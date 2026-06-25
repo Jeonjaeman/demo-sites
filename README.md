@@ -35,7 +35,7 @@ demo-sites/  (이 레포, GitHub Pages 루트)
 | 매출·인보이스 | `goldinvoice` | https://jeonjaeman.github.io/goldinvoice/ |
 | 보안업체 | `securion-demo` | https://jeonjaeman.github.io/securion-demo/ |
 | 업무요청 접수 | `as-demo` | https://jeonjaeman.github.io/as-demo/ |
-| 경매 | `demosite` | (Pages 미설정) |
+| 경매 | `demosite` | https://jeonjaeman.github.io/demosite/ |
 
 ## 로컬 실행
 ```bash
