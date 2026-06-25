@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>견적 문의 | 한울로지스</title>
+<meta name="description" content="운송 문의 및 견적 요청 접수 — 기업정보·화물정보·상하차지 입력. 전담 상담원이 영업시간 내 빠르게 연락드립니다." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  /* ─── 견적 폼 전용 스타일 ─── */
+
+  /* 폼 래퍼: 최대 860px 중앙 정렬 */
+  .quote-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* 폼 내 섹션 구분 제목 */
+  .form-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-family: var(--font-en);
+    margin: 0 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1.5px solid var(--line);
+  }
+  .form-section-title .num-badge {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--grad);
+    color: #fff;
+    font-size: 12px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  /* 폼 블록 (fieldset 대체) */
+  .form-block {
+    margin-bottom: 32px;
+  }
+  .form-block:last-of-type {
+    margin-bottom: 0;
+  }
+
+  /* 문의 유형 라디오 버튼 그룹 */
+  .type-radio-group {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .type-radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: .22s var(--ease);
+    flex: 1;
+    min-width: 180px;
+    position: relative;
+  }
+  .type-radio-group label:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+  .type-radio-group input[type="radio"] {
+    accent-color: var(--blue);
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+  }
+  .type-radio-group input[type="radio"]:checked + span {
+    color: var(--blue);
+  }
+  .type-radio-group label:has(input:checked) {
+    border-color: var(--blue);
+    background: rgba(31,114,230,.05);
+    color: var(--blue);
+  }
+  .type-radio-group .type-desc {
+    display: block;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* 파일 첨부 스타일 */
+  .file-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 11px 20px;
+    border: 1.5px dashed var(--blue);
+    border-radius: 10px;
+    color: var(--blue);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: .22s;
+    background: rgba(31,114,230,.04);
+  }
+  .file-label:hover {
+    background: rgba(31,114,230,.10);
+  }
+  .file-label svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--blue);
+    flex-shrink: 0;
+  }
+  #fileInput { display: none; }
+  .file-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 6px 12px;
+    background: var(--bg-soft);
+    border-radius: 8px;
+  }
+  .file-item svg {
+    width: 14px;
+    height: 14px;
+    stroke: var(--blue);
+    flex-shrink: 0;
+  }
+  .file-hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  /* 개인정보 동의 박스 */
+  .consent-box {
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    max-height: 120px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  .consent-check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .consent-check-row input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--blue);
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* 폼 액션 버튼 행 */
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .btn-primary { cursor: pointer; }
+  .btn-line { cursor: pointer; }
+
+  /* 인라인 에러 메시지 */
+  .field-error {
+    font-size: 12px;
+    color: #e2483d;
+    margin-top: 5px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+  input.f.err, select.f.err, textarea.f.err {
+    border-color: #e2483d;
+    box-shadow: 0 0 0 3px rgba(226,72,61,.10);
+  }
+
+  /* 성공 모달 오버레이 */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12,19,34,.65);
+    backdrop-filter: blur(6px);
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .35s var(--ease), visibility .35s;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-box {
+    background: #fff;
+    border-radius: 24px;
+    padding: 48px 40px;
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 40px 80px -30px rgba(12,32,78,.45);
+    transform: scale(.92) translateY(20px);
+    transition: transform .4s var(--ease);
+  }
+  .modal-overlay.open .modal-box {
+    transform: scale(1) translateY(0);
+  }
+  .modal-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--grad-soft);
+    display: grid;
+    place-items: center;
+    margin: 0 auto 22px;
+  }
+  .modal-icon svg {
+    width: 38px;
+    height: 38px;
+    stroke: var(--blue);
+  }
+  .modal-box h3 {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 10px;
+    color: var(--ink);
+  }
+  .modal-ref {
+    font-family: var(--font-en);
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--blue);
+    letter-spacing: .06em;
+    background: var(--bg-soft);
+    padding: 12px 24px;
+    border-radius: 10px;
+    margin: 14px 0 16px;
+    display: inline-block;
+  }
+  .modal-box p {
+    color: var(--ink-soft);
+    font-size: 15px;
+    line-height: 1.75;
+    margin: 0 0 10px;
+  }
+  .modal-demo-note {
+    font-size: 12px;
+    color: #9aa4ba;
+    margin: 14px 0 0;
+    padding: 10px 14px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 3px solid var(--line);
+    text-align: left;
+    line-height: 1.6;
+  }
+  .modal-close {
+    margin-top: 28px;
+  }
+
+  /* 반응형 */
+  @media (max-width: 600px) {
+    .type-radio-group { flex-direction: column; }
+    .form-actions { flex-direction: column; align-items: stretch; }
+    .form-actions button, .form-actions .btn-line { width: 100%; text-align: center; }
+    .modal-box { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="header solid" id="header">
+  <div class="wrap">
+    <a class="logo" href="index.html">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="48" y2="48">
+          <stop stop-color="#36c5f0"/><stop offset="1" stop-color="#1559cf"/></linearGradient></defs>
+        <path d="M6 30c8-2 14-10 18-10s10 8 18 10c-8 2-14 5-18 5s-10-3-18-5z" fill="url(#lg)"/>
+        <path d="M10 20c6-1 10-7 14-7s8 6 14 7c-6 1-10 3-14 3s-8-2-14-3z" fill="url(#lg)" opacity=".6"/>
+      </svg>
+      <span><b>HANUL</b><small>LOGISTICS PORTAL</small></span>
+    </a>
+    <nav>
+      <a href="index.html#service">서비스</a>
+      <a href="index.html#rate">운임조회</a>
+      <a href="board.html">공지·FAQ</a>
+      <a href="index.html#network">네트워크</a>
+      <a href="index.html#contact">문의</a>
+    </nav>
+    <div class="head-cta">
+      <a href="board.html" class="btn-pill ghost">고객지원</a>
+      <a href="quote.html" class="btn-pill solid">견적 문의 <span class="arr">›</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Page Hero ===== -->
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb">홈 &nbsp;·&nbsp; 견적 문의</div>
+    <span class="eyebrow">Get a Quote</span>
+    <h1>운송 문의 · 견적 요청</h1>
+    <p>접수해 주시면 전담 상담원이 빠르게 연락드립니다.</p>
+  </div>
+  <div class="wm">QUOTE</div>
+</section>
+
+<!-- ===== 견적 폼 섹션 ===== -->
+<section class="section-pad">
+  <div class="quote-wrap">
+
+    <form id="quoteForm" novalidate autocomplete="off">
+      <div class="panel">
+
+        <!-- ───────── 1. 문의 유형 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">1</span>
+            문의 유형
+          </div>
+          <div class="type-radio-group">
+            <label>
+              <input type="radio" name="inquiryType" value="단건(일반)" checked />
+              <span>
+                단건(일반)
+                <small class="type-desc">1회성 화물 운송 견적 요청</small>
+              </span>
+            </label>
+            <label>
+              <input type="radio" name="inquiryType" value="기업 정기계약(월 정산)" />
+              <span>
+                기업 정기계약(월 정산)
+                <small class="type-desc">고정 노선·반복 물량 기업 전담 계약</small>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ───────── 2. 기업 / 의뢰인 정보 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">2</span>
+            기업 / 의뢰인 정보
+          </div>
+          <div class="form-grid">
+            <div>
+              <label class="flabel" for="companyName">
+                회사명 / 성함 <span class="req">*</span>
+              </label>
+              <input class="f" type="text" id="companyName" name="companyName"
+                placeholder="예) (주)한성물류 / 홍길동" maxlength="80" />
+              <div class="field-error" id="err-companyName">회사명 또는 성함을 입력해 주세요.</div>
+            </div>
+            <div>
+              <label class="flabel" for="phone">
+                연락처 <span class="req">*</span>
+              </label>
+              <input class="f" type="tel" id="phone" name="phone"
+                placeholder="010-0000-0000" maxlength="20" />
+              <div class="field-error" id="err-phone">연락처를 입력해 주세요.</div>
+            </div>
+            <div class="full">
+              <label class="flabel" for="email">이메일</label>
+              <input class="f" type="email" id="email" name="email"
+                placeholder="example@company.co.kr" maxlength="120" />
+              <div class="field-error" id="err-email">올바른 이메일 형식을 입력해 주세요.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ───────── 3. 화물 정보 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">3</span>
+            화물 정보
+          </div>
+          <div class="form-grid">
+            <div>
+              <label class="flabel" for="cargoItem">화물 품목</label>
+              <input class="f" type="text" id="cargoItem" name="cargoItem"
+                placeholder="예) 정밀부품, 냉장 식자재, 건자재" maxlength="100" />
+            </div>
+            <div>
+              <label class="flabel" for="cargoQty">중량 / 수량</label>
+              <input class="f" type="text" id="cargoQty" name="cargoQty"
+                placeholder="예) 약 800kg / 파렛트 4개" maxlength="80" />
+            </div>
+            <div>
+              <label class="flabel" for="vehicle">
+                희망 차종 <span class="req">*</span>
+              </label>
+              <select class="f" id="vehicle" name="vehicle">
+                <option value="">차종을 선택해 주세요</option>
+                <!-- DEMO_VEHICLES 데이터로 quote.js에서 채워짐 -->
+              </select>
+              <div class="field-error" id="err-vehicle">희망 차종을 선택해 주세요.</div>
+            </div>
+            <div>
+              <label class="flabel" for="desiredDate">희망 운송일</label>
+              <input class="f" type="date" id="desiredDate" name="desiredDate" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ───────── 4. 상하차지 정보 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">4</span>
+            상하차지 정보
+          </div>
+          <div class="form-grid">
+            <div>
+              <label class="flabel" for="addrFrom">
+                출발지(상차지) 주소 <span class="req">*</span>
+              </label>
+              <input class="f" type="text" id="addrFrom" name="addrFrom"
+                placeholder="예) 경기도 안산시 단원구 OO로 000" maxlength="200" />
+              <div class="field-error" id="err-addrFrom">출발지(상차지) 주소를 입력해 주세요.</div>
+            </div>
+            <div>
+              <label class="flabel" for="addrTo">
+                도착지(하차지) 주소 <span class="req">*</span>
+              </label>
+              <input class="f" type="text" id="addrTo" name="addrTo"
+                placeholder="예) 충청남도 아산시 탕정면 OO로 000" maxlength="200" />
+              <div class="field-error" id="err-addrTo">도착지(하차지) 주소를 입력해 주세요.</div>
+            </div>
+            <div>
+              <label class="flabel" for="loadingMethod">상차 방법</label>
+              <select class="f" id="loadingMethod" name="loadingMethod">
+                <option value="">선택 (미정 포함)</option>
+                <option value="지게차">지게차</option>
+                <option value="수작업">수작업</option>
+                <option value="리프트게이트">리프트게이트</option>
+                <option value="기타">기타 (요청사항 기재)</option>
+              </select>
+            </div>
+            <div>
+              <label class="flabel" for="unloadingMethod">하차 방법</label>
+              <select class="f" id="unloadingMethod" name="unloadingMethod">
+                <option value="">선택 (미정 포함)</option>
+                <option value="지게차">지게차</option>
+                <option value="수작업">수작업</option>
+                <option value="리프트게이트">리프트게이트</option>
+                <option value="기타">기타 (요청사항 기재)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ───────── 5. 요청사항 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">5</span>
+            요청사항
+          </div>
+          <div class="form-grid">
+            <div class="full">
+              <label class="flabel" for="remarks">추가 요청사항</label>
+              <textarea class="f" id="remarks" name="remarks" rows="4"
+                placeholder="긴급 배차, 냉동·냉장 필요, 특수 적재 요건, 방문 주의사항 등 자유롭게 기재해 주세요."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ───────── 6. 파일 첨부 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">6</span>
+            파일 첨부
+          </div>
+          <label class="file-label" for="fileInput">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8">
+              <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.2-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+            </svg>
+            파일 선택 (이미지·PDF·Excel 등)
+          </label>
+          <input type="file" id="fileInput" name="files" multiple
+            accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.xlsx,.xls,.csv,.doc,.docx" />
+          <div class="file-list" id="fileList"></div>
+          <div class="file-hint">이미지(JPG·PNG), PDF, Excel(xlsx) 등 최대 10MB 이하 파일을 첨부하실 수 있습니다.</div>
+        </div>
+
+        <!-- ───────── 7. 개인정보 수집·이용 동의 ───────── -->
+        <div class="form-block reveal">
+          <div class="form-section-title">
+            <span class="num-badge">7</span>
+            개인정보 수집·이용 동의
+          </div>
+          <div class="consent-box" id="consentBox">
+            <strong>개인정보 수집·이용 동의 (필수)</strong><br/><br/>
+            <strong>수집하는 개인정보 항목</strong>: 회사명/성함, 연락처(전화번호), 이메일 주소, 화물 정보 및 상하차지 주소<br/><br/>
+            <strong>수집·이용 목적</strong>: 운송 견적 산정 및 상담원 연락, 견적 접수 처리 및 운송 계약 체결, 운송 서비스 제공 및 관련 민원 처리<br/><br/>
+            <strong>보유·이용 기간</strong>: 견적 접수일로부터 2년 (단, 운송 계약 체결 시 계약 종료 후 5년 보관)<br/><br/>
+            귀하는 개인정보 수집·이용에 대한 동의를 거부하실 수 있습니다. 다만, 동의 거부 시 견적 접수 서비스 이용이 제한될 수 있습니다.<br/><br/>
+            본 동의서는 「개인정보 보호법」 제15조 및 제22조에 의거하여 작성되었습니다. 자세한 내용은 개인정보처리방침을 확인하여 주시기 바랍니다.
+          </div>
+          <div class="consent-check-row">
+            <input type="checkbox" id="consentCheck" name="consentCheck" />
+            <label for="consentCheck">
+              위 개인정보 수집·이용 내용을 읽었으며, 이에 동의합니다. <span class="req">*</span>
+            </label>
+          </div>
+          <div class="field-error" id="err-consent">개인정보 수집·이용에 동의해 주세요.</div>
+        </div>
+
+        <!-- ───────── 제출 버튼 ───────── -->
+        <div class="form-actions reveal">
+          <button type="submit" class="btn-primary" id="submitBtn">
+            견적 요청 접수 &nbsp;›
+          </button>
+          <button type="reset" class="btn-line" id="resetBtn">
+            초기화
+          </button>
+        </div>
+
+      </div><!-- /.panel -->
+    </form>
+
+  </div><!-- /.quote-wrap -->
+</section>
+
+<!-- ===== 성공 모달 ===== -->
+<div class="modal-overlay" id="successModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <h3 id="modalTitle">견적 요청이 접수되었습니다.</h3>
+    <div class="modal-ref" id="modalRef">Q-20260626-000</div>
+    <p>전담 상담원이 영업시간 내(평일 07:00 – 22:00) 입력하신 연락처로 빠르게 연락드립니다.</p>
+    <p style="font-size:13px; color:#9aa4ba;">접수번호를 메모해 두시면 문의 시 빠른 확인이 가능합니다.</p>
+    <div class="modal-demo-note">
+      ※ 데모: 실제 구축 시 자체 DB에 적재되며, 관리자 페이지에서 접수 내역을 조회·처리할 수 있습니다.
+    </div>
+    <div class="modal-close">
+      <button class="btn-primary" id="modalCloseBtn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="f-top">
+      <div>
+        <div class="logo"><span><b>HANUL</b><small>LOGISTICS PORTAL</small></span></div>
+        <div class="f-info">
+          한울로지스(주) · 대표 홍길동<br/>
+          사업자등록번호 000-00-00000<br/>
+          본사 서울특별시 강서구 양천로 000<br/>
+          물류센터 경기도 광주시 곤지암읍 000<br/>
+          대표전화 1800-0000 · contact@hanul-demo.co.kr
+        </div>
+      </div>
+      <div>
+        <h5>서비스</h5>
+        <ul>
+          <li><a href="index.html#service">전국 화물 운송</a></li>
+          <li><a href="index.html#service">기업 정기계약</a></li>
+          <li><a href="index.html#rate">간이 운임조회</a></li>
+          <li><a href="quote.html">견적 문의</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>고객지원</h5>
+        <ul>
+          <li><a href="board.html">공지사항</a></li>
+          <li><a href="board.html#faq">자주 묻는 질문</a></li>
+          <li><a href="quote.html">운송 문의</a></li>
+          <li><a href="admin.html">관리자</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>상담 채널</h5>
+        <ul>
+          <li><a href="tel:1800-0000">전화 1800-0000</a></li>
+          <li><a href="#" onclick="alert('데모: 카카오톡 채널 연동 예정')">카카오톡 상담</a></li>
+          <li>평일 07:00 – 22:00</li>
+          <li>연중무휴 운영</li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© 2026 HANUL LOGISTICS (Demo). 본 사이트는 제안용 데모입니다.</span>
+      <span>이용약관 · 개인정보처리방침</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Floating buttons ===== -->
+<div class="floats">
+  <button class="fab kakao" onclick="alert('데모: 카카오톡 상담 채널 연동')">
+    <span class="tip">카카오톡 상담</span>
+    <svg viewBox="0 0 24 24" fill="#3c1e1e"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.8 6.7-.2.7-.7 2.6-.8 3-.1.5.2.5.4.4.2-.1 2.6-1.8 3.7-2.5.6.1 1.3.1 1.9.1 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg>
+  </button>
+  <a class="fab tel" href="tel:1800-0000">
+    <span class="tip">전화 상담 1800-0000</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3 19.5 19.5 0 01-6-6 19.8 19.8 0 01-3-8.6A2 2 0 014.1 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8.1 9.9a16 16 0 006 6l1.3-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg>
+  </a>
+  <button class="fab top" id="toTop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </button>
+</div>
+
+<!-- ===== Scripts ===== -->
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/quote.js"></script>
+</body>
+</html>
