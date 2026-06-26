@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>로그인 · 회원가입 · 마이페이지 | 대한창업지원협회</title>
+<meta name="description" content="대한창업지원협회 회원 — 이메일 기반 로그인/회원가입, 마이페이지에서 내 정보와 문의 내역 확인." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<header class="header solid" id="header">
+  <div class="wrap">
+    <div class="util"><a href="member.html">로그인</a><a href="member.html">회원가입</a><a href="admin.html">관리자</a><a href="board.html">검색</a></div>
+    <div class="bar">
+      <a class="logo" href="index.html">
+        <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="kg" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>
+          <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#kg)"/>
+          <path d="M13 31l8-8 5 5 9-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M30 17h6v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span><b>KSSA</b><small>대한창업지원협회</small></span>
+      </a>
+      <nav><a href="about.html">협회소개</a><a href="index.html#programs">지원사업</a><a href="board.html">공지·정보</a><a href="inquiry.html">1:1 문의</a><a href="about.html#map">오시는 길</a></nav>
+      <div class="head-cta"><a href="member.html" class="btn-pill ghost">마이페이지</a><a href="inquiry.html" class="btn-pill solid">상담 신청 <span class="arr">›</span></a></div>
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">홈</a> › 회원</div>
+    <span class="eyebrow">Member</span>
+    <h1 id="memberTitle">회원 로그인</h1>
+    <p>이메일 기반 기업 회원 서비스입니다. 로그인 후 마이페이지에서 내 정보와 1:1 문의 답변을 확인할 수 있습니다.</p>
+  </div>
+  <div class="wm en">MEMBER</div>
+</section>
+
+<section class="section-pad">
+  <div class="wrap">
+
+    <!-- ===== 인증 (로그인/회원가입) ===== -->
+    <div id="authView" class="auth-wrap">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="on" data-auth="login">로그인</button>
+          <button data-auth="signup">회원가입</button>
+        </div>
+
+        <!-- 로그인 -->
+        <form id="loginForm">
+          <h2>다시 오신 것을 환영합니다</h2>
+          <div class="sub">기업 회원 계정으로 로그인하세요</div>
+          <div class="field"><label class="flabel">이메일</label><input class="f" type="email" id="lg_email" placeholder="name@company.com" value="seoyeon@blueoceanlab.kr" /></div>
+          <div class="field"><label class="flabel">비밀번호</label><input class="f" type="password" id="lg_pw" placeholder="비밀번호" value="demo1234" /></div>
+          <label class="checkrow" style="margin:4px 0 18px"><input type="checkbox" /> <span>로그인 상태 유지</span></label>
+          <button type="submit" class="btn-primary" style="width:100%">로그인</button>
+          <div class="divider">또는</div>
+          <button type="button" class="btn-line" style="width:100%" onclick="toast('데모: 소셜 로그인 연동 예정')">카카오로 시작하기</button>
+          <div class="auth-foot">아직 회원이 아니신가요? <a href="#" id="toSignup" style="color:var(--blue);font-weight:700">회원가입 ›</a></div>
+        </form>
+
+        <!-- 회원가입 -->
+        <form id="signupForm" style="display:none">
+          <h2>기업 회원가입</h2>
+          <div class="sub">창업기업 정보를 입력해 주세요</div>
+          <div class="field"><label class="flabel">기업명 <span class="req">*</span></label><input class="f" id="su_company" placeholder="(주)회사명" /></div>
+          <div class="field"><label class="flabel">대표자/담당자 이름 <span class="req">*</span></label><input class="f" id="su_name" placeholder="이름" /></div>
+          <div class="field"><label class="flabel">이메일 <span class="req">*</span></label><input class="f" type="email" id="su_email" placeholder="name@company.com" /></div>
+          <div class="field"><label class="flabel">비밀번호 <span class="req">*</span></label><input class="f" type="password" id="su_pw" placeholder="8자 이상" /><div class="fhelp">영문·숫자 조합 8자 이상 — 실제 구축 시 단방향 암호화(bcrypt 등) 저장</div></div>
+          <div class="field"><label class="flabel">비밀번호 확인 <span class="req">*</span></label><input class="f" type="password" id="su_pw2" placeholder="비밀번호 재입력" /></div>
+          <label class="checkrow" style="margin:6px 0 18px"><input type="checkbox" id="su_agree" /> <span><b>[필수]</b> 이용약관 및 개인정보 수집·이용에 동의합니다.</span></label>
+          <button type="submit" class="btn-primary" style="width:100%">가입 신청</button>
+          <div class="auth-foot">이미 회원이신가요? <a href="#" id="toLogin" style="color:var(--blue);font-weight:700">로그인 ›</a></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== 마이페이지 ===== -->
+    <div id="mypageView" style="display:none">
+      <div class="mp-grid">
+        <aside class="mp-side">
+          <div class="avatar">B</div>
+          <div class="name">이서연</div>
+          <div class="email">seoyeon@blueoceanlab.kr</div>
+          <nav id="mpNav">
+            <a class="on" data-mp="profile">내 정보 수정</a>
+            <a data-mp="inquiries">1:1 문의 내역</a>
+            <a href="#" id="logoutBtn">로그아웃</a>
+          </nav>
+        </aside>
+        <div>
+          <!-- 내 정보 -->
+          <div class="panel mp-pane" data-pane="profile">
+            <h2 style="font-size:22px;margin:0 0 22px">내 정보 수정</h2>
+            <form id="profileForm" class="form-grid">
+              <div><label class="flabel">기업명</label><input class="f" value="블루오션랩" /></div>
+              <div><label class="flabel">담당자 이름</label><input class="f" value="이서연" /></div>
+              <div><label class="flabel">이메일 (아이디)</label><input class="f" value="seoyeon@blueoceanlab.kr" disabled style="background:var(--bg-soft);color:var(--ink-soft)" /></div>
+              <div><label class="flabel">연락처</label><input class="f" value="010-1234-5678" /></div>
+              <div><label class="flabel">새 비밀번호</label><input class="f" type="password" placeholder="변경 시에만 입력" /></div>
+              <div><label class="flabel">새 비밀번호 확인</label><input class="f" type="password" placeholder="변경 시에만 입력" /></div>
+              <div class="full" style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+                <button type="submit" class="btn-primary">변경사항 저장</button>
+              </div>
+            </form>
+          </div>
+          <!-- 문의 내역 -->
+          <div class="panel mp-pane" data-pane="inquiries" style="display:none">
+            <h2 style="font-size:22px;margin:0 0 22px">내 1:1 문의 내역</h2>
+            <table class="tbl"><thead><tr><th style="width:110px">분류</th><th>제목</th><th style="width:110px">상태</th><th class="c-date">작성일</th></tr></thead><tbody id="mpInqBody"></tbody></table>
+            <div style="text-align:right;margin-top:20px"><a href="inquiry.html" class="btn-line">새 문의 작성 ›</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="f-top">
+      <div>
+        <div class="logo">
+          <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="kgf" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>
+            <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#kgf)"/>
+            <path d="M13 31l8-8 5 5 9-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M30 17h6v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span><b>KSSA</b><small>대한창업지원협회</small></span>
+        </div>
+        <div class="f-info">사단법인 대한창업지원협회 · 회장 홍길동<br/>고유번호 000-00-00000<br/>본부 서울특별시 강남구 테헤란로 000 창업지원센터 0층<br/>대표전화 1666-0000 · support@kssa-demo.or.kr</div>
+      </div>
+      <div><h5>협회 안내</h5><ul><li><a href="about.html">인사말</a></li><li><a href="about.html#history">연혁</a></li><li><a href="about.html#vision">비전·조직</a></li><li><a href="about.html#map">오시는 길</a></li></ul></div>
+      <div><h5>지원·소통</h5><ul><li><a href="index.html#programs">지원사업</a></li><li><a href="board.html">공지·정보</a></li><li><a href="inquiry.html">1:1 문의</a></li><li><a href="member.html">마이페이지</a></li></ul></div>
+      <div><h5>상담 채널</h5><ul><li><a href="tel:1666-0000">전화 1666-0000</a></li><li><a href="#" onclick="alert('데모: 카카오톡 채널 연동 예정'); return false;">카카오톡 상담</a></li><li>평일 09:00 – 18:00</li><li>주말·공휴일 휴무</li></ul></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 KOREA STARTUP SUPPORT ASSOCIATION (Demo). 본 사이트는 제안용 데모입니다.</span><div class="badges"><span>WEB ACCESSIBILITY</span><span>개인정보처리방침</span><span>이용약관</span></div></div>
+  </div>
+</footer>
+
+<div class="floats"><button class="fab top" id="toTop"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/sub.js"></script>
+<script src="assets/js/member.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>관리자 백오피스 | 대한창업지원협회</title>
+<meta name="description" content="대한창업지원협회 관리자 — 대시보드, 회원관리, 콘텐츠관리, 문의관리." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="admin">
+<div class="admin-shell">
+
+  <!-- Sidebar -->
+  <aside class="admin-side">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="kg" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>
+        <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#kg)"/>
+        <path d="M13 31l8-8 5 5 9-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M30 17h6v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><b>KSSA Admin</b><small>백오피스</small></div>
+    </div>
+    <nav id="adminNav">
+      <a class="on" data-pane="dashboard"><svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg> 대시보드</a>
+      <a data-pane="members"><svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3.5 20a5.5 5.5 0 0111 0M16 6a3 3 0 010 6M19 20a5 5 0 00-3-4.6"/></svg> 회원관리</a>
+      <a data-pane="content"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg> 콘텐츠관리</a>
+      <a data-pane="inquiries"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> 문의관리 <span id="inqBadge" style="margin-left:auto;background:#ff5d5d;color:#fff;font-size:11px;font-weight:800;border-radius:999px;padding:1px 7px"></span></a>
+    </nav>
+    <a class="back" href="index.html">← 사이트로 돌아가기</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-top">
+      <h1 id="adminTitle">대시보드</h1>
+      <div class="who"><span>관리자</span><div class="av">A</div></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <section class="admin-pane" data-pane="dashboard">
+      <div class="kpi-grid" id="kpiGrid"></div>
+      <div class="admin-cols">
+        <div class="acard">
+          <h3>월별 신규 가입 추이 <span class="more-link">최근 6개월</span></h3>
+          <div class="bars" id="signupBars"></div>
+        </div>
+        <div class="acard">
+          <h3>신규 1:1 문의 <a class="more-link" href="#" data-goto="inquiries">전체보기</a></h3>
+          <ul class="mini-list" id="recentInq"></ul>
+        </div>
+      </div>
+      <div class="admin-cols" style="margin-top:22px">
+        <div class="acard">
+          <h3>최근 가입 회원 <a class="more-link" href="#" data-goto="members">전체보기</a></h3>
+          <ul class="mini-list" id="recentMembers"></ul>
+        </div>
+        <div class="acard">
+          <h3>빠른 작업</h3>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="btn-line" data-goto="content" style="text-align:left">＋ 새 공지 작성</button>
+            <button class="btn-line" data-goto="inquiries" style="text-align:left">✉ 미답변 문의 처리</button>
+            <button class="btn-line" data-goto="members" style="text-align:left">👤 가입 대기 회원 승인</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 회원관리 -->
+    <section class="admin-pane" data-pane="members" hidden>
+      <div class="admin-toolbar">
+        <div class="seg" id="memberFilter"><button class="on" data-f="전체">전체</button><button data-f="정상">정상</button><button data-f="대기">대기</button><button data-f="정지">정지</button></div>
+        <div class="search-box"><input class="f" id="memberSearch" placeholder="기업명·이메일 검색" /></div>
+      </div>
+      <div class="acard" style="padding:0;overflow:hidden">
+        <table class="tbl"><thead><tr><th style="width:90px">회원ID</th><th>기업명</th><th>담당자</th><th>이메일</th><th class="c-date">가입일</th><th style="width:90px">상태</th><th style="width:160px">관리</th></tr></thead>
+        <tbody id="memberBody"></tbody></table>
+      </div>
+    </section>
+
+    <!-- 콘텐츠관리 -->
+    <section class="admin-pane" data-pane="content" hidden>
+      <div class="admin-toolbar">
+        <div class="seg"><button class="on">공지·정보</button></div>
+        <button class="btn-primary" id="newPostBtn" style="padding:11px 22px">＋ 새 글 작성</button>
+      </div>
+      <div class="acard" style="padding:0;overflow:hidden;margin-bottom:24px">
+        <table class="tbl"><thead><tr><th class="c-num">번호</th><th style="width:90px">분류</th><th>제목</th><th class="c-date">작성일</th><th class="c-views">조회</th><th style="width:120px">관리</th></tr></thead>
+        <tbody id="contentBody"></tbody></table>
+      </div>
+
+      <div class="acard" id="editorCard">
+        <h3>새 글 작성 <span class="more-link">웹 에디터</span></h3>
+        <div class="form-grid" style="margin-bottom:16px">
+          <div><label class="flabel">분류</label><select class="f" id="ed_cat"><option>공지</option><option>정보</option><option>보도</option></select></div>
+          <div><label class="flabel">게시 상태</label><select class="f"><option>게시</option><option>임시저장</option></select></div>
+        </div>
+        <label class="flabel">제목</label>
+        <input class="f" id="ed_title" placeholder="제목을 입력하세요" style="margin-bottom:16px" />
+        <label class="flabel">본문</label>
+        <div class="editor-toolbar">
+          <button type="button" data-cmd="bold" title="굵게"><b>B</b></button>
+          <button type="button" data-cmd="italic" title="기울임"><i>I</i></button>
+          <button type="button" data-cmd="underline" title="밑줄"><u>U</u></button>
+          <button type="button" data-cmd="insertUnorderedList" title="목록">≣</button>
+          <button type="button" data-cmd="formatBlock" data-val="H3" title="제목">H</button>
+          <button type="button" data-cmd="createLink" title="링크">🔗</button>
+        </div>
+        <div class="editor-area" id="ed_body" contenteditable="true"><p>여기에 공지 내용을 작성하세요. 데모 웹 에디터로 굵게·기울임·목록·링크 서식을 적용할 수 있습니다.</p></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+          <button class="btn-line" id="ed_cancel">취소</button>
+          <button class="btn-primary" id="ed_submit">등록</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 문의관리 -->
+    <section class="admin-pane" data-pane="inquiries" hidden>
+      <div class="admin-toolbar">
+        <div class="seg" id="inqFilter"><button class="on" data-f="전체">전체</button><button data-f="접수">미답변</button><button data-f="답변완료">답변완료</button></div>
+      </div>
+      <div id="adminInqList"></div>
+    </section>
+  </main>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>공지사항 · 정보제공 | 대한창업지원협회</title>
+<meta name="description" content="대한창업지원협회 공지사항, 창업 정보제공, 보도자료 게시판." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<header class="header solid" id="header">
+  <div class="wrap">
+    <div class="util"><a href="member.html">로그인</a><a href="member.html">회원가입</a><a href="admin.html">관리자</a><a href="board.html">검색</a></div>
+    <div class="bar">
+      <a class="logo" href="index.html">
+        <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="kg" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>
+          <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#kg)"/>
+          <path d="M13 31l8-8 5 5 9-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M30 17h6v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span><b>KSSA</b><small>대한창업지원협회</small></span>
+      </a>
+      <nav>
+        <a href="about.html">협회소개</a><a href="index.html#programs">지원사업</a><a href="board.html">공지·정보</a><a href="inquiry.html">1:1 문의</a><a href="about.html#map">오시는 길</a>
+      </nav>
+      <div class="head-cta"><a href="member.html" class="btn-pill ghost">마이페이지</a><a href="inquiry.html" class="btn-pill solid">상담 신청 <span class="arr">›</span></a></div>
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">홈</a> › 공지·정보</div>
+    <span class="eyebrow">News &amp; Notice</span>
+    <h1>공지사항 · 정보제공</h1>
+    <p>협회의 공지와 창업에 도움이 되는 정보, 보도자료를 한 곳에서 확인하세요. 제목을 클릭하면 상세 내용과 첨부파일이 펼쳐집니다.</p>
+  </div>
+  <div class="wm en">NOTICE</div>
+</section>
+
+<section class="section-pad">
+  <div class="wrap">
+    <div class="board-tabs" id="boardTabs">
+      <button class="on" data-tab="전체">전체</button>
+      <button data-tab="공지">공지사항</button>
+      <button data-tab="정보">정보제공</button>
+      <button data-tab="보도">보도자료</button>
+    </div>
+
+    <div class="toolbar">
+      <div id="boardCount" style="color:var(--ink-soft); font-size:14px;"></div>
+      <div class="search-box">
+        <select class="f" id="searchField"><option value="title">제목</option><option value="body">내용</option></select>
+        <input class="f" id="searchInput" type="text" placeholder="검색어를 입력하세요" />
+        <button class="btn-line" id="searchBtn" style="padding:13px 20px">검색</button>
+      </div>
+    </div>
+
+    <table class="tbl">
+      <thead><tr><th class="c-num">번호</th><th style="width:90px">분류</th><th>제목</th><th class="c-date">작성일</th><th class="c-views">조회</th></tr></thead>
+      <tbody id="boardBody"></tbody>
+    </table>
+    <div class="pager" id="boardPager"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="section-pad" id="faq" style="background:var(--bg-soft)">
+  <div class="wrap" style="max-width:880px">
+    <div class="section-head reveal">
+      <span class="eyebrow">FAQ</span>
+      <h2>자주 묻는 질문</h2>
+      <p>회원가입·지원사업·멘토링·문의에 대해 가장 많이 묻는 질문을 모았습니다.</p>
+    </div>
+    <div id="faqList" class="reveal"></div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="f-top">
+      <div>
+        <div class="logo">
+          <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="kgf" x1="4" y1="4" x2="44" y2="44"><stop stop-color="#2563eb"/><stop offset="1" stop-color="#10b981"/></linearGradient></defs>
+            <rect x="4" y="4" width="40" height="40" rx="12" fill="url(#kgf)"/>
+            <path d="M13 31l8-8 5 5 9-11" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M30 17h6v6" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span><b>KSSA</b><small>대한창업지원협회</small></span>
+        </div>
+        <div class="f-info">사단법인 대한창업지원협회 · 회장 홍길동<br/>고유번호 000-00-00000<br/>본부 서울특별시 강남구 테헤란로 000 창업지원센터 0층<br/>대표전화 1666-0000 · support@kssa-demo.or.kr</div>
+      </div>
+      <div><h5>협회 안내</h5><ul><li><a href="about.html">인사말</a></li><li><a href="about.html#history">연혁</a></li><li><a href="about.html#vision">비전·조직</a></li><li><a href="about.html#map">오시는 길</a></li></ul></div>
+      <div><h5>지원·소통</h5><ul><li><a href="index.html#programs">지원사업</a></li><li><a href="board.html">공지·정보</a></li><li><a href="inquiry.html">1:1 문의</a></li><li><a href="member.html">마이페이지</a></li></ul></div>
+      <div><h5>상담 채널</h5><ul><li><a href="tel:1666-0000">전화 1666-0000</a></li><li><a href="#" onclick="alert('데모: 카카오톡 채널 연동 예정'); return false;">카카오톡 상담</a></li><li>평일 09:00 – 18:00</li><li>주말·공휴일 휴무</li></ul></div>
+    </div>
+    <div class="f-bottom"><span>© 2026 KOREA STARTUP SUPPORT ASSOCIATION (Demo). 본 사이트는 제안용 데모입니다.</span><div class="badges"><span>WEB ACCESSIBILITY</span><span>개인정보처리방침</span><span>이용약관</span></div></div>
+  </div>
+</footer>
+
+<div class="floats"><button class="fab top" id="toTop"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button></div>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/sub.js"></script>
+<script src="assets/js/board.js"></script>
+</body>
+</html>
