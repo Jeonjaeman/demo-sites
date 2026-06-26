@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>미식데스크 | 로그인</title>
+<meta name="description" content="타겟 키워드 기반 맛집 정보 통합 관리 백오피스 — 폐쇄형 시스템 (제안용 데모)" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+<div class="login-wrap">
+
+  <!-- 좌측 브랜드 -->
+  <aside class="login-aside">
+    <div class="lbrand"><span class="lg en">M</span><span>미식데스크</span></div>
+    <div>
+      <h2>흩어진 정보를<br><span>한 곳에서</span> 등록·검색·관리</h2>
+      <p>맛집 관련 웹·검색·공개 데이터를 개별 조회하던 업무를, 등록·검색·분류·협업이 한 화면에서 되는 통합 정보 관리 시스템으로. 이후 공개 정보 연동·자동수집·중복감지·알림·통계로 단계적 고도화.</p>
+      <div class="lfeat">
+        <div><span class="ck">✓</span>권한 기반 폐쇄형 접근 제어 (조회/등록/수정/삭제/관리)</div>
+        <div><span class="ck">✓</span>통합 검색 · 다중 조건 필터 · 카테고리/상태 관리</div>
+        <div><span class="ck">✓</span>내부 메모 · 댓글 · 담당자 · 변경 이력 협업</div>
+        <div><span class="ck">✓</span>키워드 기반 공개 정보 자동수집 · 중복 감지 <em style="font-style:normal;color:#c4b5fd">(2차)</em></div>
+      </div>
+    </div>
+    <div class="lfoot">© 2026 미식데스크 · 본 사이트는 제안용 데모이며 데이터는 목(mock)입니다.</div>
+  </aside>
+
+  <!-- 우측 로그인 -->
+  <main class="login-main">
+    <div class="login-card">
+      <div class="lhd">
+        <div class="eyk">SECURE BACK-OFFICE</div>
+        <h1>로그인</h1>
+        <p>허가된 계정만 접근할 수 있는 폐쇄형 시스템입니다.</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="field"><label>이메일</label><input class="inp" id="email" type="email" placeholder="name@misikdesk.io" value="doyun@misikdesk.io" /></div>
+        <div class="field"><label>비밀번호</label><input class="inp" id="pw" type="password" placeholder="••••••••" value="demo1234" /></div>
+        <button class="btn primary lg" type="submit">로그인</button>
+      </form>
+
+      <div class="closed-note">🔒 데모에서는 비밀번호 검증 없이 아래 계정으로 바로 체험할 수 있습니다.</div>
+
+      <div class="demo-accounts">
+        <div class="dt">권한별 데모 계정 — 클릭하면 바로 입장</div>
+        <button class="acct" data-role="관리자" data-name="김도윤">
+          <span class="av" style="background:#7c3aed">도윤</span>
+          <span><span class="nm">김도윤 · 관리자</span><span class="rl">전체 권한 · 사용자/카테고리 관리, 삭제</span></span>
+          <span class="go">입장 →</span>
+        </button>
+        <button class="acct" data-role="매니저" data-name="이서연">
+          <span class="av" style="background:#2475d6">서연</span>
+          <span><span class="nm">이서연 · 매니저</span><span class="rl">조회·등록·수정·삭제 (관리자 메뉴 제외)</span></span>
+          <span class="go">입장 →</span>
+        </button>
+        <button class="acct" data-role="일반" data-name="박지호">
+          <span class="av" style="background:#1f9d57">지호</span>
+          <span><span class="nm">박지호 · 일반</span><span class="rl">조회·등록만 (수정/삭제/관리 제한)</span></span>
+          <span class="go">입장 →</span>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  function enter(role, name) {
+    sessionStorage.setItem("misikdesk.role", role);
+    sessionStorage.setItem("misikdesk.name", name);
+    location.href = "app.html";
+  }
+  document.querySelectorAll(".acct").forEach(function (b) {
+    b.addEventListener("click", function () { enter(b.dataset.role, b.dataset.name); });
+  });
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    enter("관리자", "김도윤"); // 데모: 기본 관리자 입장
+  });
+</script>
+</body>
+</html>

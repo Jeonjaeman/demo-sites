@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>미식데스크 | 정보 통합 관리 백오피스</title>
+<meta name="description" content="타겟 키워드 기반 맛집 정보 통합 관리 백오피스 — 수집·검색·분류·협업·자동수집 (제안용 데모)" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="side" id="side">
+    <div class="sbrand">
+      <span class="lg en">M</span>
+      <span><b>미식데스크</b><small class="en">MISIK DESK</small></span>
+    </div>
+    <nav>
+      <div class="navlabel">관제</div>
+      <a class="nav" href="#/dashboard"><span class="ni">📊</span>대시보드</a>
+
+      <div class="navlabel">정보</div>
+      <a class="nav" href="#/info"><span class="ni">🗂️</span>정보 관리<span class="cnt" id="navCntInfo">0</span></a>
+      <a class="nav" href="#/collect"><span class="ni">🛰️</span>자동수집</a>
+      <a class="nav" href="#/favorites"><span class="ni">⭐</span>즐겨찾기<span class="cnt" id="navCntFav">0</span></a>
+      <a class="nav" href="#/archive"><span class="ni">📦</span>아카이브<span class="cnt" id="navCntArch">0</span></a>
+
+      <div class="navlabel">관리자</div>
+      <a class="nav" href="#/taxonomy" data-admin><span class="ni">🏷️</span>카테고리·상태</a>
+      <a class="nav" href="#/users" data-admin><span class="ni">👥</span>사용자·권한</a>
+      <a class="nav" href="#/logs"><span class="ni">📜</span>활동 로그</a>
+      <a class="nav" href="#/settings"><span class="ni">⚙️</span>설정</a>
+    </nav>
+    <div class="suser">
+      <span class="av" id="meAvatar">?</span>
+      <div><div class="nm" id="meName">사용자</div><div class="rl" id="meRole">권한</div></div>
+      <button class="out" title="로그아웃" onclick="MISIK_logout()">⏻</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="iconbtn menu-toggle" id="menuToggle" style="margin-right:4px">☰</button>
+      <div class="gsearch"><span class="ic">🔎</span><input id="gsearch" placeholder="전체 통합 검색 (Enter)" /></div>
+      <div class="tb-right">
+        <button class="iconbtn" title="알림">🔔<span class="nd"></span></button>
+        <a class="iconbtn" href="../index.html" title="데모 포털로">↩</a>
+      </div>
+    </header>
+
+    <div style="flex:1;overflow-y:auto">
+      <div class="content" id="view"><!-- view rendered here --></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER (detail) -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dh" id="drawerHead"></div>
+  <div class="db" id="drawerBody"></div>
+  <div class="df" id="drawerFoot"></div>
+</aside>
+
+<!-- MODAL -->
+<div class="modal-scrim" id="modalScrim">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mh"><h3 id="modalTitle">제목</h3><button class="x" data-act="modal-close">✕</button></div>
+    <div class="mb" id="modalBody"></div>
+    <div class="mf" id="modalFoot"></div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
