@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MOA · 앱 커뮤니티 + 자체 광고 플랫폼</title>
+<meta name="description" content="MOA(모아) — Flutter 앱 웹뷰에 연동되는 익명 커뮤니티 게시판과 노출·클릭을 직접 트래킹하는 자체 광고 시스템을 Supabase 기반으로 통합한 플랫폼 데모." />
+<meta property="og:title" content="MOA · 앱 커뮤니티 + 자체 광고 플랫폼" />
+<meta property="og:description" content="익명 커뮤니티 게시판 + 5종 자체 광고 소재 + 노출/클릭 트래킹 통계. Supabase 기반 통합 플랫폼 제안 데모." />
+<meta property="og:type" content="website" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<!-- ===== Nav ===== -->
+<header class="lnav">
+  <div class="wrap">
+    <a class="logo" href="index.html">
+      <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.4" fill="#fff"/></svg></span>
+      <span><b class="en">MOA</b><small>모아 · 커뮤니티 + 광고</small></span>
+    </a>
+    <nav>
+      <a href="#surfaces">구성</a>
+      <a href="#features">기능</a>
+      <a href="app.html">커뮤니티</a>
+      <a href="admin.html">어드민</a>
+      <a href="advertiser.html">광고주</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn ghost" href="admin.html">어드민 보기</a>
+      <a class="btn solid" href="app.html">커뮤니티 체험 <span class="arr">›</span></a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-copy-col">
+      <span class="eyebrow"><i></i> Supabase 기반 · Flutter 웹뷰 연동</span>
+      <h1>앱 속 <span class="grad-text">커뮤니티</span>와<br/>자체 <span class="grad-text">광고 시스템</span>을<br/>하나로.</h1>
+      <p class="lead">사용자가 직접 글을 쓰는 익명 커뮤니티 게시판과, 노출·클릭을 직접 집계하는 자체 광고 플랫폼. 사용자·관리자·광고주 3개 화면을 한 번에 제안합니다.</p>
+      <div class="cta-row">
+        <a class="btn solid" href="app.html">커뮤니티 앱 체험 <span class="arr">›</span></a>
+        <a class="btn ghost" href="admin.html">관리자 어드민</a>
+      </div>
+      <div class="trust" id="heroTrust"></div>
+    </div>
+
+    <div class="hero-vis">
+      <div class="glow"></div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="scr">
+          <div style="padding:34px 14px 10px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+              <span style="width:26px;height:26px;border-radius:8px;background:var(--grad);display:grid;place-items:center"><svg viewBox="0 0 24 24" width="16" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></span>
+              <b style="font-size:16px">모아 커뮤니티</b>
+            </div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:13px;padding:13px;box-shadow:var(--shadow-soft);margin-bottom:9px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="av" style="width:30px;height:30px;border-radius:50%;font-size:12px">너</span><div style="line-height:1.2"><b style="font-size:12.5px">코딩하는너구리</b><br><small style="color:var(--muted);font-size:10px">1시간 전</small></div><span style="margin-left:auto;font-size:10px;font-weight:700;color:var(--accent)">🔥 인기</span></div>
+              <div style="font-size:12.5px;font-weight:700">사이드프로젝트 첫 결제가 찍혔어요 🎉</div>
+              <div style="display:flex;gap:14px;margin-top:9px;color:var(--ink-soft);font-size:11px"><span>♥ 421</span><span>💬 57</span><span>🔖 134</span></div>
+            </div>
+            <div style="background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:var(--shadow-soft)">
+              <div style="background:var(--grad-2);color:#fff;padding:14px">
+                <div style="font-size:10px;font-weight:700;opacity:.9">프레시밀 키트 · <span style="background:rgba(0,0,0,.3);padding:1px 5px;border-radius:4px">AD</span></div>
+                <div style="font-size:14px;font-weight:800;margin-top:5px">15분이면 끝나는 집밥</div>
+                <div style="font-size:11px;opacity:.92;margin-top:3px">첫 주문 40% 할인 🍳</div>
+              </div>
+              <div style="padding:9px 13px;font-size:11px;color:var(--brand);font-weight:700">첫 주문 할인받기 ›</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Surfaces (3 roles) ===== -->
+<section class="surfaces" id="surfaces">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">3 Surfaces</span>
+      <h2>하나의 백엔드, 세 개의 화면</h2>
+      <p>같은 Supabase 데이터 위에서 사용자·관리자·광고주가 각자의 화면으로 연결됩니다. 각 데모를 직접 클릭해 체험해 보세요.</p>
+    </div>
+    <div class="surf-grid" id="surfGrid"></div>
+  </div>
+</section>
+
+<!-- ===== Features ===== -->
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Core Features</span>
+      <h2>커뮤니티부터 광고 트래킹까지</h2>
+      <p>요청하신 사용자 게시판·자체 광고·트래킹·운영 기능을 빠짐없이 구현 범위에 담았습니다.</p>
+    </div>
+    <div class="feat-grid" id="featGrid"></div>
+  </div>
+</section>
+
+<!-- ===== Tech band ===== -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-card reveal">
+      <div class="inner">
+        <div>
+          <h2>Supabase 위에서, 가볍고 빠르게</h2>
+          <p>PostgreSQL·Auth·Storage·Edge Functions를 그대로 활용해 광고 트래킹은 Batch로 DB 부하를 낮추고, AI 번역은 Edge Function 프록시로 API Key를 숨깁니다. 백오피스는 상용 UI 템플릿으로, 예산은 핵심 기능에 집중합니다.</p>
+        </div>
+        <div class="stack-tags">
+          <span>Supabase PostgreSQL</span><span>Supabase Auth</span><span>Storage</span>
+          <span>Edge Functions</span><span>Next.js / React</span><span>Flutter WebView</span>
+          <span>노출·클릭 Batch 트래킹</span><span>SEO · JSON-LD</span><span>AI 번역 프록시</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="lfoot">
+  <div class="wrap">
+    <div class="row">
+      <a class="logo" href="index.html">
+        <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.4" fill="#fff"/></svg></span>
+        <span><b class="en">MOA</b><small>모아 · 커뮤니티 + 광고</small></span>
+      </a>
+      <div class="links">
+        <a href="app.html">커뮤니티</a>
+        <a href="admin.html">관리자 어드민</a>
+        <a href="advertiser.html">광고주 대시보드</a>
+        <a href="../index.html">← 데모 포털</a>
+      </div>
+    </div>
+    <div class="cp">© 2026 MOA Platform (Demo). 본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/landing.js"></script>
+</body>
+</html>

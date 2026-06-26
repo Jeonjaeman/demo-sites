@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>모아 커뮤니티 | 사용자 게시판 (웹뷰)</title>
+<meta name="description" content="MOA 커뮤니티 — 익명 게시판. 글·댓글·투표·신고·스크랩·AI 번역과 5종 광고 소재가 노출되는 Flutter 웹뷰 사용자 화면 데모." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="app">
+
+<div class="app-stage">
+  <!-- left caption -->
+  <aside class="app-aside left">
+    <span class="badge-link">📱 Flutter 앱 WebView 임베드</span>
+    <h2>사용자<br/>커뮤니티 게시판</h2>
+    <p>앱 안에서 웹뷰로 열리는 익명 커뮤니티 화면입니다. 좌우 영역은 설명용이며, 실제 단말에서는 가운데 화면만 전체로 노출됩니다.</p>
+    <ul class="feat-mini">
+      <li>익명 닉네임 · 이미지 3장 글쓰기 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg></li>
+      <li>댓글 · 대댓글 · 신고 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg></li>
+      <li>스포일러 · 투표 · 좋아요/스크랩 <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg></li>
+      <li>클라이언트 AI 번역 (원문 보기) <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12l4 4L19 7"/></svg></li>
+    </ul>
+    <p class="note">데모 팁 — 하트(좋아요)·🔖(스크랩)·번역·투표·스포일러를 눌러보고, 광고 카드를 탭하면 우측 트래킹 로그에 노출/클릭 이벤트가 쌓입니다.</p>
+    <p class="note" style="margin-top:14px"><a href="index.html" style="color:var(--brand);font-weight:700">← 플랫폼 소개로</a></p>
+  </aside>
+
+  <!-- device -->
+  <div class="device">
+    <div class="notch"></div>
+    <div class="screen">
+      <div class="scroll" id="scroll">
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="dots">●●● <span style="margin-left:4px">📶 🔋</span></span>
+        </div>
+
+        <header class="app-head">
+          <div class="bar">
+            <div class="ttl"><span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg></span>모아</div>
+            <div class="acts">
+              <button class="iconbtn" id="searchBtn" aria-label="검색"><svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg></button>
+              <button class="iconbtn" id="alarmBtn" aria-label="알림"><span class="dot"></span><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 9a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M10 20a2 2 0 004 0"/></svg></button>
+            </div>
+          </div>
+          <div class="app-tabs" id="tabs">
+            <button class="on" data-tab="전체">전체</button>
+            <button data-tab="인기">🔥 인기</button>
+            <button data-tab="투표">투표</button>
+            <button data-tab="공지">공지</button>
+            <button data-tab="내글">내 글</button>
+            <button data-tab="스크랩">스크랩</button>
+          </div>
+        </header>
+
+        <div class="compose-trig" id="composeTrig">
+          <span class="av" style="font-size:13px">나</span>
+          <span>익명으로 자유롭게 이야기를 남겨보세요</span>
+          <span class="pen"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9"><path d="M4 20h4L18 10l-4-4L4 16v4z"/><path d="M14 6l4 4"/></svg></span>
+        </div>
+
+        <div class="feed" id="feed"></div>
+        <div style="text-align:center;color:var(--muted);font-size:12px;padding:18px 0 8px">— 데모 피드의 끝 —</div>
+      </div>
+
+      <!-- bottom nav -->
+      <nav class="app-nav">
+        <a class="on" data-nav="홈"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>홈</a>
+        <a data-nav="검색"><svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>검색</a>
+        <a class="fab" data-nav="작성"><svg viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></a>
+        <a data-nav="스크랩"><svg viewBox="0 0 24 24" stroke-width="1.8"><path d="M6 4h12v16l-6-4-6 4z"/></svg>스크랩</a>
+        <a data-nav="마이"><svg viewBox="0 0 24 24" stroke-width="1.8"><circle cx="12" cy="8" r="3.4"/><path d="M5 20a7 7 0 0114 0"/></svg>마이</a>
+      </nav>
+
+      <!-- fixed banner ad -->
+      <div class="ad-banner" id="adBanner"></div>
+
+      <!-- ad overlay (popup interstitial) -->
+      <div class="ov" id="adOverlay"><div class="ov-back" data-close-ov></div><div id="adOverlayInner"></div></div>
+
+      <!-- bottomsheet ad -->
+      <div class="ad-sheet" id="adBottomSheet"></div>
+
+      <!-- functional sheets (composer / detail / report) -->
+      <div class="sheet" id="sheet"><div class="sheet-back" data-close-sheet></div><div class="sheet-panel" id="sheetPanel"></div></div>
+    </div>
+  </div>
+
+  <!-- right caption: live tracking log -->
+  <aside class="app-aside right">
+    <span class="badge-link">⚡ 자체 광고 트래킹</span>
+    <h2>실시간 노출·클릭<br/>트래킹 로그</h2>
+    <p>광고 소재가 화면에 보이면 <b>노출(impression)</b>, 탭하면 <b>클릭</b> 이벤트가 Batch 큐에 적재됩니다. 아래는 그 흐름을 시각화한 데모 로그입니다.</p>
+    <div id="trackPanel" style="background:#15131f;border-radius:14px;padding:14px;box-shadow:var(--shadow-card)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-family:var(--font-en);font-size:11px;letter-spacing:.1em;color:#8b87a8">TRACKING · BATCH</span>
+        <span style="display:flex;gap:5px"><i style="width:8px;height:8px;border-radius:50%;background:#ff5d8f"></i><i style="width:8px;height:8px;border-radius:50%;background:#f5b942"></i><i style="width:8px;height:8px;border-radius:50%;background:#18c79a"></i></span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <div style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px 12px"><div style="font-family:var(--font-en);font-weight:700;font-size:20px;color:#fff" id="impCount">0</div><div style="font-size:10.5px;color:#8b87a8">노출</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px 12px"><div style="font-family:var(--font-en);font-weight:700;font-size:20px;color:#ff8fb0" id="clkCount">0</div><div style="font-size:10.5px;color:#8b87a8">클릭</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.05);border-radius:10px;padding:10px 12px"><div style="font-family:var(--font-en);font-weight:700;font-size:20px;color:#7ee7c8" id="ctrCount">0%</div><div style="font-size:10.5px;color:#8b87a8">CTR</div></div>
+      </div>
+      <div id="trackLog" style="font-family:var(--font-en);font-size:11px;line-height:1.85;color:#a7a3c4;max-height:200px;overflow:auto"></div>
+    </div>
+    <p class="note" style="margin-top:14px">실제 구축 시 이벤트는 5초/100건 단위 Batch로 Supabase에 적재되어 DB 부하를 최소화합니다.</p>
+  </aside>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

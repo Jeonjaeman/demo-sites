@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MOA 어드민 | 관리자 백오피스</title>
+<meta name="description" content="MOA 관리자 백오피스 — 회원·권한 4단계 관리, 게시글·신고 처리, 광고 캠페인·5종 소재 운영, 노출/클릭/CTR 트래킹 통계와 CSV 내보내기." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="admin">
+<div class="ashell">
+
+  <!-- Sidebar -->
+  <aside class="aside">
+    <div class="brand">
+      <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.4" fill="#fff"/></svg></span>
+      <div><b class="en">MOA Admin</b><small>백오피스 v1</small></div>
+    </div>
+    <div class="grp">운영</div>
+    <nav id="nav">
+      <a class="on" data-pane="dashboard"><svg viewBox="0 0 24 24" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>대시보드</a>
+      <a data-pane="members"><svg viewBox="0 0 24 24" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3.5 20a5.5 5.5 0 0111 0M16 6a3 3 0 010 6M19.5 20a5 5 0 00-3-4.6"/></svg>회원·권한 <span class="cnt" id="navReq"></span></a>
+      <a data-pane="content"><svg viewBox="0 0 24 24" stroke-width="1.7"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>콘텐츠 관리</a>
+      <a data-pane="reports"><svg viewBox="0 0 24 24" stroke-width="1.7"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2 18a2 2 0 001.7 3h16.6a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>신고 관리 <span class="cnt" id="navRep"></span></a>
+    </nav>
+    <div class="grp">광고</div>
+    <nav id="nav2">
+      <a data-pane="campaigns"><svg viewBox="0 0 24 24" stroke-width="1.7"><path d="M3 11l16-6v14L3 13z"/><path d="M7 12v5a2 2 0 002 2h1"/></svg>광고 캠페인</a>
+      <a data-pane="creatives"><svg viewBox="0 0 24 24" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M9 21V9"/></svg>광고 소재</a>
+      <a data-pane="tracking"><svg viewBox="0 0 24 24" stroke-width="1.7"><path d="M3 17l5-6 4 4 5-7 4 5"/><path d="M3 21h18"/></svg>트래킹 통계</a>
+    </nav>
+    <a class="back" href="index.html">← 플랫폼 소개로</a>
+  </aside>
+
+  <!-- Main -->
+  <main class="amain">
+    <div class="atop">
+      <div><h1 id="aTitle">대시보드</h1><div class="sub" id="aSub">오늘의 커뮤니티·광고 운영 현황</div></div>
+      <div class="who"><div style="text-align:right"><b style="font-size:14px">관리자</b><br/><small style="color:var(--muted);font-size:12px">admin@moa.app</small></div><span class="av" style="background:var(--grad)">A</span></div>
+    </div>
+
+    <!-- 대시보드 -->
+    <section class="apane on" data-pane="dashboard">
+      <div class="kpis" id="kpis"></div>
+      <div class="cols">
+        <div class="acard">
+          <h3>노출 · 클릭 추이 <span class="mini" data-goto="tracking">트래킹 통계 →</span></h3>
+          <p class="csub">최근 7일 · 일자별 노출수(영역)와 클릭수(막대)</p>
+          <div class="chart" id="dashChart"></div>
+          <div class="legend"><span><i style="background:#a855f7"></i>노출(Impressions)</span><span><i style="background:#6d5cf5"></i>클릭(Clicks)</span></div>
+        </div>
+        <div class="acard">
+          <h3>진행 중 캠페인 <span class="mini" data-goto="campaigns">전체 →</span></h3>
+          <p class="csub">집행률 상위</p>
+          <ul class="mlist" id="dashCmp"></ul>
+        </div>
+      </div>
+      <div class="cols" style="margin-top:18px">
+        <div class="acard">
+          <h3>최근 신고 <span class="mini" data-goto="reports">신고 관리 →</span></h3>
+          <ul class="mlist" id="dashRep"></ul>
+        </div>
+        <div class="acard">
+          <h3>빠른 작업</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+            <button class="btn-line" data-goto="campaigns" style="text-align:left">＋ 새 광고 캠페인 만들기</button>
+            <button class="btn-line" data-goto="content" style="text-align:left">＋ 공지·광고 게시글 작성</button>
+            <button class="btn-line" data-goto="members" style="text-align:left">👤 권한 신청 승인 처리</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 회원·권한 -->
+    <section class="apane" data-pane="members">
+      <div class="acard" style="margin-bottom:18px">
+        <h3>권한 신청 대기 <span class="mini" id="reqCount"></span></h3>
+        <p class="csub">4단계 권한(관리자·광고주·유료·무료) 승인/반려</p>
+        <div id="roleReqs"></div>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="roleFilter"><button class="on" data-f="전체">전체</button><button data-f="관리자">관리자</button><button data-f="광고주">광고주</button><button data-f="유료">유료</button><button data-f="무료">무료</button></div>
+        <div class="tool-r">
+          <div class="search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input id="memberSearch" placeholder="닉네임·이메일 검색"/></div>
+          <button class="csv" id="csvMembers"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>CSV</button>
+        </div>
+      </div>
+      <div class="tbl-card"><table class="tbl"><thead><tr><th>회원ID</th><th>닉네임</th><th>이메일</th><th>권한</th><th>가입일</th><th>활동</th><th>상태</th><th>관리</th></tr></thead><tbody id="memberBody"></tbody></table></div>
+    </section>
+
+    <!-- 콘텐츠 관리 -->
+    <section class="apane" data-pane="content">
+      <div class="toolbar">
+        <div class="seg" id="contentFilter"><button class="on" data-f="전체">전체</button><button data-f="공지">공지</button><button data-f="광고">광고</button><button data-f="일반">일반</button></div>
+        <button class="btn-primary" id="newPostBtn" style="padding:10px 20px">＋ 새 글 작성</button>
+      </div>
+      <div class="tbl-card" style="margin-bottom:20px"><table class="tbl"><thead><tr><th>번호</th><th>분류</th><th>제목</th><th>상태</th><th>작성일</th><th>조회</th><th>관리</th></tr></thead><tbody id="contentBody"></tbody></table></div>
+
+      <div class="acard" id="editorCard">
+        <h3>새 글 작성 <span class="mini">HTML 에디터 · 예약발행</span></h3>
+        <div class="ed-grid" style="margin-top:14px">
+          <div><label class="flabel">분류</label><select class="f" id="edCat"><option>공지</option><option>광고</option><option>일반</option></select></div>
+          <div><label class="flabel">게시 상태</label><select class="f" id="edState"><option>즉시 게시</option><option>예약 발행</option><option>임시 저장</option></select></div>
+        </div>
+        <div id="edScheduleWrap" style="display:none;margin-bottom:16px"><label class="flabel">예약 일시</label><input class="f" id="edSchedule" type="datetime-local"/></div>
+        <label class="flabel">제목</label>
+        <input class="f" id="edTitle" placeholder="제목을 입력하세요" style="margin-bottom:16px"/>
+        <label class="flabel">본문</label>
+        <div class="ed-tools">
+          <button type="button" data-cmd="bold"><b>B</b></button>
+          <button type="button" data-cmd="italic"><i>I</i></button>
+          <button type="button" data-cmd="underline"><u>U</u></button>
+          <button type="button" data-cmd="insertUnorderedList">≣</button>
+          <button type="button" data-cmd="formatBlock" data-val="H3">H</button>
+          <button type="button" data-cmd="createLink">🔗</button>
+        </div>
+        <div class="ed-area" id="edBody" contenteditable="true"><p>여기에 내용을 작성하세요. 굵게·기울임·목록·링크 서식과 복수 이미지 업로드를 지원하며, 예약 발행으로 게시 시점을 예약할 수 있습니다.</p></div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
+          <button class="btn-line" id="edCancel">취소</button>
+          <button class="btn-primary" id="edSubmit">등록</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 신고 관리 -->
+    <section class="apane" data-pane="reports">
+      <div class="toolbar">
+        <div class="seg" id="reportFilter"><button class="on" data-f="접수">미처리</button><button data-f="처리완료">처리완료</button><button data-f="전체">전체</button></div>
+        <button class="csv" id="csvReports"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>CSV</button>
+      </div>
+      <div id="reportList"></div>
+    </section>
+
+    <!-- 광고 캠페인 -->
+    <section class="apane" data-pane="campaigns">
+      <div class="toolbar">
+        <div class="seg" id="cmpFilter"><button class="on" data-f="전체">전체</button><button data-f="진행중">진행중</button><button data-f="예약">예약</button><button data-f="종료">종료</button></div>
+        <button class="btn-primary" id="newCmpBtn" style="padding:10px 20px">＋ 새 캠페인</button>
+      </div>
+      <div class="cmp-grid" id="cmpGrid"></div>
+    </section>
+
+    <!-- 광고 소재 -->
+    <section class="apane" data-pane="creatives">
+      <div class="acard" style="margin-bottom:18px">
+        <h3>5종 광고 소재 타입</h3>
+        <p class="csub">노출 위치별 소재 규격 — 클릭 시 외부 링크로 라우팅되며 노출/클릭이 트래킹됩니다.</p>
+        <div class="cre-grid" id="creGrid" style="margin-top:8px"></div>
+      </div>
+      <div class="toolbar"><div class="seg"><button class="on">운영 중 소재</button></div>
+        <button class="csv" id="csvCre"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>CSV</button></div>
+      <div class="tbl-card"><table class="tbl"><thead><tr><th>소재ID</th><th>타입</th><th>캠페인</th><th>광고주</th><th>노출</th><th>클릭</th><th>CTR</th><th>상태</th></tr></thead><tbody id="creBody"></tbody></table></div>
+    </section>
+
+    <!-- 트래킹 통계 -->
+    <section class="apane" data-pane="tracking">
+      <div class="kpis" id="trackKpis"></div>
+      <div class="acard" style="margin-bottom:18px">
+        <h3>노출 · 클릭 추이 <span class="mini">최근 7일</span></h3>
+        <p class="csub">Batch 적재 기준 일자별 집계</p>
+        <div class="chart" id="trackChart"></div>
+        <div class="legend"><span><i style="background:#a855f7"></i>노출(Impressions)</span><span><i style="background:#6d5cf5"></i>클릭(Clicks)</span></div>
+      </div>
+      <div class="toolbar"><div class="seg"><button class="on">캠페인별 성과</button></div>
+        <button class="csv" id="csvTracking"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>전체 CSV 내보내기</button></div>
+      <div class="tbl-card"><table class="tbl"><thead><tr><th>캠페인</th><th>광고주</th><th>타입</th><th>노출</th><th>클릭</th><th>CTR</th><th>집행률</th></tr></thead><tbody id="trackBody"></tbody></table></div>
+    </section>
+  </main>
+</div>
+
+<!-- modal -->
+<div class="modal-back" id="modalBack"><div class="modal" id="modal"></div></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
