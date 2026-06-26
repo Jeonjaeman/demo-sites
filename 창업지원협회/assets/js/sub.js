@@ -5,22 +5,17 @@
   "use strict";
   const D = window.KSSA || {};
 
-  /* Smooth scroll */
-  let lenis = null;
-  if (window.Lenis) {
-    lenis = new Lenis({ duration: 1.05, smoothWheel: true });
-    function raf(t) { lenis.raf(t); requestAnimationFrame(raf); }
-    requestAnimationFrame(raf);
-    window.__lenis = lenis;
-  }
+  /* Anchor smooth-scroll (네이티브, 모션 라이브러리 미사용) */
+  const lenis = null;
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     a.addEventListener("click", (e) => {
       const id = a.getAttribute("href");
-      if (id.length < 2) return;
+      if (!id || id.length < 2) return;
       const el = document.querySelector(id);
       if (!el) return;
       e.preventDefault();
-      lenis ? lenis.scrollTo(el, { offset: -80 }) : el.scrollIntoView({ behavior: "smooth" });
+      const top = el.getBoundingClientRect().top + (window.scrollY || 0) - 88;
+      window.scrollTo({ top, behavior: "smooth" });
     });
   });
 
@@ -33,7 +28,7 @@
   };
   onScroll(window.scrollY || 0);
   if (lenis) lenis.on("scroll", ({ scroll }) => onScroll(scroll));
-  else window.addEventListener("scroll", () => onScroll(window.scrollY));
+  else window.addEventListener("scroll", () => onScroll(window.scrollY || 0), { passive: true });
   toTop && toTop.addEventListener("click", () => (lenis ? lenis.scrollTo(0) : window.scrollTo({ top: 0, behavior: "smooth" })));
 
   document.getElementById("menuToggle")?.addEventListener("click", () => {
@@ -87,7 +82,9 @@
       cur && cur.l.classList.add("on");
     };
     onSc();
-    if (lenis) lenis.on("scroll", onSc); else window.addEventListener("scroll", onSc);
+    let _s = false;
+    const sScroll = () => { if (_s) return; _s = true; requestAnimationFrame(() => { onSc(); _s = false; }); };
+    if (lenis) lenis.on("scroll", onSc); else window.addEventListener("scroll", sScroll, { passive: true });
   }
 
   /* Render 연혁 (about.html) */

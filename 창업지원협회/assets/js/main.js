@@ -114,9 +114,17 @@
       schedule();
     });
 
-    // 영상 자동재생 보강
+    // 영상 자동재생 보강 + 배너가 화면 밖이면 일시정지(스크롤 부하 ↓)
     const v = track.querySelector("video");
-    if (v) { const p = () => v.play().catch(() => {}); p(); v.addEventListener("canplay", p, { once: true }); }
+    if (v) {
+      const p = () => v.play().catch(() => {});
+      p();
+      v.addEventListener("canplay", p, { once: true });
+      const heroEl = document.querySelector(".hero");
+      if (heroEl && "IntersectionObserver" in window) {
+        new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? p() : v.pause())), { threshold: 0.04 }).observe(heroEl);
+      }
+    }
 
     curEl.textContent = "01";
     restartProgress();
