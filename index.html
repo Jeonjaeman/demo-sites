@@ -52,6 +52,15 @@
   .go{font-family:"Montserrat";font-weight:800;font-size:12px;letter-spacing:.08em;color:var(--cyan)}
   .card.disabled{opacity:.6;pointer-events:none}
 
+  .tabbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:4px 0 30px}
+  .tab{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
+    color:var(--muted);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
+  .tab:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+  .tab.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 14px 30px -16px rgba(31,114,230,.8)}
+  .tab .tc{font-size:12px;font-weight:800;background:rgba(0,0,0,.18);padding:1px 8px;border-radius:999px}
+  .tab.on .tc{background:rgba(255,255,255,.22)}
+
   footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center}
 
   @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
@@ -75,48 +84,77 @@
     <div class="count">총 <b id="cnt">0</b>개 데모 · 클릭하면 새 탭에서 열립니다</div>
   </section>
 
+  <section class="tabbar" id="tabbar"></section>
   <section class="grid" id="grid"></section>
 
   <footer>© 2026 Demo Portal · 본 사이트들은 제안용 데모입니다.</footer>
 </div>
 
 <script>
-  // 데모 목록 — 신규(이 레포 하위폴더) + 기존(개별 Pages) 통합
+  // 데모 목록 — cat: home(홈페이지·브랜드) / admin(관리자·대시보드) / platform(플랫폼·서비스)
   const DEMOS = [
-    { name:"키워드 분석 플랫폼", en:"PULSE", desc:"네이버+4대 SNS(인스타·X·유튜브·틱톡) 키워드 통합 분석 BI 대시보드 · 다중검색·추이·인구통계·연관어·엑셀", url:"./키워드분석플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#7c6cff,#22d3ee)", here:true },
-    { name:"타겟 키워드 정보관리 백오피스", en:"MISIK", desc:"맛집 정보 통합 관리 폐쇄형 백오피스 · 로그인/권한·검색/필터·협업·대시보드 + 키워드 자동수집(2차)", url:"./타겟키워드자동수집/index.html", status:"live", g:"linear-gradient(135deg,#5046e5,#8b5cf6)", here:true },
-    { name:"앱 커뮤니티+광고", en:"MOA", desc:"앱 커뮤니티 게시판 + 자체 광고 시스템 · 사용자(웹뷰)/관리자/광고주 3화면 · Supabase", url:"./커뮤니티광고플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#6d5cf5,#a855f7)", here:true },
-    { name:"창업지원협회", en:"KSSA", desc:"창업지원협회 공식 홈페이지 · 롤링배너·공지/정보·1:1문의·회원·관리자", url:"./창업지원협회/index.html", status:"live", g:"linear-gradient(135deg,#1d4ed8,#0a7d5a)", here:true },
-    { name:"운송포탈", en:"HANUL", desc:"전국 화물 운송 통합 플랫폼 · 운임조회·견적·관리자", url:"./운송포탈/index.html", status:"live", g:"linear-gradient(135deg,#1b3a6b,#0f2548)", here:true },
-    { name:"건축자재", en:"HAOS", desc:"HAOS × Sto 건축자재 브랜드 데모", url:"https://jeonjaeman.github.io/haos-demo/", status:"live", g:"linear-gradient(135deg,#5a4636,#2c2118)" },
-    { name:"여성 피트니스", en:"VIVAFIT", desc:"여성 전용 프리미엄 피트니스 브랜드", url:"https://jeonjaeman.github.io/vivafit-demo/", status:"live", g:"linear-gradient(135deg,#7a2f5e,#3a1530)" },
-    { name:"중고 건설장비", en:"JANGIN", desc:"굴삭기 등 중고 건설장비 거래 플랫폼", url:"https://jeonjaeman.github.io/jangin-demo/", status:"live", g:"linear-gradient(135deg,#6b5a1b,#352b0f)" },
-    { name:"매출·인보이스 관리", en:"GOLD", desc:"GoldInvoice 매출/정산 관리 서비스", url:"https://jeonjaeman.github.io/goldinvoice/", status:"live", g:"linear-gradient(135deg,#1b5a4a,#0f2c25)" },
-    { name:"보안업체", en:"SECURION", desc:"기업 보안·관제 서비스 브랜드", url:"https://jeonjaeman.github.io/securion-demo/", status:"live", g:"linear-gradient(135deg,#23314f,#141d30)" },
-    { name:"업무요청 접수", en:"AS", desc:"AS·업무요청 접수 관리 시스템", url:"https://jeonjaeman.github.io/as-demo/", status:"live", g:"linear-gradient(135deg,#2f4a6b,#172638)" },
-    { name:"회사제품 소개", en:"SOON", desc:"준비 중인 데모입니다", url:"#", status:"soon", g:"linear-gradient(135deg,#2a3344,#1a2130)" }
+    { name:"키워드 분석 플랫폼", en:"PULSE", cat:"admin", desc:"네이버+4대 SNS(인스타·X·유튜브·틱톡) 키워드 통합 분석 BI 대시보드 · 다중검색·추이·인구통계·연관어·엑셀", url:"./키워드분석플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#7c6cff,#22d3ee)", here:true },
+    { name:"타겟 키워드 정보관리 백오피스", en:"MISIK", cat:"admin", desc:"맛집 정보 통합 관리 폐쇄형 백오피스 · 로그인/권한·검색/필터·협업·대시보드 + 키워드 자동수집(2차)", url:"./타겟키워드자동수집/index.html", status:"live", g:"linear-gradient(135deg,#5046e5,#8b5cf6)", here:true },
+    { name:"앱 커뮤니티+광고", en:"MOA", cat:"platform", desc:"앱 커뮤니티 게시판 + 자체 광고 시스템 · 사용자(웹뷰)/관리자/광고주 3화면 · Supabase", url:"./커뮤니티광고플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#6d5cf5,#a855f7)", here:true },
+    { name:"창업지원협회", en:"KSSA", cat:"home", desc:"창업지원협회 공식 홈페이지 · 롤링배너·공지/정보·1:1문의·회원·관리자", url:"./창업지원협회/index.html", status:"live", g:"linear-gradient(135deg,#1d4ed8,#0a7d5a)", here:true },
+    { name:"운송포탈", en:"HANUL", cat:"platform", desc:"전국 화물 운송 통합 플랫폼 · 운임조회·견적·관리자", url:"./운송포탈/index.html", status:"live", g:"linear-gradient(135deg,#1b3a6b,#0f2548)", here:true },
+    { name:"건축자재", en:"HAOS", cat:"home", desc:"HAOS × Sto 건축자재 브랜드 데모", url:"https://jeonjaeman.github.io/haos-demo/", status:"live", g:"linear-gradient(135deg,#5a4636,#2c2118)" },
+    { name:"여성 피트니스", en:"VIVAFIT", cat:"home", desc:"여성 전용 프리미엄 피트니스 브랜드", url:"https://jeonjaeman.github.io/vivafit-demo/", status:"live", g:"linear-gradient(135deg,#7a2f5e,#3a1530)" },
+    { name:"중고 건설장비", en:"JANGIN", cat:"platform", desc:"굴삭기 등 중고 건설장비 거래 플랫폼", url:"https://jeonjaeman.github.io/jangin-demo/", status:"live", g:"linear-gradient(135deg,#6b5a1b,#352b0f)" },
+    { name:"매출·인보이스 관리", en:"GOLD", cat:"admin", desc:"GoldInvoice 매출/정산 관리 서비스", url:"https://jeonjaeman.github.io/goldinvoice/", status:"live", g:"linear-gradient(135deg,#1b5a4a,#0f2c25)" },
+    { name:"보안업체", en:"SECURION", cat:"home", desc:"기업 보안·관제 서비스 브랜드", url:"https://jeonjaeman.github.io/securion-demo/", status:"live", g:"linear-gradient(135deg,#23314f,#141d30)" },
+    { name:"업무요청 접수", en:"AS", cat:"admin", desc:"AS·업무요청 접수 관리 시스템", url:"https://jeonjaeman.github.io/as-demo/", status:"live", g:"linear-gradient(135deg,#2f4a6b,#172638)" },
+    { name:"회사제품 소개", en:"SOON", cat:"home", desc:"준비 중인 데모입니다", url:"#", status:"soon", g:"linear-gradient(135deg,#2a3344,#1a2130)" }
   ];
 
+  // 카테고리 탭
+  const CATS = [
+    { key:"all", label:"전체" },
+    { key:"home", label:"홈페이지" },
+    { key:"admin", label:"대시보드" },
+    { key:"platform", label:"플랫폼" },
+  ];
+  let activeCat = "all";
+
   const grid = document.getElementById("grid");
+  const tabbar = document.getElementById("tabbar");
   const badgeHtml = (s)=> s==="live" ? '<span class="badge live">● LIVE</span>'
     : s==="repo" ? '<span class="badge repo">GitHub</span>'
     : '<span class="badge soon">준비중</span>';
   const goHtml = (s)=> s==="soon" ? '' : '<span class="go">OPEN ↗</span>';
+  const inCat = (d)=> activeCat==="all" || d.cat===activeCat;
 
-  grid.innerHTML = DEMOS.map(d=>{
-    const tag = d.status==="soon" ? "div" : "a";
-    const attrs = d.status==="soon" ? 'class="card disabled"'
-      : `class="card" href="${d.url}" ${d.here?'':'target="_blank" rel="noopener"'}`;
-    return `<${tag} ${attrs}>
-      <div class="thumb" style="background:${d.g}"><span style="position:relative;z-index:1">${d.en}</span></div>
-      <div class="body">
-        <h3>${d.name}</h3>
-        <p>${d.desc}</p>
-        <div class="meta">${badgeHtml(d.status)}${goHtml(d.status)}</div>
-      </div>
-    </${tag}>`;
-  }).join("");
+  function renderTabs(){
+    tabbar.innerHTML = CATS.map(c=>{
+      const n = c.key==="all" ? DEMOS.length : DEMOS.filter(d=>d.cat===c.key).length;
+      return `<button class="tab ${c.key===activeCat?'on':''}" data-cat="${c.key}">${c.label} <span class="tc">${n}</span></button>`;
+    }).join("");
+  }
 
+  function renderGrid(){
+    grid.innerHTML = DEMOS.filter(inCat).map(d=>{
+      const tag = d.status==="soon" ? "div" : "a";
+      const attrs = d.status==="soon" ? 'class="card disabled"'
+        : `class="card" href="${d.url}" ${d.here?'':'target="_blank" rel="noopener"'}`;
+      return `<${tag} ${attrs}>
+        <div class="thumb" style="background:${d.g}"><span style="position:relative;z-index:1">${d.en}</span></div>
+        <div class="body">
+          <h3>${d.name}</h3>
+          <p>${d.desc}</p>
+          <div class="meta">${badgeHtml(d.status)}${goHtml(d.status)}</div>
+        </div>
+      </${tag}>`;
+    }).join("");
+  }
+
+  tabbar.addEventListener("click", (e)=>{
+    const b = e.target.closest("[data-cat]"); if(!b) return;
+    activeCat = b.getAttribute("data-cat");
+    renderTabs(); renderGrid();
+  });
+
+  renderTabs();
+  renderGrid();
   document.getElementById("cnt").textContent = DEMOS.filter(d=>d.status!=="soon").length;
 </script>
 </body>
