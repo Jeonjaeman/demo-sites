@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>키워드펄스 | 네이버 + 4대 SNS 키워드 분석</title>
+<meta name="description" content="네이버 검색량 + 인스타그램·X·유튜브·틱톡 언급량을 통합 분석하는 내부 전용 키워드 분석 BI 대시보드 (제안용 데모)" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="./index.html">
+      <span class="lg en">K</span>
+      <span><b>키워드펄스</b><small class="en">KEYWORD PULSE</small></span>
+    </a>
+    <span class="spacer"></span>
+    <span class="pill-internal">🔒 내부 전용 · 광고 제안/결과 분석</span>
+    <a class="ghost" href="../index.html">데모 포털 ↩</a>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- CONTROL PANEL -->
+  <section class="control">
+    <div class="ctitle">
+      <h2>키워드 다중 분석</h2>
+      <span class="hintx">최대 10개 키워드 동시 검색 · Enter 또는 쉼표로 추가</span>
+    </div>
+    <div class="kwbox" id="kwBox">
+      <span id="kwChips"></span>
+      <input id="kwInput" placeholder="키워드 입력 후 Enter (예: 마라탕, 탕후루, 두바이초콜릿)" autocomplete="off" />
+    </div>
+    <div class="filters">
+      <span class="lab">기간</span>
+      <select class="inp" id="daysSel">
+        <option value="7">최근 7일</option>
+        <option value="30" selected>최근 30일</option>
+        <option value="90">최근 90일</option>
+      </select>
+      <span class="lab" style="margin-left:6px">성별</span>
+      <div class="seg" data-group="gender">
+        <button class="on" data-seg="gender" data-val="all">전체</button>
+        <button data-seg="gender" data-val="m">남성</button>
+        <button data-seg="gender" data-val="f">여성</button>
+      </div>
+      <span class="lab" style="margin-left:6px">연령</span>
+      <select class="inp" id="ageSel">
+        <option value="all">전체</option>
+        <option value="10대">10대</option><option value="20대">20대</option><option value="30대">30대</option>
+        <option value="40대">40대</option><option value="50대">50대</option><option value="60대+">60대+</option>
+      </select>
+      <span class="spacer"></span>
+      <button class="btn" id="excelBtn"><span class="ic">⤓</span>엑셀 다운로드</button>
+      <button class="btn primary lg" id="analyzeBtn"><span class="ic">📊</span>분석 실행</button>
+    </div>
+  </section>
+
+  <!-- WELCOME -->
+  <section id="welcome">
+    <div class="welcome">
+      <div class="eyk">SOCIAL KEYWORD INTELLIGENCE</div>
+      <h1>네이버 + <span>4대 SNS</span> 언급량을 한 번에</h1>
+      <p>광고 제안서·결과 분석을 위한 내부 전용 대시보드. 키워드를 동시 검색하면 네이버 검색량과 인스타그램·X·유튜브·틱톡 언급량을 통합 수집해 차트로 보여주고, 엑셀로 내려받을 수 있습니다.</p>
+      <div class="chans">
+        <span class="cbadge"><span class="d" style="background:var(--nv)"></span>네이버</span>
+        <span class="cbadge"><span class="d" style="background:var(--ig)"></span>인스타그램</span>
+        <span class="cbadge"><span class="d" style="background:var(--x)"></span>엑스(X)</span>
+        <span class="cbadge"><span class="d" style="background:var(--yt)"></span>유튜브</span>
+        <span class="cbadge"><span class="d" style="background:var(--tt)"></span>틱톡</span>
+      </div>
+      <div style="margin-top:26px">
+        <span class="muted" style="font-size:13px">예시로 바로 보기 →</span>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
+          <button class="btn" data-example="마라탕,탕후루,두바이초콜릿">🍜 푸드 트렌드</button>
+          <button class="btn" data-example="러닝,요가,클라이밍,헬스">🏃 운동 트렌드</button>
+          <button class="btn" data-example="제로콜라,단백질음료,비건">🥤 식음료 트렌드</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLECTION OVERLAY -->
+  <section class="collect" id="collect">
+    <h3>데이터 수집 중…</h3>
+    <p>공식 API 우선 · 미지원 매체는 크롤링/외부 수집 연동 (비동기 처리)</p>
+    <div class="chan-row">
+      <div class="chan"><span class="cc" style="background:var(--nv)">N</span><span class="nm">네이버</span><span class="st">완료</span></div>
+      <div class="chan"><span class="cc" style="background:var(--ig)">IG</span><span class="nm">인스타그램</span><span class="st">완료</span></div>
+      <div class="chan"><span class="cc" style="background:var(--x)">X</span><span class="nm">엑스(X)</span><span class="st">완료</span></div>
+      <div class="chan"><span class="cc" style="background:var(--yt)">YT</span><span class="nm">유튜브</span><span class="st">완료</span></div>
+      <div class="chan"><span class="cc" style="background:var(--tt)">TT</span><span class="nm">틱톡</span><span class="st">완료</span></div>
+    </div>
+    <div class="progress"><div class="bar" id="collectBar"></div></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="results" id="results">
+    <div class="kpis" id="kpis"></div>
+    <div class="tabs">
+      <button data-tab="volume" class="on">📊 검색량 비교</button>
+      <button data-tab="trend">📈 검색량 추이</button>
+      <button data-tab="seasonal">📅 월별·요일별</button>
+      <button data-tab="demo">👥 성별·연령별</button>
+      <button data-tab="related">🔗 연관 키워드</button>
+      <button data-tab="sns">📣 SNS 언급량</button>
+    </div>
+    <div id="tabContent"></div>
+  </section>
+
+  <footer class="foot">
+    © 2026 키워드펄스 · 본 사이트는 제안용 데모이며 데이터는 목(mock)입니다. <a href="../index.html">데모 포털</a>
+  </footer>
+</main>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
