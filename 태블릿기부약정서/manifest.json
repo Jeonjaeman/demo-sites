@@ -1,0 +1,20 @@
+{
+  "name": "한울대학교 발전기금 전자 기부약정서",
+  "short_name": "발전기금 약정",
+  "description": "태블릿 기반 전자 기부약정서 — 정보 입력·전자서명·PDF 자동 생성",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f2544",
+  "theme_color": "#0f2544",
+  "lang": "ko",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "약정서 작성", "url": "./app.html" },
+    { "name": "관리자 페이지", "url": "./admin.html" }
+  ]
+}

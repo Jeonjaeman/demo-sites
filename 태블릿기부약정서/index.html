@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>한울대학교 발전기금 전자 기부약정서 · PWA 데모</title>
+<meta name="description" content="종이 기부약정서를 태블릿 전자문서로 — 정보 입력·전자서명·PDF 자동 생성·관리자 다운로드까지." />
+<meta name="theme-color" content="#0f2544" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy:#0f2544;--navy2:#1a3860;--gold:#b58a3c;--gold2:#caa254;--gold-soft:#f3ecda;
+    --ink:#1d2634;--muted:#66738c;--line:#e4e8f0;--bg:#f5f7fb;--paper:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  .en{font-family:"Montserrat",sans-serif}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header.top{position:sticky;top:0;z-index:30;background:rgba(15,37,68,.92);backdrop-filter:blur(10px);color:#fff}
+  header.top .in{max-width:1120px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .crest{width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,var(--gold2),var(--gold));display:grid;place-items:center;color:var(--navy);font-weight:900;font-size:20px}
+  .brand b{font-size:16px;font-weight:800;display:block;line-height:1.2}
+  .brand small{color:#a9bad6;font-size:11px;letter-spacing:.16em}
+  header .nav{display:flex;gap:10px;align-items:center}
+  header .nav a{font-size:13.5px;color:#cdd8e8;padding:9px 16px;border-radius:999px;border:1px solid transparent;transition:.2s}
+  header .nav a:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+  header .nav a.cta{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3a2c10;font-weight:800;border:none}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;background:var(--navy);color:#fff;
+    background-image:radial-gradient(55% 50% at 82% -5%,rgba(202,162,84,.22),transparent 60%),radial-gradient(45% 45% at 5% 100%,rgba(26,56,96,.7),transparent 55%)}
+  .hero .in{padding:76px 0 90px;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center}
+  @media(max-width:880px){.hero .in{grid-template-columns:1fr;gap:36px;padding:52px 0 60px}}
+  .hero .ey{display:inline-flex;align-items:center;gap:9px;font-family:"Montserrat";font-weight:800;letter-spacing:.22em;color:var(--gold2);font-size:12px;border:1px solid rgba(202,162,84,.35);padding:8px 15px;border-radius:999px}
+  .hero h1{font-size:clamp(32px,5vw,50px);line-height:1.16;letter-spacing:-.02em;margin:22px 0 18px;font-weight:800}
+  .hero h1 span{color:var(--gold2)}
+  .hero p.sub{color:#c3cee0;font-size:16.5px;max-width:520px;margin:0 0 30px}
+  .hero .btns{display:flex;gap:13px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:15px 26px;border-radius:13px;font-weight:800;font-size:15.5px;transition:.2s;border:none}
+  .btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3a2c10;box-shadow:0 16px 30px -16px rgba(202,162,84,.8)}
+  .btn.gold:hover{transform:translateY(-2px)}
+  .btn.ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.22)}
+  .btn.ghost:hover{background:rgba(255,255,255,.12)}
+  .hero .meta{display:flex;gap:26px;margin-top:34px;flex-wrap:wrap}
+  .hero .meta div{font-size:13px;color:#9fb0cb}
+  .hero .meta b{display:block;font-size:22px;color:#fff;font-weight:800;font-family:"Montserrat"}
+
+  /* device mock */
+  .device{position:relative;margin:0 auto;width:100%;max-width:400px;aspect-ratio:4/3;background:#0b1a30;border:10px solid #060f1d;border-radius:26px;box-shadow:0 50px 90px -40px rgba(0,0,0,.7);overflow:hidden}
+  .device .scr{position:absolute;inset:0;background:#f5f7fb;display:flex;flex-direction:column}
+  .device .sbar{height:34px;background:var(--navy);display:flex;align-items:center;padding:0 14px;gap:8px}
+  .device .sbar i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.35)}
+  .device .body{flex:1;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .device .ln{height:11px;border-radius:5px;background:#e3e8f1}
+  .device .ln.s{width:55%}.device .ln.m{width:75%}
+  .device .fld{height:34px;border-radius:8px;background:#fff;border:1.5px solid #e3e8f1}
+  .device .sig{flex:1;min-height:60px;border-radius:10px;border:2px dashed #cdd6e4;background:repeating-linear-gradient(90deg,#fff,#fff 20px,#f2f5fa 20px,#f2f5fa 21px);position:relative}
+  .device .sig svg{position:absolute;inset:0;width:100%;height:100%}
+  .device .gbtn{height:38px;border-radius:9px;background:linear-gradient(135deg,var(--gold2),var(--gold));display:grid;place-items:center;color:#3a2c10;font-weight:800;font-size:13px}
+
+  /* section */
+  section.blk{padding:74px 0}
+  .shead{text-align:center;max-width:620px;margin:0 auto 46px}
+  .shead .ey{font-family:"Montserrat";font-weight:800;letter-spacing:.2em;color:var(--gold);font-size:12px}
+  .shead h2{font-size:clamp(26px,3.6vw,34px);margin:12px 0 12px;letter-spacing:-.02em}
+  .shead p{color:var(--muted);font-size:15.5px;margin:0}
+
+  /* flow steps */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:880px){.flow{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.flow{grid-template-columns:1fr}}
+  .fstep{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 22px;position:relative;transition:.25s}
+  .fstep:hover{transform:translateY(-5px);box-shadow:0 30px 50px -30px rgba(15,37,68,.4);border-color:rgba(181,138,60,.4)}
+  .fstep .no{font-family:"Montserrat";font-weight:900;font-size:15px;color:var(--gold);border:1.5px solid var(--gold-soft);background:var(--gold-soft);width:38px;height:38px;border-radius:11px;display:grid;place-items:center;margin-bottom:16px}
+  .fstep h3{margin:0 0 8px;font-size:17px;color:var(--navy)}
+  .fstep p{margin:0;color:var(--muted);font-size:13.8px}
+
+  /* features */
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:880px){.feats{grid-template-columns:1fr}}
+  .feat{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:28px 24px}
+  .feat .ic{width:50px;height:50px;border-radius:13px;background:var(--navy);display:grid;place-items:center;font-size:23px;margin-bottom:16px}
+  .feat h3{margin:0 0 9px;font-size:18px;color:var(--navy)}
+  .feat p{margin:0;color:var(--muted);font-size:14px}
+  .feat ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13.5px}
+  .feat li{margin:5px 0}
+
+  /* tech band */
+  .tech{background:var(--navy);color:#fff;border-radius:24px;padding:44px 40px;display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:center}
+  @media(max-width:880px){.tech{grid-template-columns:1fr;padding:34px 26px}}
+  .tech h2{font-size:26px;margin:0 0 14px}
+  .tech p{color:#c3cee0;font-size:15px;margin:0 0 22px}
+  .tech .stack{display:flex;flex-wrap:wrap;gap:10px}
+  .tech .stack span{font-size:13px;font-weight:700;padding:9px 15px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
+  .tech .stack span.g{background:rgba(202,162,84,.2);border-color:rgba(202,162,84,.4);color:var(--gold2)}
+  .tech .why{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px}
+  .tech .why b{color:var(--gold2);font-size:13px;letter-spacing:.05em}
+  .tech .why ul{margin:12px 0 0;padding-left:18px;color:#cdd8e8;font-size:14px}
+  .tech .why li{margin:8px 0}
+
+  /* CTA */
+  .final{text-align:center;padding:74px 24px}
+  .final h2{font-size:clamp(26px,3.6vw,34px);margin:0 0 14px}
+  .final p{color:var(--muted);margin:0 0 28px;font-size:16px}
+  .final .btns{display:flex;gap:13px;justify-content:center;flex-wrap:wrap}
+  .final .btn.gold{color:#3a2c10}
+  .final .btn.navy{background:var(--navy);color:#fff}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center}
+  footer a{color:var(--navy2);font-weight:600}
+  .note{display:inline-block;margin-top:10px;font-size:12px;color:#94a0b5}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="in">
+    <a class="brand" href="#top">
+      <span class="crest">한</span>
+      <span><b>한울대학교 발전기금</b><small class="en">ELECTRONIC PLEDGE</small></span>
+    </a>
+    <nav class="nav">
+      <a href="#flow">이용 흐름</a>
+      <a href="#feature">주요 기능</a>
+      <a href="#tech">기술 구성</a>
+      <a class="cta" href="./app.html">약정서 작성 →</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap in">
+    <div>
+      <span class="ey">TABLET · PWA · E-SIGNATURE</span>
+      <h1>종이 기부약정서를<br><span>태블릿 전자문서</span>로.</h1>
+      <p class="sub">모금 상담 현장에서 태블릿으로 직접 정보를 입력받고, 손글씨 서명을 받아, 원본과 동일한 레이아웃의 <b>PDF를 자동 생성·저장</b>합니다. 복잡한 시스템·결제 연동 없이 핵심 기능에만 집중한 경량 솔루션입니다.</p>
+      <div class="btns">
+        <a class="btn gold" href="./app.html">✍ 약정서 작성 시작</a>
+        <a class="btn ghost" href="./admin.html">🗂 관리자 페이지</a>
+      </div>
+      <div class="meta">
+        <div><b>4</b>단계 입력</div>
+        <div><b>PDF</b> 자동 생성</div>
+        <div><b>0</b>원 서버비용*</div>
+      </div>
+    </div>
+    <div class="device" aria-hidden="true">
+      <div class="scr">
+        <div class="sbar"><i></i><i></i><i></i></div>
+        <div class="body">
+          <div class="ln m"></div>
+          <div class="fld"></div>
+          <div class="ln s"></div>
+          <div class="fld"></div>
+          <div class="sig">
+            <svg viewBox="0 0 300 90" preserveAspectRatio="none"><path d="M25 62 C45 30 60 78 82 50 S120 20 140 55 175 72 200 42 250 30 275 55" fill="none" stroke="#0f2544" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+          <div class="gbtn">📄 PDF 생성 및 저장</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="flow">
+  <div class="wrap">
+    <div class="shead">
+      <div class="ey">HOW IT WORKS</div>
+      <h2>약정부터 저장까지 4단계</h2>
+      <p>상담 직원은 태블릿을 건네주고, 기부자는 화면 안내에 따라 작성만 하면 됩니다.</p>
+    </div>
+    <div class="flow">
+      <div class="fstep"><div class="no en">01</div><h3>기부자 정보 입력</h3><p>성명·연락처·주소·소속 등 종이 약정서와 동일한 항목을 태블릿에 최적화된 폼으로 입력합니다.</p></div>
+      <div class="fstep"><div class="no en">02</div><h3>기부 내용 지정</h3><p>기부금액(한글금액 자동 변환)·용도·납부방법을 선택합니다. 자주 쓰는 금액은 버튼 한 번으로.</p></div>
+      <div class="fstep"><div class="no en">03</div><h3>동의 · 전자서명</h3><p>개인정보 약관 동의 후, 손가락·스타일러스로 직접 서명. 서명은 투명 배경 이미지로 저장됩니다.</p></div>
+      <div class="fstep"><div class="no en">04</div><h3>PDF 자동 생성</h3><p>입력값과 서명을 원본 양식에 통합해 PDF로 생성하고 <code>날짜_이름_금액.pdf</code>로 자동 저장·전송합니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="feature" style="background:linear-gradient(180deg,#fff,#f5f7fb)">
+  <div class="wrap">
+    <div class="shead">
+      <div class="ey">KEY FEATURES</div>
+      <h2>요청하신 핵심 기능</h2>
+      <p>“오직 태블릿에서 채우고 서명한 뒤 PDF로 저장하여 관리자가 다운로드” — 딱 그 목표에 맞췄습니다.</p>
+    </div>
+    <div class="feats">
+      <div class="feat">
+        <div class="ic">📝</div>
+        <h3>종이 양식 그대로의 입력 폼</h3>
+        <p>기존 종이 약정서와 동일한 항목·순서로 구성한 직관적 UI.</p>
+        <ul><li>단계별(스텝) 진행 · 필수값 검증</li><li>한글 금액 자동 변환 · 금액 프리셋</li><li>태블릿 터치 최적화 렌더링</li></ul>
+      </div>
+      <div class="feat">
+        <div class="ic">✍️</div>
+        <h3>전자 서명 캔버스</h3>
+        <p>손가락과 스타일러스 펜을 모두 인식하는 서명 영역.</p>
+        <ul><li>되돌리기 · 다시쓰기 지원</li><li>여백 자동 트리밍</li><li>투명 배경 PNG로 변환·유지</li></ul>
+      </div>
+      <div class="feat">
+        <div class="ic">📄</div>
+        <h3>PDF 자동 생성 · 규격 저장</h3>
+        <p>텍스트와 서명을 원본 레이아웃으로 통합해 PDF 출력.</p>
+        <ul><li>A4 원본 약정서와 동일 레이아웃</li><li><code>20260629_홍길동_10000000.pdf</code> 규격 자동 파일명</li><li>기기 저장 + 관리자 페이지 전송</li></ul>
+      </div>
+      <div class="feat">
+        <div class="ic">🗂️</div>
+        <h3>관리자 페이지</h3>
+        <p>접수된 약정서를 목록으로 확인·관리.</p>
+        <ul><li>검색·필터 · 통계 대시보드</li><li>PDF 미리보기 · 다운로드</li><li>CSV 내보내기</li></ul>
+      </div>
+      <div class="feat">
+        <div class="ic">📲</div>
+        <h3>PWA · 오프라인 대응</h3>
+        <p>홈 화면에 설치해 앱처럼 실행. 상담 부스 네트워크가 불안정해도 작성 가능.</p>
+        <ul><li>설치형 웹앱(매니페스트)</li><li>서비스워커 캐싱</li><li>별도 앱스토어 심사 불필요</li></ul>
+      </div>
+      <div class="feat">
+        <div class="ic">🔒</div>
+        <h3>개인정보 동의 · 예우</h3>
+        <p>수집·이용 동의 절차를 약정 흐름에 내장.</p>
+        <ul><li>필수 약관 동의 게이트</li><li>기부금영수증 발급 선택</li><li>보관·파기 안내 문구</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="tech">
+  <div class="wrap">
+    <div class="tech">
+      <div>
+        <h2>가장 가볍고 빠른 구현</h2>
+        <p>제안 예산 안에서 가장 경제적인 오픈소스 스택으로 구성했습니다. 무거운 기부관리시스템·결제 연동 없이, 핵심 기능만 견고하게.</p>
+        <div class="stack">
+          <span class="g">PWA (Vanilla JS)</span>
+          <span class="g">jsPDF</span>
+          <span class="g">html2canvas</span>
+          <span>Canvas 서명</span>
+          <span>Service Worker</span>
+          <span>Supabase(선택)</span>
+        </div>
+      </div>
+      <div class="why">
+        <b>이 구성을 택한 이유</b>
+        <ul>
+          <li>프레임워크 빌드 없이 정적 호스팅만으로 배포 → <b>서버비용 최소</b></li>
+          <li>PDF를 브라우저에서 즉시 생성 → 서버 왕복·대기 없음</li>
+          <li>파일 저장·관리는 Supabase Storage 등으로 손쉽게 확장</li>
+          <li>본 데모는 브라우저 저장소로 백엔드를 시뮬레이션</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>지금 바로 체험해 보세요</h2>
+    <p>태블릿(또는 브라우저)에서 약정서를 작성하고, 관리자 화면에서 결과를 확인할 수 있습니다.</p>
+    <div class="btns">
+      <a class="btn gold" href="./app.html">✍ 약정서 작성하기</a>
+      <a class="btn navy" href="./admin.html">🗂 관리자 페이지 열기</a>
+    </div>
+    <div class="note">* 데모는 데이터를 브라우저(로컬)에만 저장합니다. 관리자 데모 계정: admin / 1234</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    © 2026 한울대학교 발전기금 · 전자 기부약정서 <b>제안용 데모</b> · <a href="../index.html">← 데모 포털</a>
+  </div>
+</footer>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+</script>
+</body>
+</html>

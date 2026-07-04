@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>관리자 · 한울대학교 발전기금 약정 관리</title>
+<meta name="theme-color" content="#0f2544" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    --navy:#0f2544;--navy2:#1a3860;--gold:#b58a3c;--gold2:#caa254;
+    --ink:#1d2634;--muted:#69748a;--line:#e5e9f0;--line2:#eef1f6;--bg:#f4f6fa;--paper:#fff;
+    --ok:#128a5a;--err:#d24a43;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer}
+
+  /* ===== login gate ===== */
+  .gate{position:fixed;inset:0;z-index:100;background:var(--navy);display:grid;place-items:center;padding:24px;
+    background-image:radial-gradient(60% 50% at 80% -10%,rgba(202,162,84,.18),transparent 60%),radial-gradient(50% 45% at 0% 100%,rgba(26,56,96,.6),transparent 55%)}
+  .gate.hide{display:none}
+  .gate .box{background:#fff;border-radius:20px;padding:38px 34px;width:100%;max-width:390px;box-shadow:0 40px 80px -40px rgba(0,0,0,.6)}
+  .gate .crest{width:56px;height:56px;border-radius:14px;background:linear-gradient(140deg,var(--gold2),var(--gold));display:grid;place-items:center;color:var(--navy);font-weight:900;font-size:26px;margin:0 auto 16px}
+  .gate h1{margin:0 0 4px;text-align:center;font-size:20px;color:var(--navy)}
+  .gate p{margin:0 0 24px;text-align:center;color:var(--muted);font-size:13px}
+  .gate label{display:block;font-size:12.5px;font-weight:700;margin:0 0 7px}
+  .gate input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:15px;margin-bottom:16px}
+  .gate input:focus{outline:none;border-color:var(--navy2);box-shadow:0 0 0 4px rgba(26,56,96,.1)}
+  .gate button{width:100%;padding:14px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;font-weight:800;font-size:15px}
+  .gate .demo{margin-top:16px;text-align:center;font-size:12px;color:var(--muted)}
+  .gate .demo code{background:#eef1f6;padding:2px 8px;border-radius:6px;color:var(--navy);font-weight:700}
+
+  /* ===== layout ===== */
+  header.top{background:var(--navy);color:#fff;padding:16px 26px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20}
+  header.top .brand{display:flex;align-items:center;gap:13px}
+  header.top .crest{width:38px;height:38px;border-radius:10px;background:linear-gradient(140deg,var(--gold2),var(--gold));display:grid;place-items:center;color:var(--navy);font-weight:900;font-size:18px}
+  header.top .tt b{font-size:16px;font-weight:800}
+  header.top .tt small{display:block;color:#a9bad6;font-size:11px;letter-spacing:.14em}
+  header.top .actions{display:flex;gap:10px;align-items:center}
+  header.top .actions a,header.top .actions button{color:#cdd8e8;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.18);background:transparent;padding:8px 15px;border-radius:999px;transition:.2s}
+  header.top .actions a:hover,header.top .actions button:hover{color:#fff;border-color:rgba(255,255,255,.45)}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:26px}
+
+  /* stats */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  @media(max-width:820px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 22px;position:relative;overflow:hidden}
+  .stat::after{content:"";position:absolute;right:-14px;top:-14px;width:70px;height:70px;border-radius:50%;background:var(--line2)}
+  .stat .lb{font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:9px;position:relative}
+  .stat .v{font-size:27px;font-weight:900;color:var(--navy);letter-spacing:-.02em;position:relative;font-variant-numeric:tabular-nums}
+  .stat .v small{font-size:14px;color:var(--muted);font-weight:700;margin-left:3px}
+  .stat.gold .v{color:var(--gold)}
+
+  /* toolbar */
+  .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .toolbar input,.toolbar select{padding:11px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:14px;background:#fff}
+  .toolbar input{min-width:230px}
+  .toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--navy2)}
+  .toolbar .sp{flex:1}
+  .toolbar .btn{padding:11px 16px;border-radius:11px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:13.5px;color:var(--navy)}
+  .toolbar .btn:hover{border-color:var(--navy2)}
+  .toolbar .btn.danger{color:var(--err);border-color:#f2cdcb}
+  .toolbar .btn.danger:hover{background:#fdf3f2}
+
+  /* table */
+  .tablewrap{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  thead th{background:#f7f9fc;text-align:left;font-size:12.5px;color:var(--muted);font-weight:800;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap;letter-spacing:.02em}
+  tbody td{padding:14px 16px;border-bottom:1px solid var(--line2);font-size:14px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fafbfe}
+  .nm{font-weight:800;color:var(--navy)}
+  .amt{font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:800}
+  .tag.g{background:#eef4ff;color:#2b5bb5}
+  .tag.p{background:var(--line2);color:var(--muted)}
+  .tag.r{background:#eafaf1;color:var(--ok)}
+  .tag.rr{background:#fdf0ef;color:var(--err)}
+  .fname{font-size:12px;color:var(--muted);font-family:ui-monospace,monospace}
+  .rowbtns{display:flex;gap:7px;white-space:nowrap}
+  .rowbtns button{padding:7px 12px;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:12.5px;color:var(--navy);transition:.15s}
+  .rowbtns button:hover{border-color:var(--navy2);background:#f6f8fc}
+  .rowbtns button.del{color:var(--err)}
+  .rowbtns button.del:hover{background:#fdf3f2;border-color:#f2cdcb}
+
+  .empty{padding:70px 20px;text-align:center;color:var(--muted)}
+  .empty .ic{font-size:44px;margin-bottom:12px;opacity:.5}
+  .empty a{color:var(--navy2);font-weight:700}
+
+  /* modal preview */
+  .modal{position:fixed;inset:0;z-index:60;background:rgba(15,37,68,.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.on{display:flex}
+  .modal .mbox{background:#fff;border-radius:16px;width:100%;max-width:820px;height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 80px -40px rgba(0,0,0,.7)}
+  .modal .mhead{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--line)}
+  .modal .mhead b{color:var(--navy);font-size:15px}
+  .modal .mhead .x{border:none;background:#eef1f6;width:34px;height:34px;border-radius:9px;font-size:17px;color:var(--muted)}
+  .modal iframe{flex:1;border:none;width:100%;background:#525659}
+  .modal .mfoot{padding:13px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+  .modal .mfoot button{padding:11px 20px;border-radius:10px;border:none;font-weight:800;font-size:14px}
+  .modal .mfoot .dl{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3a2c10}
+  .modal .mfoot .cl{background:#eef1f6;color:var(--ink)}
+
+  .toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:var(--ink);color:#fff;padding:13px 20px;border-radius:11px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:90}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<!-- ===== login gate ===== -->
+<div class="gate" id="gate">
+  <div class="box">
+    <div class="crest">한</div>
+    <h1>발전기금 약정 관리</h1>
+    <p>관리자 로그인이 필요합니다</p>
+    <label>아이디</label>
+    <input id="gid" placeholder="admin" autocomplete="off">
+    <label>비밀번호</label>
+    <input id="gpw" type="password" placeholder="••••••" autocomplete="off">
+    <button id="gbtn">로그인</button>
+    <div class="demo">데모 계정 · <code>admin</code> / <code>1234</code></div>
+  </div>
+</div>
+
+<header class="top">
+  <div class="brand">
+    <div class="crest">한</div>
+    <div class="tt"><b>발전기금 약정 관리자</b><small>ADMIN CONSOLE</small></div>
+  </div>
+  <div class="actions">
+    <a href="./app.html">＋ 신규 약정 작성</a>
+    <a href="./index.html">데모 홈</a>
+    <button id="logout">로그아웃</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input id="q" placeholder="🔍 성명·연락처·문서번호 검색">
+    <select id="fRel"><option value="">전체 소속</option><option>동문</option><option>재학생</option><option>교직원</option><option>외부</option></select>
+    <select id="fPurpose"><option value="">전체 용도</option><option>장학금</option><option>연구지원</option><option>시설확충</option><option>도서기금</option><option>비지정</option><option>기타</option></select>
+    <div class="sp"></div>
+    <button class="btn" id="seed">데모 데이터 채우기</button>
+    <button class="btn" id="csv">CSV 내보내기</button>
+    <button class="btn danger" id="clearAll">전체 삭제</button>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>약정일</th><th>성명</th><th>소속</th><th>기부금액</th><th>용도</th><th>납부방법</th><th>영수증</th><th>파일명</th><th>관리</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">
+      <div class="ic">🗂️</div>
+      <div>저장된 약정서가 없습니다.</div>
+      <div style="margin-top:8px"><a href="./app.html">약정서 작성하러 가기 →</a> 또는 <b>데모 데이터 채우기</b></div>
+    </div>
+  </div>
+</div>
+
+<!-- pdf preview modal -->
+<div class="modal" id="modal">
+  <div class="mbox">
+    <div class="mhead"><b id="mTitle">약정서 미리보기</b><button class="x" id="mClose">✕</button></div>
+    <iframe id="mFrame"></iframe>
+    <div class="mfoot">
+      <button class="cl" id="mCloseBtn">닫기</button>
+      <button class="dl" id="mDownload">⬇ PDF 다운로드</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const $=(s,el=document)=>el.querySelector(s);const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const STORE='hanul_pledges';const AUTH='hanul_admin_auth';
+const commas=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const toast=m=>{const t=$('#toast');t.textContent=m;t.className='toast on';clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',2000);};
+const load=()=>JSON.parse(localStorage.getItem(STORE)||'[]');
+const save=l=>localStorage.setItem(STORE,JSON.stringify(l));
+
+/* ===== auth ===== */
+function checkAuth(){if(sessionStorage.getItem(AUTH)==='1')$('#gate').classList.add('hide');}
+$('#gbtn').onclick=()=>{
+  if($('#gid').value==='admin'&&$('#gpw').value==='1234'){sessionStorage.setItem(AUTH,'1');$('#gate').classList.add('hide');render();}
+  else toast('아이디 또는 비밀번호가 올바르지 않습니다');
+};
+$('#gpw').addEventListener('keydown',e=>{if(e.key==='Enter')$('#gbtn').click();});
+$('#logout').onclick=()=>{sessionStorage.removeItem(AUTH);location.reload();};
+
+/* ===== render ===== */
+const relTag=r=>({'동문':'g','재학생':'g','교직원':'g','외부':'p'}[r]||'p');
+function purposeShort(p){return (p||'').split(' · ')[0];}
+function filtered(){
+  let l=load();
+  const q=$('#q').value.trim().toLowerCase();
+  const fr=$('#fRel').value,fp=$('#fPurpose').value;
+  if(q)l=l.filter(x=>[x.name,x.phone,x.id,x.filename].join(' ').toLowerCase().includes(q));
+  if(fr)l=l.filter(x=>x.rel===fr);
+  if(fp)l=l.filter(x=>purposeShort(x.purpose)===fp);
+  return l;
+}
+function renderStats(){
+  const l=load();const total=l.reduce((s,x)=>s+(x.amount||0),0);
+  const thisMonth=new Date().toISOString().slice(0,7);
+  const mCnt=l.filter(x=>(x.date||'').slice(0,7)===thisMonth).length;
+  const reg=l.filter(x=>/정기납/.test(x.pay||'')).length;
+  $('#stats').innerHTML=`
+    <div class="stat"><div class="lb">총 약정 건수</div><div class="v">${l.length}<small>건</small></div></div>
+    <div class="stat gold"><div class="lb">누적 약정 금액</div><div class="v">${commas(total)}<small>원</small></div></div>
+    <div class="stat"><div class="lb">이번 달 접수</div><div class="v">${mCnt}<small>건</small></div></div>
+    <div class="stat"><div class="lb">정기 약정</div><div class="v">${reg}<small>건</small></div></div>`;
+}
+function render(){
+  renderStats();
+  const l=filtered();
+  const rows=$('#rows'),empty=$('#empty');
+  if(load().length===0){rows.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  rows.innerHTML=l.map((x,i)=>{
+    const idx=load().indexOf(l[i]);
+    const rec=x.receipt==='발급 신청'?'<span class="tag r">발급</span>':'<span class="tag rr">미발급</span>';
+    return `<tr>
+      <td>${x.date||'—'}<div class="fname">${x.id||''}</div></td>
+      <td><span class="nm">${x.name}</span> <span class="tag p" style="margin-left:2px">${x.gubun||'개인'}</span></td>
+      <td><span class="tag ${relTag(x.rel)}">${x.rel||'—'}</span></td>
+      <td class="amt">${commas(x.amount||0)}원</td>
+      <td>${purposeShort(x.purpose)}</td>
+      <td style="font-size:12.5px;color:var(--muted)">${x.pay||'—'}</td>
+      <td>${rec}</td>
+      <td class="fname">${x.filename||'—'}</td>
+      <td><div class="rowbtns">
+        ${x.pdf?`<button data-view="${idx}">보기</button><button data-dl="${idx}">PDF</button>`:'<span style="color:#bbb;font-size:12px">PDF 없음</span>'}
+        <button class="del" data-del="${idx}">삭제</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* row actions (delegated) */
+$('#rows').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const l=load();
+  if(b.dataset.view!=null){openPreview(l[+b.dataset.view]);}
+  if(b.dataset.dl!=null){downloadRec(l[+b.dataset.dl]);}
+  if(b.dataset.del!=null){
+    if(confirm('이 약정서를 삭제하시겠습니까?')){l.splice(+b.dataset.del,1);save(l);render();toast('삭제되었습니다');}
+  }
+});
+
+function downloadRec(x){
+  if(!x.pdf)return;
+  const a=document.createElement('a');a.href=x.pdf;a.download=x.filename||'약정서.pdf';a.click();
+}
+
+/* preview modal */
+let curRec=null;
+function openPreview(x){
+  curRec=x;$('#mTitle').textContent=x.filename||'약정서 미리보기';
+  $('#mFrame').src=x.pdf;$('#modal').classList.add('on');
+}
+$('#mClose').onclick=$('#mCloseBtn').onclick=()=>{$('#modal').classList.remove('on');$('#mFrame').src='';};
+$('#mDownload').onclick=()=>{if(curRec)downloadRec(curRec);};
+$('#modal').addEventListener('click',e=>{if(e.target===$('#modal')){$('#mClose').click();}});
+
+/* filters */
+['#q','#fRel','#fPurpose'].forEach(s=>$(s).addEventListener('input',render));
+
+/* CSV */
+$('#csv').onclick=()=>{
+  const l=filtered();if(!l.length){toast('내보낼 데이터가 없습니다');return;}
+  const head=['약정일','문서번호','성명','구분','소속','휴대전화','이메일','기부금액','용도','납부방법','영수증','파일명'];
+  const rows=l.map(x=>[x.date,x.id,x.name,x.gubun,x.rel,x.phone,x.email,x.amount,x.purpose,x.pay,x.receipt,x.filename]
+    .map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(','));
+  const csv='﻿'+[head.join(','),...rows].join('\r\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='발전기금_약정목록.csv';a.click();
+  toast('CSV를 내보냈습니다');
+};
+
+/* clear all */
+$('#clearAll').onclick=()=>{if(confirm('저장된 모든 약정서를 삭제합니다. 계속할까요?')){save([]);render();toast('전체 삭제되었습니다');}};
+
+/* seed demo data (no pdf blobs, listing only) */
+$('#seed').onclick=()=>{
+  const l=load();
+  const samples=[
+    ['김서연','동문','장학금','정기납(매월 36회) · CMS 자동이체',3600000,'발급 신청','010-2841-7752','2026-06-28'],
+    ['㈜한울테크','법인','연구지원','일시납 · 계좌이체',50000000,'발급 신청','02-559-8820','2026-06-25'],
+    ['박준호','교직원','도서기금','정기납(매월 무기한) · CMS 자동이체',1200000,'발급 신청','010-9930-1174','2026-06-22'],
+    ['이하늘','재학생','비지정','일시납 · 신용카드',100000,'신청 안함','010-5521-9084','2026-06-20'],
+    ['정민재','동문','시설확충','일시납 · 신용카드',10000000,'발급 신청','010-3388-2201','2026-06-18'],
+    ['최유진','외부','연구지원','정기납(분기별 12회) · CMS 자동이체',2400000,'발급 신청','010-7744-6650','2026-06-15'],
+  ];
+  samples.forEach(([name,rel,purpose,pay,amount,receipt,phone,date])=>{
+    const key=date.replace(/-/g,'');
+    l.push({id:'PL-'+key+'-'+Math.floor(1000+Math.random()*8999),
+      filename:`${key}_${name}_${amount}.pdf`,name,gubun:rel==='법인'?'법인':'개인',rel,amount,purpose,pay,phone,
+      email:'',receipt,date,dateKo:date,createdAt:date+'T09:00:00.000Z',pdf:null});
+  });
+  save(l);render();toast('데모 데이터 6건을 추가했습니다');
+};
+
+/* init */
+checkAuth();render();
+</script>
+</body>
+</html>

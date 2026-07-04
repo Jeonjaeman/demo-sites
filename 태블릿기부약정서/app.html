@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>한울대학교 발전기금 전자 기부약정서</title>
+<meta name="description" content="태블릿 기반 전자 기부약정서 — 정보 입력·전자서명·PDF 자동 생성" />
+<meta name="theme-color" content="#0f2544" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --navy:#0f2544; --navy2:#1a3860; --gold:#b58a3c; --gold2:#caa254; --gold-soft:#f2e9d4;
+    --ink:#1d2634; --muted:#69748a; --line:#e2e6ee; --line2:#eef1f6;
+    --bg:#eef1f6; --paper:#ffffff; --ok:#128a5a; --err:#d24a43;
+    --shadow:0 24px 60px -30px rgba(15,37,68,.5);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+  input,textarea,select,button{font-family:inherit}
+  button{cursor:pointer}
+
+  /* ===== App shell ===== */
+  .app{max-width:900px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;background:var(--bg)}
+  header.bar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;
+    padding:14px 22px calc(14px + env(safe-area-inset-top)) 22px;padding-top:calc(14px + env(safe-area-inset-top));
+    display:flex;align-items:center;justify-content:space-between;box-shadow:0 6px 20px -12px rgba(0,0,0,.6)}
+  header.bar .brand{display:flex;align-items:center;gap:12px}
+  header.bar .crest{width:40px;height:40px;border-radius:10px;background:linear-gradient(140deg,var(--gold2),var(--gold));
+    display:grid;place-items:center;color:var(--navy);font-weight:900;font-size:19px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+  header.bar .tt{line-height:1.2}
+  header.bar .tt b{font-size:16px;font-weight:800;letter-spacing:-.01em}
+  header.bar .tt small{display:block;color:#a9bad6;font-size:11px;letter-spacing:.14em;margin-top:2px}
+  header.bar a.exit{color:#a9bad6;text-decoration:none;font-size:13px;border:1px solid rgba(255,255,255,.18);
+    padding:8px 14px;border-radius:999px;transition:.2s}
+  header.bar a.exit:hover{color:#fff;border-color:rgba(255,255,255,.4)}
+
+  /* ===== Stepper ===== */
+  .steps{display:flex;gap:0;background:var(--paper);padding:16px 22px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+  .steps{position:relative}
+  .step{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;position:relative;color:var(--muted)}
+  .step .dot{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;
+    background:#eef1f6;color:var(--muted);border:2px solid var(--line);transition:.25s;z-index:2}
+  .step .lb{font-size:12.5px;font-weight:600}
+  .step::before{content:"";position:absolute;top:17px;left:-50%;width:100%;height:2px;background:var(--line);z-index:1}
+  .step:first-child::before{display:none}
+  .step.active .dot{background:var(--navy);border-color:var(--navy);color:#fff}
+  .step.active .lb{color:var(--navy);font-weight:800}
+  .step.done .dot{background:var(--gold);border-color:var(--gold);color:#fff}
+  .step.done::before,.step.active::before{background:var(--gold)}
+
+  /* ===== Scroll area ===== */
+  .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 22px 140px}
+  .panel{display:none;animation:fade .4s ease}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .lead{margin:0 0 20px}
+  .lead h2{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
+  .lead p{margin:0;color:var(--muted);font-size:14px}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 1px 0 rgba(15,37,68,.03)}
+  .card > h3{margin:0 0 4px;font-size:15px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:9px}
+  .card > h3::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--gold)}
+  .card > .sub{margin:0 0 18px;color:var(--muted);font-size:12.5px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid .full{grid-column:1/-1}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-size:13px;font-weight:700;color:var(--ink)}
+  .field label .req{color:var(--err);margin-left:3px}
+  .field input,.field select,.field textarea{width:100%;padding:14px 15px;border:1.5px solid var(--line);border-radius:11px;
+    font-size:15.5px;background:#fbfcfe;color:var(--ink);transition:.15s;-webkit-user-select:text;user-select:text}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--navy2);background:#fff;box-shadow:0 0 0 4px rgba(26,56,96,.08)}
+  .field input.bad,.field select.bad{border-color:var(--err);background:#fef5f4}
+  .field .hint{font-size:11.5px;color:var(--muted)}
+  .field textarea{resize:none;min-height:78px;line-height:1.6}
+
+  /* chip radio group */
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chips.cols4{display:grid;grid-template-columns:repeat(4,1fr)}
+  .chips.cols3{display:grid;grid-template-columns:repeat(3,1fr)}
+  .chips.cols2{display:grid;grid-template-columns:repeat(2,1fr)}
+  @media(max-width:560px){.chips.cols4,.chips.cols3{grid-template-columns:repeat(2,1fr)}}
+  .chip{position:relative}
+  .chip input{position:absolute;opacity:0;pointer-events:none}
+  .chip span{display:flex;align-items:center;justify-content:center;gap:6px;padding:13px 14px;border:1.5px solid var(--line);
+    border-radius:11px;font-size:14px;font-weight:600;color:var(--muted);background:#fbfcfe;transition:.15s;text-align:center;line-height:1.3}
+  .chip input:checked + span{border-color:var(--navy);background:var(--navy);color:#fff;box-shadow:0 8px 18px -10px rgba(15,37,68,.6)}
+  .chip input:focus-visible + span{box-shadow:0 0 0 4px rgba(26,56,96,.12)}
+
+  /* amount presets */
+  .amtwrap{position:relative}
+  .amtwrap .won{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:15px;pointer-events:none}
+  .amtwrap input{padding-right:36px;text-align:right;font-weight:800;font-size:19px;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .amtprview{margin-top:9px;font-size:13px;color:var(--gold);font-weight:700;min-height:18px}
+  .presets{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  @media(max-width:560px){.presets{grid-template-columns:repeat(2,1fr)}}
+  .presets button{padding:11px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--navy);
+    font-weight:700;font-size:13.5px;transition:.15s}
+  .presets button:hover{border-color:var(--gold);background:var(--gold-soft)}
+  .presets button:active{transform:scale(.96)}
+
+  /* signature */
+  .sigbox{border:2px dashed var(--line);border-radius:14px;background:
+    linear-gradient(90deg,transparent 24px,var(--line2) 24px,var(--line2) 25px,transparent 25px) 0 0/26px 100%,
+    #fff;position:relative;touch-action:none;overflow:hidden}
+  .sigbox canvas{display:block;width:100%;height:230px;touch-action:none}
+  .sigbox .ph{position:absolute;inset:0;display:grid;place-items:center;color:#b9c2d2;font-size:15px;font-weight:600;pointer-events:none;transition:.2s}
+  .sigbox.inked .ph{opacity:0}
+  .sigbox .line{position:absolute;left:24px;right:24px;bottom:52px;border-bottom:1.5px solid var(--line);pointer-events:none}
+  .sigbox .line::after{content:"서명";position:absolute;right:0;bottom:6px;font-size:11px;color:#c3ccda}
+  .sigtools{display:flex;gap:10px;margin-top:12px}
+  .sigtools button{flex:1;padding:12px;border-radius:11px;border:1.5px solid var(--line);background:#fff;
+    font-weight:700;font-size:14px;color:var(--navy);display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+  .sigtools button:hover{border-color:var(--navy2);background:#f6f8fc}
+  .sigtools button:active{transform:scale(.97)}
+
+  /* consent */
+  .consent{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+  .consent .body{max-height:150px;overflow-y:auto;padding:16px;font-size:12.5px;color:var(--muted);line-height:1.75;background:#fbfcfe;-webkit-user-select:text;user-select:text}
+  .consent .agree{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line);background:#fff}
+  .consent .agree input{width:22px;height:22px;accent-color:var(--navy);flex:none}
+  .consent .agree label{font-size:13.5px;font-weight:700;cursor:pointer}
+  .consent .agree .req{color:var(--err)}
+
+  /* review */
+  .review{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .review .rrow{display:flex;padding:14px 18px;border-bottom:1px solid var(--line2);font-size:14px}
+  .review .rrow:last-child{border-bottom:none}
+  .review .rk{width:130px;flex:none;color:var(--muted);font-weight:600}
+  .review .rv{font-weight:700;color:var(--ink);word-break:break-all}
+  .review .rv.amt{color:var(--gold);font-size:16px}
+  .review .rsig{padding:14px 18px}
+  .review .rsig img{height:66px;max-width:220px;object-fit:contain}
+  .filenote{margin:14px 4px 0;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .filenote code{background:#eef1f6;padding:3px 9px;border-radius:6px;color:var(--navy);font-weight:700;font-size:12.5px}
+
+  /* footer nav */
+  .navbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:14px 22px calc(14px + env(safe-area-inset-bottom));display:flex;gap:12px;max-width:900px;margin:0 auto}
+  .navbar .fill{flex:1}
+  .btn{padding:15px 26px;border-radius:13px;border:none;font-size:15.5px;font-weight:800;transition:.18s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn.ghost{background:#fff;border:1.5px solid var(--line);color:var(--navy)}
+  .btn.ghost:hover{border-color:var(--navy2)}
+  .btn.primary{background:linear-gradient(135deg,var(--navy2),var(--navy));color:#fff;box-shadow:0 14px 26px -14px rgba(15,37,68,.8)}
+  .btn.primary:hover{transform:translateY(-1px)}
+  .btn.gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#3a2c10}
+  .btn:disabled{opacity:.5;pointer-events:none}
+  .btn:active{transform:scale(.98)}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:100px;transform:translate(-50%,20px);background:var(--ink);color:#fff;
+    padding:14px 22px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:60;box-shadow:0 18px 40px -18px rgba(0,0,0,.6)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  .toast.err{background:var(--err)}
+
+  /* success overlay */
+  .done-ov{position:fixed;inset:0;z-index:80;background:rgba(15,37,68,.5);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:24px}
+  .done-ov.on{display:flex;animation:fade .3s}
+  .done-card{background:#fff;border-radius:22px;max-width:420px;width:100%;padding:38px 30px 30px;text-align:center;box-shadow:var(--shadow)}
+  .done-card .check{width:82px;height:82px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(135deg,#1fae72,#128a5a);display:grid;place-items:center;box-shadow:0 16px 30px -14px rgba(18,138,90,.7)}
+  .done-card .check svg{width:42px;height:42px}
+  .done-card h2{margin:0 0 8px;font-size:23px;color:var(--navy)}
+  .done-card p{margin:0 0 6px;color:var(--muted);font-size:14px;line-height:1.6}
+  .done-card .fname{margin:16px 0 22px;background:#eef1f6;border-radius:12px;padding:13px;font-weight:800;color:var(--navy);font-size:14px;word-break:break-all}
+  .done-card .acts{display:flex;flex-direction:column;gap:10px}
+
+  /* overlay while generating */
+  .gen-ov{position:fixed;inset:0;z-index:90;background:rgba(15,37,68,.72);backdrop-filter:blur(4px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;color:#fff}
+  .gen-ov.on{display:flex}
+  .spin{width:54px;height:54px;border:5px solid rgba(255,255,255,.25);border-top-color:var(--gold2);border-radius:50%;animation:sp 1s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .gen-ov p{font-size:15px;font-weight:600;letter-spacing:.02em}
+
+  /* hidden PDF template (A4) */
+  .pdf-stage{position:fixed;left:-9999px;top:0}
+  .pdf-page{width:794px;min-height:1123px;background:#fff;color:#111;padding:64px 60px;font-family:"Pretendard",sans-serif;position:relative}
+  .pdf-page .p-head{text-align:center;border-bottom:3px double #0f2544;padding-bottom:20px;margin-bottom:6px}
+  .pdf-page .p-head .p-org{font-size:15px;color:#b58a3c;font-weight:800;letter-spacing:.3em}
+  .pdf-page .p-head .p-title{font-size:34px;font-weight:900;color:#0f2544;letter-spacing:.28em;margin:12px 0 4px}
+  .pdf-page .p-head .p-sub{font-size:12px;color:#555;letter-spacing:.1em}
+  .pdf-page .p-intro{font-size:13px;color:#333;line-height:1.9;margin:22px 4px 20px;text-align:justify}
+  .pdf-page table.p-tbl{width:100%;border-collapse:collapse;margin-bottom:8px}
+  .pdf-page table.p-tbl td{border:1px solid #94a0b4;padding:11px 13px;font-size:13.5px;vertical-align:middle}
+  .pdf-page table.p-tbl td.k{background:#f0f3f8;font-weight:800;color:#0f2544;width:120px;text-align:center;letter-spacing:.02em}
+  .pdf-page table.p-tbl td.v{color:#111;font-weight:600}
+  .pdf-page .p-sec{font-size:13px;font-weight:900;color:#0f2544;margin:22px 2px 9px;letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+  .pdf-page .p-sec::before{content:"";width:16px;height:16px;background:#b58a3c;border-radius:3px;display:inline-block}
+  .pdf-page .p-amt{font-size:22px;font-weight:900;color:#0f2544}
+  .pdf-page .p-amt small{font-size:13px;color:#b58a3c;font-weight:800;margin-left:8px}
+  .pdf-page .p-pledge{border:2px solid #0f2544;border-radius:6px;padding:18px 20px;margin:24px 0;font-size:14px;line-height:2;color:#222;text-align:center;background:#fbfaf6}
+  .pdf-page .p-pledge b{color:#0f2544}
+  .pdf-page .p-sign{margin-top:30px;display:flex;justify-content:space-between;align-items:flex-end}
+  .pdf-page .p-sign .p-date{font-size:16px;font-weight:800;color:#111;letter-spacing:.08em}
+  .pdf-page .p-sign .p-who{text-align:right;font-size:14px;color:#111}
+  .pdf-page .p-sign .p-who .p-line{display:flex;align-items:flex-end;gap:12px;justify-content:flex-end;margin-top:6px}
+  .pdf-page .p-sign .p-who .p-name{font-weight:900;font-size:18px;letter-spacing:.1em;border-bottom:1.5px solid #111;padding:0 30px 3px}
+  .pdf-page .p-sign .p-who .p-sig{height:74px}
+  .pdf-page .p-foot{position:absolute;left:60px;right:60px;bottom:44px;text-align:center;border-top:1px solid #ccc;padding-top:14px;font-size:11px;color:#888;letter-spacing:.05em}
+  .pdf-page .p-stamp{position:absolute;right:70px;top:120px;width:96px;height:96px;border:3px solid rgba(181,138,60,.35);border-radius:50%;
+    display:grid;place-items:center;color:rgba(181,138,60,.4);font-weight:900;font-size:13px;transform:rotate(-14deg);letter-spacing:.1em;text-align:center;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <div class="brand">
+      <div class="crest">한</div>
+      <div class="tt"><b>한울대학교 발전기금</b><small>ELECTRONIC PLEDGE</small></div>
+    </div>
+    <a class="exit" href="./index.html">← 처음으로</a>
+  </header>
+
+  <div class="steps" id="steps">
+    <div class="step active" data-s="1"><div class="dot">1</div><div class="lb">기부자 정보</div></div>
+    <div class="step" data-s="2"><div class="dot">2</div><div class="lb">기부 내용</div></div>
+    <div class="step" data-s="3"><div class="dot">3</div><div class="lb">동의·서명</div></div>
+    <div class="step" data-s="4"><div class="dot">4</div><div class="lb">확인·완료</div></div>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <!-- STEP 1 : 기부자 정보 -->
+    <section class="panel on" data-p="1">
+      <div class="lead"><h2>기부자 정보</h2><p>종이 약정서와 동일한 항목을 입력합니다. <span style="color:var(--err)">*</span> 표시는 필수입니다.</p></div>
+
+      <div class="card">
+        <h3>구분</h3>
+        <p class="sub">기부 주체를 선택하세요.</p>
+        <div class="chips cols3" data-radio="gubun">
+          <label class="chip"><input type="radio" name="gubun" value="개인" checked><span>개인</span></label>
+          <label class="chip"><input type="radio" name="gubun" value="법인"><span>법인</span></label>
+          <label class="chip"><input type="radio" name="gubun" value="단체"><span>단체</span></label>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>인적 사항</h3>
+        <div class="grid">
+          <div class="field">
+            <label>성명 (기관·단체명)<span class="req">*</span></label>
+            <input id="f_name" placeholder="홍길동" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>생년월일 / 사업자번호</label>
+            <input id="f_birth" placeholder="1998-03-21" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label>소속 구분</label>
+            <div class="chips cols4" data-radio="rel">
+              <label class="chip"><input type="radio" name="rel" value="동문" checked><span>동문(졸업생)</span></label>
+              <label class="chip"><input type="radio" name="rel" value="재학생"><span>재학생</span></label>
+              <label class="chip"><input type="radio" name="rel" value="교직원"><span>교직원</span></label>
+              <label class="chip"><input type="radio" name="rel" value="외부"><span>외부/기타</span></label>
+            </div>
+          </div>
+          <div class="field">
+            <label>단과대학 / 학과</label>
+            <input id="f_dept" placeholder="공과대학 컴퓨터공학과" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>학번 / 기수</label>
+            <input id="f_sid" placeholder="17학번 · 71기" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>연락처 및 주소</h3>
+        <div class="grid">
+          <div class="field">
+            <label>휴대전화<span class="req">*</span></label>
+            <input id="f_phone" placeholder="010-1234-5678" inputmode="numeric" autocomplete="off">
+          </div>
+          <div class="field">
+            <label>이메일</label>
+            <input id="f_email" placeholder="hong@example.ac.kr" inputmode="email" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label>주소</label>
+            <input id="f_addr" placeholder="도로명 주소를 입력하세요" autocomplete="off">
+          </div>
+          <div class="field full">
+            <label>상세 주소</label>
+            <input id="f_addr2" placeholder="상세주소 (동/호수 등)" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2 : 기부 내용 -->
+    <section class="panel" data-p="2">
+      <div class="lead"><h2>기부 내용</h2><p>기부금액·용도·납부방법을 지정합니다.</p></div>
+
+      <div class="card">
+        <h3>기부금액</h3>
+        <p class="sub">숫자로 입력하면 한글 금액이 자동 표기됩니다.</p>
+        <div class="field">
+          <div class="amtwrap">
+            <input id="f_amount" inputmode="numeric" placeholder="0" autocomplete="off">
+            <span class="won">원</span>
+          </div>
+          <div class="amtprview" id="amtKor"></div>
+        </div>
+        <div class="presets" id="presets">
+          <button data-add="100000">+10만</button>
+          <button data-add="500000">+50만</button>
+          <button data-add="1000000">+100만</button>
+          <button data-add="10000000">+1,000만</button>
+        </div>
+        <div style="margin-top:10px"><button class="presets" style="all:unset;color:var(--muted);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline" id="amtClear">금액 지우기</button></div>
+      </div>
+
+      <div class="card">
+        <h3>기부 용도</h3>
+        <p class="sub">지정 기부 시 사용 목적을 선택하세요.</p>
+        <div class="chips cols3" data-radio="purpose">
+          <label class="chip"><input type="radio" name="purpose" value="장학금" checked><span>장학기금</span></label>
+          <label class="chip"><input type="radio" name="purpose" value="연구지원"><span>연구지원</span></label>
+          <label class="chip"><input type="radio" name="purpose" value="시설확충"><span>시설확충</span></label>
+          <label class="chip"><input type="radio" name="purpose" value="도서기금"><span>도서기금</span></label>
+          <label class="chip"><input type="radio" name="purpose" value="비지정"><span>비지정(대학발전)</span></label>
+          <label class="chip"><input type="radio" name="purpose" value="기타"><span>기타(직접입력)</span></label>
+        </div>
+        <div class="field" style="margin-top:14px;display:none" id="purposeEtcWrap">
+          <label>기타 용도</label>
+          <input id="f_purpose_etc" placeholder="예) OO학과 실습실 리모델링" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>납부 방법</h3>
+        <div class="field">
+          <label style="margin-bottom:9px">납부 형태</label>
+          <div class="chips cols2" data-radio="paytype" id="paytype">
+            <label class="chip"><input type="radio" name="paytype" value="일시납" checked><span>일시납 (1회)</span></label>
+            <label class="chip"><input type="radio" name="paytype" value="정기납"><span>정기납 (약정)</span></label>
+          </div>
+        </div>
+        <div class="grid" style="margin-top:16px">
+          <div class="field" id="cycleWrap" style="display:none">
+            <label>납부 주기</label>
+            <select id="f_cycle">
+              <option value="매월">매월</option>
+              <option value="분기별">분기별(3개월)</option>
+              <option value="반기별">반기별(6개월)</option>
+              <option value="매년">매년</option>
+            </select>
+          </div>
+          <div class="field" id="monthsWrap" style="display:none">
+            <label>약정 기간(회차)</label>
+            <select id="f_months">
+              <option value="12">12회</option>
+              <option value="24">24회</option>
+              <option value="36" selected>36회</option>
+              <option value="60">60회</option>
+              <option value="무기한">무기한(별도 해지 시까지)</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>결제 수단</label>
+            <div class="chips cols3" data-radio="method">
+              <label class="chip"><input type="radio" name="method" value="CMS 자동이체" checked><span>CMS 자동이체</span></label>
+              <label class="chip"><input type="radio" name="method" value="신용카드"><span>신용카드</span></label>
+              <label class="chip"><input type="radio" name="method" value="계좌이체"><span>계좌이체</span></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>기부금 영수증</h3>
+        <p class="sub">연말정산·세액공제용 기부금영수증 발급 여부입니다.</p>
+        <div class="chips cols2" data-radio="receipt">
+          <label class="chip"><input type="radio" name="receipt" value="발급 신청" checked><span>발급 신청</span></label>
+          <label class="chip"><input type="radio" name="receipt" value="신청 안함"><span>신청 안 함</span></label>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3 : 동의 · 서명 -->
+    <section class="panel" data-p="3">
+      <div class="lead"><h2>개인정보 동의 및 전자서명</h2><p>약관 동의 후 태블릿 화면에 직접 서명해 주세요.</p></div>
+
+      <div class="card">
+        <h3>개인정보 수집·이용 동의</h3>
+        <div class="consent">
+          <div class="body">
+            한울대학교(이하 "대학")는 발전기금 기부약정 및 기부금영수증 발급을 위하여 아래와 같이 개인정보를 수집·이용합니다.<br><br>
+            <b>1. 수집 항목</b> — 성명, 생년월일(사업자번호), 연락처, 주소, 이메일, 소속, 기부금액 및 납부정보<br>
+            <b>2. 수집·이용 목적</b> — 기부약정 접수·관리, 기부금영수증 발급, 기부 예우 및 안내, 관련 법령상 보관 의무 이행<br>
+            <b>3. 보유 및 이용 기간</b> — 기부금품법 및 소득세법 등 관계 법령에 따라 기부일로부터 5년간 보관 후 파기<br>
+            <b>4. 동의 거부 권리</b> — 귀하는 개인정보 수집·이용에 동의하지 않을 권리가 있으나, 미동의 시 전자 약정 접수가 제한됩니다.<br><br>
+            본인은 위 내용을 충분히 읽고 이해하였으며, 개인정보의 수집·이용에 동의합니다.
+          </div>
+          <div class="agree">
+            <input type="checkbox" id="agree1">
+            <label for="agree1">[필수] 개인정보 수집·이용에 동의합니다 <span class="req">*</span></label>
+          </div>
+        </div>
+        <div class="consent">
+          <div class="body">
+            본인은 위 기부약정 내용이 사실과 다름이 없음을 확인하며, 약정한 기부금을 성실히 납부할 것을 서약합니다. 정기납의 경우 지정한 결제수단으로 자동 납부됨에 동의합니다.
+          </div>
+          <div class="agree">
+            <input type="checkbox" id="agree2">
+            <label for="agree2">[필수] 기부약정 내용에 동의합니다 <span class="req">*</span></label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>전자 서명</h3>
+        <p class="sub">손가락 또는 스타일러스 펜으로 아래 영역에 서명하세요.</p>
+        <div class="sigbox" id="sigbox">
+          <canvas id="sig"></canvas>
+          <div class="line"></div>
+          <div class="ph">✍  이곳에 서명해 주세요</div>
+        </div>
+        <div class="sigtools">
+          <button id="sigUndo">↶ 되돌리기</button>
+          <button id="sigClear">✕ 다시쓰기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4 : 확인 -->
+    <section class="panel" data-p="4">
+      <div class="lead"><h2>최종 확인</h2><p>아래 내용으로 전자 약정서 PDF가 생성됩니다.</p></div>
+      <div class="review" id="review"></div>
+      <div class="filenote">저장 파일명 <code id="fnamePrev">—</code></div>
+    </section>
+  </div>
+
+  <div class="navbar">
+    <button class="btn ghost" id="btnPrev" style="display:none">← 이전</button>
+    <div class="fill"></div>
+    <button class="btn primary" id="btnNext">다음 →</button>
+    <button class="btn gold" id="btnSubmit" style="display:none">📄 PDF 생성 및 저장</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="gen-ov" id="genOv"><div class="spin"></div><p id="genMsg">전자 약정서를 생성하고 있습니다…</p></div>
+
+<div class="done-ov" id="doneOv">
+  <div class="done-card">
+    <div class="check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2>약정서가 저장되었습니다</h2>
+    <p>전자 약정서 PDF가 생성되어 관리자 페이지에 전송되었습니다.</p>
+    <div class="fname" id="doneFname">—</div>
+    <div class="acts">
+      <button class="btn gold" id="doneDownload">⬇ PDF 다시 다운로드</button>
+      <button class="btn primary" id="doneNew">＋ 새 약정서 작성</button>
+      <button class="btn ghost" id="doneAdmin" onclick="location.href='./admin.html'">관리자 페이지에서 확인 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden A4 template used for PDF rendering -->
+<div class="pdf-stage"><div class="pdf-page" id="pdfPage"></div></div>
+
+<script>
+/* ============================ helpers ============================ */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const val=id=>($('#'+id)?.value||'').trim();
+const radio=name=>$(`input[name="${name}"]:checked`)?.value||'';
+const toast=(m,err)=>{const t=$('#toast');t.textContent=m;t.className='toast on'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.className='toast',2200);};
+const commas=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const digits=s=>String(s).replace(/[^\d]/g,'');
+
+/* 한글 금액 변환 */
+function koMoney(num){
+  num=Number(num);if(!num)return'';
+  const d=['','일','이','삼','사','오','육','칠','팔','구'];
+  const sm=['','십','백','천'];const big=['','만','억','조','경'];
+  let s=String(num),res='',grp=[];
+  while(s.length>0){grp.unshift(s.slice(-4));s=s.slice(0,-4);}
+  grp.forEach((g,gi)=>{
+    let gv=Number(g),chunk='';
+    const gs=String(gv);
+    for(let i=0;i<gs.length;i++){const dig=Number(gs[i]);const pos=gs.length-1-i;if(dig!==0){chunk+=d[dig]+sm[pos];}}
+    if(gv!==0)res+=chunk+big[grp.length-1-gi];
+  });
+  return res?('일금 '+res+'원정'):'';
+}
+
+/* ============================ stepper ============================ */
+let step=1;const MAX=4;
+function showStep(n){
+  step=n;
+  $$('.panel').forEach(p=>p.classList.toggle('on',+p.dataset.p===n));
+  $$('.step').forEach(s=>{const v=+s.dataset.s;s.classList.toggle('active',v===n);s.classList.toggle('done',v<n);});
+  $('#btnPrev').style.display=n>1?'inline-flex':'none';
+  $('#btnNext').style.display=n<MAX?'inline-flex':'none';
+  $('#btnSubmit').style.display=n===MAX?'inline-flex':'none';
+  $('#scroll').scrollTop=0;
+  if(n===MAX)buildReview();
+  if(n===3)setTimeout(fitSig,60);
+}
+
+/* ============================ validation ============================ */
+function validateStep(n){
+  if(n===1){
+    let ok=true;
+    [['f_name','성명을 입력해 주세요'],['f_phone','휴대전화를 입력해 주세요']].forEach(([id,msg])=>{
+      const el=$('#'+id);if(!el.value.trim()){el.classList.add('bad');if(ok)toast(msg,true);ok=false;}else el.classList.remove('bad');
+    });
+    return ok;
+  }
+  if(n===2){
+    const a=Number(digits(val('f_amount')));
+    if(!a){$('#f_amount').classList.add('bad');toast('기부금액을 입력해 주세요',true);return false;}
+    $('#f_amount').classList.remove('bad');
+    if(radio('purpose')==='기타'&&!val('f_purpose_etc')){toast('기타 용도를 입력해 주세요',true);return false;}
+    return true;
+  }
+  if(n===3){
+    if(!$('#agree1').checked||!$('#agree2').checked){toast('필수 약관에 동의해 주세요',true);return false;}
+    if(sigEmpty()){toast('전자 서명을 입력해 주세요',true);return false;}
+    return true;
+  }
+  return true;
+}
+
+$('#btnNext').onclick=()=>{if(validateStep(step))showStep(Math.min(MAX,step+1));};
+$('#btnPrev').onclick=()=>showStep(Math.max(1,step-1));
+
+/* ============================ amount ============================ */
+const fAmt=$('#f_amount');
+function renderAmt(){const n=Number(digits(fAmt.value));fAmt.value=n?commas(n):'';$('#amtKor').textContent=koMoney(n);}
+fAmt.addEventListener('input',renderAmt);
+$$('#presets [data-add]').forEach(b=>b.onclick=()=>{const n=Number(digits(fAmt.value))+Number(b.dataset.add);fAmt.value=commas(n);renderAmt();});
+$('#amtClear').onclick=()=>{fAmt.value='';renderAmt();};
+
+/* purpose etc & paytype toggles */
+$$('input[name="purpose"]').forEach(r=>r.addEventListener('change',()=>{
+  $('#purposeEtcWrap').style.display=radio('purpose')==='기타'?'flex':'none';
+}));
+$$('input[name="paytype"]').forEach(r=>r.addEventListener('change',()=>{
+  const reg=radio('paytype')==='정기납';
+  $('#cycleWrap').style.display=reg?'flex':'none';
+  $('#monthsWrap').style.display=reg?'flex':'none';
+}));
+
+/* ============================ signature pad ============================ */
+const cv=$('#sig'),ctx=cv.getContext('2d');
+let drawing=false,strokes=[],cur=null,DPR=Math.min(window.devicePixelRatio||1,2.5);
+function fitSig(){
+  const r=cv.getBoundingClientRect();if(!r.width)return;
+  cv.width=r.width*DPR;cv.height=r.height*DPR;ctx.scale(DPR,DPR);
+  redraw();
+}
+function redraw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.lineWidth=2.6;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#0f2544';
+  strokes.forEach(st=>{if(st.length<2)return;ctx.beginPath();ctx.moveTo(st[0].x,st[0].y);for(let i=1;i<st.length;i++)ctx.lineTo(st[i].x,st[i].y);ctx.stroke();});
+  $('#sigbox').classList.toggle('inked',strokes.length>0);
+}
+function posOf(e){const r=cv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+function start(e){e.preventDefault();drawing=true;cur=[posOf(e)];strokes.push(cur);}
+function move(e){if(!drawing)return;e.preventDefault();cur.push(posOf(e));redraw();}
+function end(){drawing=false;}
+cv.addEventListener('pointerdown',start);cv.addEventListener('pointermove',move);
+window.addEventListener('pointerup',end);
+cv.addEventListener('touchstart',start,{passive:false});cv.addEventListener('touchmove',move,{passive:false});cv.addEventListener('touchend',end);
+$('#sigUndo').onclick=()=>{strokes.pop();redraw();};
+$('#sigClear').onclick=()=>{strokes=[];redraw();};
+function sigEmpty(){return strokes.length===0;}
+/* export trimmed transparent PNG */
+function sigPNG(){
+  if(sigEmpty())return null;
+  let minX=1e9,minY=1e9,maxX=0,maxY=0;
+  strokes.forEach(st=>st.forEach(p=>{minX=Math.min(minX,p.x);minY=Math.min(minY,p.y);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y);}));
+  const pad=14;minX=Math.max(0,minX-pad);minY=Math.max(0,minY-pad);maxX=maxX+pad;maxY=maxY+pad;
+  const w=(maxX-minX),h=(maxY-minY);
+  const o=document.createElement('canvas');o.width=w*DPR;o.height=h*DPR;
+  const oc=o.getContext('2d');oc.scale(DPR,DPR);oc.translate(-minX,-minY);
+  oc.lineWidth=2.6;oc.lineCap='round';oc.lineJoin='round';oc.strokeStyle='#0f2544';
+  strokes.forEach(st=>{if(st.length<2)return;oc.beginPath();oc.moveTo(st[0].x,st[0].y);for(let i=1;i<st.length;i++)oc.lineTo(st[i].x,st[i].y);oc.stroke();});
+  return o.toDataURL('image/png');
+}
+window.addEventListener('resize',()=>{if(step===3)fitSig();});
+
+/* ============================ collect data ============================ */
+function today(){const d=new Date();return{y:d.getFullYear(),m:d.getMonth()+1,d:d.getDate(),
+  iso:`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,
+  key:`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`};}
+function purposeText(){const p=radio('purpose');return p==='기타'?('기타 · '+val('f_purpose_etc')):p;}
+function payText(){
+  const t=radio('paytype');
+  if(t==='일시납')return `일시납 · ${radio('method')}`;
+  return `정기납(${$('#f_cycle').value} ${$('#f_months').value==='무기한'?'무기한':$('#f_months').value+'회'}) · ${radio('method')}`;
+}
+function collect(){
+  const t=today();const amt=Number(digits(val('f_amount')));
+  return {
+    id:'PL-'+t.key+'-'+Math.floor(1000+ (amt%9000)),
+    name:val('f_name')||'무기명', gubun:radio('gubun'), birth:val('f_birth'),
+    rel:radio('rel'), dept:val('f_dept'), sid:val('f_sid'),
+    phone:val('f_phone'), email:val('f_email'),
+    addr:(val('f_addr')+' '+val('f_addr2')).trim(),
+    amount:amt, amountKor:koMoney(amt),
+    purpose:purposeText(), pay:payText(), receipt:radio('receipt'),
+    date:t.iso, dateKey:t.key, dateKo:`${t.y}년 ${t.m}월 ${t.d}일`,
+    sig:sigPNG(),
+    filename:`${t.key}_${val('f_name')||'무기명'}_${amt}.pdf`
+  };
+}
+
+/* ============================ review ============================ */
+function rrow(k,v,cls){return `<div class="rrow"><div class="rk">${k}</div><div class="rv ${cls||''}">${v||'—'}</div></div>`;}
+function buildReview(){
+  const d=collect();
+  $('#review').innerHTML=
+    rrow('구분',d.gubun)+
+    rrow('성명',d.name)+
+    rrow('소속',[d.rel,d.dept,d.sid].filter(Boolean).join(' · '))+
+    rrow('연락처',d.phone)+
+    rrow('이메일',d.email)+
+    rrow('주소',d.addr)+
+    rrow('기부금액',commas(d.amount)+'원 <span style="color:var(--muted);font-weight:600;font-size:13px">('+d.amountKor+')</span>','amt')+
+    rrow('기부용도',d.purpose)+
+    rrow('납부방법',d.pay)+
+    rrow('기부금영수증',d.receipt)+
+    rrow('약정일자',d.dateKo)+
+    (d.sig?`<div class="rsig"><div class="rk" style="margin-bottom:8px">전자서명</div><img src="${d.sig}"></div>`:'');
+  $('#fnamePrev').textContent=d.filename;
+}
+
+/* ============================ PDF template ============================ */
+function fillPdf(d){
+  const gv=(x)=>x||'&nbsp;';
+  $('#pdfPage').innerHTML=`
+    <div class="p-head">
+      <div class="p-org">HANUL UNIVERSITY DEVELOPMENT FUND</div>
+      <div class="p-title">기 부 약 정 서</div>
+      <div class="p-sub">한 울 대 학 교 발 전 기 금</div>
+    </div>
+    <div class="p-stamp">한울대학교<br>발전기금</div>
+    <div class="p-intro">본인은 한울대학교의 교육·연구 발전과 인재 양성이라는 설립 이념에 뜻을 같이하여, 아래와 같이 발전기금 기부를 약정합니다.</div>
+
+    <div class="p-sec">기부자 정보</div>
+    <table class="p-tbl">
+      <tr><td class="k">구분</td><td class="v">${gv(d.gubun)}</td><td class="k">성명</td><td class="v">${gv(d.name)}</td></tr>
+      <tr><td class="k">생년월일</td><td class="v">${gv(d.birth)}</td><td class="k">소속</td><td class="v">${gv([d.rel,d.dept,d.sid].filter(Boolean).join(' / '))}</td></tr>
+      <tr><td class="k">휴대전화</td><td class="v">${gv(d.phone)}</td><td class="k">이메일</td><td class="v">${gv(d.email)}</td></tr>
+      <tr><td class="k">주소</td><td class="v" colspan="3">${gv(d.addr)}</td></tr>
+    </table>
+
+    <div class="p-sec">기부 약정 내용</div>
+    <table class="p-tbl">
+      <tr><td class="k">기부금액</td><td class="v" colspan="3"><span class="p-amt">${commas(d.amount)} 원</span><small>${gv(d.amountKor)}</small></td></tr>
+      <tr><td class="k">기부용도</td><td class="v">${gv(d.purpose)}</td><td class="k">영수증</td><td class="v">${gv(d.receipt)}</td></tr>
+      <tr><td class="k">납부방법</td><td class="v" colspan="3">${gv(d.pay)}</td></tr>
+    </table>
+
+    <div class="p-pledge">
+      본인은 위와 같이 <b>${gv(d.name)}</b>의 명의로 <b>일금 ${commas(d.amount)}원정</b>을<br>
+      한울대학교 발전기금으로 기부할 것을 약정하며, 위 기재 사항이 사실과 다름이 없음을 확인합니다.
+    </div>
+
+    <div class="p-sign">
+      <div class="p-date">${d.dateKo}</div>
+      <div class="p-who">
+        약정자
+        <div class="p-line">
+          <span class="p-name">${gv(d.name)}</span>
+          ${d.sig?`<img class="p-sig" src="${d.sig}">`:'<span style="width:120px"></span>'}
+          <span style="font-size:13px;color:#666">(서명)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-foot">한울대학교 대외협력처 발전기금팀 · TEL 02-000-0000 · fund@hanul.ac.kr · 문서번호 ${d.id}</div>
+  `;
+}
+
+async function makePDF(d){
+  fillPdf(d);
+  await new Promise(r=>setTimeout(r,120)); // let images/layout settle
+  const page=$('#pdfPage');
+  const canvas=await html2canvas(page,{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false,windowWidth:794});
+  const img=canvas.toDataURL('image/jpeg',0.92);
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF('p','mm','a4');
+  const pw=210,ph=297;
+  const ih=canvas.height*pw/canvas.width;
+  pdf.addImage(img,'JPEG',0,0,pw,Math.min(ih,ph));
+  return pdf;
+}
+
+/* ============================ storage (mock backend) ============================ */
+const STORE='hanul_pledges';
+function saveRecord(d,pdfDataUri){
+  const list=JSON.parse(localStorage.getItem(STORE)||'[]');
+  list.unshift({
+    id:d.id, filename:d.filename, name:d.name, gubun:d.gubun, rel:d.rel,
+    amount:d.amount, purpose:d.purpose, pay:d.pay, phone:d.phone, email:d.email,
+    receipt:d.receipt, date:d.date, dateKo:d.dateKo, createdAt:new Date().toISOString(),
+    pdf:pdfDataUri
+  });
+  localStorage.setItem(STORE,JSON.stringify(list));
+}
+
+/* ============================ submit ============================ */
+let lastPdf=null,lastData=null;
+$('#btnSubmit').onclick=async()=>{
+  if(!validateStep(3)){showStep(3);return;}
+  const d=collect();
+  $('#genOv').classList.add('on');
+  try{
+    const pdf=await makePDF(d);
+    const uri=pdf.output('datauristring');
+    saveRecord(d,uri);
+    lastPdf=pdf;lastData=d;
+    pdf.save(d.filename);
+    $('#doneFname').textContent=d.filename;
+    $('#genOv').classList.remove('on');
+    $('#doneOv').classList.add('on');
+  }catch(err){
+    console.error(err);
+    $('#genOv').classList.remove('on');
+    toast('PDF 생성 중 오류가 발생했습니다',true);
+  }
+};
+$('#doneDownload').onclick=()=>{if(lastPdf&&lastData)lastPdf.save(lastData.filename);};
+$('#doneNew').onclick=()=>location.reload();
+
+/* init */
+renderAmt();showStep(1);
+</script>
+</body>
+</html>
