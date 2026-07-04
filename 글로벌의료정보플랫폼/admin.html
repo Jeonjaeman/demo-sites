@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUMIÈRE · 최고 관리자 콘솔</title>
+<meta name="description" content="LUMIÈRE 최고 관리자(Super Admin) 콘솔 데모 — 입점 병원 계정 관리, 콘텐츠 발행 승인, 예약 통합 관리, 회원 관리. 한국어/일본어 지원." />
+<meta name="theme-color" content="#E85D9E" />
+<link rel="stylesheet" href="./assets/style.css" />
+<style>
+/* ===== admin-only helpers (colors ONLY from existing tokens) ===== */
+.admin-main{max-width:var(--maxw);margin:0 auto;padding:26px 24px 60px}
+
+/* login */
+.login-wrap{min-height:calc(100vh - 220px);display:grid;place-items:center;padding:40px 20px}
+.login-card{width:100%;max-width:430px;padding:clamp(28px,4vw,40px);border-radius:var(--radius-lg)}
+.login-card .logo-badge{width:56px;height:56px;border-radius:16px;background:var(--grad);display:grid;place-items:center;
+  color:#fff;font-family:"Poppins";font-weight:800;font-size:26px;box-shadow:var(--glow-rose);margin:0 auto 18px}
+.login-card h1{font-size:24px;font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-.02em}
+.login-card .sub{text-align:center;color:var(--muted);font-size:14px;margin:0 0 26px}
+.demo-hint{margin-top:16px;padding:11px 14px;border-radius:var(--radius-sm);background:rgba(232,93,158,.07);
+  border:1px dashed rgba(232,93,158,.3);font-size:12.5px;color:var(--ink-2);text-align:center}
+.demo-hint b{color:var(--rose-d);font-family:"Poppins"}
+
+/* dashboard shell */
+.dash-top{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}
+.dash-top .title h1{font-size:clamp(24px,3.2vw,32px);font-weight:800;letter-spacing:-.02em;margin:0}
+.dash-top .title p{color:var(--muted);font-size:14px;margin:4px 0 0}
+.admin-chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:var(--radius-pill);
+  background:rgba(255,255,255,.7);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink-2);box-shadow:var(--shadow-sm)}
+.admin-chip .av{width:26px;height:26px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800}
+
+.tabbar{margin-bottom:26px}
+.panel{display:none;animation:fade .3s var(--ease)}
+.panel.on{display:block}
+
+/* kpi */
+.stat.kpi{cursor:default}
+.stat .ic.rose{background:rgba(232,93,158,.12);color:var(--rose-d)}
+.stat .ic.lilac{background:rgba(139,92,246,.12);color:var(--violet)}
+.stat .ic.warm{background:var(--grad-soft)}
+.stat .ic.blue{background:#E6EDFB;color:#3A6BD6}
+
+/* chart (CSS bars) */
+.chart-card{padding:24px;border-radius:var(--radius)}
+.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.chart-head b{font-size:16px;font-weight:800}
+.chart-head .legend{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.chart-head .legend i{width:10px;height:10px;border-radius:3px;background:var(--grad);display:inline-block}
+.bars{display:flex;align-items:flex-end;gap:10px;height:180px;padding-top:10px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end}
+.bar-col .bar{width:100%;max-width:46px;border-radius:10px 10px 4px 4px;background:var(--grad);
+  box-shadow:var(--glow-rose);transition:height 1s var(--ease);position:relative}
+.bar-col .bar .v{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:800;color:var(--rose-d);font-family:"Poppins";white-space:nowrap}
+.bar-col .dow{font-size:12px;font-weight:700;color:var(--muted)}
+
+/* pending approvals mini list */
+.mini-list{padding:22px;border-radius:var(--radius);height:100%}
+.mini-list h4{margin:0 0 4px;font-size:16px;font-weight:800}
+.mini-list .mh-sub{color:var(--muted);font-size:12.5px;margin:0 0 16px}
+.mini-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.mini-row:first-of-type{border-top:none}
+.mini-row .mi{width:36px;height:36px;border-radius:11px;flex:none;display:grid;place-items:center;font-size:16px;background:var(--grad-soft)}
+.mini-row .mtxt{flex:1;min-width:0}
+.mini-row .mtxt b{font-size:14px;font-weight:700;display:block;line-height:1.3}
+.mini-row .mtxt small{color:var(--muted);font-size:12px}
+
+/* toolbar over tables */
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.panel-head h2{font-size:20px;font-weight:800;margin:0;letter-spacing:-.01em}
+.panel-head .ph-sub{color:var(--muted);font-size:13px;margin:3px 0 0}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+
+/* table extras */
+.tbl td .cname{font-weight:700;color:var(--ink)}
+.tbl .rating{font-size:13px}
+.tbl-actions{display:inline-flex;gap:6px;flex-wrap:wrap}
+.mini-btn{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:var(--radius-pill);
+  border:1px solid var(--line-2);background:#fff;color:var(--ink-2);transition:.18s}
+.mini-btn:hover{border-color:var(--rose);color:var(--rose-d)}
+.mini-btn.solid{background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--glow-rose)}
+.mini-btn.solid:hover{filter:brightness(1.05);color:#fff}
+.mini-btn.danger:hover{border-color:#D14343;color:#D14343}
+.tbl tr.blocked td{opacity:.5}
+.tbl tr.blocked td .tbl-actions{opacity:1}
+
+/* status select inline */
+.st-select{font-size:12.5px;font-weight:700;padding:7px 30px 7px 12px;border-radius:var(--radius-pill);
+  border:1.5px solid var(--line-2);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23948AA0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 11px center;
+  color:var(--ink-2);font-family:inherit;-webkit-appearance:none;appearance:none;cursor:pointer;transition:.18s}
+.st-select:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,158,.12)}
+
+/* content approval cards */
+.req-card{display:flex;align-items:flex-start;gap:16px;padding:20px 22px;border-radius:var(--radius);
+  background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:.25s var(--ease)}
+.req-card+.req-card{margin-top:14px}
+.req-card .r-ic{width:44px;height:44px;border-radius:13px;flex:none;display:grid;place-items:center;font-size:20px;background:var(--grad-soft)}
+.req-card .r-body{flex:1;min-width:0}
+.req-card .r-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.req-card .r-top b{font-size:15.5px;font-weight:800}
+.req-card .r-summary{color:var(--ink-2);font-size:14px;margin:0 0 4px}
+.req-card .r-date{color:var(--faint);font-size:12.5px;font-family:"Poppins"}
+.req-card .r-actions{display:flex;gap:8px;flex:none;align-self:center}
+.req-card.processed{opacity:.62;background:var(--blush)}
+.req-card.processed .r-actions{display:none}
+@media(max-width:640px){.req-card{flex-wrap:wrap}.req-card .r-actions{width:100%}}
+
+/* empty state */
+.empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:14px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:400;
+  background:var(--ink);color:#fff;padding:13px 22px;border-radius:var(--radius-pill);font-size:14px;font-weight:600;
+  box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.3s var(--ease);max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* checkbox row in modal */
+.chk-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--radius-sm);
+  background:rgba(150,90,150,.05);border:1px solid var(--line);margin-bottom:9px;cursor:pointer;transition:.15s}
+.chk-row:hover{border-color:var(--line-2)}
+.chk-row input{width:18px;height:18px;accent-color:var(--rose);flex:none}
+.chk-row .ct{font-size:13.5px}
+.chk-row .ct b{font-weight:700;display:block;font-size:13.5px}
+.chk-row .ct small{color:var(--muted);font-size:12px}
+
+.modal-back .modal{position:relative}
+.grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.grid-2col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header class="site-header" id="top">
+  <div class="bar">
+    <a class="brand" href="./index.html">
+      <span class="mark">L</span>
+      <span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span>
+    </a>
+    <nav class="nav">
+      <a href="#" data-panel="dash" data-ko="대시보드" data-ja="ダッシュボード">대시보드</a>
+      <a href="#" data-panel="clinics" data-ko="입점 병원" data-ja="提携クリニック">입점 병원</a>
+      <a href="#" data-panel="bookings" data-ko="예약 관리" data-ja="予約管理">예약 관리</a>
+      <a href="#" data-panel="members" data-ko="회원 관리" data-ja="会員管理">회원 관리</a>
+      <a href="#" data-panel="content" data-ko="콘텐츠 승인" data-ja="コンテンツ承認">콘텐츠 승인</a>
+    </nav>
+    <div class="header-tools">
+      <div class="lang-toggle">
+        <button data-l="ko">KOR</button>
+        <button data-l="ja">JPN</button>
+      </div>
+      <button class="btn btn-ghost" id="logoutBtn" style="padding:11px 18px;font-size:14px" data-ko="로그아웃" data-ja="ログアウト">로그아웃</button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== LOGIN VIEW ===================== -->
+<section id="loginView">
+  <div class="login-wrap">
+    <div class="glass login-card reveal-s in">
+      <div class="logo-badge">L</div>
+      <h1 data-ko="최고 관리자 콘솔" data-ja="スーパー管理者コンソール">최고 관리자 콘솔</h1>
+      <p class="sub" data-ko="LUMIÈRE 플랫폼 통합 운영 시스템" data-ja="LUMIÈRE プラットフォーム統合運用システム">LUMIÈRE 플랫폼 통합 운영 시스템</p>
+      <form id="loginForm" autocomplete="off">
+        <div class="field">
+          <label data-ko="관리자 ID" data-ja="管理者ID">관리자 ID</label>
+          <input class="input" id="loginId" type="text" value="admin" data-ko-ph="관리자 ID를 입력하세요" data-ja-ph="管理者IDを入力" />
+        </div>
+        <div class="field">
+          <label data-ko="비밀번호" data-ja="パスワード">비밀번호</label>
+          <input class="input" id="loginPw" type="password" value="1234" data-ko-ph="비밀번호" data-ja-ph="パスワード" />
+        </div>
+        <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:6px" data-ko="로그인" data-ja="ログイン">로그인</button>
+      </form>
+      <div class="demo-hint" data-ko="데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 입력해도 로그인됩니다." data-ja="デモアカウント · <b>admin</b> / <b>1234</b> — 任意の値でもログインできます。">데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 입력해도 로그인됩니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DASHBOARD VIEW ===================== -->
+<main id="dashView" class="admin-main hide">
+
+  <div class="dash-top">
+    <div class="title">
+      <h1 id="panelTitle" data-ko="대시보드" data-ja="ダッシュボード">대시보드</h1>
+      <p id="panelDesc" data-ko="플랫폼 전체 운영 현황을 한눈에 확인합니다." data-ja="プラットフォーム全体の運用状況を一目で確認します。">플랫폼 전체 운영 현황을 한눈에 확인합니다.</p>
+    </div>
+    <div class="admin-chip"><span class="av">A</span><span data-ko="최고 관리자 · admin" data-ja="スーパー管理者 · admin">최고 관리자 · admin</span></div>
+  </div>
+
+  <!-- tab bar -->
+  <div class="tabbar">
+    <div class="seg" id="tabSeg">
+      <button class="on" data-panel="dash" data-ko="대시보드" data-ja="ダッシュボード">대시보드</button>
+      <button data-panel="clinics" data-ko="입점 병원 관리" data-ja="提携クリニック管理">입점 병원 관리</button>
+      <button data-panel="bookings" data-ko="예약 통합 관리" data-ja="予約統合管理">예약 통합 관리</button>
+      <button data-panel="members" data-ko="회원 관리" data-ja="会員管理">회원 관리</button>
+      <button data-panel="content" data-ko="콘텐츠 승인" data-ja="コンテンツ承認">콘텐츠 승인</button>
+    </div>
+  </div>
+
+  <!-- ============ PANEL: DASHBOARD ============ -->
+  <section class="panel on" id="panel-dash">
+    <div class="grid g-4" style="margin-bottom:22px">
+      <div class="stat kpi reveal in">
+        <div class="ic rose">🏥</div>
+        <div class="n"><span data-count="128">0</span></div>
+        <div class="l" data-ko="입점 병원" data-ja="提携クリニック">입점 병원</div>
+        <div class="d up">▲ 6 <span data-ko="이번 달" data-ja="今月">이번 달</span></div>
+      </div>
+      <div class="stat kpi reveal in">
+        <div class="ic lilac">📋</div>
+        <div class="n"><span data-count="12840">0</span></div>
+        <div class="l" data-ko="누적 예약" data-ja="累計予約">누적 예약</div>
+        <div class="d up">▲ 8.2% <span data-ko="전월 대비" data-ja="前月比">전월 대비</span></div>
+      </div>
+      <div class="stat kpi reveal in">
+        <div class="ic warm">👥</div>
+        <div class="n"><span data-count="356">0</span></div>
+        <div class="l" data-ko="신규 회원 (이번 달)" data-ja="新規会員 (今月)">신규 회원 (이번 달)</div>
+        <div class="d up">▲ 12.4% <span data-ko="전월 대비" data-ja="前月比">전월 대비</span></div>
+      </div>
+      <div class="stat kpi reveal in">
+        <div class="ic blue">📅</div>
+        <div class="n"><span data-count="47">0</span></div>
+        <div class="l" data-ko="오늘 예약" data-ja="本日の予約">오늘 예약</div>
+        <div class="d up">▲ 5 <span data-ko="어제 대비" data-ja="昨日比">어제 대비</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:1.55fr 1fr;gap:22px">
+      <div class="glass chart-card">
+        <div class="chart-head">
+          <b data-ko="최근 7일 예약 접수" data-ja="直近7日間の予約受付">최근 7일 예약 접수</b>
+          <span class="legend"><i></i><span data-ko="일별 예약 건수" data-ja="日別予約件数">일별 예약 건수</span></span>
+        </div>
+        <div class="bars" id="chartBars"></div>
+      </div>
+
+      <div class="glass mini-list">
+        <h4 data-ko="대기중 승인 요청" data-ja="承認待ちリクエスト">대기중 승인 요청</h4>
+        <p class="mh-sub" data-ko="병원이 요청한 콘텐츠 발행 승인 대기 건" data-ja="クリニックからのコンテンツ発行承認待ち">병원이 요청한 콘텐츠 발행 승인 대기 건</p>
+        <div id="pendingMini"></div>
+        <button class="btn btn-soft btn-block" style="margin-top:16px" data-panel="content" data-ko="콘텐츠 승인으로 이동 →" data-ja="コンテンツ承認へ →">콘텐츠 승인으로 이동 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PANEL: CLINICS ============ -->
+  <section class="panel" id="panel-clinics">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="입점 병원 관리" data-ja="提携クリニック管理">입점 병원 관리</h2>
+        <p class="ph-sub" data-ko="입점 병원 계정 생성 및 운영 상태를 관리합니다." data-ja="提携クリニックのアカウント作成と運用状態を管理します。">입점 병원 계정 생성 및 운영 상태를 관리합니다.</p>
+      </div>
+      <button class="btn btn-primary" id="newClinicBtn" data-ko="＋ 신규 병원 계정 생성" data-ja="＋ 新規クリニックアカウント作成">＋ 신규 병원 계정 생성</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th data-ko="병원명" data-ja="クリニック名">병원명</th>
+            <th data-ko="진료과" data-ja="診療科">진료과</th>
+            <th data-ko="지역" data-ja="エリア">지역</th>
+            <th data-ko="평점" data-ja="評価">평점</th>
+            <th data-ko="상태" data-ja="状態">상태</th>
+            <th data-ko="관리" data-ja="管理">관리</th>
+          </tr>
+        </thead>
+        <tbody id="clinicRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PANEL: BOOKINGS ============ -->
+  <section class="panel" id="panel-bookings">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="예약 통합 관리" data-ja="予約統合管理">예약 통합 관리</h2>
+        <p class="ph-sub" data-ko="플랫폼 전체 예약 접수를 조회하고 상태를 변경합니다." data-ja="プラットフォーム全体の予約受付を照会し状態を変更します。">플랫폼 전체 예약 접수를 조회하고 상태를 변경합니다.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="bookingFilter">
+        <button class="on" data-st="all" data-ko="전체" data-ja="すべて">전체</button>
+        <button data-st="wait" data-ko="예약대기" data-ja="予約待ち">예약대기</button>
+        <button data-st="ok" data-ko="예약확정" data-ja="予約確定">예약확정</button>
+        <button data-st="done" data-ko="방문완료" data-ja="来院済み">방문완료</button>
+        <button data-st="cancel" data-ko="취소" data-ja="キャンセル">취소</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th data-ko="예약번호" data-ja="予約番号">예약번호</th>
+            <th data-ko="병원" data-ja="クリニック">병원</th>
+            <th data-ko="환자" data-ja="患者">환자</th>
+            <th data-ko="시술" data-ja="施術">시술</th>
+            <th data-ko="희망일시" data-ja="希望日時">희망일시</th>
+            <th data-ko="상태 변경" data-ja="状態変更">상태 변경</th>
+          </tr>
+        </thead>
+        <tbody id="bookingRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PANEL: MEMBERS ============ -->
+  <section class="panel" id="panel-members">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="회원 관리" data-ja="会員管理">회원 관리</h2>
+        <p class="ph-sub" data-ko="가입 사용자 정보를 조회하고 차단/해제를 관리합니다." data-ja="登録ユーザー情報を照会し、ブロック/解除を管理します。">가입 사용자 정보를 조회하고 차단/해제를 관리합니다.</p>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th data-ko="회원 ID" data-ja="会員ID">회원 ID</th>
+            <th data-ko="가입일" data-ja="登録日">가입일</th>
+            <th data-ko="국가" data-ja="国">국가</th>
+            <th data-ko="예약 수" data-ja="予約数">예약 수</th>
+            <th data-ko="상태" data-ja="状態">상태</th>
+            <th data-ko="관리" data-ja="管理">관리</th>
+          </tr>
+        </thead>
+        <tbody id="memberRows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ PANEL: CONTENT ============ -->
+  <section class="panel" id="panel-content">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="콘텐츠 발행 승인" data-ja="コンテンツ発行承認">콘텐츠 발행 승인</h2>
+        <p class="ph-sub" data-ko="입점 병원이 요청한 정보·시술·후기 수정 사항을 검토하고 발행을 승인합니다." data-ja="提携クリニックが要請した情報・施術・口コミの修正事項を確認し発行を承認します。">입점 병원이 요청한 정보·시술·후기 수정 사항을 검토하고 발행을 승인합니다.</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <div class="seg" id="contentFilter">
+        <button class="on" data-cf="all" data-ko="전체" data-ja="すべて">전체</button>
+        <button data-cf="pending" data-ko="대기중" data-ja="待機中">대기중</button>
+        <button data-cf="processed" data-ko="처리완료" data-ja="処理済み">처리완료</button>
+      </div>
+    </div>
+    <div id="contentList"></div>
+  </section>
+
+</main>
+
+<!-- ===================== NEW CLINIC MODAL ===================== -->
+<div class="modal-back" id="clinicModal">
+  <div class="modal">
+    <button class="close" id="clinicModalClose" aria-label="close">✕</button>
+    <h3 data-ko="신규 병원 계정 생성" data-ja="新規クリニックアカウント作成">신규 병원 계정 생성</h3>
+    <p class="muted" style="margin:0 0 20px;font-size:14px" data-ko="입점 병원의 기본 정보와 관리자 계정을 생성합니다." data-ja="提携クリニックの基本情報と管理者アカウントを作成します。">입점 병원의 기본 정보와 관리자 계정을 생성합니다.</p>
+    <form id="clinicForm">
+      <div class="field">
+        <label data-ko="병원명" data-ja="クリニック名">병원명</label>
+        <input class="input" id="ncName" required data-ko-ph="예: 루미에르 성형외과" data-ja-ph="例: ルミエール美容外科" />
+      </div>
+      <div class="grid-2col">
+        <div class="field">
+          <label data-ko="진료과" data-ja="診療科">진료과</label>
+          <select class="input" id="ncCat">
+            <option value="plastic" data-ko="성형외과" data-ja="美容外科">성형외과</option>
+            <option value="dental" data-ko="치과" data-ja="歯科">치과</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-ko="지역" data-ja="エリア">지역</label>
+          <select class="input" id="ncArea"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label data-ko="계정 ID" data-ja="アカウントID">계정 ID</label>
+        <input class="input" id="ncAccount" required data-ko-ph="예: lumiere_ps" data-ja-ph="例: lumiere_ps" />
+      </div>
+      <label style="font-size:13.5px;font-weight:700;color:var(--ink-2);display:block;margin:4px 0 9px" data-ko="관리자 권한 부여" data-ja="管理者権限の付与">관리자 권한 부여</label>
+      <label class="chk-row">
+        <input type="checkbox" id="ncPermInfo" checked />
+        <span class="ct"><b data-ko="병원 정보 관리" data-ja="クリニック情報管理">병원 정보 관리</b><small data-ko="소개·진료시간·태그 수정 요청" data-ja="紹介・診療時間・タグ修正要請">소개·진료시간·태그 수정 요청</small></span>
+      </label>
+      <label class="chk-row">
+        <input type="checkbox" id="ncPermProc" checked />
+        <span class="ct"><b data-ko="시술 정보 관리" data-ja="施術情報管理">시술 정보 관리</b><small data-ko="시술·가격 등록 요청" data-ja="施術・価格の登録要請">시술·가격 등록 요청</small></span>
+      </label>
+      <label class="chk-row">
+        <input type="checkbox" id="ncPermReview" />
+        <span class="ct"><b data-ko="후기 관리" data-ja="口コミ管理">후기 관리</b><small data-ko="후기 답변·신고 처리" data-ja="口コミ返信・通報処理">후기 답변·신고 처리</small></span>
+      </label>
+      <div class="stack" style="display:flex;gap:10px;margin-top:22px">
+        <button type="button" class="btn btn-ghost" id="clinicCancel" style="flex:1" data-ko="취소" data-ja="キャンセル">취소</button>
+        <button type="submit" class="btn btn-primary" style="flex:2" data-ko="계정 생성 (승인대기)" data-ja="アカウント作成 (承認待ち)">계정 생성 (승인대기)</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="in">
+    <div>
+      <div class="brand"><span class="mark">L</span><span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span></div>
+      <p data-ko="한·일 프리미엄 성형·치과 정보 플랫폼 · 최고 관리자 콘솔 데모" data-ja="韓日プレミアム美容・歯科情報プラットフォーム · スーパー管理者コンソールデモ">한·일 프리미엄 성형·치과 정보 플랫폼 · 최고 관리자 콘솔 데모</p>
+    </div>
+    <div class="flinks">
+      <a href="./index.html" data-ko="메인 사이트" data-ja="メインサイト">메인 사이트</a>
+      <a href="./index.html#featured" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="../index.html">← 데모 포털</a>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script src="./assets/data.js"></script>
+<script src="./assets/i18n.js"></script>
+<script>
+/* =========================================================
+   LUMIÈRE · 최고 관리자 콘솔 — 인터랙션 (vanilla)
+   ========================================================= */
+(function(){
+  const D = window.LUMIERE_DATA;
+  const T = { ko:{}, ja:{} };
+  const L = () => I18N.getLang();
+
+  /* ---- inline dictionary for dynamically rendered content ---- */
+  const DICT = {
+    // status labels
+    st:{ wait:{ko:"예약대기",ja:"予約待ち"}, ok:{ko:"예약확정",ja:"予約確定"}, done:{ko:"방문완료",ja:"来院済み"}, cancel:{ko:"취소",ja:"キャンセル"} },
+    // clinic operating status
+    op:{ live:{ko:"운영중",ja:"運営中"}, pending:{ko:"승인대기",ja:"承認待ち"} },
+    // member status
+    mem:{ ok:{ko:"정상",ja:"正常"}, blocked:{ko:"차단",ja:"ブロック"} },
+    // content kinds
+    kind:{ info:{ko:"병원정보",ja:"クリニック情報"}, proc:{ko:"시술",ja:"施術"}, review:{ko:"후기",ja:"口コミ"} },
+    ct:{ processed:{ko:"처리완료",ja:"処理済み"}, rejected:{ko:"반려됨",ja:"却下"} },
+    approve:{ko:"승인",ja:"承認"}, reject:{ko:"반려",ja:"却下"},
+    toggleApprove:{ko:"승인",ja:"承認"}, toggleRevert:{ko:"대기 전환",ja:"待機へ"},
+    block:{ko:"차단",ja:"ブロック"}, unblock:{ko:"차단 해제",ja:"解除"},
+    manage:{ko:"관리",ja:"管理"}, cnt:{ko:"건",ja:"件"},
+    toast:{
+      login:{ko:"로그인되었습니다.",ja:"ログインしました。"},
+      logout:{ko:"로그아웃되었습니다.",ja:"ログアウトしました。"},
+      clinicAdd:{ko:"신규 병원 계정이 생성되었습니다 (승인대기).",ja:"新規クリニックアカウントを作成しました (承認待ち)。"},
+      clinicApproved:{ko:"병원이 운영중으로 승인되었습니다.",ja:"クリニックを運営中に承認しました。"},
+      clinicPending:{ko:"병원이 승인대기로 전환되었습니다.",ja:"クリニックを承認待ちに変更しました。"},
+      bookingChanged:{ko:"예약 상태가 변경되었습니다.",ja:"予約状態を変更しました。"},
+      blocked:{ko:"회원이 차단되었습니다.",ja:"会員をブロックしました。"},
+      unblocked:{ko:"회원 차단이 해제되었습니다.",ja:"会員のブロックを解除しました。"},
+      approved:{ko:"콘텐츠가 발행 승인되었습니다.",ja:"コンテンツを発行承認しました。"},
+      rejected:{ko:"콘텐츠 요청이 반려되었습니다.",ja:"コンテンツ要請を却下しました。"}
+    }
+  };
+  const tx = (obj) => (obj && obj[L()]) || (obj && obj.ko) || "";
+
+  /* ---- badge helper: maps status -> class + label ---- */
+  function badge(kind, key){
+    const map = {
+      st:{ wait:"wait", ok:"ok", done:"done", cancel:"cancel" },
+      op:{ live:"ok", pending:"wait" },
+      mem:{ ok:"ok", blocked:"cancel" },
+      ct:{ processed:"done", rejected:"cancel" }
+    };
+    const cls = map[kind][key];
+    const label = tx(DICT[kind][key]);
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  /* ---- toast ---- */
+  const toastEl = document.getElementById('toast');
+  let toastTimer;
+  function toast(obj){
+    toastEl.textContent = tx(obj);
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 2400);
+  }
+
+  /* =========================================================
+     STATE
+     ========================================================= */
+  // clinics (seed from LUMIERE_DATA, all 운영중; new ones get 승인대기)
+  let clinics = D.CLINICS.map(c=>({
+    id:c.id, cat:c.cat, area:c.area,
+    name:{ko:c.name.ko, ja:c.name.ja},
+    area_full:{ko:c.area_full.ko, ja:c.area_full.ja},
+    rating:c.rating, status:"live"
+  }));
+
+  // 7-day booking chart data (mon..today)
+  const chartData = [
+    { d:{ko:"월",ja:"月"}, v:38 },
+    { d:{ko:"화",ja:"火"}, v:52 },
+    { d:{ko:"수",ja:"水"}, v:44 },
+    { d:{ko:"목",ja:"木"}, v:61 },
+    { d:{ko:"금",ja:"金"}, v:73 },
+    { d:{ko:"토",ja:"土"}, v:55 },
+    { d:{ko:"일",ja:"日"}, v:47 }
+  ];
+
+  // platform-wide bookings (patient names masked)
+  const procMap = {
+    doublefold:{ko:"자연유착 쌍꺼풀",ja:"自然癒着 二重"},
+    rhino:{ko:"코 재수술",ja:"鼻 再手術"},
+    contour:{ko:"안면윤곽 3종",ja:"輪郭 3種"},
+    align:{ko:"투명교정",ja:"マウスピース矯正"},
+    implant:{ko:"임플란트",ja:"インプラント"},
+    ulthera:{ko:"울쎄라 리프팅",ja:"ウルセラ リフト"},
+    whitening:{ko:"전문가 미백",ja:"オフィスホワイトニング"},
+    cheek:{ko:"광대 축소",ja:"頬骨縮小"},
+    lipo:{ko:"복부 지방흡입",ja:"腹部 脂肪吸引"},
+    laminate:{ko:"올세라믹 라미네이트",ja:"オールセラミック ラミネート"}
+  };
+  let bookings = [
+    { no:"BK-260704-01", clinic:"raon",      patient:"김*연", country:"kr", proc:"doublefold", when:"2026.07.09 11:00", status:"wait" },
+    { no:"BK-260704-02", clinic:"puredent",  patient:"佐藤 *", country:"jp", proc:"align",      when:"2026.07.09 14:30", status:"ok" },
+    { no:"BK-260703-08", clinic:"aurora",    patient:"이*희", country:"kr", proc:"ulthera",    when:"2026.07.08 16:00", status:"ok" },
+    { no:"BK-260703-05", clinic:"beautyline",patient:"박*수", country:"kr", proc:"cheek",      when:"2026.07.11 10:30", status:"wait" },
+    { no:"BK-260703-02", clinic:"whitebell", patient:"田中 *", country:"jp", proc:"whitening",  when:"2026.07.07 13:00", status:"done" },
+    { no:"BK-260702-09", clinic:"smileplus", patient:"정*민", country:"kr", proc:"implant",    when:"2026.07.10 09:30", status:"wait" },
+    { no:"BK-260702-04", clinic:"misojium",  patient:"최*아", country:"kr", proc:"lipo",       when:"2026.07.12 15:00", status:"ok" },
+    { no:"BK-260702-01", clinic:"raon",      patient:"鈴木 *", country:"jp", proc:"rhino",      when:"2026.07.06 11:30", status:"cancel" },
+    { no:"BK-260701-07", clinic:"denal",     patient:"한*결", country:"kr", proc:"implant",    when:"2026.07.05 10:00", status:"done" },
+    { no:"BK-260701-03", clinic:"puredent",  patient:"高橋 *", country:"jp", proc:"laminate",   when:"2026.07.13 17:00", status:"wait" }
+  ];
+
+  // members (IDs masked)
+  let members = [
+    { id:"kim****@naver.com",  join:"2026.06.28", country:"kr", bookings:3, status:"ok" },
+    { id:"yuki****@gmail.com", join:"2026.06.25", country:"jp", bookings:1, status:"ok" },
+    { id:"lee****@daum.net",   join:"2026.06.20", country:"kr", bookings:5, status:"ok" },
+    { id:"sato****@icloud.com",join:"2026.06.18", country:"jp", bookings:2, status:"blocked" },
+    { id:"park****@gmail.com", join:"2026.06.14", country:"kr", bookings:0, status:"ok" },
+    { id:"aoi****@yahoo.co.jp",join:"2026.06.10", country:"jp", bookings:4, status:"ok" },
+    { id:"choi****@naver.com", join:"2026.06.05", country:"kr", bookings:1, status:"ok" },
+    { id:"tanaka****@au.com",  join:"2026.05.30", country:"jp", bookings:2, status:"blocked" }
+  ];
+
+  // content edit requests submitted by clinics
+  let contentReqs = [
+    { id:1, clinic:"raon",      kind:"info",   summary:{ko:"병원 소개 문구 및 진료시간 변경 (토요일 야간진료 추가)",ja:"クリニック紹介文と診療時間の変更 (土曜夜間診療を追加)"}, date:"2026.07.04", status:"pending" },
+    { id:2, clinic:"aurora",    kind:"proc",   summary:{ko:"신규 시술 '리쥬란 힐러' 등록 요청 (가격 30만원)",ja:"新規施術「リジュラン ヒーラー」登録要請 (価格 30万ウォン)"}, date:"2026.07.04", status:"pending" },
+    { id:3, clinic:"puredent",  kind:"review", summary:{ko:"악성 후기 신고 및 삭제 요청 (허위 사실 포함)",ja:"悪質な口コミの通報・削除要請 (虚偽事実を含む)"}, date:"2026.07.03", status:"pending" },
+    { id:4, clinic:"beautyline",kind:"proc",   summary:{ko:"'광대 축소' 시술 가격 인상 (450→480만원)",ja:"「頬骨縮小」施術価格の引き上げ (450→480万ウォン)"}, date:"2026.07.03", status:"pending" },
+    { id:5, clinic:"whitebell", kind:"info",   summary:{ko:"대표 원장 프로필 및 병원 대표 이미지 교체",ja:"代表院長プロフィール・クリニック代表画像の差し替え"}, date:"2026.07.02", status:"pending" }
+  ];
+
+  function clinicName(id){
+    const c = clinics.find(x=>x.id===id) || D.clinicById(id);
+    return c ? c.name[L()] : id;
+  }
+  function flag(country){ return country==="jp" ? "🇯🇵" : "🇰🇷"; }
+
+  /* =========================================================
+     RENDERERS
+     ========================================================= */
+  function renderChart(){
+    const max = Math.max(...chartData.map(d=>d.v));
+    const el = document.getElementById('chartBars');
+    el.innerHTML = chartData.map(d=>`
+      <div class="bar-col">
+        <div class="bar" data-h="${Math.round(d.v/max*100)}" style="height:0"><span class="v">${d.v}</span></div>
+        <div class="dow">${d.d[L()]}</div>
+      </div>`).join('');
+    // animate bars after paint (setTimeout fallback ensures settle even if rAF is throttled)
+    const grow = ()=> el.querySelectorAll('.bar').forEach(b=>{ b.style.height = b.dataset.h + '%'; });
+    requestAnimationFrame(()=>requestAnimationFrame(grow));
+    setTimeout(grow, 120);
+  }
+
+  function renderPendingMini(){
+    const pend = contentReqs.filter(r=>r.status==="pending").slice(0,4);
+    const icons = { info:"🏥", proc:"💉", review:"⭐" };
+    const el = document.getElementById('pendingMini');
+    if(!pend.length){ el.innerHTML = `<div class="empty" data-ko="대기중인 요청이 없습니다." data-ja="待機中のリクエストはありません。">대기중인 요청이 없습니다.</div>`; return; }
+    el.innerHTML = pend.map(r=>`
+      <div class="mini-row">
+        <div class="mi">${icons[r.kind]}</div>
+        <div class="mtxt">
+          <b>${clinicName(r.clinic)}</b>
+          <small>${tx(DICT.kind[r.kind])} · ${r.date}</small>
+        </div>
+        <span class="badge wait">${tx(DICT.st.wait)}</span>
+      </div>`).join('');
+  }
+
+  function renderClinics(){
+    const el = document.getElementById('clinicRows');
+    el.innerHTML = clinics.map(c=>{
+      const pill = c.cat==="plastic" ? "pill-plastic" : "pill-dental";
+      const toggleLabel = c.status==="live" ? tx(DICT.toggleRevert) : tx(DICT.toggleApprove);
+      const toggleCls = c.status==="live" ? "" : "solid";
+      return `
+      <tr>
+        <td><span class="cname" style="display:inline-flex;align-items:center;gap:10px">
+          <img src="${(D.CLINIC_IMG&&D.CLINIC_IMG[c.id])||''}" alt="" loading="lazy" style="width:38px;height:38px;border-radius:10px;object-fit:cover;flex:none;background-image:${c.grad};background-size:cover"/>
+          ${c.name[L()]}</span></td>
+        <td><span class="pill ${pill}">${D.catLabel(c.cat, L())}</span></td>
+        <td>${c.area_full[L()]}</td>
+        <td><span class="rating"><span class="star">★</span>${c.rating.toFixed(1)}</span></td>
+        <td>${badge('op', c.status)}</td>
+        <td><span class="tbl-actions">
+          <button class="mini-btn ${toggleCls}" data-clinic-toggle="${c.id}">${toggleLabel}</button>
+        </span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  let bookingFilterSt = "all";
+  function renderBookings(){
+    const el = document.getElementById('bookingRows');
+    const list = bookings.filter(b=> bookingFilterSt==="all" ? true : b.status===bookingFilterSt);
+    if(!list.length){
+      el.innerHTML = `<tr><td colspan="6"><div class="empty" data-ko="해당 상태의 예약이 없습니다." data-ja="該当する状態の予約はありません。">해당 상태의 예약이 없습니다.</div></td></tr>`;
+      I18N.applyStatic(el); return;
+    }
+    const opts = ["wait","ok","done","cancel"];
+    el.innerHTML = list.map(b=>`
+      <tr>
+        <td style="font-family:'Poppins';font-weight:600;color:var(--ink)">${b.no}</td>
+        <td><span class="cname">${clinicName(b.clinic)}</span></td>
+        <td>${flag(b.country)} ${b.patient}</td>
+        <td>${tx(procMap[b.proc])}</td>
+        <td>${b.when}</td>
+        <td>
+          ${badge('st', b.status)}
+          <select class="st-select" data-booking="${b.no}" style="margin-left:8px">
+            ${opts.map(o=>`<option value="${o}" ${o===b.status?'selected':''}>${tx(DICT.st[o])}</option>`).join('')}
+          </select>
+        </td>
+      </tr>`).join('');
+  }
+
+  function renderMembers(){
+    const el = document.getElementById('memberRows');
+    el.innerHTML = members.map((m,i)=>{
+      const blocked = m.status==="blocked";
+      const btnLabel = blocked ? tx(DICT.unblock) : tx(DICT.block);
+      const btnCls = blocked ? "solid" : "danger";
+      return `
+      <tr class="${blocked?'blocked':''}">
+        <td style="font-family:'Poppins';color:var(--ink)">${m.id}</td>
+        <td>${m.join}</td>
+        <td>${flag(m.country)} ${m.country==="jp"?"JP":"KR"}</td>
+        <td>${m.bookings} ${tx(DICT.cnt)}</td>
+        <td>${badge('mem', m.status)}</td>
+        <td><span class="tbl-actions">
+          <button class="mini-btn ${btnCls}" data-member="${i}">${btnLabel}</button>
+        </span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  let contentFilter = "all";
+  function renderContent(){
+    const el = document.getElementById('contentList');
+    const icons = { info:"🏥", proc:"💉", review:"⭐" };
+    const list = contentReqs.filter(r=>{
+      if(contentFilter==="all") return true;
+      if(contentFilter==="pending") return r.status==="pending";
+      return r.status!=="pending";
+    });
+    if(!list.length){
+      el.innerHTML = `<div class="empty" data-ko="해당하는 요청이 없습니다." data-ja="該当するリクエストはありません。">해당하는 요청이 없습니다.</div>`;
+      return;
+    }
+    el.innerHTML = list.map(r=>{
+      const processed = r.status!=="pending";
+      const kindPill = r.kind==="proc" ? "pill-plastic" : r.kind==="review" ? "pill-dental" : "pill-soft";
+      let statusBadge = "";
+      if(r.status==="processed") statusBadge = badge('ct','processed');
+      else if(r.status==="rejected") statusBadge = badge('ct','rejected');
+      else statusBadge = `<span class="badge wait">${tx(DICT.st.wait)}</span>`;
+      return `
+      <div class="req-card ${processed?'processed':''}">
+        <div class="r-ic">${icons[r.kind]}</div>
+        <div class="r-body">
+          <div class="r-top">
+            <b>${clinicName(r.clinic)}</b>
+            <span class="pill ${kindPill}">${tx(DICT.kind[r.kind])}</span>
+            ${statusBadge}
+          </div>
+          <p class="r-summary">${tx(r.summary)}</p>
+          <span class="r-date">${r.date}</span>
+        </div>
+        <div class="r-actions">
+          <button class="mini-btn solid" data-content-approve="${r.id}">${tx(DICT.approve)}</button>
+          <button class="mini-btn danger" data-content-reject="${r.id}">${tx(DICT.reject)}</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAll(){
+    renderChart();
+    renderPendingMini();
+    renderClinics();
+    renderBookings();
+    renderMembers();
+    renderContent();
+    I18N.applyStatic(document);
+  }
+
+  /* =========================================================
+     COUNT-UP (own implementation) — triggered on dashboard show
+     ========================================================= */
+  function runCountUp(){
+    document.querySelectorAll('#panel-dash [data-count]').forEach(el=>{
+      const end = +el.dataset.count; if(isNaN(end)) return;
+      const dur = 1200, t0 = performance.now();
+      (function tick(t){
+        let p = Math.min(1, (t-t0)/dur);
+        p = 1 - Math.pow(1-p, 3);
+        el.textContent = Math.round(end*p).toLocaleString();
+        if(p<1) requestAnimationFrame(tick);
+      })(t0);
+      // settle fallback: guarantee final value even if rAF is throttled (backgrounded tab)
+      setTimeout(()=>{ el.textContent = end.toLocaleString(); }, dur + 260);
+    });
+  }
+
+  /* =========================================================
+     PANEL / TAB SWITCHING
+     ========================================================= */
+  const panelMeta = {
+    dash:    { title:{ko:"대시보드",ja:"ダッシュボード"}, desc:{ko:"플랫폼 전체 운영 현황을 한눈에 확인합니다.",ja:"プラットフォーム全体の運用状況を一目で確認します。"} },
+    clinics: { title:{ko:"입점 병원 관리",ja:"提携クリニック管理"}, desc:{ko:"입점 병원 계정 생성 및 운영 상태를 관리합니다.",ja:"提携クリニックのアカウント作成と運用状態を管理します。"} },
+    bookings:{ title:{ko:"예약 통합 관리",ja:"予約統合管理"}, desc:{ko:"플랫폼 전체 예약 접수를 조회하고 상태를 변경합니다.",ja:"プラットフォーム全体の予約受付を照会し状態を変更します。"} },
+    members: { title:{ko:"회원 관리",ja:"会員管理"}, desc:{ko:"가입 사용자 정보를 조회하고 차단/해제를 관리합니다.",ja:"登録ユーザー情報を照会し、ブロック/解除を管理します。"} },
+    content: { title:{ko:"콘텐츠 발행 승인",ja:"コンテンツ発行承認"}, desc:{ko:"입점 병원이 요청한 정보·시술·후기 수정 사항을 검토합니다.",ja:"提携クリニックが要請した情報・施術・口コミの修正事項を確認します。"} }
+  };
+
+  function showPanel(name){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+    const target = document.getElementById('panel-'+name);
+    if(target) target.classList.add('on');
+    // seg buttons
+    document.querySelectorAll('#tabSeg button').forEach(b=>b.classList.toggle('on', b.dataset.panel===name));
+    // header nav active (optional visual)
+    document.querySelectorAll('.nav [data-panel]').forEach(a=>a.classList.toggle('active', a.dataset.panel===name));
+    // title
+    const meta = panelMeta[name];
+    const pt = document.getElementById('panelTitle'), pd = document.getElementById('panelDesc');
+    pt.setAttribute('data-ko', meta.title.ko); pt.setAttribute('data-ja', meta.title.ja);
+    pd.setAttribute('data-ko', meta.desc.ko);  pd.setAttribute('data-ja', meta.desc.ja);
+    pt.textContent = meta.title[L()]; pd.textContent = meta.desc[L()];
+    // dashboard count-up
+    if(name==="dash"){ renderChart(); runCountUp(); }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  // tab seg + header nav + "이동" buttons
+  document.addEventListener('click', (e)=>{
+    const t = e.target.closest('[data-panel]');
+    if(t){ e.preventDefault(); showPanel(t.dataset.panel); }
+  });
+
+  /* =========================================================
+     LOGIN / LOGOUT
+     ========================================================= */
+  const loginView = document.getElementById('loginView');
+  const dashView  = document.getElementById('dashView');
+  const headerNav = document.querySelector('.nav');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function setLoggedIn(on){
+    loginView.classList.toggle('hide', on);
+    dashView.classList.toggle('hide', !on);
+    headerNav.style.visibility = on ? 'visible' : 'hidden';
+    logoutBtn.style.display = on ? '' : 'none';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    setLoggedIn(true);
+    renderAll();
+    showPanel('dash');
+    toast(DICT.toast.login);
+  });
+
+  logoutBtn.addEventListener('click', ()=>{
+    setLoggedIn(false);
+    countedOnce = false;
+    window.scrollTo({top:0});
+    toast(DICT.toast.logout);
+  });
+
+  /* =========================================================
+     CLINIC MODAL + status toggle
+     ========================================================= */
+  const clinicModal = document.getElementById('clinicModal');
+  function openModal(){ clinicModal.classList.add('open'); }
+  function closeModal(){ clinicModal.classList.remove('open'); }
+
+  // populate area select
+  function fillAreaSelect(){
+    const sel = document.getElementById('ncArea');
+    sel.innerHTML = D.AREAS.map(a=>`<option value="${a.key}">${a[L()]}</option>`).join('');
+  }
+
+  document.getElementById('newClinicBtn').addEventListener('click', ()=>{ fillAreaSelect(); openModal(); });
+  document.getElementById('clinicModalClose').addEventListener('click', closeModal);
+  document.getElementById('clinicCancel').addEventListener('click', closeModal);
+  clinicModal.addEventListener('click', (e)=>{ if(e.target===clinicModal) closeModal(); });
+
+  document.getElementById('clinicForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const name = document.getElementById('ncName').value.trim();
+    const cat  = document.getElementById('ncCat').value;
+    const areaKey = document.getElementById('ncArea').value;
+    if(!name){ return; }
+    const areaObj = D.AREAS.find(a=>a.key===areaKey) || D.AREAS[0];
+    const newClinic = {
+      id:"new_"+Date.now(), cat, area:areaKey,
+      name:{ ko:name, ja:name },
+      area_full:{ ko:"서울 "+areaObj.ko, ja:"ソウル "+areaObj.ja },
+      rating: 0.0, status:"pending"
+    };
+    clinics.unshift(newClinic);
+    renderClinics(); I18N.applyStatic(document.getElementById('clinicRows'));
+    closeModal();
+    e.target.reset();
+    toast(DICT.toast.clinicAdd);
+    showPanel('clinics');
+  });
+
+  // clinic status toggle (delegated)
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-clinic-toggle]');
+    if(!btn) return;
+    const id = btn.dataset.clinicToggle;
+    const c = clinics.find(x=>x.id===id); if(!c) return;
+    c.status = c.status==="live" ? "pending" : "live";
+    renderClinics(); I18N.applyStatic(document.getElementById('clinicRows'));
+    toast(c.status==="live" ? DICT.toast.clinicApproved : DICT.toast.clinicPending);
+  });
+
+  /* =========================================================
+     BOOKING status change + filter
+     ========================================================= */
+  document.getElementById('bookingFilter').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-st]'); if(!b) return;
+    document.querySelectorAll('#bookingFilter button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    bookingFilterSt = b.dataset.st;
+    renderBookings(); I18N.applyStatic(document.getElementById('bookingRows'));
+  });
+
+  document.addEventListener('change', (e)=>{
+    const sel = e.target.closest('[data-booking]'); if(!sel) return;
+    const bk = bookings.find(x=>x.no===sel.dataset.booking); if(!bk) return;
+    bk.status = sel.value;
+    renderBookings(); I18N.applyStatic(document.getElementById('bookingRows'));
+    toast(DICT.toast.bookingChanged);
+  });
+
+  /* =========================================================
+     MEMBER block toggle
+     ========================================================= */
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('[data-member]'); if(!btn) return;
+    const idx = +btn.dataset.member;
+    const m = members[idx]; if(!m) return;
+    m.status = m.status==="blocked" ? "ok" : "blocked";
+    renderMembers(); I18N.applyStatic(document.getElementById('memberRows'));
+    toast(m.status==="blocked" ? DICT.toast.blocked : DICT.toast.unblocked);
+  });
+
+  /* =========================================================
+     CONTENT approve / reject + filter
+     ========================================================= */
+  document.getElementById('contentFilter').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-cf]'); if(!b) return;
+    document.querySelectorAll('#contentFilter button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    contentFilter = b.dataset.cf;
+    renderContent(); I18N.applyStatic(document.getElementById('contentList'));
+  });
+
+  document.addEventListener('click', (e)=>{
+    const ap = e.target.closest('[data-content-approve]');
+    const rj = e.target.closest('[data-content-reject]');
+    if(!ap && !rj) return;
+    const id = +(ap ? ap.dataset.contentApprove : rj.dataset.contentReject);
+    const r = contentReqs.find(x=>x.id===id); if(!r) return;
+    r.status = ap ? "processed" : "rejected";
+    renderContent(); I18N.applyStatic(document.getElementById('contentList'));
+    renderPendingMini(); I18N.applyStatic(document.getElementById('pendingMini'));
+    toast(ap ? DICT.toast.approved : DICT.toast.rejected);
+  });
+
+  /* =========================================================
+     LANG CHANGE — re-render all dynamic content
+     ========================================================= */
+  document.addEventListener('langchange', ()=>{
+    // re-render dynamic tables/cards (static handled by I18N)
+    renderChart();
+    renderPendingMini();
+    renderClinics();
+    renderBookings();
+    renderMembers();
+    renderContent();
+    // re-apply static translation to freshly injected nodes
+    I18N.applyStatic(document);
+    // keep panel title in current language (data attrs already set by showPanel)
+  });
+
+  /* =========================================================
+     INIT — start on login screen
+     ========================================================= */
+  setLoggedIn(false);
+  // pre-render tables so language toggle works even before login (harmless)
+  renderAll();
+})();
+</script>
+</body>
+</html>

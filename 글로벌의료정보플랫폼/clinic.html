@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>병원 상세 · LUMIÈRE</title>
+<meta name="description" content="병원 소개·시술 정보·실후기 확인 및 상담 예약. 한국어/일본어 지원." />
+<meta name="theme-color" content="#E85D9E" />
+<link rel="stylesheet" href="./assets/style.css" />
+<style>
+  /* 병원 상세: 랜딩처럼 배너 풀블리드 + 헤더 오버레이 (헤더가 배너 위에 떠 있음) */
+  .site-header{position:fixed;left:0;right:0}
+  .c-hero{position:relative;margin-top:0;border-radius:0;overflow:hidden}
+  .c-banner{height:clamp(320px,26vw,380px);position:relative}
+  .c-banner .art{position:absolute;inset:0}
+  .c-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(43,31,51,.5))}
+  .ba .layer,.ba-mini .layer{background-size:cover;background-position:center}
+  .c-head{max-width:var(--maxw);margin:-70px auto 0;padding:0 24px;position:relative;z-index:2}
+  .c-headcard{background:var(--card-solid);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+  .c-headcard h1{margin:8px 0 6px;font-size:clamp(24px,3.4vw,34px);font-weight:800}
+  .c-meta{display:flex;gap:14px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:14px;margin-top:4px}
+  .layout{max-width:var(--maxw);margin:34px auto;padding:0 24px;display:grid;grid-template-columns:1fr 340px;gap:30px;align-items:start}
+  @media(max-width:920px){.layout{grid-template-columns:1fr}}
+  .aside{position:sticky;top:110px}
+  @media(max-width:920px){.aside{position:static}}
+  .tabpanel{display:none}.tabpanel.on{display:block;animation:fade .35s}
+  .proc{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;margin-bottom:12px;transition:.2s}
+  .proc:hover{border-color:rgba(232,93,158,.3);box-shadow:var(--shadow-sm)}
+  .proc h4{margin:0 0 4px;font-size:16px}
+  .proc p{margin:0;color:var(--muted);font-size:13.5px}
+  .proc .pr{text-align:right;flex:none}
+  .proc .pr b{font-family:'Poppins';color:var(--rose-d);font-size:17px}
+  .rev{padding:20px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;margin-bottom:12px}
+  .rev .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .map{height:200px;border-radius:var(--radius-sm);background-image:linear-gradient(135deg,#E9D5FF,#FFE1EC);position:relative;overflow:hidden;border:1px solid var(--line)}
+  .map .pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:34px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.2))}
+  .step-ind{display:flex;gap:8px;margin:2px 0 18px}
+  .step-ind span{flex:1;height:5px;border-radius:99px;background:var(--line)}
+  .step-ind span.on{background:var(--grad)}
+  .sumline{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+  .sumline b{font-weight:700}
+  .done-check{width:76px;height:76px;border-radius:50%;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:38px;margin:6px auto 16px;box-shadow:var(--glow-rose)}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+
+<header class="site-header" id="top">
+  <div class="bar">
+    <a class="brand" href="./index.html">
+      <span class="mark">L</span>
+      <span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span>
+    </a>
+    <nav class="nav">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科">치과</a>
+    </nav>
+    <div class="header-tools">
+      <div class="lang-toggle">
+        <button data-l="ko">KOR</button>
+        <button data-l="ja">JPN</button>
+      </div>
+      <button class="btn btn-primary" id="ctaTop" style="padding:11px 20px;font-size:14px" data-ko="상담 예약" data-ja="予約する">상담 예약</button>
+    </div>
+  </div>
+</header>
+
+<div id="notfound" class="wrap hide" style="padding:180px 24px;text-align:center">
+  <div style="font-size:52px">🔎</div>
+  <h2 data-ko="병원을 찾을 수 없습니다" data-ja="クリニックが見つかりません">병원을 찾을 수 없습니다</h2>
+  <a class="btn btn-primary mt-s" href="./clinics.html" data-ko="병원 목록으로" data-ja="クリニック一覧へ">병원 목록으로</a>
+</div>
+
+<main id="main" class="hide">
+  <section class="c-hero">
+    <div class="c-banner"><div class="art" id="banner"></div></div>
+  </section>
+  <div class="c-head">
+    <div class="c-headcard">
+      <div>
+        <span class="pill" id="catPill"></span>
+        <h1 id="cName"></h1>
+        <div class="c-meta">
+          <span class="rating"><span class="star">★</span><b id="cRating"></b> <span class="cnt" id="cReviews"></span></span>
+          <span id="cArea"></span>
+        </div>
+        <div class="tags mt-s" id="cTags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-soft" id="favBtn">♡ <span data-ko="찜" data-ja="保存">찜</span></button>
+        <button class="btn btn-primary btn-lg" id="ctaHead" data-ko="상담 예약" data-ja="予約する">상담 예약</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div>
+      <div class="seg" id="tabs" style="margin-bottom:22px">
+        <button data-tab="intro" class="on" data-ko="병원 소개" data-ja="紹介">병원 소개</button>
+        <button data-tab="proc" data-ko="시술 정보" data-ja="施術情報">시술 정보</button>
+        <button data-tab="rev" data-ko="실후기" data-ja="口コミ">실후기</button>
+        <button data-tab="loc" data-ko="위치·진료시간" data-ja="場所・診療時間">위치·진료시간</button>
+      </div>
+
+      <div class="tabpanel on" id="tab-intro">
+        <p style="font-size:16.5px;color:var(--ink-2)" id="introText"></p>
+        <div class="divider"></div>
+        <h3 data-ko="전후 비교" data-ja="ビフォーアフター" style="margin:0 0 6px">전후 비교</h3>
+        <p class="muted" style="font-size:13.5px;margin:0 0 16px" data-ko="슬라이더를 좌우로 드래그해 변화를 확인하세요. (데모 이미지)" data-ja="スライダーを左右にドラッグして変化を確認。(デモ画像)">슬라이더를 좌우로 드래그해 변화를 확인하세요. (데모 이미지)</p>
+        <div class="ba" id="ba" style="max-width:520px">
+          <div class="layer before" id="baBefore"><span class="lab b">BEFORE</span></div>
+          <div class="layer after" id="baAfter"><span class="lab a">AFTER</span></div>
+          <div class="handle" id="baHandle"><div class="grip">⟺</div></div>
+        </div>
+        <div class="divider"></div>
+        <h3 data-ko="같은 분야 전후 사례" data-ja="同分野の症例" style="margin:0 0 14px">같은 분야 전후 사례</h3>
+        <div class="grid g-3" id="clinicBaGallery"></div>
+      </div>
+
+      <div class="tabpanel" id="tab-proc"><div id="procList"></div>
+        <p class="muted" style="font-size:12.5px" data-ko="* 가격은 데모용 예시이며 상담 시 변동될 수 있습니다." data-ja="* 価格はデモ用の例です。相談時に変動する場合があります。">* 가격은 데모용 예시이며 상담 시 변동될 수 있습니다.</p>
+      </div>
+
+      <div class="tabpanel" id="tab-rev"><div id="revList"></div></div>
+
+      <div class="tabpanel" id="tab-loc">
+        <div class="map"><div class="pin">📍</div></div>
+        <div class="mt-m">
+          <div class="sumline"><span class="muted" data-ko="주소" data-ja="住所">주소</span><b id="locAddr"></b></div>
+          <div class="sumline"><span class="muted" data-ko="진료시간" data-ja="診療時間">진료시간</span><b id="locHours"></b></div>
+          <div class="sumline"><span class="muted" data-ko="언어 지원" data-ja="対応言語">언어 지원</span><b>한국어 · 日本語</b></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <div class="glass" style="padding:22px;border-radius:var(--radius)">
+        <div style="font-family:'Poppins';font-weight:700;font-size:15px;margin-bottom:4px" data-ko="상담은 무료입니다" data-ja="相談は無料です">상담은 무료입니다</div>
+        <p class="muted" style="font-size:13.5px;margin:0 0 16px" data-ko="원하는 날짜·시간을 선택해 간편하게 예약하세요." data-ja="希望の日時を選んで簡単予約。">원하는 날짜·시간을 선택해 간편하게 예약하세요.</p>
+        <div class="sumline"><span class="muted" data-ko="평점" data-ja="評価">평점</span><b><span class="star" style="color:#FFB020">★</span> <span id="asRating"></span></b></div>
+        <div class="sumline"><span class="muted" data-ko="실후기" data-ja="口コミ">실후기</span><b id="asReviews"></b></div>
+        <div class="sumline" style="border:none"><span class="muted" data-ko="상담료" data-ja="相談料">상담료</span><b style="color:var(--rose-d)" data-ko="무료" data-ja="無料">무료</b></div>
+        <button class="btn btn-primary btn-block btn-lg mt-s" id="ctaAside" data-ko="상담 예약하기" data-ja="予約する">상담 예약하기</button>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="in">
+    <div>
+      <div class="brand"><span class="mark">L</span><span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span></div>
+      <p data-ko="한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모" data-ja="韓日プレミアム美容・歯科情報プラットフォーム · 提案デモ">한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모</p>
+    </div>
+    <div class="flinks">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="../index.html">← 데모 포털</a>
+    </div>
+  </div>
+</footer>
+<!-- ===== BOOKING MODAL ===== -->
+<div class="modal-back" id="bookModal">
+  <div class="modal" style="position:relative">
+    <button class="close" id="bookClose">✕</button>
+    <div class="step-ind"><span class="on" id="si1"></span><span id="si2"></span><span id="si3"></span></div>
+
+    <!-- step 1: date/time -->
+    <div id="step1">
+      <h3 data-ko="날짜·시간 선택" data-ja="日付・時間を選択">날짜·시간 선택</h3>
+      <p class="muted" id="bkName" style="margin:2px 0 16px;font-size:14px"></p>
+      <div class="cal">
+        <div class="cal-head"><button id="calPrev" aria-label="prev">‹</button><b id="calTitle"></b><button id="calNext" aria-label="next">›</button></div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <label style="display:block;font-weight:700;font-size:13.5px;color:var(--ink-2);margin:16px 0 8px" data-ko="예약 시간" data-ja="予約時間">예약 시간</label>
+      <div class="slots" id="slots"></div>
+      <button class="btn btn-primary btn-block btn-lg mt-m" id="toStep2" disabled data-ko="다음" data-ja="次へ">다음</button>
+    </div>
+
+    <!-- step 2: info -->
+    <div id="step2" class="hide">
+      <h3 data-ko="예약자 정보" data-ja="予約者情報">예약자 정보</h3>
+      <p class="muted" style="margin:2px 0 16px;font-size:14px" id="bkWhen"></p>
+      <div class="field"><label data-ko="이름" data-ja="お名前">이름</label><input class="input" id="fName" data-ko-ph="홍길동" data-ja-ph="山田 太郎" placeholder="홍길동" /></div>
+      <div class="field"><label data-ko="연락처" data-ja="電話番号">연락처</label><input class="input" id="fPhone" placeholder="010-0000-0000" /></div>
+      <div class="field"><label data-ko="이메일 (선택)" data-ja="メール (任意)">이메일 (선택)</label><input class="input" id="fEmail" placeholder="you@example.com" /></div>
+      <div class="field"><label data-ko="상담 내용 (선택)" data-ja="ご相談内容 (任意)">상담 내용 (선택)</label><textarea class="input" id="fMemo" data-ko-ph="궁금한 점이나 희망 시술을 남겨주세요." data-ja-ph="ご希望の施術やご質問をどうぞ。"></textarea></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" id="backStep1" data-ko="이전" data-ja="戻る">이전</button>
+        <button class="btn btn-primary" style="flex:1" id="submitBook" data-ko="예약 신청" data-ja="予約を申し込む">예약 신청</button>
+      </div>
+    </div>
+
+    <!-- step 3: done -->
+    <div id="step3" class="hide" style="text-align:center;padding:10px 0">
+      <div class="done-check">✓</div>
+      <h3 data-ko="예약 신청 완료" data-ja="予約申込 完了">예약 신청 완료</h3>
+      <p class="muted" style="margin:6px 0 20px" data-ko="병원에서 확인 후 연락드립니다." data-ja="クリニックの確認後ご連絡します。">병원에서 확인 후 연락드립니다.</p>
+      <div class="glass" style="padding:18px;text-align:left;border-radius:var(--radius-sm)">
+        <div class="sumline"><span class="muted" data-ko="병원" data-ja="クリニック">병원</span><b id="dName"></b></div>
+        <div class="sumline"><span class="muted" data-ko="일시" data-ja="日時">일시</span><b id="dWhen"></b></div>
+        <div class="sumline" style="border:none"><span class="muted" data-ko="예약자" data-ja="予約者">예약자</span><b id="dWho"></b></div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg mt-m" id="doneClose" data-ko="확인" data-ja="確認">확인</button>
+    </div>
+  </div>
+</div>
+
+<script src="./assets/data.js"></script>
+<script src="./assets/i18n.js"></script>
+<script>
+/* cursor glow */
+(function(){const g=document.getElementById('glow');if(!g)return;let x=innerWidth/2,y=innerHeight/2,tx=x,ty=y;
+addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+(function l(){x+=(tx-x)*.12;y+=(ty-y)*.12;g.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;requestAnimationFrame(l);})();})();
+
+const D=window.LUMIERE_DATA;
+const id=new URLSearchParams(location.search).get('id');
+const clinic=D.clinicById(id)||null;
+
+if(!clinic){document.getElementById('notfound').classList.remove('hide');}
+else{
+  document.getElementById('main').classList.remove('hide');
+  const $=s=>document.getElementById(s);
+
+  function render(){
+    const lang=I18N.getLang();
+    const cimg=(D.CLINIC_IMG&&D.CLINIC_IMG[clinic.id])||'';
+    $('banner').style.backgroundImage=(cimg?`url("${cimg}"), `:'')+clinic.grad;
+    $('banner').style.backgroundSize='cover';
+    $('banner').style.backgroundPosition='center';
+    const cp=$('catPill');cp.className='pill '+(clinic.cat==='plastic'?'pill-plastic':'pill-dental');cp.textContent=D.catLabel(clinic.cat,lang);
+    $('cName').textContent=clinic.name[lang];
+    $('cRating').textContent=clinic.rating;
+    $('cReviews').textContent='('+clinic.reviews.toLocaleString()+')';
+    $('cArea').textContent='📍 '+clinic.area_full[lang];
+    $('cTags').innerHTML=clinic.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('');
+    $('asRating').textContent=clinic.rating;
+    $('asReviews').textContent=clinic.reviews.toLocaleString()+(lang==='ja'?' 件':'개');
+    // intro
+    const intro={ko:`${clinic.name.ko}는 ${clinic.area_full.ko}에 위치한 ${D.catLabel(clinic.cat,'ko')}로, "${clinic.tagline.ko}"를 지향합니다. ${clinic.since}년부터 축적된 임상 경험과 정밀한 상담으로 신뢰받고 있으며, 한국어와 일본어 상담을 모두 지원합니다.`,
+      ja:`${clinic.name.ja}は${clinic.area_full.ja}に位置する${D.catLabel(clinic.cat,'ja')}で、「${clinic.tagline.ja}」を目指しています。${clinic.since}年からの臨床経験と丁寧なカウンセリングで信頼を得ており、韓国語・日本語の相談に対応します。`};
+    $('introText').textContent=intro[lang];
+    // before/after (실제 사진: 같은 이미지, before는 무광 오버레이로 '시술 전' 느낌)
+    var mainBaImg=(clinic.cat==='dental')?D.M.smile2:D.M.profile;
+    $('baBefore').style.backgroundImage='linear-gradient(rgba(120,114,126,.42),rgba(120,114,126,.42)),url("'+mainBaImg+'")';
+    $('baAfter').style.backgroundImage='url("'+mainBaImg+'")';
+    // procedures
+    $('procList').innerHTML=clinic.procedures.map(p=>`
+      <div class="proc">
+        <div><h4>${p.name[lang]}</h4><p>${p.desc[lang]}</p></div>
+        <div class="pr"><b>${D.fmtPrice(p.price,lang)}</b><div><button class="btn btn-soft" style="padding:8px 14px;font-size:13px;margin-top:6px" data-book>${lang==='ja'?'予約':'예약'}</button></div></div>
+      </div>`).join('');
+    // reviews
+    $('revList').innerHTML=clinic.reviewList.map(r=>`
+      <div class="rev">
+        <div class="top"><span class="rating"><span class="star">${'★'.repeat(r.rating)}</span></span><span class="muted" style="font-size:13px">${r.date}</span></div>
+        <div style="font-size:15px;color:var(--ink)">"${r.text[lang]}"</div>
+        <div class="muted" style="font-size:13px;margin-top:8px">${r.user} · ${r.proc[lang]}</div>
+      </div>`).join('') || `<p class="muted">${lang==='ja'?'口コミ準備中':'후기 준비중'}</p>`;
+    // location
+    $('locAddr').textContent=clinic.area_full[lang]+(lang==='ja'?' (デモ住所)':' (데모 주소)');
+    $('locHours').textContent=clinic.hours[lang];
+    $('bkName').textContent=clinic.name[lang];
+    // same-category before/after cases
+    var cases=D.baByCat(clinic.cat).slice(0,3);
+    var BA_PART_IMG={'눈성형':D.M.eyes,'코성형':D.M.nose2,'안면윤곽':D.M.vline,'리프팅':D.M.lift2,'치아교정':D.M.teeth2,'심미보철':D.M.smile2,'치아미백':D.M.dental,'바디라인':D.M.spa};
+    $('clinicBaGallery').innerHTML=cases.map(function(b){var im=BA_PART_IMG[b.part.ko]||D.M.profile;return '<div class="ba-mini" data-cba>'+
+      '<div class="layer before" style="background-image:linear-gradient(rgba(120,114,126,.42),rgba(120,114,126,.42)),url(\''+im+'\')"><span class="lab b">BEFORE</span></div>'+
+      '<div class="layer after" style="background-image:url(\''+im+'\');clip-path:inset(0 0 0 50%)"><span class="lab a">AFTER</span></div>'+
+      '<div class="handle" style="left:50%"><div class="grip">⟺</div></div>'+
+      '<div class="cap"><b>'+b.part[lang]+'</b><span>'+b.proc[lang]+'</span></div></div>';}).join('');
+    $('clinicBaGallery').querySelectorAll('[data-cba]').forEach(function(el){
+      var after=el.querySelector('.layer.after'),handle=el.querySelector('.handle'),drag=false;
+      function set(px){var r=el.getBoundingClientRect();var p=(px-r.left)/r.width;p=Math.max(.05,Math.min(.95,p));after.style.clipPath='inset(0 0 0 '+(p*100)+'%)';handle.style.left=(p*100)+'%';}
+      el.addEventListener('pointerdown',function(e){drag=true;set(e.clientX);el.setPointerCapture(e.pointerId);});
+      el.addEventListener('pointermove',function(e){if(drag)set(e.clientX);});
+      el.addEventListener('pointerup',function(){drag=false;});el.addEventListener('pointercancel',function(){drag=false;});
+    });
+  }
+  render();
+  document.addEventListener('langchange',()=>{render();});
+
+  // tabs
+  document.getElementById('tabs').addEventListener('click',e=>{
+    const b=e.target.closest('[data-tab]');if(!b)return;
+    document.querySelectorAll('#tabs [data-tab]').forEach(x=>x.classList.toggle('on',x===b));
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.toggle('on',p.id==='tab-'+b.dataset.tab));
+  });
+
+  // favorite
+  $('favBtn').addEventListener('click',function(){this.classList.toggle('faved');const on=this.classList.contains('faved');this.style.background=on?'var(--grad)':'';this.style.color=on?'#fff':'';this.firstChild.textContent=on?'♥ ':'♡ ';});
+
+  /* before/after */
+  (function(){
+    const ba=$('ba'),after=$('baAfter'),handle=$('baHandle');let drag=false;
+    function set(px){const r=ba.getBoundingClientRect();let p=(px-r.left)/r.width;p=Math.max(.04,Math.min(.96,p));after.style.clipPath=`inset(0 0 0 ${p*100}%)`;handle.style.left=p*100+'%';}
+    ba.addEventListener('pointerdown',e=>{drag=true;set(e.clientX);ba.setPointerCapture(e.pointerId);});
+    ba.addEventListener('pointermove',e=>{if(drag)set(e.clientX);});
+    ba.addEventListener('pointerup',()=>drag=false);ba.addEventListener('pointercancel',()=>drag=false);
+    requestAnimationFrame(()=>set(ba.getBoundingClientRect().left+ba.getBoundingClientRect().width*.5));
+  })();
+
+  /* ===== BOOKING ===== */
+  const modal=$('bookModal');
+  const sel={date:null,time:null};
+  let viewY, viewM; // calendar view
+  const today=new Date();today.setHours(0,0,0,0);
+  const maxDate=new Date(today);maxDate.setMonth(maxDate.getMonth()+2);
+  const SLOTS=['10:00','11:00','13:00','14:00','15:00','16:00','17:00'];
+
+  function openModal(){resetFlow();modal.classList.add('open');document.body.style.overflow='hidden';}
+  function closeModal(){modal.classList.remove('open');document.body.style.overflow='';}
+  function resetFlow(){
+    sel.date=null;sel.time=null;
+    viewY=today.getFullYear();viewM=today.getMonth();
+    step(1);renderCal();renderSlots();$('toStep2').disabled=true;
+    ['fName','fPhone','fEmail','fMemo'].forEach(i=>$(i).value='');
+  }
+  function step(n){[1,2,3].forEach(k=>$('step'+k).classList.toggle('hide',k!==n));
+    $('si1').classList.toggle('on',n>=1);$('si2').classList.toggle('on',n>=2);$('si3').classList.toggle('on',n>=3);}
+
+  function renderCal(){
+    const lang=I18N.getLang();
+    $('calTitle').textContent=lang==='ja'?`${viewY}年 ${viewM+1}月`:`${viewY}년 ${viewM+1}월`;
+    const dows=(lang==='ja'?['日','月','火','水','木','金','土']:['일','월','화','수','목','금','토']);
+    const first=new Date(viewY,viewM,1);const start=first.getDay();const days=new Date(viewY,viewM+1,0).getDate();
+    let html=dows.map(d=>`<span class="dow">${d}</span>`).join('');
+    for(let i=0;i<start;i++)html+=`<span class="day off"></span>`;
+    for(let d=1;d<=days;d++){
+      const dt=new Date(viewY,viewM,d);const dow=dt.getDay();
+      const past=dt<today, tooFar=dt>maxDate, sunday=dow===0;
+      const disabled=past||tooFar||sunday;
+      const isSel=sel.date&&sel.date.getTime()===dt.getTime();
+      html+=`<span class="day${disabled?' disabled':''}${isSel?' sel':''}" data-d="${d}">${d}</span>`;
+    }
+    $('calGrid').innerHTML=html;
+    // nav limits
+    const cur=new Date(viewY,viewM,1);
+    $('calPrev').style.visibility=(viewY<today.getFullYear()||(viewY===today.getFullYear()&&viewM<=today.getMonth()))?'hidden':'visible';
+    $('calNext').style.visibility=(cur>=new Date(maxDate.getFullYear(),maxDate.getMonth(),1))?'hidden':'visible';
+  }
+  function renderSlots(){
+    const lang=I18N.getLang();
+    // pseudo-disable a couple slots based on selected date for realism
+    const seed=sel.date?sel.date.getDate():0;
+    $('slots').innerHTML=SLOTS.map((s,i)=>{
+      const off=((seed+i)%4===0)&&sel.date; // some slots unavailable
+      const on=sel.time===s;
+      return `<button data-slot="${s}" ${off?'disabled':''} class="${on?'on':''}">${s}</button>`;
+    }).join('');
+    if(!sel.date)$('slots').querySelectorAll('button').forEach(b=>b.disabled=true);
+  }
+  function checkStep1(){$('toStep2').disabled=!(sel.date&&sel.time);}
+  function whenText(){
+    const lang=I18N.getLang();if(!sel.date)return'';
+    const dd=sel.date;const dow=(lang==='ja'?['日','月','火','水','木','金','土']:['일','월','화','수','목','금','토'])[dd.getDay()];
+    return lang==='ja'?`${dd.getFullYear()}年${dd.getMonth()+1}月${dd.getDate()}日(${dow}) ${sel.time}`
+                      :`${dd.getFullYear()}년 ${dd.getMonth()+1}월 ${dd.getDate()}일 (${dow}) ${sel.time}`;
+  }
+
+  // events
+  ['ctaTop','ctaHead','ctaAside'].forEach(x=>$(x).addEventListener('click',openModal));
+  document.addEventListener('click',e=>{if(e.target.closest('[data-book]'))openModal();});
+  $('bookClose').addEventListener('click',closeModal);
+  modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+  $('calPrev').addEventListener('click',()=>{if(viewM===0){viewM=11;viewY--;}else viewM--;renderCal();});
+  $('calNext').addEventListener('click',()=>{if(viewM===11){viewM=0;viewY++;}else viewM++;renderCal();});
+  $('calGrid').addEventListener('click',e=>{const c=e.target.closest('.day');if(!c||c.classList.contains('disabled')||c.classList.contains('off'))return;
+    sel.date=new Date(viewY,viewM,+c.dataset.d);sel.time=null;renderCal();renderSlots();checkStep1();});
+  $('slots').addEventListener('click',e=>{const b=e.target.closest('[data-slot]');if(!b||b.disabled)return;sel.time=b.dataset.slot;renderSlots();checkStep1();});
+  $('toStep2').addEventListener('click',()=>{$('bkWhen').textContent=clinic.name[I18N.getLang()]+' · '+whenText();step(2);});
+  $('backStep1').addEventListener('click',()=>step(1));
+  $('submitBook').addEventListener('click',()=>{
+    const lang=I18N.getLang();
+    if(!$('fName').value.trim()||!$('fPhone').value.trim()){$( 'fName').value.trim()||$('fName').focus();alert(lang==='ja'?'お名前と電話番号を入力してください。':'이름과 연락처를 입력해 주세요.');return;}
+    $('dName').textContent=clinic.name[lang];$('dWhen').textContent=whenText();$('dWho').textContent=$('fName').value.trim();
+    step(3);
+  });
+  $('doneClose').addEventListener('click',closeModal);
+  document.addEventListener('langchange',()=>{if(modal.classList.contains('open')){renderCal();renderSlots();}});
+}
+</script>
+</body>
+</html>

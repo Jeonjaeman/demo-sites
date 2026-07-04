@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>병원 찾기 · LUMIÈRE</title>
+<meta name="description" content="성형외과·치과 병원을 지역·평점으로 검색하고 비교하세요. 한국어/일본어 지원." />
+<meta name="theme-color" content="#E85D9E" />
+<link rel="stylesheet" href="./assets/style.css" />
+<style>
+  .page-hero{padding:150px 0 40px;position:relative}
+  .page-hero .eyebrow{background:rgba(255,255,255,.6)}
+  .page-hero h1{font-size:clamp(30px,5vw,50px);letter-spacing:-.02em;margin:16px 0 10px;font-weight:800}
+  .page-hero p{color:var(--ink-2);font-size:16px;margin:0}
+  .searchbar{display:flex;gap:10px;margin-top:26px;max-width:560px}
+  .searchbar .input{flex:1}
+  .filter-row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;margin:8px 0 30px}
+  .filter-row .left{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .filter-row select.input{width:auto;padding:11px 38px 11px 15px;font-size:14px;font-weight:600}
+  .rescount{color:var(--muted);font-size:14px;font-weight:600}
+  .rescount b{color:var(--rose-d)}
+  .empty{text-align:center;padding:80px 20px;color:var(--muted)}
+  .empty .ico{font-size:52px;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+
+<header class="site-header" id="top">
+  <div class="bar">
+    <a class="brand" href="./index.html">
+      <span class="mark">L</span>
+      <span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span>
+    </a>
+    <nav class="nav">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科">치과</a>
+      <a href="./index.html#reviews" data-ko="실후기" data-ja="口コミ">실후기</a>
+    </nav>
+    <div class="header-tools">
+      <div class="lang-toggle">
+        <button data-l="ko">KOR</button>
+        <button data-l="ja">JPN</button>
+      </div>
+      <a class="btn btn-primary" href="./hospital.html" style="padding:11px 20px;font-size:14px" data-ko="병원 로그인" data-ja="クリニックログイン">병원 로그인</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero wrap">
+  <span class="eyebrow">FIND YOUR CLINIC</span>
+  <h1 data-ko="당신에게 맞는 <span class='grad-text'>병원</span> 찾기" data-ja="あなたに合う <span class='grad-text'>クリニック</span>探し">당신에게 맞는 <span class="grad-text">병원</span> 찾기</h1>
+  <p data-ko="성형외과·치과 검증된 병원을 지역·평점으로 비교하세요." data-ja="美容外科・歯科の厳選クリニックをエリア・評価で比較。">성형외과·치과 검증된 병원을 지역·평점으로 비교하세요.</p>
+  <div class="searchbar">
+    <input class="input" id="q" data-ko-ph="병원·지역·시술 검색" data-ja-ph="クリニック・エリア・施術を検索" placeholder="병원·지역·시술 검색" />
+    <button class="btn btn-primary" id="searchBtn" data-ko="검색" data-ja="検索">검색</button>
+  </div>
+</section>
+
+<section class="wrap" style="padding:0 0 90px">
+  <div class="filter-row">
+    <div class="left">
+      <div class="seg" id="catSeg">
+        <button data-cat="all" class="on" data-ko="전체" data-ja="すべて">전체</button>
+        <button data-cat="plastic" data-ko="성형외과" data-ja="美容外科">성형외과</button>
+        <button data-cat="dental" data-ko="치과" data-ja="歯科">치과</button>
+      </div>
+      <select class="input" id="areaSel"></select>
+      <select class="input" id="sortSel">
+        <option value="rating" data-ko="평점순" data-ja="評価順">평점순</option>
+        <option value="review" data-ko="후기많은순" data-ja="口コミ数順">후기많은순</option>
+        <option value="new" data-ko="신규순" data-ja="新着順">신규순</option>
+      </select>
+    </div>
+    <div class="rescount"><b id="cnt">0</b><span data-ko="개 병원" data-ja="件">개 병원</span></div>
+  </div>
+
+  <div class="grid g-3" id="grid"></div>
+  <div class="empty hide" id="empty">
+    <div class="ico">🔍</div>
+    <p data-ko="조건에 맞는 병원이 없습니다." data-ja="条件に合うクリニックがありません。">조건에 맞는 병원이 없습니다.</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="in">
+    <div>
+      <div class="brand"><span class="mark">L</span><span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span></div>
+      <p data-ko="한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모" data-ja="韓日プレミアム美容・歯科情報プラットフォーム · 提案デモ">한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모</p>
+    </div>
+    <div class="flinks">
+      <a href="./index.html" data-ko="홈" data-ja="ホーム">홈</a>
+      <a href="./hospital.html" data-ko="병원 로그인" data-ja="クリニックログイン">병원 로그인</a>
+      <a href="./admin.html" data-ko="관리자" data-ja="管理者">관리자</a>
+      <a href="../index.html">← 데모 포털</a>
+    </div>
+  </div>
+</footer>
+<script src="./assets/data.js"></script>
+<script src="./assets/i18n.js"></script>
+<script>
+/* cursor glow */
+(function(){const g=document.getElementById('glow');if(!g)return;let x=innerWidth/2,y=innerHeight/2,tx=x,ty=y;
+addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+(function l(){x+=(tx-x)*.12;y+=(ty-y)*.12;g.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;requestAnimationFrame(l);})();})();
+
+(function(){
+  const D=window.LUMIERE_DATA;
+  const params=new URLSearchParams(location.search);
+  const state={cat:params.get('cat')||'all',area:'all',sort:'rating',q:''};
+  if(!['all','plastic','dental'].includes(state.cat))state.cat='all';
+
+  const grid=document.getElementById('grid'), empty=document.getElementById('empty'), cnt=document.getElementById('cnt');
+  const catSeg=document.getElementById('catSeg'), areaSel=document.getElementById('areaSel'), sortSel=document.getElementById('sortSel'), q=document.getElementById('q');
+
+  // build area options
+  function buildAreas(){
+    const lang=I18N.getLang();
+    const opts=['<option value="all">'+(lang==='ja'?'全エリア':'전체 지역')+'</option>']
+      .concat(D.AREAS.map(a=>`<option value="${a.key}">${a[lang]}</option>`));
+    areaSel.innerHTML=opts.join('');areaSel.value=state.area;
+  }
+
+  function apply(){
+    const lang=I18N.getLang();
+    let list=D.CLINICS.filter(c=>state.cat==='all'||c.cat===state.cat)
+      .filter(c=>state.area==='all'||c.area===state.area)
+      .filter(c=>{
+        if(!state.q)return true;const s=state.q.toLowerCase();
+        return (c.name.ko+c.name.ja+c.area_full.ko+c.area_full.ja+c.tags.ko.join()+c.tags.ja.join()).toLowerCase().includes(s);
+      });
+    if(state.sort==='rating')list.sort((a,b)=>b.rating-a.rating);
+    else if(state.sort==='review')list.sort((a,b)=>b.reviews-a.reviews);
+    else list.sort((a,b)=>b.since-a.since);
+
+    cnt.textContent=list.length;
+    empty.classList.toggle('hide',list.length>0);
+    grid.innerHTML=list.map((c,i)=>`
+      <a class="clinic-card reveal" style="transition-delay:${(i%3)*.06}s" href="./clinic.html?id=${c.id}">
+        <div class="thumb" style="background-image:${c.grad};background-size:cover">
+          <img class="art" src="${(D.CLINIC_IMG&&D.CLINIC_IMG[c.id])||''}" alt="${c.name[lang]}" loading="lazy"/>
+          <span class="pill ${c.cat==='plastic'?'pill-plastic':'pill-dental'} cat-pill">${D.catLabel(c.cat,lang)}</span>
+          <span class="fav">♡</span>
+        </div>
+        <div class="body">
+          <h3>${c.name[lang]}</h3>
+          <div class="area">📍 ${c.area_full[lang]}</div>
+          <div class="muted" style="font-size:13.5px;margin-top:-2px">${c.tagline[lang]}</div>
+          <div class="tags">${c.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <div class="foot">
+            <span class="rating"><span class="star">★</span>${c.rating} <span class="cnt">(${c.reviews.toLocaleString()})</span></span>
+            <span class="price"><small>${lang==='ja'?'相談':'상담'}</small> <b>${lang==='ja'?'無料':'무료'}</b></span>
+          </div>
+        </div>
+      </a>`).join('');
+    scan();
+  }
+
+  // reveal
+  const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.1});
+  function scan(){grid.querySelectorAll('.reveal').forEach(el=>io.observe(el));}
+
+  // sync seg UI
+  function syncSeg(){catSeg.querySelectorAll('[data-cat]').forEach(b=>b.classList.toggle('on',b.dataset.cat===state.cat));}
+
+  catSeg.addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(!b)return;state.cat=b.dataset.cat;syncSeg();apply();});
+  areaSel.addEventListener('change',()=>{state.area=areaSel.value;apply();});
+  sortSel.addEventListener('change',()=>{state.sort=sortSel.value;apply();});
+  q.addEventListener('input',()=>{state.q=q.value.trim();apply();});
+  document.getElementById('searchBtn').addEventListener('click',()=>{state.q=q.value.trim();apply();});
+
+  buildAreas();syncSeg();apply();
+  document.addEventListener('langchange',()=>{buildAreas();apply();});
+})();
+</script>
+</body>
+</html>
