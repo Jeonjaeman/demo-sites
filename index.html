@@ -136,7 +136,7 @@
     grid.innerHTML = DEMOS.filter(inCat).map(d=>{
       const tag = d.status==="soon" ? "div" : "a";
       const attrs = d.status==="soon" ? 'class="card disabled"'
-        : `class="card" href="${d.url}" ${d.here?'':'target="_blank" rel="noopener"'}`;
+        : `class="card" href="${d.url}" target="_blank" rel="noopener"`;
       return `<${tag} ${attrs}>
         <div class="thumb" style="background:${d.g}"><span style="position:relative;z-index:1">${d.en}</span></div>
         <div class="body">
