@@ -113,8 +113,8 @@
   const CATS = [
     { key:"all", label:"전체" },
     { key:"home", label:"홈페이지" },
-    { key:"admin", label:"대시보드" },
     { key:"platform", label:"플랫폼" },
+    { key:"admin", label:"대시보드" },
   ];
   let activeCat = "all";
 
@@ -133,8 +133,15 @@
     }).join("");
   }
 
+  // 카드 정렬: 홈페이지 → 플랫폼 → 대시보드, 준비중 카드는 맨 뒤
+  const CAT_RANK = { home:0, platform:1, admin:2 };
+  const catRank = (d)=> CAT_RANK[d.cat]===undefined ? 9 : CAT_RANK[d.cat];
   function renderGrid(){
-    grid.innerHTML = DEMOS.filter(inCat).map(d=>{
+    grid.innerHTML = DEMOS.filter(inCat).sort((a,b)=>{
+      const sa = a.status==="soon"?1:0, sb = b.status==="soon"?1:0;
+      if(sa!==sb) return sa-sb;
+      return catRank(a)-catRank(b);
+    }).map(d=>{
       const tag = d.status==="soon" ? "div" : "a";
       const attrs = d.status==="soon" ? 'class="card disabled"'
         : `class="card" href="${d.url}" target="_blank" rel="noopener"`;
