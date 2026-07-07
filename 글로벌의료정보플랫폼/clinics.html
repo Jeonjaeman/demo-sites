@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>병원 찾기 · LUMIÈRE</title>
 <meta name="description" content="성형외과·치과 병원을 지역·평점으로 검색하고 비교하세요. 한국어/일본어 지원." />
-<meta name="theme-color" content="#E85D9E" />
+<meta name="theme-color" content="#F4581C" />
 <link rel="stylesheet" href="./assets/style.css" />
 <style>
   .page-hero{padding:150px 0 40px;position:relative}
@@ -42,7 +42,7 @@
     <div class="header-tools">
       <div class="lang-toggle">
         <button data-l="ko">KOR</button>
-        <button data-l="ja">JPN</button>
+        <button data-l="ja">JPN</button><button data-l="en">ENG</button>
       </div>
       <a class="btn btn-primary" href="./hospital.html" style="padding:11px 20px;font-size:14px" data-ko="병원 로그인" data-ja="クリニックログイン">병원 로그인</a>
     </div>
@@ -71,12 +71,19 @@
       <select class="input" id="sortSel">
         <option value="rating" data-ko="평점순" data-ja="評価順">평점순</option>
         <option value="review" data-ko="후기많은순" data-ja="口コミ数順">후기많은순</option>
-        <option value="new" data-ko="신규순" data-ja="新着順">신규순</option>
+        <option value="new" data-ko="신규순" data-ja="新着順" data-en="Newest">신규순</option>
+        <option value="near" data-ko="가까운순" data-ja="近い順" data-en="Nearest">가까운순</option>
       </select>
+      <button class="btn btn-soft" id="nearBtn" data-ko="📍 내 주변" data-ja="📍 現在地" data-en="📍 Near Me">📍 내 주변</button>
     </div>
     <div class="rescount"><b id="cnt">0</b><span data-ko="개 병원" data-ja="件">개 병원</span></div>
   </div>
 
+  <div class="geo-map slim" id="listMap">
+    <div class="road" style="left:8%;top:32%;width:84%;height:6px"></div>
+    <div class="road" style="left:50%;top:8%;width:6px;height:84%"></div>
+    <div class="road" style="left:16%;top:64%;width:68%;height:4px;transform:rotate(-12deg)"></div>
+  </div>
   <div class="grid g-3" id="grid"></div>
   <div class="empty hide" id="empty">
     <div class="ico">🔍</div>
@@ -118,7 +125,7 @@ addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
   // build area options
   function buildAreas(){
     const lang=I18N.getLang();
-    const opts=['<option value="all">'+(lang==='ja'?'全エリア':'전체 지역')+'</option>']
+    const opts=['<option value="all">'+(lang==='ja'?'全エリア':lang==='en'?'All Areas':'전체 지역')+'</option>']
       .concat(D.AREAS.map(a=>`<option value="${a.key}">${a[lang]}</option>`));
     areaSel.innerHTML=opts.join('');areaSel.value=state.area;
   }
@@ -133,6 +140,7 @@ addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
       });
     if(state.sort==='rating')list.sort((a,b)=>b.rating-a.rating);
     else if(state.sort==='review')list.sort((a,b)=>b.reviews-a.reviews);
+    else if(state.sort==='near')list.sort((a,b)=>a.dist-b.dist);
     else list.sort((a,b)=>b.since-a.since);
 
     cnt.textContent=list.length;
@@ -148,15 +156,33 @@ addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
           <h3>${c.name[lang]}</h3>
           <div class="area">📍 ${c.area_full[lang]}</div>
           <div class="muted" style="font-size:13.5px;margin-top:-2px">${c.tagline[lang]}</div>
-          <div class="tags">${c.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <div class="tags">${state.sort==='near'?`<span class="tag dist-tag">📍 ${c.dist.toFixed(1)}km</span>`:''}${c.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
           <div class="foot">
             <span class="rating"><span class="star">★</span>${c.rating} <span class="cnt">(${c.reviews.toLocaleString()})</span></span>
-            <span class="price"><small>${lang==='ja'?'相談':'상담'}</small> <b>${lang==='ja'?'無料':'무료'}</b></span>
+            <span class="price"><small>${lang==='ja'?'相談':lang==='en'?'Consult':'상담'}</small> <b>${lang==='ja'?'無料':lang==='en'?'Free':'무료'}</b></span>
           </div>
         </div>
       </a>`).join('');
+    renderMap(list);
     scan();
   }
+
+  /* ---- v3: 지도 패널 (위치 기반 · RFP 2-4) ---- */
+  function renderMap(list){
+    const lang=I18N.getLang();
+    const map=document.getElementById('listMap');
+    map.querySelectorAll('.gpin,.me-dot').forEach(p=>p.remove());
+    if(state.sort==='near'){const me=document.createElement('div');me.className='me-dot';me.style.left='44%';me.style.top='52%';map.appendChild(me);}
+    list.forEach(c=>{const el=document.createElement('a');el.className='gpin';el.href='./clinic.html?id='+c.id;
+      el.style.left=c.pin.x+'%';el.style.top=c.pin.y+'%';
+      el.innerHTML=`<span class="tip">${c.name[lang]} ★${c.rating} · ${c.dist.toFixed(1)}km</span><span class="dot"><span>${c.cat==='dental'?'🦷':'✚'}</span></span>`;
+      map.appendChild(el);});
+  }
+  let v3tt;function v3toast(msg){let el=document.getElementById('v3toast');
+    if(!el){el=document.createElement('div');el.id='v3toast';el.className='toast';document.body.appendChild(el);}
+    el.textContent=msg;el.classList.add('show');clearTimeout(v3tt);v3tt=setTimeout(()=>el.classList.remove('show'),3200);}
+  document.getElementById('nearBtn').addEventListener('click',()=>{
+    state.sort='near';sortSel.value='near';v3toast(I18N.t('near_done'));apply();});
 
   // reveal
   const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.1});

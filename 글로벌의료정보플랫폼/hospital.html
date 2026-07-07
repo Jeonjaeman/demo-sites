@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LUMIÈRE · 입점 병원 · 파트너 클리닉 관리</title>
 <meta name="description" content="LUMIÈRE 입점 병원 전용 화면. 병원 계정으로 로그인하여 예약 접수 내역을 확인하고, 병원 정보·시술·후기 수정 사항을 최고 관리자에게 요청하세요. 한국어/일본어 지원." />
-<meta name="theme-color" content="#E85D9E" />
+<meta name="theme-color" content="#F4581C" />
 <link rel="stylesheet" href="./assets/style.css" />
 <style>
   /* ===== hospital.html 전용 소량 유틸 (전역 토큰만 사용, 새 색상 없음) ===== */
@@ -18,7 +18,7 @@
     padding:11px 14px;margin-top:4px;font-weight:600;text-align:center}
   .clinic-banner{position:relative;overflow:hidden;border-radius:var(--radius-lg);padding:clamp(24px,4vw,34px);
     color:#fff;margin-bottom:26px;box-shadow:var(--shadow-sm)}
-  .clinic-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(43,31,51,.55),rgba(43,31,51,.22));z-index:0}
+  .clinic-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(120deg,rgba(46,32,19,.55),rgba(46,32,19,.22));z-index:0}
   .clinic-banner > *{position:relative;z-index:1}
   .cb-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .cb-ava{width:64px;height:64px;border-radius:20px;background:rgba(255,255,255,.28);backdrop-filter:blur(6px);
@@ -48,7 +48,7 @@
   .req-empty{color:var(--muted);font-size:13.5px;padding:26px;text-align:center;border:1px dashed var(--line-2);border-radius:var(--radius-sm)}
   .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:300;
     background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:14px 22px;border-radius:var(--radius-pill);
-    box-shadow:0 20px 44px -16px rgba(43,31,51,.6);opacity:0;pointer-events:none;transition:.35s var(--ease);display:flex;align-items:center;gap:9px}
+    box-shadow:0 20px 44px -16px rgba(46,32,19,.6);opacity:0;pointer-events:none;transition:.35s var(--ease);display:flex;align-items:center;gap:9px}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast .tk{color:var(--rose-l)}
   .hv-section{margin-bottom:38px}
@@ -59,6 +59,13 @@
   @media(max-width:600px){
     .stat-row{grid-template-columns:1fr 1fr;gap:12px}
   }
+
+  /* v3: 예약 처리 버튼 · 정산 */
+  .mini-btn2{font-size:12px;font-weight:700;padding:6px 12px;border-radius:var(--radius-pill);border:1px solid var(--line-2);background:#fff;color:var(--ink-2);transition:.18s;cursor:pointer}
+  .mini-btn2:hover{border-color:var(--rose);color:var(--rose-d)}
+  .mini-btn2.ok{background:var(--grad);color:#fff;border-color:transparent}
+  .mini-btn2.no:hover{border-color:#D14343;color:#D14343}
+  .settle-note{font-size:12.5px;color:var(--ink-2);background:var(--lav-100);border-radius:var(--radius-sm);padding:12px 15px;margin:0 0 14px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -179,11 +186,24 @@
             <th data-ko="시술" data-ja="施術">시술</th>
             <th data-ko="방문 희망 일시" data-ja="来院希望日時">방문 희망 일시</th>
             <th data-ko="상태" data-ja="ステータス">상태</th>
+            <th data-ko="처리" data-ja="処理">처리</th>
           </tr>
         </thead>
         <tbody id="bookingBody"></tbody>
       </table>
     </div>
+  </div>
+
+  <!-- ===== 정산 확인 (RFP 2-6 · 열람 전용) ===== -->
+  <div class="hv-section">
+    <div class="dash-head">
+      <div>
+        <h2 data-ko="정산 확인 (이번 달)" data-ja="精算確認 (今月)">정산 확인 (이번 달)</h2>
+        <p data-ko="항목별 자동 계산 내역 — 열람 전용, 총관리자 확정 후 7/15 지급됩니다. (실제 PG 연동 아님)" data-ja="項目別自動計算の内訳 — 閲覧のみ。スーパー管理者の確定後、7/15に支払われます。(実PG連携ではありません)">항목별 자동 계산 내역 — 열람 전용</p>
+      </div>
+      <span class="badge wait" data-ko="확정 대기" data-ja="確定待ち">확정 대기</span>
+    </div>
+    <div class="tbl-wrap"><table class="tbl"><tbody id="settleRows"></tbody></table></div>
   </div>
 
   <!-- ===== 정보·시술·후기 수정 요청 ===== -->
@@ -260,6 +280,7 @@
    ========================================================= */
 (function () {
   const D = window.LUMIERE_DATA;
+  const GL = function(){ var l = I18N.getLang(); return l === "en" ? "ko" : l; };
   const CLINIC = (D && D.clinicById("raon")) || null;
 
   const loginView = document.getElementById("loginView");
@@ -307,7 +328,7 @@
   /* ---- 병원 프로필 배너 렌더 ---- */
   function renderClinic() {
     if (!CLINIC) return;
-    const lang = I18N.getLang();
+    const lang = GL();
     const banner = document.getElementById("clinicBanner");
     const cimg = (D.CLINIC_IMG && D.CLINIC_IMG[CLINIC.id]) || "";
     banner.style.backgroundImage = (cimg ? `url("${cimg}"), ` : "") + CLINIC.grad;
@@ -326,13 +347,13 @@
 
   /* ---- 예약 테이블 렌더 ---- */
   function renderBookings() {
-    const lang = I18N.getLang();
+    const lang = GL();
     const body = document.getElementById("bookingBody");
     const rows = BOOKINGS.filter((b) => curFilter === "all" || b.st === curFilter);
 
     if (!rows.length) {
       body.innerHTML =
-        '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:34px">' +
+        '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:34px">' +
         (lang === "ja" ? "該当する予約がありません。" : "해당하는 예약이 없습니다.") +
         "</td></tr>";
     } else {
@@ -347,6 +368,11 @@
             "<td>" + b.proc[lang] + "</td>" +
             "<td>" + b.when[lang] + "</td>" +
             '<td><span class="badge ' + s.cls + '">' + I18N.t(s.key) + "</span></td>" +
+            "<td>" + (b.st === "wait"
+              ? '<button class="mini-btn2 ok" data-bok="' + b.no + '">' + (lang === "ja" ? "確定" : "확정") + '</button> <button class="mini-btn2 no" data-bcancel="' + b.no + '">' + (lang === "ja" ? "拒否" : "거절") + "</button>"
+              : b.st === "ok"
+              ? '<button class="mini-btn2" data-bdone="' + b.no + '">' + (lang === "ja" ? "来院完了" : "방문완료") + "</button>"
+              : "—") + "</td>" +
             "</tr>"
           );
         })
@@ -397,7 +423,7 @@
   }
 
   function renderRequests() {
-    const lang = I18N.getLang();
+    const lang = GL();
     const list = document.getElementById("reqList");
     if (!requests.length) {
       list.innerHTML =
@@ -426,7 +452,7 @@
   /* ---- 요청 폼 제출 ---- */
   document.getElementById("reqForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    const lang = I18N.getLang();
+    const lang = GL();
     const kind = document.getElementById("reqKind").value;
     const titleEl = document.getElementById("reqTitle");
     const bodyEl = document.getElementById("reqBody");
@@ -471,6 +497,59 @@
     toastTimer = setTimeout(() => t.classList.remove("show"), 3200);
   }
 
+  /* ---- v3: 정산 확인 (자사 · 자동 계산) ---- */
+  function renderSettle() {
+    const lang = GL();
+    const el = document.getElementById("settleRows");
+    if (!el) return;
+    const done = 21, avg = 1800000;
+    const gross = done * avg, fee = Math.round(gross * 0.10), ad = 500000, pg = Math.round(gross * 0.015);
+    const pay = gross - fee - ad - pg;
+    const won = (n) => n.toLocaleString("ko-KR") + (lang === "ja" ? "ウォン" : "원");
+    const rows = [
+      [lang === "ja" ? "完了施術 件数" : "완료 시술 건수", done + (lang === "ja" ? "件" : "건")],
+      [lang === "ja" ? "施術売上 (推定)" : "시술 매출 (추정)", won(gross)],
+      [lang === "ja" ? "プラットフォーム手数料 (10%)" : "플랫폼 수수료 (10%)", "-" + won(fee)],
+      [lang === "ja" ? "広告費" : "광고비", "-" + won(ad)],
+      [lang === "ja" ? "PG手数料 (1.5%)" : "PG 수수료 (1.5%)", "-" + won(pg)],
+      [lang === "ja" ? "支払予定額 (7/15)" : "지급 예정액 (7/15)", "<b style='color:var(--rose-d);font-size:16px'>" + won(pay) + "</b>"],
+    ];
+    el.innerHTML = rows.map((r) => "<tr><td>" + r[0] + "</td><td style='text-align:right'>" + r[1] + "</td></tr>").join("");
+  }
+
+  /* ---- v3: 예약 상태 처리 (확정/거절/방문완료) ---- */
+  document.addEventListener("click", function (e) {
+    const ok = e.target.closest("[data-bok]");
+    const no = e.target.closest("[data-bcancel]");
+    const dn = e.target.closest("[data-bdone]");
+    if (!ok && !no && !dn) return;
+    const noId = (ok || no || dn).dataset.bok || (ok || no || dn).dataset.bcancel || (ok || no || dn).dataset.bdone;
+    const b = BOOKINGS.find((x) => x.no === noId);
+    if (!b) return;
+    b.st = ok ? "ok" : no ? "cancel" : "done";
+    renderBookings();
+    const lang = GL();
+    showToast(ok ? (lang === "ja" ? "予約を確定しました — ユーザーへ通知送信" : "예약이 확정되었습니다 — 사용자에게 알림 발송")
+      : no ? (lang === "ja" ? "予約を拒否しました" : "예약이 거절되었습니다")
+      : (lang === "ja" ? "来院完了 — 口コミ依頼を送信" : "방문 완료 처리 — 후기 요청 발송"));
+  });
+
+  /* ---- v3: 실시간 신규 예약 알림 시뮬레이션 (RFP 2-3) ---- */
+  let notifStarted = false;
+  function startNotifOnce() {
+    if (notifStarted) return;
+    notifStarted = true;
+    setTimeout(function () {
+      BOOKINGS.unshift({
+        no: "B-260707-019", name: { ko: "김**", ja: "キム**" }, phone: "010-****-5521",
+        proc: { ko: "눈매교정", ja: "目もと矯正" }, when: { ko: "7월 11일 (토) 13:00", ja: "7月11日(土) 13:00" }, st: "wait",
+      });
+      renderBookings();
+      const lang = GL();
+      showToast(lang === "ja" ? "🔔 新規予約を受け付けました — リアルタイム通知" : "🔔 신규 예약이 접수되었습니다 — 실시간 알림");
+    }, 6000);
+  }
+
   /* ---- 로그인 / 로그아웃 뷰 토글 ---- */
   function showDashboard() {
     loginView.style.display = "none";
@@ -479,6 +558,8 @@
     renderClinic();
     renderBookings();
     renderRequests();
+    renderSettle();
+    startNotifOnce();
     window.scrollTo(0, 0);
   }
   function showLogin() {
@@ -504,6 +585,7 @@
       renderClinic();
       renderBookings();
       renderRequests();
+      renderSettle();
     }
   });
 })();

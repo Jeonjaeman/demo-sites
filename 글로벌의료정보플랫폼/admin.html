@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LUMIÈRE · 최고 관리자 콘솔</title>
 <meta name="description" content="LUMIÈRE 최고 관리자(Super Admin) 콘솔 데모 — 입점 병원 계정 관리, 콘텐츠 발행 승인, 예약 통합 관리, 회원 관리. 한국어/일본어 지원." />
-<meta name="theme-color" content="#E85D9E" />
+<meta name="theme-color" content="#F4581C" />
 <link rel="stylesheet" href="./assets/style.css" />
 <style>
 /* ===== admin-only helpers (colors ONLY from existing tokens) ===== */
@@ -18,8 +18,8 @@
   color:#fff;font-family:"Poppins";font-weight:800;font-size:26px;box-shadow:var(--glow-rose);margin:0 auto 18px}
 .login-card h1{font-size:24px;font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-.02em}
 .login-card .sub{text-align:center;color:var(--muted);font-size:14px;margin:0 0 26px}
-.demo-hint{margin-top:16px;padding:11px 14px;border-radius:var(--radius-sm);background:rgba(232,93,158,.07);
-  border:1px dashed rgba(232,93,158,.3);font-size:12.5px;color:var(--ink-2);text-align:center}
+.demo-hint{margin-top:16px;padding:11px 14px;border-radius:var(--radius-sm);background:rgba(244,88,28,.07);
+  border:1px dashed rgba(244,88,28,.3);font-size:12.5px;color:var(--ink-2);text-align:center}
 .demo-hint b{color:var(--rose-d);font-family:"Poppins"}
 
 /* dashboard shell */
@@ -36,8 +36,8 @@
 
 /* kpi */
 .stat.kpi{cursor:default}
-.stat .ic.rose{background:rgba(232,93,158,.12);color:var(--rose-d)}
-.stat .ic.lilac{background:rgba(139,92,246,.12);color:var(--violet)}
+.stat .ic.rose{background:rgba(244,88,28,.12);color:var(--rose-d)}
+.stat .ic.lilac{background:rgba(232,138,26,.12);color:var(--violet)}
 .stat .ic.warm{background:var(--grad-soft)}
 .stat .ic.blue{background:#E6EDFB;color:#3A6BD6}
 
@@ -88,7 +88,7 @@
 .st-select{font-size:12.5px;font-weight:700;padding:7px 30px 7px 12px;border-radius:var(--radius-pill);
   border:1.5px solid var(--line-2);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23948AA0' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 11px center;
   color:var(--ink-2);font-family:inherit;-webkit-appearance:none;appearance:none;cursor:pointer;transition:.18s}
-.st-select:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(232,93,158,.12)}
+.st-select:focus{outline:none;border-color:var(--rose);box-shadow:0 0 0 3px rgba(244,88,28,.12)}
 
 /* content approval cards */
 .req-card{display:flex;align-items:flex-start;gap:16px;padding:20px 22px;border-radius:var(--radius);
@@ -116,7 +116,7 @@
 
 /* checkbox row in modal */
 .chk-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:var(--radius-sm);
-  background:rgba(150,90,150,.05);border:1px solid var(--line);margin-bottom:9px;cursor:pointer;transition:.15s}
+  background:rgba(155,110,60,.05);border:1px solid var(--line);margin-bottom:9px;cursor:pointer;transition:.15s}
 .chk-row:hover{border-color:var(--line-2)}
 .chk-row input{width:18px;height:18px;accent-color:var(--rose);flex:none}
 .chk-row .ct{font-size:13.5px}
@@ -126,6 +126,21 @@
 .modal-back .modal{position:relative}
 .grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:520px){.grid-2col{grid-template-columns:1fr}}
+
+/* v3: 알림 벨 · 정산 요약 */
+.bell{position:relative;width:44px;height:44px;border-radius:50%;background:#fff;border:1px solid var(--line);font-size:17px;box-shadow:var(--shadow-sm)}
+.bell .bn{position:absolute;top:-4px;right:-4px;background:#D14343;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:grid;place-items:center;padding:0 4px}
+.bell-panel{position:absolute;right:0;top:calc(100% + 10px);width:330px;background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--line);padding:10px;display:none;z-index:120;text-align:left}
+.bell-panel.show{display:block;animation:fade .25s}
+.bell-panel .bi{display:flex;gap:11px;padding:11px 12px;border-radius:12px;font-size:12.5px;align-items:center;transition:.15s}
+.bell-panel .bi:hover{background:var(--blush)}
+.bell-panel .bi .ic{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;background:var(--grad-soft);font-size:15px}
+.bell-panel .bi b{display:block;font-size:13px}
+.bell-panel .bi small{color:var(--muted)}
+.settle-sum{max-width:440px;margin-top:20px}
+.settle-sum .srow{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px dashed var(--line);font-size:14px}
+.settle-sum .srow.total{border-bottom:0;border-top:2px solid var(--ink);font-size:15px;padding-top:13px;margin-top:4px}
+.settle-sum .srow.total b{color:var(--rose-d);font-size:17px;font-family:"Poppins"}
 </style>
 </head>
 <body>
@@ -143,6 +158,8 @@
       <a href="#" data-panel="bookings" data-ko="예약 관리" data-ja="予約管理">예약 관리</a>
       <a href="#" data-panel="members" data-ko="회원 관리" data-ja="会員管理">회원 관리</a>
       <a href="#" data-panel="content" data-ko="콘텐츠 승인" data-ja="コンテンツ承認">콘텐츠 승인</a>
+      <a href="#" data-panel="reports" data-ko="신고·환불" data-ja="通報・返金">신고·환불</a>
+      <a href="#" data-panel="settle" data-ko="정산" data-ja="精算">정산</a>
     </nav>
     <div class="header-tools">
       <div class="lang-toggle">
@@ -170,9 +187,16 @@
           <label data-ko="비밀번호" data-ja="パスワード">비밀번호</label>
           <input class="input" id="loginPw" type="password" value="1234" data-ko-ph="비밀번호" data-ja-ph="パスワード" />
         </div>
+        <div class="field">
+          <label data-ko="접속 권한 (데모)" data-ja="アクセス権限 (デモ)">접속 권한 (데모)</label>
+          <select class="input" id="loginRole">
+            <option value="super" data-ko="총관리자 (Super Admin)" data-ja="スーパー管理者 (Super Admin)">총관리자 (Super Admin)</option>
+            <option value="mid" data-ko="중간관리자 (Operator)" data-ja="中間管理者 (Operator)">중간관리자 (Operator)</option>
+          </select>
+        </div>
         <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:6px" data-ko="로그인" data-ja="ログイン">로그인</button>
       </form>
-      <div class="demo-hint" data-ko="데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 입력해도 로그인됩니다." data-ja="デモアカウント · <b>admin</b> / <b>1234</b> — 任意の値でもログインできます。">데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 입력해도 로그인됩니다.</div>
+      <div class="demo-hint" data-ko="데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 로그인됩니다. 권한별로 메뉴·승인·정산 범위가 분리됩니다." data-ja="デモアカウント · <b>admin</b> / <b>1234</b> — 任意の値でもログインできます。">데모 계정 · <b>admin</b> / <b>1234</b> — 아무 값이나 입력해도 로그인됩니다.</div>
     </div>
   </div>
 </section>
@@ -185,7 +209,13 @@
       <h1 id="panelTitle" data-ko="대시보드" data-ja="ダッシュボード">대시보드</h1>
       <p id="panelDesc" data-ko="플랫폼 전체 운영 현황을 한눈에 확인합니다." data-ja="プラットフォーム全体の運用状況を一目で確認します。">플랫폼 전체 운영 현황을 한눈에 확인합니다.</p>
     </div>
-    <div class="admin-chip"><span class="av">A</span><span data-ko="최고 관리자 · admin" data-ja="スーパー管理者 · admin">최고 관리자 · admin</span></div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="position:relative">
+        <button class="bell" id="bellBtn">🔔<span class="bn" id="bellN">4</span></button>
+        <div class="bell-panel" id="bellPanel"></div>
+      </div>
+      <div class="admin-chip"><span class="av">A</span><span id="roleChip" data-ko="최고 관리자 · admin" data-ja="スーパー管理者 · admin">최고 관리자 · admin</span></div>
+    </div>
   </div>
 
   <!-- tab bar -->
@@ -196,6 +226,8 @@
       <button data-panel="bookings" data-ko="예약 통합 관리" data-ja="予約統合管理">예약 통합 관리</button>
       <button data-panel="members" data-ko="회원 관리" data-ja="会員管理">회원 관리</button>
       <button data-panel="content" data-ko="콘텐츠 승인" data-ja="コンテンツ承認">콘텐츠 승인</button>
+      <button data-panel="reports" data-ko="신고·환불" data-ja="通報・返金">신고·환불</button>
+      <button data-panel="settle" data-ko="정산 대시보드" data-ja="精算ダッシュボード">정산 대시보드</button>
     </div>
   </div>
 
@@ -349,6 +381,45 @@
     <div id="contentList"></div>
   </section>
 
+  <!-- ============ PANEL: REPORTS (신고·차단·환불 · RFP 2-5) ============ -->
+  <section class="panel" id="panel-reports">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="신고 · 차단 · 환불" data-ja="通報・ブロック・返金">신고 · 차단 · 환불</h2>
+        <p class="ph-sub" data-ko="악성 리뷰 신고를 검토해 차단하고, 예약금 환불 요청을 처리합니다. 리뷰는 병원 제공/이용자 인증 2종 라벨로 게시됩니다." data-ja="悪質な口コミの通報を確認しブロック、予約金の返金要請を処理します。口コミはクリニック提供/利用者認証の2種ラベルで掲載。">악성 리뷰 신고를 검토해 차단하고, 예약금 환불 요청을 처리합니다.</p>
+      </div>
+    </div>
+    <div id="reportList"></div>
+  </section>
+
+  <!-- ============ PANEL: SETTLE (정산 대시보드 · RFP 2-6) ============ -->
+  <section class="panel" id="panel-settle">
+    <div class="panel-head">
+      <div>
+        <h2 data-ko="정산 대시보드" data-ja="精算ダッシュボード">정산 대시보드</h2>
+        <p class="ph-sub" data-ko="실제 PG 연동이 아닌 항목별 자동 계산 데모 — 완료 건수 × 평균 시술가 기준. 중간관리자는 열람만 가능하며 확정은 총관리자 전용입니다." data-ja="実PG連携ではなく項目別自動計算のデモ — 完了件数×平均施術価格基準。中間管理者は閲覧のみ、確定はスーパー管理者専用。">항목별 자동 계산 데모 — 확정은 총관리자 전용.</p>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th data-ko="병원" data-ja="クリニック">병원</th>
+            <th data-ko="완료 건수" data-ja="完了件数">완료 건수</th>
+            <th data-ko="시술 매출(추정)" data-ja="施術売上(推定)">시술 매출(추정)</th>
+            <th data-ko="플랫폼 수수료 10%" data-ja="手数料10%">플랫폼 수수료 10%</th>
+            <th data-ko="광고비" data-ja="広告費">광고비</th>
+            <th>PG 1.5%</th>
+            <th data-ko="지급 예정액" data-ja="支払予定額">지급 예정액</th>
+          </tr>
+        </thead>
+        <tbody id="settleBody"></tbody>
+      </table>
+    </div>
+    <div class="settle-sum" id="settleSum"></div>
+    <button class="btn btn-primary" id="settleConfirm" style="margin-top:18px"></button>
+  </section>
+
 </main>
 
 <!-- ===================== NEW CLINIC MODAL ===================== -->
@@ -426,7 +497,7 @@
 (function(){
   const D = window.LUMIERE_DATA;
   const T = { ko:{}, ja:{} };
-  const L = () => I18N.getLang();
+  const L = () => { const l = I18N.getLang(); return l === 'en' ? 'ko' : l; };
 
   /* ---- inline dictionary for dynamically rendered content ---- */
   const DICT = {
@@ -453,7 +524,13 @@
       blocked:{ko:"회원이 차단되었습니다.",ja:"会員をブロックしました。"},
       unblocked:{ko:"회원 차단이 해제되었습니다.",ja:"会員のブロックを解除しました。"},
       approved:{ko:"콘텐츠가 발행 승인되었습니다.",ja:"コンテンツを発行承認しました。"},
-      rejected:{ko:"콘텐츠 요청이 반려되었습니다.",ja:"コンテンツ要請を却下しました。"}
+      rejected:{ko:"콘텐츠 요청이 반려되었습니다.",ja:"コンテンツ要請を却下しました。"},
+      repBlocked:{ko:"리뷰가 차단 처리되었습니다.",ja:"口コミをブロックしました。"},
+      repRefund:{ko:"예약금 환불이 처리되었습니다.",ja:"予約金を返金処理しました。"},
+      repKeep:{ko:"검토 완료 — 게시 유지되었습니다.",ja:"確認完了 — 掲載を維持します。"},
+      settled:{ko:"정산이 확정되었습니다 — 7/15 지급 예정.",ja:"精算を確定しました — 7/15支払予定。"},
+      noPerm:{ko:"🔒 총관리자 전용 기능입니다.",ja:"🔒 スーパー管理者専用の機能です。"},
+      newBooking:{ko:"🔔 실시간 알림 — 신규 예약 접수 (라온 성형외과)",ja:"🔔 リアルタイム通知 — 新規予約 (ラオン美容外科)"}
     }
   };
   const tx = (obj) => (obj && obj[L()]) || (obj && obj.ko) || "";
@@ -548,6 +625,23 @@
     { id:3, clinic:"puredent",  kind:"review", summary:{ko:"악성 후기 신고 및 삭제 요청 (허위 사실 포함)",ja:"悪質な口コミの通報・削除要請 (虚偽事実を含む)"}, date:"2026.07.03", status:"pending" },
     { id:4, clinic:"beautyline",kind:"proc",   summary:{ko:"'광대 축소' 시술 가격 인상 (450→480만원)",ja:"「頬骨縮小」施術価格の引き上げ (450→480万ウォン)"}, date:"2026.07.03", status:"pending" },
     { id:5, clinic:"whitebell", kind:"info",   summary:{ko:"대표 원장 프로필 및 병원 대표 이미지 교체",ja:"代表院長プロフィール・クリニック代表画像の差し替え"}, date:"2026.07.02", status:"pending" }
+  ];
+
+  /* ---- v3: 권한 · 신고/환불 · 정산 데이터 ---- */
+  let role = "super";
+  let reports = [
+    { id:"RP-88", clinic:"whitebell", target:{ko:"리뷰 #4412",ja:"口コミ #4412"}, reason:{ko:"경쟁사 비방 의심",ja:"競合誹謗の疑い"}, reporter:{ko:"병원",ja:"クリニック"}, date:"2026.07.06", status:"pending" },
+    { id:"RP-87", clinic:"raon", target:{ko:"리뷰 #4398",ja:"口コミ #4398"}, reason:{ko:"허위 시술 후기 의심",ja:"虚偽の口コミの疑い"}, reporter:{ko:"이용자",ja:"利用者"}, date:"2026.07.05", status:"pending" },
+    { id:"RP-86", clinic:"puredent", target:{ko:"결제 #P-2201 예약금",ja:"決済 #P-2201 予約金"}, reason:{ko:"예약금 환불 요청",ja:"予約金の返金要請"}, reporter:{ko:"이용자",ja:"利用者"}, date:"2026.07.03", status:"pending", refund:true },
+    { id:"RP-85", clinic:"aurora", target:{ko:"리뷰 #4371",ja:"口コミ #4371"}, reason:{ko:"욕설 포함",ja:"暴言を含む"}, reporter:{ko:"이용자",ja:"利用者"}, date:"2026.07.02", status:"done", action:{ko:"차단 완료",ja:"ブロック済み"} }
+  ];
+  const SETTLE = [
+    { clinic:"raon", done:21, avg:1800000, ad:500000 },
+    { clinic:"aurora", done:34, avg:520000, ad:300000 },
+    { clinic:"puredent", done:18, avg:1400000, ad:400000 },
+    { clinic:"whitebell", done:26, avg:430000, ad:200000 },
+    { clinic:"beautyline", done:12, avg:3200000, ad:450000 },
+    { clinic:"smileplus", done:19, avg:820000, ad:250000 }
   ];
 
   function clinicName(id){
@@ -696,6 +790,94 @@
     }).join('');
   }
 
+  function fmtWon(n){ return n.toLocaleString("ko-KR") + (L()==="ja" ? "\u30A6\u30A9\u30F3" : "\uC6D0"); }
+
+  /* ---- v3: 신고·차단·환불 ---- */
+  function renderReports(){
+    const el = document.getElementById("reportList"); if(!el) return;
+    const lang = L();
+    el.innerHTML = reports.map(r=>{
+      const done = r.status !== "pending";
+      return `
+      <div class="req-card ${done?"processed":""}">
+        <div class="r-ic">${r.refund ? "\uD83D\uDCB8" : "\uD83D\uDEA9"}</div>
+        <div class="r-body">
+          <div class="r-top"><b>${clinicName(r.clinic)}</b>
+            <span class="pill pill-soft">${tx(r.target)}</span>
+            ${done ? `<span class="badge done">${tx(r.action)||""}</span>` : `<span class="badge wait">${tx(DICT.st.wait)}</span>`}
+          </div>
+          <p class="r-summary">${tx(r.reason)} · ${lang==="ja"?"通報者":"신고자"}: ${tx(r.reporter)}</p>
+          <span class="r-date">${r.date}</span>
+        </div>
+        <div class="r-actions">
+          ${r.refund
+            ? `<button class="mini-btn solid" data-rep-refund="${r.id}">${lang==="ja"?"返金処理":"환불 처리"}</button>`
+            : `<button class="mini-btn solid" data-rep-block="${r.id}">${lang==="ja"?"ブロック":"차단"}</button>`}
+          <button class="mini-btn" data-rep-keep="${r.id}">${lang==="ja"?"掲載維持":"게시 유지"}</button>
+        </div>
+      </div>`;
+    }).join("");
+  }
+
+  /* ---- v3: 정산 대시보드 (자동 계산 · 실연동 아님) ---- */
+  function renderSettle(){
+    const el = document.getElementById("settleBody"); if(!el) return;
+    const lang = L();
+    let sum = { gross:0, fee:0, ad:0, pg:0, pay:0 };
+    el.innerHTML = SETTLE.map(s=>{
+      const gross = s.done*s.avg, fee = Math.round(gross*.10), pg = Math.round(gross*.015), pay = gross-fee-s.ad-pg;
+      sum.gross+=gross; sum.fee+=fee; sum.ad+=s.ad; sum.pg+=pg; sum.pay+=pay;
+      return `<tr><td><span class="cname">${clinicName(s.clinic)}</span></td><td>${s.done}${tx(DICT.cnt)}</td><td>${fmtWon(gross)}</td><td style="color:var(--rose-d)">-${fmtWon(fee)}</td><td>-${fmtWon(s.ad)}</td><td>-${fmtWon(pg)}</td><td><b>${fmtWon(pay)}</b></td></tr>`;
+    }).join("");
+    const lbl = lang==="ja"
+      ? ["施術売上 合計","手数料 (10%)","広告費","PG手数料 (1.5%)","パートナー支払 総額"]
+      : ["시술 매출 합계","플랫폼 수수료 (10%)","광고비","PG 수수료 (1.5%)","파트너 지급 총액"];
+    document.getElementById("settleSum").innerHTML =
+      `<div class="srow"><span>${lbl[0]}</span><b>${fmtWon(sum.gross)}</b></div>`+
+      `<div class="srow"><span>${lbl[1]}</span><b>-${fmtWon(sum.fee)}</b></div>`+
+      `<div class="srow"><span>${lbl[2]}</span><b>-${fmtWon(sum.ad)}</b></div>`+
+      `<div class="srow"><span>${lbl[3]}</span><b>-${fmtWon(sum.pg)}</b></div>`+
+      `<div class="srow total"><span>${lbl[4]}</span><b>${fmtWon(sum.pay)}</b></div>`;
+    const btn = document.getElementById("settleConfirm");
+    if(btn){
+      if(role === "super"){ btn.disabled = false; btn.classList.remove("btn-ghost"); btn.classList.add("btn-primary");
+        btn.textContent = lang==="ja" ? "\u7CBE\u7B97\u78BA\u5B9A (7/15 \u652F\u6255)" : "\uC815\uC0B0 \uD655\uC815 (7/15 \uC9C0\uAE09)"; }
+      else { btn.disabled = true; btn.classList.remove("btn-primary"); btn.classList.add("btn-ghost");
+        btn.textContent = lang==="ja" ? "\uD83D\uDD12 \u78BA\u5B9A\u6A29\u9650\u306A\u3057 \u2014 \u30B9\u30FC\u30D1\u30FC\u7BA1\u7406\u8005\u5C02\u7528" : "\uD83D\uDD12 \uD655\uC815 \uAD8C\uD55C \uC5C6\uC74C \u2014 \uCD1D\uAD00\uB9AC\uC790 \uC804\uC6A9"; }
+    }
+  }
+
+  /* ---- v3: 알림 벨 (실시간 알림 · RFP 2-3) ---- */
+  function renderBell(){
+    const el = document.getElementById("bellPanel"); if(!el) return;
+    const lang = L();
+    const waitBk = bookings.filter(b=>b.status==="wait").length;
+    const pendCt = contentReqs.filter(r=>r.status==="pending").length;
+    const pendRp = reports.filter(r=>r.status==="pending").length;
+    const items = [
+      { ic:"\uD83D\uDCC5", b: lang==="ja"?`\u4E88\u7D04\u5F85\u3061 ${waitBk}\u4EF6`:`\uC608\uC57D\uB300\uAE30 ${waitBk}\uAC74`, s: lang==="ja"?"\u78BA\u8A8D\u304C\u5FC5\u8981\u3067\u3059":"\uC989\uC2DC \uD655\uC778 \uD544\uC694", panel:"bookings" },
+      { ic:"\u270F\uFE0F", b: lang==="ja"?`\u627F\u8A8D\u5F85\u3061 ${pendCt}\u4EF6`:`\uC2B9\uC778 \uB300\uAE30 ${pendCt}\uAC74`, s: lang==="ja"?"\u30D1\u30FC\u30C8\u30CA\u30FC\u4FEE\u6B63\u30EA\u30AF\u30A8\u30B9\u30C8":"\uD30C\uD2B8\uB108 \uC218\uC815 \uC694\uCCAD", panel:"content" },
+      { ic:"\uD83D\uDEA9", b: lang==="ja"?`\u901A\u5831 ${pendRp}\u4EF6`:`\uC2E0\uACE0 ${pendRp}\uAC74`, s: lang==="ja"?"\u30D6\u30ED\u30C3\u30AF/\u8FD4\u91D1\u51E6\u7406":"\uCC28\uB2E8/\uD658\uBD88 \uCC98\uB9AC", panel:"reports" },
+      { ic:"\uD83D\uDCB0", b: lang==="ja"?"6\u6708\u7CBE\u7B97\u78BA\u5B9A":"6\uC6D4 \uC815\uC0B0 \uD655\uC815", s: lang==="ja"?"\u652F\u6255\u4E88\u5B9A 7/15":"\uC9C0\uAE09 \uC608\uC815 7/15", panel:"settle" }
+    ];
+    el.innerHTML = items.map(i=>`<a href="#" class="bi" data-panel="${i.panel}"><span class="ic">${i.ic}</span><span><b>${i.b}</b><small>${i.s}</small></span></a>`).join("");
+    document.getElementById("bellN").textContent = waitBk + pendCt + pendRp;
+  }
+
+  /* ---- v3: 권한 적용 ---- */
+  function applyRole(){
+    document.querySelectorAll('a[data-panel="members"], button[data-panel="members"]').forEach(el=>{
+      el.style.display = role === "super" ? "" : "none";
+    });
+    const chip = document.getElementById("roleChip");
+    if(chip){
+      chip.setAttribute("data-ko", role==="super" ? "\uCD1D\uAD00\uB9AC\uC790 \u00B7 admin" : "\uC911\uAC04\uAD00\uB9AC\uC790 \u00B7 operator");
+      chip.setAttribute("data-ja", role==="super" ? "\u30B9\u30FC\u30D1\u30FC\u7BA1\u7406\u8005 \u00B7 admin" : "\u4E2D\u9593\u7BA1\u7406\u8005 \u00B7 operator");
+      chip.textContent = chip.getAttribute("data-" + L());
+    }
+    renderSettle();
+  }
+
   function renderAll(){
     renderChart();
     renderPendingMini();
@@ -703,6 +885,9 @@
     renderBookings();
     renderMembers();
     renderContent();
+    renderReports();
+    renderSettle();
+    renderBell();
     I18N.applyStatic(document);
   }
 
@@ -732,10 +917,13 @@
     clinics: { title:{ko:"입점 병원 관리",ja:"提携クリニック管理"}, desc:{ko:"입점 병원 계정 생성 및 운영 상태를 관리합니다.",ja:"提携クリニックのアカウント作成と運用状態を管理します。"} },
     bookings:{ title:{ko:"예약 통합 관리",ja:"予約統合管理"}, desc:{ko:"플랫폼 전체 예약 접수를 조회하고 상태를 변경합니다.",ja:"プラットフォーム全体の予約受付を照会し状態を変更します。"} },
     members: { title:{ko:"회원 관리",ja:"会員管理"}, desc:{ko:"가입 사용자 정보를 조회하고 차단/해제를 관리합니다.",ja:"登録ユーザー情報を照会し、ブロック/解除を管理します。"} },
-    content: { title:{ko:"콘텐츠 발행 승인",ja:"コンテンツ発行承認"}, desc:{ko:"입점 병원이 요청한 정보·시술·후기 수정 사항을 검토합니다.",ja:"提携クリニックが要請した情報・施術・口コミの修正事項を確認します。"} }
+    content: { title:{ko:"콘텐츠 발행 승인",ja:"コンテンツ発行承認"}, desc:{ko:"입점 병원이 요청한 정보·시술·후기 수정 사항을 검토합니다.",ja:"提携クリニックが要請した情報・施術・口コミの修正事項を確認します。"} },
+    reports: { title:{ko:"신고 · 차단 · 환불",ja:"通報・ブロック・返金"}, desc:{ko:"악성 리뷰 차단과 예약금 환불 요청을 처리합니다.",ja:"悪質な口コミのブロックと予約金の返金要請を処理します。"} },
+    settle:  { title:{ko:"정산 대시보드",ja:"精算ダッシュボード"}, desc:{ko:"항목별 자동 계산 내역을 확인합니다 (실연동 아님).",ja:"項目別の自動計算内訳を確認します (実連携ではありません)。"} }
   };
 
   function showPanel(name){
+    if(role !== "super" && name === "members"){ toast(DICT.toast.noPerm); name = "dash"; }
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
     const target = document.getElementById('panel-'+name);
     if(target) target.classList.add('on');
@@ -775,8 +963,14 @@
     logoutBtn.style.display = on ? '' : 'none';
   }
 
+  let notifStarted = false;
   document.getElementById('loginForm').addEventListener('submit', (e)=>{
     e.preventDefault();
+    role = (document.getElementById('loginRole')||{value:'super'}).value;
+    applyRole();
+    if(!notifStarted){ notifStarted = true;
+      setTimeout(()=>{ toast(DICT.toast.newBooking);
+        const n=document.getElementById('bellN'); if(n) n.textContent = (+n.textContent||0)+1; }, 6000); }
     setLoggedIn(true);
     renderAll();
     showPanel('dash');
@@ -895,6 +1089,33 @@
   });
 
   /* =========================================================
+     v3: 신고·환불 / 정산 확정 / 알림 벨 이벤트
+     ========================================================= */
+  document.addEventListener('click', (e)=>{
+    const blk = e.target.closest('[data-rep-block]');
+    const rfd = e.target.closest('[data-rep-refund]');
+    const kp  = e.target.closest('[data-rep-keep]');
+    if(blk||rfd||kp){
+      const id = (blk||rfd||kp).dataset.repBlock || (blk||rfd||kp).dataset.repRefund || (blk||rfd||kp).dataset.repKeep;
+      const r = reports.find(x=>x.id===id); if(!r) return;
+      r.status = "done";
+      r.action = blk ? {ko:"차단 완료",ja:"ブロック済み"} : rfd ? {ko:"환불 완료",ja:"返金済み"} : {ko:"게시 유지",ja:"掲載維持"};
+      renderReports(); renderBell();
+      toast(blk ? DICT.toast.repBlocked : rfd ? DICT.toast.repRefund : DICT.toast.repKeep);
+      return;
+    }
+    if(e.target.closest('#settleConfirm')){
+      if(role !== "super"){ toast(DICT.toast.noPerm); return; }
+      toast(DICT.toast.settled);
+      return;
+    }
+    const bell = e.target.closest('#bellBtn');
+    const panel = document.getElementById('bellPanel');
+    if(bell){ e.preventDefault(); panel.classList.toggle('show'); return; }
+    if(panel && !e.target.closest('#bellPanel')) panel.classList.remove('show');
+  });
+
+  /* =========================================================
      LANG CHANGE — re-render all dynamic content
      ========================================================= */
   document.addEventListener('langchange', ()=>{
@@ -905,6 +1126,10 @@
     renderBookings();
     renderMembers();
     renderContent();
+    renderReports();
+    renderSettle();
+    renderBell();
+    applyRole();
     // re-apply static translation to freshly injected nodes
     I18N.applyStatic(document);
     // keep panel title in current language (data attrs already set by showPanel)

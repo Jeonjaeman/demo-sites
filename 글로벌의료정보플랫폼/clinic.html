@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>병원 상세 · LUMIÈRE</title>
 <meta name="description" content="병원 소개·시술 정보·실후기 확인 및 상담 예약. 한국어/일본어 지원." />
-<meta name="theme-color" content="#E85D9E" />
+<meta name="theme-color" content="#F4581C" />
 <link rel="stylesheet" href="./assets/style.css" />
 <style>
   /* 병원 상세: 랜딩처럼 배너 풀블리드 + 헤더 오버레이 (헤더가 배너 위에 떠 있음) */
@@ -13,7 +13,7 @@
   .c-hero{position:relative;margin-top:0;border-radius:0;overflow:hidden}
   .c-banner{height:clamp(320px,26vw,380px);position:relative}
   .c-banner .art{position:absolute;inset:0}
-  .c-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(43,31,51,.5))}
+  .c-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(46,32,19,.5))}
   .ba .layer,.ba-mini .layer{background-size:cover;background-position:center}
   .c-head{max-width:var(--maxw);margin:-70px auto 0;padding:0 24px;position:relative;z-index:2}
   .c-headcard{background:var(--card-solid);border:1px solid var(--line);border-radius:var(--radius);padding:26px 28px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
@@ -25,14 +25,14 @@
   @media(max-width:920px){.aside{position:static}}
   .tabpanel{display:none}.tabpanel.on{display:block;animation:fade .35s}
   .proc{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;margin-bottom:12px;transition:.2s}
-  .proc:hover{border-color:rgba(232,93,158,.3);box-shadow:var(--shadow-sm)}
+  .proc:hover{border-color:rgba(244,88,28,.3);box-shadow:var(--shadow-sm)}
   .proc h4{margin:0 0 4px;font-size:16px}
   .proc p{margin:0;color:var(--muted);font-size:13.5px}
   .proc .pr{text-align:right;flex:none}
   .proc .pr b{font-family:'Poppins';color:var(--rose-d);font-size:17px}
   .rev{padding:20px;border:1px solid var(--line);border-radius:var(--radius-sm);background:#fff;margin-bottom:12px}
   .rev .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .map{height:200px;border-radius:var(--radius-sm);background-image:linear-gradient(135deg,#E9D5FF,#FFE1EC);position:relative;overflow:hidden;border:1px solid var(--line)}
+  .map{height:200px;border-radius:var(--radius-sm);background-image:linear-gradient(135deg,#FFE8C7,#FFE3D1);position:relative;overflow:hidden;border:1px solid var(--line)}
   .map .pin{position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:34px;filter:drop-shadow(0 6px 8px rgba(0,0,0,.2))}
   .step-ind{display:flex;gap:8px;margin:2px 0 18px}
   .step-ind span{flex:1;height:5px;border-radius:99px;background:var(--line)}
@@ -60,7 +60,7 @@
     <div class="header-tools">
       <div class="lang-toggle">
         <button data-l="ko">KOR</button>
-        <button data-l="ja">JPN</button>
+        <button data-l="ja">JPN</button><button data-l="en">ENG</button>
       </div>
       <button class="btn btn-primary" id="ctaTop" style="padding:11px 20px;font-size:14px" data-ko="상담 예약" data-ja="予約する">상담 예약</button>
     </div>
@@ -130,7 +130,7 @@
         <div class="mt-m">
           <div class="sumline"><span class="muted" data-ko="주소" data-ja="住所">주소</span><b id="locAddr"></b></div>
           <div class="sumline"><span class="muted" data-ko="진료시간" data-ja="診療時間">진료시간</span><b id="locHours"></b></div>
-          <div class="sumline"><span class="muted" data-ko="언어 지원" data-ja="対応言語">언어 지원</span><b>한국어 · 日本語</b></div>
+          <div class="sumline"><span class="muted" data-ko="언어 지원" data-ja="対応言語">언어 지원</span><b>한국어 · 日本語 · English</b></div>
         </div>
       </div>
     </div>
@@ -142,7 +142,13 @@
         <div class="sumline"><span class="muted" data-ko="평점" data-ja="評価">평점</span><b><span class="star" style="color:#FFB020">★</span> <span id="asRating"></span></b></div>
         <div class="sumline"><span class="muted" data-ko="실후기" data-ja="口コミ">실후기</span><b id="asReviews"></b></div>
         <div class="sumline" style="border:none"><span class="muted" data-ko="상담료" data-ja="相談料">상담료</span><b style="color:var(--rose-d)" data-ko="무료" data-ja="無料">무료</b></div>
-        <button class="btn btn-primary btn-block btn-lg mt-s" id="ctaAside" data-ko="상담 예약하기" data-ja="予約する">상담 예약하기</button>
+        <button class="btn btn-primary btn-block btn-lg mt-s" id="ctaAside" data-ko="상담 예약하기" data-ja="予約する" data-en="Book a Consult">상담 예약하기</button>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px">
+          <button class="btn btn-ghost" style="padding:11px 0;font-size:12.5px" data-ch="tel">📞 <span data-ko="전화" data-ja="電話" data-en="Call">전화</span></button>
+          <button class="btn btn-ghost" style="padding:11px 0;font-size:12.5px" data-ch="KakaoTalk">💬 Kakao</button>
+          <button class="btn btn-ghost" style="padding:11px 0;font-size:12.5px" data-ch="LINE">💚 LINE</button>
+        </div>
+        <p class="muted" style="font-size:11.5px;margin:14px 0 0;line-height:1.6" data-ko="상담·예약 내역은 저장되어 병원과 운영팀이 함께 확인합니다. 이력은 관계 법령 기준 5년 보존됩니다." data-ja="相談・予約履歴は保存され、クリニックと運営が共に確認します。履歴は法令基準で5年保存。" data-en="Consult records are saved and shared with the clinic and ops team. Retained 5 years per law.">상담·예약 내역은 저장되어 병원과 운영팀이 함께 확인합니다.</p>
       </div>
     </aside>
   </div>
@@ -197,7 +203,8 @@
     <div id="step3" class="hide" style="text-align:center;padding:10px 0">
       <div class="done-check">✓</div>
       <h3 data-ko="예약 신청 완료" data-ja="予約申込 完了">예약 신청 완료</h3>
-      <p class="muted" style="margin:6px 0 20px" data-ko="병원에서 확인 후 연락드립니다." data-ja="クリニックの確認後ご連絡します。">병원에서 확인 후 연락드립니다.</p>
+      <p class="muted" style="margin:6px 0 8px" data-ko="병원에서 확인 후 연락드립니다." data-ja="クリニックの確認後ご連絡します。" data-en="We'll contact you once the clinic confirms.">병원에서 확인 후 연락드립니다.</p>
+      <p class="muted" style="font-size:12px;margin:0 0 18px" data-ko="🔔 병원·운영팀 대시보드에 실시간 알림이 전송되었으며, 상담 내역은 저장되어 함께 관리됩니다 (5년 보존)." data-ja="🔔 クリニック・運営ダッシュボードへリアルタイム通知を送信。相談履歴は保存され共同管理されます (5年保存)。" data-en="🔔 Real-time alert sent to clinic & ops dashboards. Your consult record is saved (retained 5 years).">🔔 병원·운영팀 대시보드에 실시간 알림이 전송되었습니다.</p>
       <div class="glass" style="padding:18px;text-align:left;border-radius:var(--radius-sm)">
         <div class="sumline"><span class="muted" data-ko="병원" data-ja="クリニック">병원</span><b id="dName"></b></div>
         <div class="sumline"><span class="muted" data-ko="일시" data-ja="日時">일시</span><b id="dWhen"></b></div>
@@ -224,6 +231,7 @@ if(!clinic){document.getElementById('notfound').classList.remove('hide');}
 else{
   document.getElementById('main').classList.remove('hide');
   const $=s=>document.getElementById(s);
+  const blockedRv=new Set(); // v3: 신고로 숨김 처리된 리뷰 인덱스
 
   function render(){
     const lang=I18N.getLang();
@@ -238,37 +246,42 @@ else{
     $('cArea').textContent='📍 '+clinic.area_full[lang];
     $('cTags').innerHTML=clinic.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('');
     $('asRating').textContent=clinic.rating;
-    $('asReviews').textContent=clinic.reviews.toLocaleString()+(lang==='ja'?' 件':'개');
+    $('asReviews').textContent=clinic.reviews.toLocaleString()+(lang==='ja'?' 件':lang==='en'?' reviews':'개');
     // intro
     const intro={ko:`${clinic.name.ko}는 ${clinic.area_full.ko}에 위치한 ${D.catLabel(clinic.cat,'ko')}로, "${clinic.tagline.ko}"를 지향합니다. ${clinic.since}년부터 축적된 임상 경험과 정밀한 상담으로 신뢰받고 있으며, 한국어와 일본어 상담을 모두 지원합니다.`,
       ja:`${clinic.name.ja}は${clinic.area_full.ja}に位置する${D.catLabel(clinic.cat,'ja')}で、「${clinic.tagline.ja}」を目指しています。${clinic.since}年からの臨床経験と丁寧なカウンセリングで信頼を得ており、韓国語・日本語の相談に対応します。`};
-    $('introText').textContent=intro[lang];
+    $('introText').textContent=intro[lang]||intro.ko;
     // before/after (실제 사진: 같은 이미지, before는 무광 오버레이로 '시술 전' 느낌)
     var mainBaImg=(clinic.cat==='dental')?D.M.smile2:D.M.profile;
-    $('baBefore').style.backgroundImage='linear-gradient(rgba(120,114,126,.42),rgba(120,114,126,.42)),url("'+mainBaImg+'")';
+    $('baBefore').style.backgroundImage='linear-gradient(rgba(126,118,104,.42),rgba(126,118,104,.42)),url("'+mainBaImg+'")';
     $('baAfter').style.backgroundImage='url("'+mainBaImg+'")';
     // procedures
     $('procList').innerHTML=clinic.procedures.map(p=>`
       <div class="proc">
         <div><h4>${p.name[lang]}</h4><p>${p.desc[lang]}</p></div>
-        <div class="pr"><b>${D.fmtPrice(p.price,lang)}</b><div><button class="btn btn-soft" style="padding:8px 14px;font-size:13px;margin-top:6px" data-book>${lang==='ja'?'予約':'예약'}</button></div></div>
+        <div class="pr"><b>${D.fmtPrice(p.price,lang)}</b><div><button class="btn btn-soft" style="padding:8px 14px;font-size:13px;margin-top:6px" data-book>${lang==='ja'?'予約':lang==='en'?'Book':'예약'}</button></div></div>
       </div>`).join('');
     // reviews
-    $('revList').innerHTML=clinic.reviewList.map(r=>`
-      <div class="rev">
-        <div class="top"><span class="rating"><span class="star">${'★'.repeat(r.rating)}</span></span><span class="muted" style="font-size:13px">${r.date}</span></div>
-        <div style="font-size:15px;color:var(--ink)">"${r.text[lang]}"</div>
-        <div class="muted" style="font-size:13px;margin-top:8px">${r.user} · ${r.proc[lang]}</div>
-      </div>`).join('') || `<p class="muted">${lang==='ja'?'口コミ準備中':'후기 준비중'}</p>`;
+    $('revList').innerHTML=clinic.reviewList.map((r,ri)=>{
+      const blocked=blockedRv.has(ri);
+      return `
+      <div class="rev${blocked?' rv-blocked':''}">
+        <div class="top"><span style="display:inline-flex;align-items:center;gap:8px"><span class="rating"><span class="star">${'★'.repeat(r.rating)}</span></span>
+          <span class="rv-type ${r.type}">${I18N.t(r.type==='hospital'?'review_hospital':'review_user')}</span></span>
+          <span class="muted" style="font-size:13px">${r.date}</span></div>
+        <div style="font-size:15px;color:var(--ink)" class="q">${blocked?(lang==='ja'?'運営により非表示':lang==='en'?'Hidden by ops team':'운영팀에 의해 숨김 처리됨'):'"'+r.text[lang]+'"'}</div>
+        <div class="muted" style="font-size:13px;margin-top:8px;display:flex;justify-content:space-between;align-items:center"><span>${r.user} · ${r.proc[lang]}</span>
+          ${blocked?'':`<button class="mini-rep" data-report="${ri}">🚩 ${I18N.t('report')}</button>`}</div>
+      </div>`;}).join('') || `<p class="muted">${lang==='ja'?'口コミ準備中':lang==='en'?'Reviews coming soon':'후기 준비중'}</p>`;
     // location
-    $('locAddr').textContent=clinic.area_full[lang]+(lang==='ja'?' (デモ住所)':' (데모 주소)');
+    $('locAddr').textContent=clinic.area_full[lang]+(lang==='ja'?' (デモ住所)':lang==='en'?' (demo address)':' (데모 주소)');
     $('locHours').textContent=clinic.hours[lang];
     $('bkName').textContent=clinic.name[lang];
     // same-category before/after cases
     var cases=D.baByCat(clinic.cat).slice(0,3);
     var BA_PART_IMG={'눈성형':D.M.eyes,'코성형':D.M.nose2,'안면윤곽':D.M.vline,'리프팅':D.M.lift2,'치아교정':D.M.teeth2,'심미보철':D.M.smile2,'치아미백':D.M.dental,'바디라인':D.M.spa};
     $('clinicBaGallery').innerHTML=cases.map(function(b){var im=BA_PART_IMG[b.part.ko]||D.M.profile;return '<div class="ba-mini" data-cba>'+
-      '<div class="layer before" style="background-image:linear-gradient(rgba(120,114,126,.42),rgba(120,114,126,.42)),url(\''+im+'\')"><span class="lab b">BEFORE</span></div>'+
+      '<div class="layer before" style="background-image:linear-gradient(rgba(126,118,104,.42),rgba(126,118,104,.42)),url(\''+im+'\')"><span class="lab b">BEFORE</span></div>'+
       '<div class="layer after" style="background-image:url(\''+im+'\');clip-path:inset(0 0 0 50%)"><span class="lab a">AFTER</span></div>'+
       '<div class="handle" style="left:50%"><div class="grip">⟺</div></div>'+
       '<div class="cap"><b>'+b.part[lang]+'</b><span>'+b.proc[lang]+'</span></div></div>';}).join('');
@@ -303,6 +316,18 @@ else{
     requestAnimationFrame(()=>set(ba.getBoundingClientRect().left+ba.getBoundingClientRect().width*.5));
   })();
 
+  /* ---- v3: 리뷰 신고 · 상담 채널 · 토스트 ---- */
+  let v3tt;function v3toast(msg){let el=document.getElementById('v3toast');
+    if(!el){el=document.createElement('div');el.id='v3toast';el.className='toast';document.body.appendChild(el);}
+    el.textContent=msg;el.classList.add('show');clearTimeout(v3tt);v3tt=setTimeout(()=>el.classList.remove('show'),3200);}
+  document.addEventListener('click',e=>{
+    const rep=e.target.closest('[data-report]');
+    if(rep){blockedRv.add(+rep.dataset.report);v3toast(I18N.t('report_done'));render();return;}
+    const ch=e.target.closest('[data-ch]');
+    if(ch){const l=I18N.getLang();
+      v3toast(ch.dataset.ch==='tel'?('📞 02-0000-0000 · '+clinic.name[l]):(ch.dataset.ch+' — '+({ko:'채널 연결 (데모)',ja:'チャンネル接続(デモ)',en:'Channel link (demo)'}[l])));}
+  });
+
   /* ===== BOOKING ===== */
   const modal=$('bookModal');
   const sel={date:null,time:null};
@@ -324,8 +349,8 @@ else{
 
   function renderCal(){
     const lang=I18N.getLang();
-    $('calTitle').textContent=lang==='ja'?`${viewY}年 ${viewM+1}月`:`${viewY}년 ${viewM+1}월`;
-    const dows=(lang==='ja'?['日','月','火','水','木','金','土']:['일','월','화','수','목','금','토']);
+    $('calTitle').textContent=lang==='ja'?`${viewY}年 ${viewM+1}月`:lang==='en'?`${viewY}. ${String(viewM+1).padStart(2,'0')}`:`${viewY}년 ${viewM+1}월`;
+    const dows=(lang==='ja'?['日','月','火','水','木','金','土']:lang==='en'?['Sun','Mon','Tue','Wed','Thu','Fri','Sat']:['일','월','화','수','목','금','토']);
     const first=new Date(viewY,viewM,1);const start=first.getDay();const days=new Date(viewY,viewM+1,0).getDate();
     let html=dows.map(d=>`<span class="dow">${d}</span>`).join('');
     for(let i=0;i<start;i++)html+=`<span class="day off"></span>`;
@@ -356,7 +381,8 @@ else{
   function checkStep1(){$('toStep2').disabled=!(sel.date&&sel.time);}
   function whenText(){
     const lang=I18N.getLang();if(!sel.date)return'';
-    const dd=sel.date;const dow=(lang==='ja'?['日','月','火','水','木','金','土']:['일','월','화','수','목','금','토'])[dd.getDay()];
+    const dd=sel.date;const dow=(lang==='ja'?['日','月','火','水','木','金','土']:lang==='en'?['Sun','Mon','Tue','Wed','Thu','Fri','Sat']:['일','월','화','수','목','금','토'])[dd.getDay()];
+    if(lang==='en')return `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dd.getMonth()]} ${dd.getDate()}, ${dd.getFullYear()} (${dow}) ${sel.time}`;
     return lang==='ja'?`${dd.getFullYear()}年${dd.getMonth()+1}月${dd.getDate()}日(${dow}) ${sel.time}`
                       :`${dd.getFullYear()}년 ${dd.getMonth()+1}월 ${dd.getDate()}일 (${dow}) ${sel.time}`;
   }
@@ -375,7 +401,7 @@ else{
   $('backStep1').addEventListener('click',()=>step(1));
   $('submitBook').addEventListener('click',()=>{
     const lang=I18N.getLang();
-    if(!$('fName').value.trim()||!$('fPhone').value.trim()){$( 'fName').value.trim()||$('fName').focus();alert(lang==='ja'?'お名前と電話番号を入力してください。':'이름과 연락처를 입력해 주세요.');return;}
+    if(!$('fName').value.trim()||!$('fPhone').value.trim()){$( 'fName').value.trim()||$('fName').focus();alert(lang==='ja'?'お名前と電話番号を入力してください。':lang==='en'?'Please enter your name and phone number.':'이름과 연락처를 입력해 주세요.');return;}
     $('dName').textContent=clinic.name[lang];$('dWhen').textContent=whenText();$('dWho').textContent=$('fName').value.trim();
     step(3);
   });

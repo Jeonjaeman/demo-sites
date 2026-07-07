@@ -13,8 +13,8 @@
   const CLINICS = [
     {
       id: "raon", cat: "plastic", area: "gangnam", rating: 4.9, reviews: 1284, since: 2009,
-      grad: "linear-gradient(135deg,#FDA4C7,#E85D9E 55%,#A78BFA)",
-      ba: { before: "linear-gradient(135deg,#c9b8c4,#a790a5)", after: "linear-gradient(135deg,#FDA4C7,#E85D9E 60%,#A78BFA)" },
+      grad: "linear-gradient(135deg,#FFB27D,#F4581C 55%,#F7B267)",
+      ba: { before: "linear-gradient(135deg,#c9c0b2,#a79a86)", after: "linear-gradient(135deg,#FFB27D,#F4581C 60%,#F7B267)" },
       name: { ko: "라온 성형외과", ja: "ラオン美容外科" },
       area_full: { ko: "서울 강남·압구정", ja: "ソウル 江南・狎鴎亭" },
       tagline: { ko: "자연스러운 눈·코 라인의 정석", ja: "自然な目・鼻ラインの定番" },
@@ -32,8 +32,8 @@
     },
     {
       id: "puredent", cat: "dental", area: "cheongdam", rating: 4.8, reviews: 932, since: 2013,
-      grad: "linear-gradient(135deg,#A78BFA,#8B5CF6 60%,#6D5CF5)",
-      ba: { before: "linear-gradient(135deg,#b7b0c9,#8f89a5)", after: "linear-gradient(135deg,#C4B5FD,#8B5CF6 60%,#6D5CF5)" },
+      grad: "linear-gradient(135deg,#F7B267,#E88A1A 60%,#E88A1A)",
+      ba: { before: "linear-gradient(135deg,#bdb4a2,#998e7a)", after: "linear-gradient(135deg,#FFD9A6,#E88A1A 60%,#E88A1A)" },
       name: { ko: "청담 퓨어 치과", ja: "清潭ピュア歯科" },
       area_full: { ko: "서울 청담", ja: "ソウル 清潭" },
       tagline: { ko: "심미 보철·교정 전문", ja: "審美補綴・矯正の専門" },
@@ -50,8 +50,8 @@
     },
     {
       id: "aurora", cat: "plastic", area: "gangnam", rating: 4.9, reviews: 2105, since: 2016,
-      grad: "linear-gradient(135deg,#FFD1E8,#F48FB8 50%,#C9A0FF)",
-      ba: { before: "linear-gradient(135deg,#cfc3cc,#a998ad)", after: "linear-gradient(135deg,#FFD1E8,#F48FB8 55%,#C9A0FF)" },
+      grad: "linear-gradient(135deg,#FFE0C2,#FFA45C 50%,#FFC98A)",
+      ba: { before: "linear-gradient(135deg,#cfc7b8,#a99c88)", after: "linear-gradient(135deg,#FFE0C2,#FFA45C 55%,#FFC98A)" },
       name: { ko: "오로라 의원", ja: "オーロラクリニック" },
       area_full: { ko: "서울 강남", ja: "ソウル 江南" },
       tagline: { ko: "피부·리프팅·쁘띠 시술 중심", ja: "肌・リフト・プチ整形 中心" },
@@ -69,8 +69,8 @@
     },
     {
       id: "whitebell", cat: "dental", area: "sinsa", rating: 4.7, reviews: 654, since: 2015,
-      grad: "linear-gradient(135deg,#C4B5FD,#A78BFA 60%,#E8B4E0)",
-      ba: { before: "linear-gradient(135deg,#bfb9cb,#948fa6)", after: "linear-gradient(135deg,#C4B5FD,#A78BFA 60%,#E8B4E0)" },
+      grad: "linear-gradient(135deg,#FFD9A6,#F7B267 60%,#FFDCB0)",
+      ba: { before: "linear-gradient(135deg,#c2b9a6,#9a9078)", after: "linear-gradient(135deg,#FFD9A6,#F7B267 60%,#FFDCB0)" },
       name: { ko: "화이트벨 치과", ja: "ホワイトベル歯科" },
       area_full: { ko: "서울 신사", ja: "ソウル 新沙" },
       tagline: { ko: "미백·라미네이트 심미 치과", ja: "ホワイトニング・ラミネート審美歯科" },
@@ -86,8 +86,8 @@
     },
     {
       id: "beautyline", cat: "plastic", area: "apgujeong", rating: 4.8, reviews: 1490, since: 2011,
-      grad: "linear-gradient(135deg,#FBA9D0,#E85D9E 60%,#B983FF)",
-      ba: { before: "linear-gradient(135deg,#cbb9c6,#a68fa4)", after: "linear-gradient(135deg,#FBA9D0,#E85D9E 60%,#B983FF)" },
+      grad: "linear-gradient(135deg,#FFBE85,#F4581C 60%,#F5B04D)",
+      ba: { before: "linear-gradient(135deg,#c8bfae,#a49681)", after: "linear-gradient(135deg,#FFBE85,#F4581C 60%,#F5B04D)" },
       name: { ko: "뷰티라인 성형외과", ja: "ビューティーライン美容外科" },
       area_full: { ko: "서울 압구정", ja: "ソウル 狎鴎亭" },
       tagline: { ko: "안면윤곽·양악 정교함", ja: "輪郭・両顎の精巧さ" },
@@ -104,8 +104,8 @@
     },
     {
       id: "smileplus", cat: "dental", area: "seocho", rating: 4.8, reviews: 777, since: 2014,
-      grad: "linear-gradient(135deg,#B5A8FF,#8B5CF6 55%,#E85D9E)",
-      ba: { before: "linear-gradient(135deg,#bab4c8,#8e88a3)", after: "linear-gradient(135deg,#B5A8FF,#8B5CF6 55%,#E85D9E)" },
+      grad: "linear-gradient(135deg,#FFCF8C,#E88A1A 55%,#F4581C)",
+      ba: { before: "linear-gradient(135deg,#bcb3a0,#968b74)", after: "linear-gradient(135deg,#FFCF8C,#E88A1A 55%,#F4581C)" },
       name: { ko: "스마일플러스 치과", ja: "スマイルプラス歯科" },
       area_full: { ko: "서울 서초", ja: "ソウル 瑞草" },
       tagline: { ko: "임플란트·보철 통증 케어", ja: "インプラント・補綴の痛みケア" },
@@ -121,8 +121,8 @@
     },
     {
       id: "misojium", cat: "plastic", area: "cheongdam", rating: 4.7, reviews: 863, since: 2012,
-      grad: "linear-gradient(135deg,#FFB6D5,#F06BA8 55%,#A78BFA)",
-      ba: { before: "linear-gradient(135deg,#ccbcc7,#a690a3)", after: "linear-gradient(135deg,#FFB6D5,#F06BA8 55%,#A78BFA)" },
+      grad: "linear-gradient(135deg,#FFCB9E,#F97A2B 55%,#F7B267)",
+      ba: { before: "linear-gradient(135deg,#c9c0af,#a690a3)", after: "linear-gradient(135deg,#FFCB9E,#F97A2B 55%,#F7B267)" },
       name: { ko: "미소지음 성형외과", ja: "ミソジウム美容外科" },
       area_full: { ko: "서울 청담", ja: "ソウル 清潭" },
       tagline: { ko: "가슴·바디 라인 디자인", ja: "バスト・ボディライン デザイン" },
@@ -138,8 +138,8 @@
     },
     {
       id: "denal", cat: "dental", area: "gangnam", rating: 4.9, reviews: 1120, since: 2010,
-      grad: "linear-gradient(135deg,#9F8BFF,#7C6CF5 55%,#E06AA6)",
-      ba: { before: "linear-gradient(135deg,#b6b1c7,#8b86a1)", after: "linear-gradient(135deg,#9F8BFF,#7C6CF5 55%,#E06AA6)" },
+      grad: "linear-gradient(135deg,#FFB86B,#F08C1E 55%,#F0741F)",
+      ba: { before: "linear-gradient(135deg,#b8afa0,#948a74)", after: "linear-gradient(135deg,#FFB86B,#F08C1E 55%,#F0741F)" },
       name: { ko: "데날 치과", ja: "デナル歯科" },
       area_full: { ko: "서울 강남", ja: "ソウル 江南" },
       tagline: { ko: "충치·신경·임플란트 종합", ja: "虫歯・根管・インプラント総合" },
@@ -159,28 +159,28 @@
   const BA_CASES = [
     { id: "ba1", cat: "plastic", clinic: "raon",
       proc: { ko: "자연유착 쌍꺼풀", ja: "自然癒着 二重" }, part: { ko: "눈성형", ja: "目の整形" },
-      before: "linear-gradient(135deg,#cbb9c6,#a58fa3)", after: "linear-gradient(135deg,#FDA4C7,#E85D9E 60%,#A78BFA)" },
+      before: "linear-gradient(135deg,#c8bfae,#a58fa3)", after: "linear-gradient(135deg,#FFB27D,#F4581C 60%,#F7B267)" },
     { id: "ba2", cat: "plastic", clinic: "beautyline",
       proc: { ko: "코 재수술", ja: "鼻 再手術" }, part: { ko: "코성형", ja: "鼻の整形" },
-      before: "linear-gradient(135deg,#c7bcc9,#9a8fa6)", after: "linear-gradient(135deg,#FBA9D0,#E85D9E 60%,#B983FF)" },
+      before: "linear-gradient(135deg,#c6bdaa,#9c9179)", after: "linear-gradient(135deg,#FFBE85,#F4581C 60%,#F5B04D)" },
     { id: "ba3", cat: "plastic", clinic: "beautyline",
       proc: { ko: "광대 축소", ja: "頬骨縮小" }, part: { ko: "안면윤곽", ja: "輪郭" },
-      before: "linear-gradient(135deg,#c4bcc2,#948b9f)", after: "linear-gradient(135deg,#FFB6D5,#F06BA8 55%,#A78BFA)" },
+      before: "linear-gradient(135deg,#c4bcae,#978c76)", after: "linear-gradient(135deg,#FFCB9E,#F97A2B 55%,#F7B267)" },
     { id: "ba4", cat: "plastic", clinic: "aurora",
       proc: { ko: "울쎄라 리프팅", ja: "ウルセラ リフト" }, part: { ko: "리프팅", ja: "リフト" },
-      before: "linear-gradient(135deg,#cfc3cc,#a998ad)", after: "linear-gradient(135deg,#FFD1E8,#F48FB8 55%,#C9A0FF)" },
+      before: "linear-gradient(135deg,#cfc7b8,#a99c88)", after: "linear-gradient(135deg,#FFE0C2,#FFA45C 55%,#FFC98A)" },
     { id: "ba5", cat: "dental", clinic: "puredent",
       proc: { ko: "투명교정", ja: "マウスピース矯正" }, part: { ko: "치아교정", ja: "歯列矯正" },
-      before: "linear-gradient(135deg,#b7b0c9,#8b85a2)", after: "linear-gradient(135deg,#C4B5FD,#8B5CF6 60%,#6D5CF5)" },
+      before: "linear-gradient(135deg,#bdb4a2,#8b85a2)", after: "linear-gradient(135deg,#FFD9A6,#E88A1A 60%,#E88A1A)" },
     { id: "ba6", cat: "dental", clinic: "whitebell",
       proc: { ko: "라미네이트", ja: "ラミネート" }, part: { ko: "심미보철", ja: "審美補綴" },
-      before: "linear-gradient(135deg,#bfb9cb,#8f8aa4)", after: "linear-gradient(135deg,#C4B5FD,#A78BFA 60%,#E8B4E0)" },
+      before: "linear-gradient(135deg,#c2b9a6,#8f8aa4)", after: "linear-gradient(135deg,#FFD9A6,#F7B267 60%,#FFDCB0)" },
     { id: "ba7", cat: "dental", clinic: "whitebell",
       proc: { ko: "전문가 미백", ja: "ホワイトニング" }, part: { ko: "치아미백", ja: "ホワイトニング" },
-      before: "linear-gradient(135deg,#b9b3c4,#8d879e)", after: "linear-gradient(135deg,#E0D4FF,#B79CFF 60%,#F4B9DE)" },
+      before: "linear-gradient(135deg,#bab19e,#958a73)", after: "linear-gradient(135deg,#FFE9C9,#FFC46B 60%,#FFD4A8)" },
     { id: "ba8", cat: "plastic", clinic: "misojium",
       proc: { ko: "복부 지방흡입", ja: "腹部 脂肪吸引" }, part: { ko: "바디라인", ja: "ボディライン" },
-      before: "linear-gradient(135deg,#ccbcc7,#a08fa0)", after: "linear-gradient(135deg,#FFB6D5,#F06BA8 55%,#A78BFA)" },
+      before: "linear-gradient(135deg,#c9c0af,#a3947c)", after: "linear-gradient(135deg,#FFCB9E,#F97A2B 55%,#F7B267)" },
   ];
 
   // ---- helpers ----
@@ -339,3 +339,60 @@
   global.LUMIERE_DATA = { AREAS, CLINICS, CLINIC_IMG, BA_CASES, M, SERVICES, TREATMENTS, TREATMENT_CATS, PACKAGES, CONCERNS, NEWS, GALLERY, HERO_SLIDES, PROMO,
     clinicById, baByCat, clinicName, areaLabel, catLabel, fmtPrice };
 })(window);
+
+
+/* =========================================================
+   v3 구조 패치 — 요청업데이트 RFP 반영
+   1) 영어(en) 폴백: {ko,ja} 필드에 en 자동 추가 (미번역분은 ko 표시)
+   2) 카테고리·가격 영어 라벨
+   3) 리뷰 2종 라벨(병원 제공/이용자 인증) — 각 병원 마지막 리뷰를 병원 제공 사례로
+   4) 위치 기반 검색: 지도 핀 좌표(%)·거리(가상)
+   ========================================================= */
+(function (D) {
+  if (!D) return;
+  // 1) deep-walk en 폴백
+  var seen = typeof WeakSet !== "undefined" ? new WeakSet() : { has: function(){return false;}, add: function(){} };
+  (function walk(o) {
+    if (!o || typeof o !== "object" || seen.has(o)) return;
+    seen.add(o);
+    if (o.ko != null && o.ja != null && o.en == null && (typeof o.ko === "string")) o.en = o.ko;
+    var vals = Array.isArray(o) ? o : Object.keys(o).map(function(k){ return o[k]; });
+    vals.forEach(walk);
+  })(D);
+
+  // 주요 지역명 영어 지정
+  var AREA_EN = { gangnam: "Gangnam", apgujeong: "Apgujeong", cheongdam: "Cheongdam", sinsa: "Sinsa", seocho: "Seocho" };
+  D.AREAS.forEach(function (a) { a.en = AREA_EN[a.key] || a.ko; });
+
+  // 2) catLabel / fmtPrice en 지원
+  var _cat = D.catLabel;
+  D.catLabel = function (cat, lang) {
+    if (lang === "en") return { plastic: "Plastic Surgery", dental: "Dental" }[cat] || cat;
+    return _cat(cat, lang);
+  };
+  var _fmt = D.fmtPrice;
+  D.fmtPrice = function (v, lang) {
+    if (lang !== "en") return _fmt(v, lang);
+    if (v === "consult") return "Consult";
+    return "₩" + v.toLocaleString("en-US");
+  };
+
+  // 3) 리뷰 2종 라벨 (데모: 리뷰 2개 이상인 병원의 마지막 리뷰 = 병원 제공)
+  D.CLINICS.forEach(function (c) {
+    (c.reviewList || []).forEach(function (r, i) {
+      r.type = (c.reviewList.length > 1 && i === c.reviewList.length - 1) ? "hospital" : "user";
+    });
+  });
+
+  // 4) 지도 핀(%)·거리(km, 강남역 기준 가상)
+  var PINS = {
+    raon: [38, 52, 0.4], aurora: [46, 44, 0.9], beautyline: [47, 26, 2.8],
+    puredent: [55, 34, 2.3], whitebell: [30, 40, 1.6], smileplus: [24, 62, 3.1],
+    misojium: [58, 28, 2.6], denal: [40, 58, 0.7]
+  };
+  D.CLINICS.forEach(function (c) {
+    var p = PINS[c.id] || [50, 50, 1.0];
+    c.pin = { x: p[0], y: p[1] };
+    c.dist = p[2];
+  });
+})(window.LUMIERE_DATA);

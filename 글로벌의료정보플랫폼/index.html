@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>LUMIÈRE · 한·일 프리미엄 성형·치과 정보 플랫폼</title>
 <meta name="description" content="한국과 일본의 프리미엄 성형외과·치과. 검증된 병원·시술·실후기·간편 예약. 한국어/일본어." />
-<meta name="theme-color" content="#E85D9E" />
+<meta name="theme-color" content="#F4581C" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <link rel="stylesheet" href="./assets/style.css" />
 </head>
@@ -29,10 +29,12 @@
       <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
       <a href="#packages" data-ko="패키지" data-ja="パッケージ">패키지</a>
       <a href="#quiz" data-ko="자가진단" data-ja="セルフ診断">자가진단</a>
-      <a href="#news" data-ko="매거진" data-ja="マガジン">매거진</a>
+      <a href="#news" data-ko="매거진" data-ja="マガジン" data-en="Magazine">매거진</a>
+      <a href="#reviews" data-ko="실후기" data-ja="口コミ" data-en="Reviews">실후기</a>
     </nav>
     <div class="header-tools">
-      <div class="lang-toggle"><button data-l="ko">KOR</button><button data-l="ja">JPN</button></div>
+      <div class="lang-toggle"><button data-l="ko">KOR</button><button data-l="ja">JPN</button><button data-l="en">ENG</button></div>
+      <button class="btn btn-ghost" id="loginBtn" style="padding:11px 18px;font-size:14px" data-ko="로그인" data-ja="ログイン" data-en="Log in">로그인</button>
       <a class="btn btn-primary" href="./clinics.html" style="padding:11px 20px;font-size:14px" data-ko="상담 예약" data-ja="予約する">상담 예약</a>
     </div>
   </div>
@@ -168,6 +170,40 @@
   </div>
 </section>
 
+<!-- ===== LOCATION MAP (위치 기반 검색 · RFP 2-4) ===== -->
+<section class="section wrap" id="map">
+  <div class="shead">
+    <span class="eyebrow" data-anim="fade">LOCATION</span>
+    <h2 data-anim="lines" data-ko="지금 <span class='grad-text'>내 주변</span> 병원" data-ja="いま<span class='grad-text'>近く</span>のクリニック" data-en="Clinics <span class='grad-text'>near you</span>">지금 <span class="grad-text">내 주변</span> 병원</h2>
+    <p data-anim="fade" data-ko="어디에 있든 현재 위치 기준으로 파트너 병원을 찾아보세요. 실서비스는 Google Maps 연동으로 제공됩니다." data-ja="どこにいても現在地からパートナー医院を検索。本番はGoogle Maps連携で提供します。" data-en="Find partner clinics from wherever you are. Google Maps integration ships in production.">어디에 있든 현재 위치 기준으로 파트너 병원을 찾아보세요.</p>
+  </div>
+  <div class="geo-wrap" data-anim="zoom">
+    <div class="geo-map" id="geoMap">
+      <div class="road" style="left:8%;top:32%;width:84%;height:6px"></div>
+      <div class="road" style="left:50%;top:8%;width:6px;height:84%"></div>
+      <div class="road" style="left:16%;top:64%;width:68%;height:4px;transform:rotate(-12deg)"></div>
+      <div class="me-dot" style="left:42%;top:55%"></div>
+    </div>
+    <div class="geo-side">
+      <button class="btn btn-primary btn-lg" id="nearBtn" data-ko="📍 내 주변에서 찾기" data-ja="📍 現在地から探す" data-en="📍 Find Near Me">📍 내 주변에서 찾기</button>
+      <div id="nearList" style="display:flex;flex-direction:column;gap:10px"></div>
+      <p class="muted" style="font-size:12px;margin:2px 0 0" data-ko="* 데모용 지도입니다. 실서비스는 Google Maps SDK 기반 현재 위치·목적지 검색을 제공합니다." data-ja="* デモ用マップです。本番はGoogle Maps SDKの現在地・目的地検索を提供します。" data-en="* Demo map. Production uses the Google Maps SDK.">* 데모용 지도입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REVIEWS (실후기 · 2종 라벨 + 신고 · RFP 2-5) ===== -->
+<section class="section band-soft" id="reviews">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow" data-anim="fade">REAL REVIEWS</span>
+      <h2 data-anim="lines" data-ko="검증된 <span class='grad-text'>실후기</span>" data-ja="検証済み<span class='grad-text'>口コミ</span>" data-en="Verified <span class='grad-text'>Reviews</span>">검증된 <span class="grad-text">실후기</span></h2>
+      <p data-anim="fade" data-ko="병원 제공 사례와 이용자 인증 후기를 라벨로 구분해 게시합니다. 악성·허위 후기는 신고로 차단됩니다." data-ja="クリニック提供の症例と利用者認証の口コミをラベルで区分。悪質・虚偽の口コミは通報でブロックされます。" data-en="Clinic-provided cases and verified-visit reviews are labeled separately. Abusive reviews can be reported and blocked.">병원 제공 사례와 이용자 인증 후기를 라벨로 구분해 게시합니다.</p>
+    </div>
+    <div class="grid g-3" id="reviewGrid"></div>
+  </div>
+</section>
+
 <!-- ===== NEWS GRID ===== -->
 <section class="section wrap" id="news">
   <div class="ed-head">
@@ -216,6 +252,37 @@
     </div>
   </div>
 </footer>
+<!-- ===== 로그인 모달 (QR + 소셜 · RFP 2-2) ===== -->
+<div class="modal-back" id="loginModal">
+  <div class="modal" style="position:relative">
+    <button class="close" id="loginClose" aria-label="close">✕</button>
+    <h3 data-ko="간편 로그인" data-ja="かんたんログイン" data-en="Quick Login">간편 로그인</h3>
+    <p class="muted" style="margin:0 0 20px;font-size:14px" data-ko="QR 스캔 또는 소셜 계정으로 3초 만에 시작하세요." data-ja="QRスキャンまたはSNSアカウントで3秒でスタート。" data-en="Scan the QR or use a social account — done in 3 seconds.">QR 스캔 또는 소셜 계정으로 3초 만에 시작하세요.</p>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;justify-content:center">
+      <div class="qr-card">
+        <div class="qr-grid" id="qrGrid"></div>
+        <p data-ko="앱으로 QR 스캔 → 3초 로그인" data-ja="アプリでQRスキャン → 3秒ログイン" data-en="Scan with the app → 3s login">앱으로 QR 스캔 → 3초 로그인</p>
+      </div>
+      <div class="sso-col">
+        <button data-sso="Google"><span class="sso-ic" style="background:#4285F4">G</span> Google</button>
+        <button data-sso="Naver"><span class="sso-ic" style="background:#03C75A">N</span> Naver</button>
+        <button data-sso="Kakao"><span class="sso-ic" style="background:#FEE500;color:#3C1E1E">K</span> Kakao</button>
+        <button data-sso="LINE"><span class="sso-ic" style="background:#06C755">L</span> LINE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 상담 채널 플로팅 (전화·카카오톡·LINE · RFP 2-3) ===== -->
+<div class="consult-fab" id="consultFab">
+  <div class="cf-menu">
+    <a href="tel:02-0000-0000">📞 <span data-ko="전화 상담" data-ja="電話相談" data-en="Phone">전화 상담</span></a>
+    <button data-ch="KakaoTalk"><span class="cf-k">K</span> KakaoTalk</button>
+    <button data-ch="LINE"><span class="cf-l">L</span> LINE</button>
+  </div>
+  <button class="cf-main" aria-label="consult">💬</button>
+</div>
+
 <!-- ===== LIBS ===== -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -237,12 +304,13 @@
   (function(){const sp=$('sp');function u(){const dh=document.body.scrollHeight-innerHeight;sp.style.width=(dh>0?scrollY/dh*100:0)+'%';}addEventListener('scroll',u,{passive:true});u();})();
 
   const star=n=>'★'.repeat(Math.round(n));
-  const won=(v,l)=>v===0?(l==='ja'?'無料':'무료'):D.fmtPrice(v,l);
+  const won=(v,l)=>v===0?(l==='ja'?'無料':l==='en'?'Free':'무료'):D.fmtPrice(v,l);
 
   /* ---- renders ---- */
   function renderMarq(){const l=I18N.getLang();
     const items={ko:['눈성형','코성형','안면윤곽','임플란트','투명교정','리프팅','물광','미백','라미네이트','양악','강남','청담','압구정','신사'],
-                 ja:['目の整形','鼻の整形','輪郭','インプラント','マウスピース矯正','リフト','水光','ホワイトニング','ラミネート','両顎','江南','清潭','狎鴎亭','新沙']}[l];
+                 ja:['目の整形','鼻の整形','輪郭','インプラント','マウスピース矯正','リフト','水光','ホワイトニング','ラミネート','両顎','江南','清潭','狎鴎亭','新沙'],
+                 en:['Eyes','Nose','Contour','Implant','Aligners','Lifting','Glow','Whitening','Veneer','Two-jaw','Gangnam','Cheongdam','Apgujeong','Sinsa']}[l];
     const one=items.map(x=>`<span class="mq-item">${x}<i class="sep">✦</i></span>`).join('');$('marq1').innerHTML=one+one;}
   /* ---- 히어로 시네마틱 광고필름: 힉스필드 생성 영상 3샷(로비 진입 → 모델 등장 → 클로즈업) 크로스디졸브 루프 ---- */
   function initCine(){
@@ -297,14 +365,14 @@
     $('sigWrap').innerHTML=list.map(t=>`<div class="swiper-slide"><div class="sig-card">
       <div class="pic"><img src="${t.img}" alt="${t.name[l]}" loading="lazy"/><div class="veil"></div>
         <div class="over"><span class="cat">${t.cat[l]}</span><b>${t.name[l]}</b><p>${t.desc[l]}</p>
-          <span class="pr">${won(t.price,l)}${t.price?`<span style="opacity:.8;font-weight:500">${l==='ja'?'〜':'부터'}</span>`:''}</span></div></div>
+          <span class="pr">${won(t.price,l)}${t.price?`<span style="opacity:.8;font-weight:500">${l==='ja'?'〜':l==='en'?'+':'부터'}</span>`:''}</span></div></div>
       <div class="cap"><span class="cat">${t.cat[l]}</span><b>${t.name[l]}</b></div></div></div>`).join('');
     return list.length;}
   function pkgSlides(){const l=I18N.getLang();
     $('pkgWrap').innerHTML=D.PACKAGES.map(p=>`<div class="swiper-slide"><div class="sc-slide pkg-slide">
       <div class="pic"><img src="${p.img}" alt="" loading="lazy"/><span class="pill pill-dental tag">${p.tag[l]}</span></div>
       <div class="b"><h4>${p.name[l]}</h4><p>${p.desc[l]}</p>
-        <div class="foot"><span class="muted" style="font-size:12px">${l==='ja'?'から':'부터'}</span><b>${won(p.price,l)}</b></div></div></div></div>`).join('');}
+        <div class="foot"><span class="muted" style="font-size:12px">${l==='ja'?'から':l==='en'?'from':'부터'}</span><b>${won(p.price,l)}</b></div></div></div></div>`).join('');}
   let dcat='all';
   function renderDir(){const l=I18N.getLang();
     const list=D.CLINICS.filter(c=>dcat==='all'||c.cat===dcat);
@@ -315,7 +383,7 @@
       <div class="body"><h3>${c.name[l]}</h3><div class="area">📍 ${c.area_full[l]}</div>
         <div class="tags">${c.tags[l].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
         <div class="foot"><span class="rating"><span class="star">★</span>${c.rating} <span class="cnt">(${c.reviews.toLocaleString()})</span></span>
-          <span class="price"><small>${l==='ja'?'相談':'상담'}</small> <b>${l==='ja'?'無料':'무료'}</b></span></div></div></a>`).join('');}
+          <span class="price"><small>${l==='ja'?'相談':l==='en'?'Consult':'상담'}</small> <b>${l==='ja'?'無料':l==='en'?'Free':'무료'}</b></span></div></div></a>`).join('');}
   function renderConcerns(){const l=I18N.getLang();
     $('concernGrid').innerHTML=D.CONCERNS.map((c,i)=>`<div class="bubble" data-i="${i}"><div class="ic">${c.icon}</div><div class="l">${c.label[l]}</div></div>`).join('');}
   function renderNews(){const l=I18N.getLang();
@@ -383,9 +451,49 @@
       $('quizRec').textContent=c.rec[l];$('quizCta').href='./clinics.html?cat='+c.cat;$('quizResult').classList.add('show');});
   }
 
+  /* ---- v3: 토스트 ---- */
+  let v3tt;function v3toast(msg){let el=document.getElementById('v3toast');
+    if(!el){el=document.createElement('div');el.id='v3toast';el.className='toast';document.body.appendChild(el);}
+    el.textContent=msg;el.classList.add('show');clearTimeout(v3tt);v3tt=setTimeout(()=>el.classList.remove('show'),3200);}
+
+  /* ---- v3: 실후기 (병원 제공/이용자 인증 라벨 + 신고 · RFP 2-5) ---- */
+  const blockedRv=new Set();
+  function renderReviews(){const l=I18N.getLang();
+    const items=[];D.CLINICS.forEach(c=>(c.reviewList||[]).forEach((r,i)=>items.push({c,r,key:c.id+'_'+i})));
+    items.sort((a,b)=>(a.r.date<b.r.date?1:-1));
+    // 두 유형(병원 제공/이용자 인증)이 항상 함께 노출되도록 구성
+    const show=items.filter(x=>x.r.type==='user').slice(0,4)
+      .concat(items.filter(x=>x.r.type==='hospital').slice(0,2))
+      .sort((a,b)=>(a.r.date<b.r.date?1:-1));
+    document.getElementById('reviewGrid').innerHTML=show.map(({c,r,key})=>{
+      const blocked=blockedRv.has(key);
+      return `<div class="tcard rv-card${blocked?' rv-blocked':''}">
+        <div class="rv-top"><span class="rating"><span class="star">${'★'.repeat(r.rating)}</span></span>
+          <span class="rv-type ${r.type}">${I18N.t(r.type==='hospital'?'review_hospital':'review_user')}</span></div>
+        <p class="q" style="margin:0">${blocked?(l==='ja'?'運営により非表示処理されました':l==='en'?'Hidden by the operations team':'운영팀에 의해 숨김 처리되었습니다'):'\u201C'+r.text[l]+'\u201D'}</p>
+        <div class="who"><div><b>${r.user} · ${r.proc[l]}</b><small>${c.name[l]} · ${r.date}</small></div>
+          ${blocked?'':`<button class="mini-rep" data-report="${key}">🚩 ${I18N.t('report')}</button>`}</div></div>`;
+    }).join('');
+    document.querySelectorAll('#reviewGrid [data-report]').forEach(b=>b.addEventListener('click',e=>{
+      e.preventDefault();blockedRv.add(b.dataset.report);v3toast(I18N.t('report_done'));renderReviews();}));
+  }
+
+  /* ---- v3: 위치 기반 지도 (RFP 2-4) ---- */
+  let nearMode=false;
+  function renderGeo(){const l=I18N.getLang();const map=document.getElementById('geoMap');
+    map.querySelectorAll('.gpin').forEach(p=>p.remove());
+    D.CLINICS.forEach(c=>{const el=document.createElement('a');el.className='gpin';el.href='./clinic.html?id='+c.id;
+      el.style.left=c.pin.x+'%';el.style.top=c.pin.y+'%';
+      el.innerHTML=`<span class="tip">${c.name[l]} ★${c.rating} · ${c.dist.toFixed(1)}km</span><span class="dot"><span>${c.cat==='dental'?'🦷':'✚'}</span></span>`;
+      map.appendChild(el);});
+    const list=D.CLINICS.slice().sort((a,b)=>a.dist-b.dist).slice(0,4);
+    document.getElementById('nearList').innerHTML=list.map(c=>`<a class="near-row" href="./clinic.html?id=${c.id}">
+      <img src="${(D.CLINIC_IMG&&D.CLINIC_IMG[c.id])||''}" alt="" loading="lazy"/><div><b>${c.name[l]}</b><small>${D.catLabel(c.cat,l)} · ★${c.rating}</small></div><span class="dist">${c.dist.toFixed(1)}km</span></a>`).join('');
+  }
+
   /* ---- boot ---- */
   function boot(){
-    renderMarq();renderSvc();renderSigTabs();sigSlides();pkgSlides();renderDir();renderConcerns();renderNews();renderGallery();renderPromo();
+    renderMarq();renderSvc();renderSigTabs();sigSlides();pkgSlides();renderDir();renderConcerns();renderNews();renderGallery();renderPromo();renderReviews();renderGeo();
     initSwipers();initCine();
     if(window.LUMOTION)LUMOTION.boot();
     // count-up
@@ -398,9 +506,23 @@
       if(window.LUMOTION)LUMOTION.scanReveals($('dirGrid'));if(window.ScrollTrigger)ScrollTrigger.refresh();});
     $('sigTabs').addEventListener('click',e=>{const b=e.target.closest('[data-tk]');if(!b)return;sigCat=b.dataset.tk;
       $('sigTabs').querySelectorAll('[data-tk]').forEach(x=>x.classList.toggle('on',x===b));sigSlides();initSig();});
+    /* ---- v3 배선: 로그인 모달 · QR · 내주변 · 상담 FAB ---- */
+    (function(){
+      const lm=document.getElementById('loginModal');
+      document.getElementById('loginBtn').addEventListener('click',()=>lm.classList.add('open'));
+      document.getElementById('loginClose').addEventListener('click',()=>lm.classList.remove('open'));
+      lm.addEventListener('click',e=>{if(e.target===lm)lm.classList.remove('open');});
+      lm.querySelectorAll('[data-sso]').forEach(b=>b.addEventListener('click',()=>{lm.classList.remove('open');v3toast(b.dataset.sso+' — '+I18N.t('login_done'));}));
+      let q='';for(let i=0;i<144;i++){const r=Math.floor(i/12),c=i%12;const f=(r<3&&c<3)||(r<3&&c>8)||(r>8&&c<3);q+='<i class="'+(f?'':(i*2654435761%97)>48?'':'o')+'"></i>';}
+      document.getElementById('qrGrid').innerHTML=q;
+      document.getElementById('nearBtn').addEventListener('click',()=>{nearMode=true;renderGeo();v3toast(I18N.t('near_done'));});
+      const fab=document.getElementById('consultFab');
+      fab.querySelector('.cf-main').addEventListener('click',()=>fab.classList.toggle('open'));
+      fab.querySelectorAll('[data-ch]').forEach(b=>b.addEventListener('click',()=>{v3toast(b.dataset.ch+' — '+({ko:'채널 연결 (데모)',ja:'チャンネル接続(デモ)',en:'Channel link (demo)'}[I18N.getLang()]));fab.classList.remove('open');}));
+    })();
     wireQuiz();
     document.addEventListener('langchange',()=>{
-      renderMarq();renderSvc();renderSigTabs();sigSlides();pkgSlides();renderDir();renderConcerns();renderNews();renderGallery();renderPromo();
+      renderMarq();renderSvc();renderSigTabs();sigSlides();pkgSlides();renderDir();renderConcerns();renderNews();renderGallery();renderPromo();renderReviews();renderGeo();
       $('quizResult').classList.remove('show');initSwipers();
       if(window.LUMOTION)LUMOTION.scanReveals(document);
       if(window.ScrollTrigger)setTimeout(()=>ScrollTrigger.refresh(),200);
