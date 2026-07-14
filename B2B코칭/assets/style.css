@@ -46,6 +46,11 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 ::placeholder{color:var(--muted-2)}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
 
+/* ico() 아이콘의 기본 크기. 크기 규칙이 없는 자리에 놓이면 SVG 가 컨테이너 폭만큼
+   늘어나므로 반드시 기본값이 필요하다. 이 규칙을 파일 최상단에 두어,
+   아래의 개별 규칙(.nav-i svg, .btn svg, .kpi .ico svg …)이 항상 우선하도록 한다. */
+svg.ico-i{width:16px;height:16px;flex:0 0 auto;vertical-align:middle}
+
 /* scrollbar */
 ::-webkit-scrollbar{width:10px;height:10px}
 ::-webkit-scrollbar-thumb{background:#D9DCE8;border-radius:99px;border:3px solid transparent;background-clip:content-box}
@@ -109,6 +114,7 @@ input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
 /* ===================== Primitives ===================== */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1)}
 .card-h{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line-2)}
+.card-h > svg{width:17px;height:17px;flex:0 0 17px;stroke:var(--brand);stroke-width:1.9;fill:none}
 .card-h h3{font-size:15px}
 .card-h .spacer{flex:1}
 .card-b{padding:18px}

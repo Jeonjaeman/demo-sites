@@ -40,7 +40,10 @@ const I = {
   pin:'<path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11"/><circle cx="12" cy="10" r="2.5"/>',
   flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/>',
 };
-const ico = (n, cls) => `<svg class="${cls||''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[n]||''}</svg>`;
+/* width/height 속성을 항상 넣는다 — 이게 없으면 CSS 규칙이 걸리지 않은 위치(카드 헤더 등)에서
+   SVG 가 컨테이너 폭만큼 늘어나 아이콘이 거대해진다. 속성은 CSS 규칙보다 우선순위가 낮으므로
+   .btn svg / .kpi .ico svg 같은 기존 크기 지정은 그대로 유지된다. */
+const ico = (n, cls) => `<svg class="ico-i ${cls||''}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${I[n]||''}</svg>`;
 
 /* ---------- 권한별 메뉴 (요구사항: 권한별 접근 범위 제한) ---------- */
 const NAV = {
