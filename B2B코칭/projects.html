@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>프로젝트 관리 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .p-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:16px;align-items:start}
+  /* minmax(0,1fr): 트랙 최소값을 0으로 고정해야 넓은 테이블이 그리드를 밀어내지 않고 .tbl-wrap 안에서 가로 스크롤됩니다. */
+  @media(max-width:1200px){.p-grid{grid-template-columns:minmax(0,1fr)}}
+  table.tbl tbody tr[data-id]{cursor:pointer}
+  .dots{border:1px solid var(--line);background:#fff;border-radius:9px;width:30px;height:28px;line-height:1;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;letter-spacing:.06em}
+  .dots:hover{background:var(--brand-50);border-color:var(--brand-100);color:var(--brand-700)}
+  .pg{display:flex;align-items:center;gap:5px}
+  .pg button{min-width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;padding:0 8px}
+  .pg button:hover:not(:disabled){background:var(--hover)}
+  .pg button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .pg button:disabled{opacity:.4;cursor:not-allowed}
+  .dsum{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .dsum .b{border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:#FBFBFF}
+  .dsum .b small{display:block;color:var(--muted);font-size:11.5px;font-weight:600}
+  .dsum .b b{font-size:18px;letter-spacing:-.02em}
+  .meta{display:grid;grid-template-columns:76px 1fr;gap:7px 10px;font-size:12.8px}
+  .meta dt{color:var(--muted);font-weight:600}
+  .meta dd{margin:0;color:var(--ink-2);font-weight:600}
+  .lg-row{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:5px 0}
+  .lg-row i{width:9px;height:9px;border-radius:3px;flex:0 0 9px}
+  .lg-row .v{margin-left:auto;font-weight:800}
+  .ci-b{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
+  .ci-b .col{flex:1}
+  .cchip{display:inline-flex;align-items:center;gap:5px;background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-700);border-radius:99px;padding:3px 9px;font-size:11.5px;font-weight:700}
+  .upl{border:1.5px dashed var(--line);border-radius:12px;padding:14px;background:#FBFBFF}
+  .upl input[type=file]{font-size:12.5px;width:100%}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const _s0  = session();
+const _rl0 = _s0 ? _s0.role : null;
+const u = shell('projects', _rl0==='hr'
+  ? { title:'프로젝트 현황', sub:'자사에서 진행 중인 코칭 프로젝트의 진행 상황을 확인합니다.' }
+  : null);
+
+if(u){
+  const role      = session().role;
+  const canCreate = (role === 'admin' || role === 'pm');
+  const PER       = 10;
+
+  /* ---------- 상태 ---------- */
+  const F = { q:'', status:'', pm:'', page:1 };
+  let SEL = null;
+
+  /* ---------- 유틸 ---------- */
+  const fd    = s => String(s||'').replace(/-/g, '.');
+  const stCls = s => s==='완료' ? 'ok' : (s==='진행중' ? 'info' : 'warn');
+  const pbCls = v => v>=80 ? 'ok' : (v>=40 ? '' : 'warn');
+  const ST_C  = { '진행중':'#5B4BE8', '준비중':'#F59E0B', '완료':'#16A34A' };
+
+  /** 권한별 접근 가능 프로젝트 (요구사항: 권한별 데이터 범위 제한) */
+  function scoped(){
+    if(role === 'hr')    return PROJECTS.filter(p => p.clientId === u.clientId);
+    if(role === 'coach') return PROJECTS.filter(p => (p.coaches||[]).includes(u.name));
+    return PROJECTS.slice();
+  }
+  function filtered(base){
+    const q = F.q.trim().toLowerCase();
+    return base.filter(p =>
+      (!q || p.name.toLowerCase().includes(q) || p.client.toLowerCase().includes(q)) &&
+      (!F.status || p.status === F.status) &&
+      (!F.pm     || p.pm === F.pm)
+    );
+  }
+  /** 가중 평균(대상자 수 기준) — 준비중 프로젝트는 분모에서 제외 */
+  function wavg(list, key){
+    const a = list.filter(p => p.status !== '준비중');
+    const t = a.reduce((s,p) => s + p.members, 0);
+    if(!t) return 0;
+    return Math.round(a.reduce((s,p) => s + p[key]*p.members, 0) / t);
+  }
+  /** 프로젝트별 최근 활동 (데모: 프로젝트 상태에서 파생) */
+  function acts(p){
+    if(p.status === '준비중') return [
+      { b:`${p.pm} PM이 프로젝트를 개설했습니다.`,                s:'2일 전', on:true },
+      { b:`매칭 코치 ${p.coaches.length}명이 배정되었습니다.`,     s:'2일 전', on:true },
+      { b:'대상자 명단 업로드 대기 중입니다.',                     s:'-',      on:false },
+    ];
+    return [
+      { b:`${p.coaches[0]} 코치가 ${p.done}회차 코칭로그를 작성했습니다.`,                         s:'2시간 전', on:true },
+      { b:`대상자 ${Math.round(p.members*p.checkin/100)}명이 이번 주 체크인을 완료했습니다.`,       s:'어제',     on:true },
+      { b:`${p.pm} PM이 진행 리포트를 공유했습니다.`,                                              s:'3일 전',   on:false },
+    ];
+  }
+
+  /* ---------- 본문 ---------- */
+  $('#page').innerHTML = `
+    <div class="kpis" id="kpis"></div>
+
+    <div class="p-grid mt16">
+      <!-- 프로젝트 목록 -->
+      <section class="card">
+        <div class="card-h">
+          <h3>프로젝트 목록</h3>
+          <span class="spacer"></span>
+          ${canCreate ? `<button class="btn pri sm" id="newBtn">${ico('plus')}새 프로젝트 개설</button>` : ''}
+        </div>
+        <div class="card-b" style="padding-bottom:0">
+          <div class="toolbar">
+            <div class="search">
+              ${ico('search')}
+              <input class="inp" id="fq" placeholder="프로젝트명 · 고객사명 검색"/>
+            </div>
+            <select class="inp" id="fst" style="width:118px;flex:0 0 118px">
+              <option value="">전체 상태</option>
+              <option value="진행중">진행중</option>
+              <option value="준비중">준비중</option>
+              <option value="완료">완료</option>
+            </select>
+            <select class="inp" id="fpm" style="width:130px;flex:0 0 130px"></select>
+            <button class="btn sm" id="fclr">필터 초기화</button>
+          </div>
+        </div>
+        <div class="tbl-wrap mt12">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>프로젝트명</th><th>고객사</th><th>기간</th><th class="tc">대상자</th>
+                <th>진행률</th><th class="tc">체크인율</th><th>상태</th><th>담당자</th><th class="tc">관리</th>
+              </tr>
+            </thead>
+            <tbody id="tb"></tbody>
+          </table>
+        </div>
+        <div class="card-f">
+          <span class="hint">총 <b class="num" id="cnt">0</b>개 프로젝트</span>
+          <span class="spacer" style="flex:1"></span>
+          <div class="pg" id="pg"></div>
+        </div>
+      </section>
+
+      <!-- 프로젝트 상세 -->
+      <aside class="card" id="detail"></aside>
+    </div>
+
+    <div class="grid g3 mt16">
+      <section class="card">
+        <div class="card-h"><h3>상태별 프로젝트</h3></div>
+        <div class="card-b">
+          <div class="row" style="justify-content:center"><div id="cDonut"></div></div>
+          <div class="mt12" id="cDonutLg"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h3>이번 주 체크인 현황</h3></div>
+        <div class="card-b">
+          <div class="row" style="justify-content:center"><div id="cRing"></div></div>
+          <div class="mt12" id="cRingLg"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-h"><h3>코치별 담당 현황</h3><span class="spacer"></span><span class="hint">담당 대상자 기준</span></div>
+        <div class="card-b" id="cCoach" style="padding-top:8px"></div>
+      </section>
+    </div>`;
+
+  /* ---------- 담당자 셀렉트 ---------- */
+  const pms = Array.from(new Set(scoped().map(p => p.pm)));
+  $('#fpm').innerHTML = `<option value="">전체 담당자</option>` + pms.map(p => `<option value="${esc(p)}">${esc(p)}</option>`).join('');
+
+  /* ---------- KPI ---------- */
+  function renderKPI(base){
+    const total   = base.length;
+    const ing     = base.filter(p => p.status === '진행중').length;
+    const ready   = base.filter(p => p.status === '준비중').length;
+    const done    = base.filter(p => p.status === '완료').length;
+    const mAll    = base.reduce((s,p) => s + p.members, 0);
+    const mAct    = base.filter(p => p.status !== '준비중').reduce((s,p) => s + p.members, 0);
+    const ci      = wavg(base, 'checkin');
+    const fb      = wavg(base, 'feedback');
+    const pr      = wavg(base, 'progress');
+    const K = [
+      { i:'folder',   c:'#5B4BE8', bg:'#EEF0FF', t:'전체 프로젝트', v:total, un:'개',
+        d:`진행중 <b class="num">${ing}</b> · 준비중 <b class="num">${ready}</b> · 완료 <b class="num">${done}</b>` },
+      { i:'users',    c:'#0EA5E9', bg:'#E4F4FE', t:'전체 대상자', v:mAll, un:'명',
+        d:`활성 <b class="num">${mAct}</b> · 대기 <b class="num">${mAll-mAct}</b>` },
+      { i:'checkbox', c:'#16A34A', bg:'#E7F7EE', t:'이번 주 체크인율', v:ci, un:'%',
+        d:`지난주 대비 <span class="up">▲ 8%p</span>` },
+      { i:'chat',     c:'#F59E0B', bg:'#FEF3E2', t:'코치 피드백률', v:fb, un:'%',
+        d:`지난주 대비 <span class="up">▲ 5%p</span>` },
+      { i:'target',   c:'#EC4899', bg:'#FDE9F3', t:'평균 진척도', v:pr, un:'%',
+        d:'목표 대비 전체 평균' },
+    ];
+    $('#kpis').innerHTML = K.map(k => `
+      <div class="kpi">
+        <span class="ico" style="background:${k.bg};color:${k.c}">${ico(k.i)}</span>
+        <span class="col">
+          <span class="t">${k.t}</span>
+          <span class="v num">${k.v}<small>${k.un}</small></span>
+          <span class="d">${k.d}</span>
+        </span>
+      </div>`).join('');
+  }
+
+  /* ---------- 목록 ---------- */
+  function renderTable(rows){
+    const maxPage = Math.max(1, Math.ceil(rows.length / PER));
+    if(F.page > maxPage) F.page = maxPage;
+    const page = rows.slice((F.page-1)*PER, F.page*PER);
+
+    $('#cnt').textContent = rows.length;
+    $('#tb').innerHTML = page.length ? page.map(p => `
+      <tr data-id="${p.id}" class="${p.id===SEL?'sel':''}">
+        <td>
+          <div class="nm">${esc(p.name)}</div>
+          <div class="sub">그룹 ${p.groups}개 · ${esc(p.type)}</div>
+        </td>
+        <td>${esc(p.client)}</td>
+        <td class="small muted num">${fd(p.start)} ~<br/>${fd(p.end)}</td>
+        <td class="tc num">${p.members}명</td>
+        <td>
+          <div class="pcell">
+            <b class="num">${p.progress}%</b>
+            <span class="pbar ${pbCls(p.progress)}"><i style="width:${p.progress}%"></i></span>
+          </div>
+        </td>
+        <td class="tc num">${p.checkin}%</td>
+        <td><span class="badge ${stCls(p.status)} dot">${esc(p.status)}</span></td>
+        <td>
+          <span class="row" style="gap:6px">
+            ${avatar({ name:p.pm, color:'#0EA5E9' }, 'sm')}
+            <span class="small">${esc(p.pm)}</span>
+          </span>
+        </td>
+        <td class="tc"><button class="dots" data-go="${p.id}" title="상세 보기">···</button></td>
+      </tr>`).join('')
+      : `<tr><td colspan="9"><div class="tbl-empty">${ico('search')}<b>검색 결과가 없습니다.</b><div class="small">다른 키워드나 필터를 시도해 보세요.</div></div></td></tr>`;
+
+    $('#pg').innerHTML = `
+      <button ${F.page<=1?'disabled':''} data-pg="${F.page-1}">이전</button>
+      ${Array.from({length:maxPage}, (_,i) => `<button class="${i+1===F.page?'on':''}" data-pg="${i+1}">${i+1}</button>`).join('')}
+      <button ${F.page>=maxPage?'disabled':''} data-pg="${F.page+1}">다음</button>`;
+
+    $$('#tb tr[data-id]').forEach(tr => tr.onclick = () => { SEL = tr.dataset.id; renderAll(); });
+    $$('#tb button[data-go]').forEach(b => b.onclick = e => {
+      e.stopPropagation();
+      location.href = 'project.html?id=' + b.dataset.go;
+    });
+    $$('#pg button[data-pg]').forEach(b => b.onclick = () => { F.page = +b.dataset.pg; renderAll(); });
+  }
+
+  /* ---------- 상세 패널 ---------- */
+  function renderDetail(p){
+    if(!p){
+      $('#detail').innerHTML = `<div class="card-b"><div class="empty">${ico('folder')}<b>선택된 프로젝트가 없습니다.</b><div class="small">목록에서 프로젝트를 선택하세요.</div></div></div>`;
+      return;
+    }
+    const per = Math.max(1, Math.round(p.members / Math.max(1, p.coaches.length)));
+    const goalDone = Math.min(100, Math.round(p.progress * 0.92));
+    $('#detail').innerHTML = `
+      <div class="card-h"><h3>프로젝트 상세</h3><span class="spacer"></span><span class="badge ${stCls(p.status)} dot">${esc(p.status)}</span></div>
+      <div class="card-b">
+        <h4 style="font-size:15.5px;line-height:1.4">${esc(p.name)}</h4>
+        <div class="small muted mt8">${esc(p.desc)}</div>
+
+        <div class="divider"></div>
+        <dl class="meta">
+          <dt>고객사</dt><dd>${esc(p.client)}</dd>
+          <dt>기간</dt><dd class="num">${fd(p.start)} ~ ${fd(p.end)}</dd>
+          <dt>대상자</dt><dd class="num">${p.members}명 · ${p.groups}개 그룹</dd>
+          <dt>유형</dt><dd>${esc(p.type)} · 총 ${p.sessions}회</dd>
+          <dt>담당 PM</dt><dd>${esc(p.pm)}</dd>
+          <dt>담당 코치</dt><dd>${p.coaches.map(c => `<span class="cchip">${esc(c)}</span>`).join(' ')}</dd>
+        </dl>
+
+        <div class="divider"></div>
+        <div class="sec-t">${ico('chart')}진행 현황 요약</div>
+        <div class="dsum">
+          <div class="b"><small>체크인율</small><b class="num">${p.checkin}%</b></div>
+          <div class="b"><small>코치 피드백률</small><b class="num">${p.feedback}%</b></div>
+          <div class="b"><small>평균 진척도</small><b class="num">${p.progress}%</b></div>
+          <div class="b"><small>목표 완료율</small><b class="num">${goalDone}%</b></div>
+        </div>
+        <button class="btn pri block mt12" id="goDetail">${ico('arrow')}자세히 보기</button>
+
+        <div class="divider"></div>
+        <div class="sec-t">${ico('clock')}최근 활동</div>
+        <div class="tl">
+          ${acts(p).map(a => `<div class="tl-i ${a.on?'':'gray'}"><b>${esc(a.b)}</b><small>${esc(a.s)}</small></div>`).join('')}
+        </div>
+
+        <div class="divider"></div>
+        <div class="sec-t">${ico('user')}코치별 담당 현황</div>
+        ${p.coaches.map(c => {
+          const cu = USERS.find(x => x.name === c) || { name:c, color:'#10B981' };
+          return `<div class="li">
+            ${avatar(cu, 'sm')}
+            <span class="col"><b>${esc(cu.name)}</b><small>${esc(cu.title || '파트너 코치')}</small></span>
+            <span class="badge brand num">${per}명</span>
+          </div>`;
+        }).join('')}
+      </div>`;
+    $('#goDetail').onclick = () => { location.href = 'project.html?id=' + p.id; };
+  }
+
+  /* ---------- 하단 차트 ---------- */
+  function renderCharts(base){
+    /* 상태별 프로젝트 (도넛) */
+    const dd = ['진행중','준비중','완료']
+      .map(s => ({ n:s, v:base.filter(p => p.status === s).length, c:ST_C[s] }))
+      .filter(d => d.v > 0);
+    if(dd.length){
+      donut('#cDonut', dd, '전체 프로젝트', String(base.length));
+      $('#cDonutLg').innerHTML = dd.map(d => `
+        <div class="lg-row">
+          <i style="background:${d.c}"></i><span>${d.n}</span>
+          <span class="v num">${d.v}개 (${Math.round(d.v/base.length*100)}%)</span>
+        </div>`).join('');
+    }else{
+      $('#cDonut').innerHTML = '';
+      $('#cDonutLg').innerHTML = `<div class="empty">${ico('folder')}<b>표시할 프로젝트가 없습니다.</b></div>`;
+    }
+
+    /* 이번 주 체크인 현황 (링) */
+    const mAct = base.filter(p => p.status !== '준비중').reduce((s,p) => s + p.members, 0);
+    const ci   = wavg(base, 'checkin');
+    const ok   = Math.round(mAct * ci / 100);
+    ring('#cRing', ci, { size:130, sw:11, color:'#5B4BE8', track:'#EDEFF6', sub:'체크인율' });
+    $('#cRingLg').innerHTML = `
+      <div class="ci-b"><span class="av sm" style="background:#EEF0FF;color:#5B4BE8">${ico('users')}</span>
+        <span class="col"><b>전체 대상자</b><small>진행 중 프로젝트 기준</small></span><b class="num">${mAct}명</b></div>
+      <div class="ci-b" style="border-color:#CFEBDC;background:#F6FCF9"><span class="av sm" style="background:#E7F7EE;color:#16A34A">${ico('check')}</span>
+        <span class="col"><b>체크인 완료</b><small>이번 주 제출 완료</small></span><b class="num" style="color:#16A34A">${ok}명 (${ci}%)</b></div>
+      <div class="ci-b" style="border-color:#F7DFDF;background:#FEF9F9"><span class="av sm" style="background:#FDECEC;color:#EF4444">${ico('x')}</span>
+        <span class="col"><b>체크인 미완료</b><small>리마인드 발송 대상</small></span><b class="num" style="color:#EF4444">${mAct-ok}명 (${100-ci}%)</b></div>
+      <button class="btn soft block sm mt8" id="remindBtn">${ico('bell')}미완료자에게 리마인드 발송</button>`;
+    $('#remindBtn').onclick = () => toast(`미완료 대상자 ${mAct-ok}명에게 리마인드를 발송했습니다.`);
+
+    /* 코치별 담당 현황 */
+    const cs = USERS.filter(x => x.role === 'coach')
+      .map(c => ({ ...c, pj: base.filter(p => (p.coaches||[]).includes(c.name)).length }))
+      .filter(c => c.pj > 0)
+      .sort((a,b) => b.load - a.load);
+    const maxLoad = Math.max(1, ...cs.map(c => c.load));
+    $('#cCoach').innerHTML = cs.length ? cs.map(c => `
+      <div class="li">
+        ${avatar(c, 'sm')}
+        <span class="col" style="gap:5px">
+          <span class="between"><b>${esc(c.name)}</b><span class="small muted num">${c.load}명 · ${c.pj}개 프로젝트</span></span>
+          <span class="pbar"><i style="width:${Math.round(c.load/maxLoad*100)}%"></i></span>
+        </span>
+      </div>`).join('')
+      : `<div class="empty">${ico('user')}<b>배정된 코치가 없습니다.</b></div>`;
+  }
+
+  /* ---------- 전체 렌더 ---------- */
+  function renderAll(){
+    const base = scoped();
+    const rows = filtered(base);
+    if(!SEL || !base.some(p => p.id === SEL)) SEL = (rows[0] || base[0] || {}).id || null;
+    renderKPI(base);
+    renderTable(rows);
+    renderDetail(base.find(p => p.id === SEL));
+    renderCharts(base);
+  }
+
+  /* ---------- 필터 바인딩 ---------- */
+  $('#fq').oninput   = e => { F.q = e.target.value; F.page = 1; renderAll(); };
+  $('#fst').onchange = e => { F.status = e.target.value; F.page = 1; renderAll(); };
+  $('#fpm').onchange = e => { F.pm = e.target.value; F.page = 1; renderAll(); };
+  $('#fclr').onclick = () => {
+    F.q = ''; F.status = ''; F.pm = ''; F.page = 1;
+    $('#fq').value = ''; $('#fst').value = ''; $('#fpm').value = '';
+    renderAll(); toast('필터를 초기화했습니다.');
+  };
+
+  /* ---------- 새 프로젝트 개설 모달 ---------- */
+  if(canCreate){
+    document.body.insertAdjacentHTML('beforeend', `
+    <div class="mask" id="npM">
+      <div class="modal wide">
+        <div class="modal-h">
+          <h3>새 프로젝트 개설</h3>
+          <button class="x" onclick="closeM('npM')">${ico('x')}</button>
+        </div>
+        <div class="modal-b">
+          <div class="f-row c2">
+            <div class="field">
+              <label>고객사<span class="req">*</span></label>
+              <select class="inp" id="npClient">
+                <option value="">고객사를 선택하세요</option>
+                ${CLIENTS.map(c => `<option value="${c.id}">${esc(c.name)} · ${esc(c.biz)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>프로젝트 유형<span class="req">*</span></label>
+              <select class="inp" id="npType">
+                <option>개인코칭</option><option>그룹코칭</option><option>워크숍</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>프로젝트명<span class="req">*</span></label>
+            <input class="inp" id="npName" placeholder="예) 2025 리더십 코칭 프로그램 1기"/>
+          </div>
+
+          <div class="f-row c2">
+            <div class="field"><label>시작일<span class="req">*</span></label><input class="inp" type="date" id="npStart"/></div>
+            <div class="field"><label>종료일<span class="req">*</span></label><input class="inp" type="date" id="npEnd"/></div>
+          </div>
+
+          <div class="f-row c3">
+            <div class="field"><label>코칭 횟수<span class="req">*</span></label><input class="inp num" type="number" id="npSess" min="1" max="20" value="6"/></div>
+            <div class="field"><label>참여 인원<span class="req">*</span></label><input class="inp num" type="number" id="npMem" min="1" value="20"/></div>
+            <div class="field">
+              <label>담당 PM<span class="req">*</span></label>
+              <select class="inp" id="npPm">
+                ${USERS.filter(x => x.role==='pm' || x.role==='admin').map(x => `<option ${x.name===u.name?'selected':''}>${esc(x.name)}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>매칭 코치<span class="req">*</span> <span class="hint">(복수 선택)</span></label>
+            <div class="row wrap" id="npCoach">
+              ${USERS.filter(x => x.role==='coach').map(c => `<button type="button" class="chip" data-c="${esc(c.name)}">${esc(c.name)} · ${esc((c.spec||[])[0]||'코칭')}</button>`).join('')}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>그룹 구성</label>
+            <div class="radio-row">
+              <label><input type="radio" name="npGrp" value="none" checked/> 그룹 없이 진행</label>
+              <label><input type="radio" name="npGrp" value="group"/> 그룹으로 진행</label>
+              <input class="inp num" type="number" id="npGn" min="1" max="20" value="3" placeholder="그룹 수" style="width:110px;display:none"/>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>프로젝트 설명</label>
+            <textarea class="inp" id="npDesc" placeholder="코칭 목적과 대상, 기대 효과를 입력하세요."></textarea>
+          </div>
+
+          <div class="field" style="margin-bottom:0">
+            <label>사전 자료 업로드</label>
+            <div class="upl">
+              <input type="file" id="npFile" multiple/>
+              <div class="hint mt8">${ico('shield')} 진단 결과지 · 사전 워크시트 등은 <b>PM · 코치만 열람</b> 가능한 공개범위로 업로드됩니다.</div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-f">
+          <button class="btn" onclick="closeM('npM')">취소</button>
+          <button class="btn pri" id="npSave">${ico('check')}프로젝트 개설</button>
+        </div>
+      </div>
+    </div>`);
+    bindMask();
+
+    $('#newBtn').onclick = () => openM('npM');
+    $$('#npCoach .chip').forEach(c => c.onclick = () => c.classList.toggle('on'));
+    $$('input[name=npGrp]').forEach(r => r.onchange = () => {
+      $('#npGn').style.display = ($('input[name=npGrp]:checked').value === 'group') ? 'block' : 'none';
+    });
+
+    $('#npSave').onclick = () => {
+      const clientId = $('#npClient').value;
+      const name     = $('#npName').value.trim();
+      const start    = $('#npStart').value;
+      const end      = $('#npEnd').value;
+      const members  = parseInt($('#npMem').value, 10);
+      const sessions = parseInt($('#npSess').value, 10);
+      const coaches  = $$('#npCoach .chip.on').map(c => c.dataset.c);
+      const isGrp    = $('input[name=npGrp]:checked').value === 'group';
+
+      if(!clientId)                  return toast('고객사를 선택해 주세요.', true);
+      if(!name)                      return toast('프로젝트명을 입력해 주세요.', true);
+      if(!start || !end)             return toast('프로젝트 기간을 입력해 주세요.', true);
+      if(start > end)                return toast('종료일은 시작일 이후여야 합니다.', true);
+      if(!members || members < 1)    return toast('참여 인원을 1명 이상 입력해 주세요.', true);
+      if(!sessions || sessions < 1)  return toast('코칭 횟수를 1회 이상 입력해 주세요.', true);
+      if(!coaches.length)            return toast('매칭 코치를 1명 이상 선택해 주세요.', true);
+
+      const cl = CLIENTS.find(c => c.id === clientId);
+      PROJECTS.unshift({
+        id:'p' + Date.now(), name, client:cl.name, clientId,
+        type:$('#npType').value, start, end, members,
+        groups: isGrp ? Math.max(1, parseInt($('#npGn').value, 10) || 1) : 0,
+        sessions, done:0, pm:$('#npPm').value, coaches,
+        progress:0, checkin:0, feedback:0, status:'준비중',
+        desc:$('#npDesc').value.trim() || '코칭 목적과 대상은 개설 후 등록할 수 있습니다.',
+      });
+
+      const files = $('#npFile').files;
+      if(files && files.length){
+        Array.from(files).forEach(f => LIBRARY.unshift({
+          id:'d' + Date.now() + Math.random().toString(36).slice(2,6),
+          n:f.name, t:(f.name.split('.').pop() || 'FILE').toUpperCase(),
+          s: f.size > 1048576 ? (f.size/1048576).toFixed(1)+'MB' : Math.max(1, Math.round(f.size/1024))+'KB',
+          at:new Date().toISOString().slice(0,10), by:u.name, proj:name, vis:'PM·코치만', cat:'진단',
+        }));
+      }
+
+      SEL = PROJECTS[0].id; F.page = 1;
+      closeM('npM');
+      $('#npName').value = ''; $('#npDesc').value = ''; $('#npClient').value = '';
+      $$('#npCoach .chip').forEach(c => c.classList.remove('on'));
+      renderAll();
+      toast('프로젝트가 개설되었습니다.');
+    };
+  }
+
+  renderAll();
+}
+</script>
+</body>
+</html>

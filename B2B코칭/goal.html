@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>코칭목표합의서 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+/* ---------- goal.html 전용 ---------- */
+.wz-head{padding:20px 18px}
+.wz-title{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.wz-sub{color:var(--muted);font-size:12.8px;margin-top:3px}
+
+/* 선택 역량 바 */
+.selbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:34px}
+.selbar .none{color:var(--muted-2);font-size:12.5px}
+
+/* 역량 아코디언 */
+.cat{border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;overflow:hidden;background:#fff}
+.cat-h{display:flex;align-items:center;gap:9px;padding:12px 14px;cursor:pointer;background:#FBFCFE;border-bottom:1px solid transparent;transition:.15s}
+.cat-h:hover{background:var(--hover)}
+.cat.open .cat-h{border-bottom-color:var(--line-2)}
+.cat-h .ci{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 30px}
+.cat-h .ci svg{width:16px;height:16px;stroke-width:1.9;fill:none}
+.cat-h b{font-size:13.5px}
+.cat-h .n{font-size:11px;font-weight:800;color:var(--muted-2)}
+.cat-h .ar{margin-left:auto;color:var(--muted-2);transition:transform .2s}
+.cat-h .ar svg{width:15px;height:15px;stroke-width:2;fill:none}
+.cat.open .cat-h .ar{transform:rotate(90deg)}
+.cat-b{display:none;padding:13px 14px}
+.cat.open .cat-b{display:block}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+
+/* 목표 블록 */
+.gblock{border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;margin-bottom:14px;background:#fff;position:relative}
+.gblock.alt{background:#FCFCFF}
+.gb-h{display:flex;align-items:center;gap:8px;margin-bottom:13px}
+.gb-h .no{width:24px;height:24px;border-radius:8px;background:var(--brand-50);color:var(--brand-700);display:grid;place-items:center;font-size:11.5px;font-weight:800;flex:0 0 24px}
+.gb-h b{font-size:13.5px;flex:1}
+.del{border:0;background:transparent;color:var(--muted-2);cursor:pointer;padding:5px;border-radius:8px;display:grid;place-items:center}
+.del:hover{background:var(--danger-bg);color:var(--danger)}
+.del svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+
+/* 점수 슬라이더 */
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:var(--r);padding:13px 14px;margin-top:4px}
+.sc-l{font-size:12px;font-weight:800;color:var(--brand-700);margin-bottom:7px;display:block}
+.rg{display:flex;align-items:center;gap:9px}
+.rg input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:5px;border-radius:99px;background:#DCD8FB;outline:none}
+.rg input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:99px;background:var(--brand);border:2.5px solid #fff;box-shadow:var(--sh-2);cursor:pointer}
+.rg input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:99px;background:var(--brand);border:2.5px solid #fff;cursor:pointer}
+.rg b{width:34px;text-align:center;font-size:13px;font-weight:800;color:var(--brand-700);background:#fff;border-radius:8px;padding:3px 0;box-shadow:var(--sh-1)}
+.sc-hint{grid-column:1/-1;font-size:11.5px;color:var(--brand-700);opacity:.85;display:flex;align-items:center;gap:5px}
+.sc-hint svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;flex:0 0 13px}
+
+/* 10점 스케일 */
+.sc10{display:flex;gap:3px;margin-top:6px}
+.sc10 i{flex:1;height:8px;border-radius:3px;background:var(--line);transition:.3s}
+.sc10 i.s{background:#C9CDDC}
+.sc10 i.f{background:var(--brand)}
+.sc10 i.t{background:var(--brand-100)}
+.sc-lg{display:flex;gap:12px;margin-top:6px;font-size:11px;color:var(--muted)}
+.sc-lg span{display:flex;align-items:center;gap:4px}
+.sc-lg i{width:9px;height:9px;border-radius:3px;display:block}
+
+/* 행동지표 행 */
+.ind{display:grid;grid-template-columns:26px 1fr 118px 28px;gap:9px;align-items:start;margin-bottom:9px}
+.ind .n{width:24px;height:24px;border-radius:99px;background:#F0F1F6;color:var(--muted);display:grid;place-items:center;font-size:11px;font-weight:800;margin-top:9px}
+.ind .del{margin-top:7px}
+
+/* 확인 단계 요약 */
+.sum{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin-bottom:14px}
+.sum-h{display:flex;align-items:center;gap:9px;padding:13px 15px;background:#FBFCFE;border-bottom:1px solid var(--line-2)}
+.sum-h b{font-size:14px;flex:1}
+.sum-b{padding:15px}
+.kv{margin-bottom:12px}
+.kv .k{font-size:11.5px;font-weight:800;color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+.kv .v{font-size:13.2px;color:var(--ink-2);line-height:1.65;white-space:pre-wrap}
+.ol{counter-reset:x}
+.ol li{position:relative;padding-left:24px;margin-bottom:6px;font-size:13px;color:var(--ink-2);line-height:1.6}
+.ol li::before{counter-increment:x;content:counter(x);position:absolute;left:0;top:1px;width:17px;height:17px;border-radius:99px;background:var(--brand-50);color:var(--brand-700);font-size:10px;font-weight:800;display:grid;place-items:center}
+.ol li .fq{font-size:11px;font-weight:800;color:var(--brand-700);background:var(--brand-50);border-radius:99px;padding:1px 7px;margin-left:5px;white-space:nowrap}
+
+/* 하단 네비 */
+.wz-nav{position:sticky;bottom:0;z-index:20;display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 14px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-2)}
+.wz-nav .sp{flex:1;text-align:center;font-size:12px;color:var(--muted);font-weight:700}
+@media(max-width:900px){.wz-nav{bottom:66px}}
+
+/* 열람 모드 */
+.vh{display:flex;align-items:center;gap:14px;padding:18px}
+.vh .col{flex:1}
+.vh h2{font-size:17px}
+.vh .meta{color:var(--muted);font-size:12.5px;margin-top:2px}
+.vgoal{margin-bottom:16px}
+.qbox{display:grid;grid-template-columns:110px 1fr;gap:16px;align-items:center;background:#FBFBFF;border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#fff;text-align:center}
+.stat .l{font-size:11px;color:var(--muted);font-weight:700}
+.stat .v{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.stat.now{background:var(--brand-50);border-color:var(--brand-100)}
+.stat.now .v{color:var(--brand-700)}
+.doc-head{text-align:center;border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:18px}
+.doc-head h2{font-size:22px;letter-spacing:.06em}
+.doc-head .dm{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-top:9px;font-size:12px;color:#444}
+.doc-head .dm b{font-weight:800;color:#111}
+.doc-sign{margin-top:10px;font-size:12px;font-weight:800;letter-spacing:.1em}
+
+@media(max-width:900px){
+  .scores{grid-template-columns:1fr}
+  .ind{grid-template-columns:22px 1fr 26px;grid-template-areas:"n t d" ". f f";row-gap:6px}
+  .ind .n{grid-area:n}.ind .t{grid-area:t}.ind .f{grid-area:f}.ind .del{grid-area:d}
+  .qbox{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .stats{width:100%}
+}
+@media print{
+  .wz-nav,.tabs,.chip,.btn{display:none!important}
+  .card{break-inside:avoid;page-break-inside:avoid}
+  .vgoal{page-break-inside:avoid}
+  .qbox,.insight{background:#fff!important}
+  .print-only.doc-head{display:block!important}
+}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+/* ============================================================
+   코칭목표합의서 — 작성 위저드(대상자) / 열람 모드(코치·PM·관리자·HR)
+   정량(점수)·정성(서술) 데이터를 분리된 필드로 저장합니다.
+   ============================================================ */
+var DRAFT_KEY = 'hb_goal_draft';
+var SUB_KEY   = 'hb_goal_submitted';
+var FREQS  = ['매일','주 1회','주 2회','주 3회','수시'];
+var LABELS = ['역량 선택','코칭목표 작성','행동지표 작성','작성 내용 확인'];
+var HEADS  = [
+  ['역량을 선택해주세요','코칭을 통해 개발하고 싶은 역량을 선택합니다. (복수 선택 가능)'],
+  ['코칭목표를 작성해주세요','선택한 역량을 바탕으로 코칭목표를 직접 작성합니다. (최대 3개)'],
+  ['행동지표를 작성해주세요','목표 달성을 위해 실제로 실행할 행동과 주기를 정합니다.'],
+  ['작성 내용을 확인해주세요','제출 후에는 코치의 확인을 거쳐 확정됩니다.'],
+];
+var MAXG = 3, MAXI = 5;
+
+var S = null;         // 위저드 상태
+var ME = null;        // 로그인 사용자
+var ROLE = null;
+var VIEW_UID = null;  // 열람 대상자 id
+
+/* ---------- 상태 ---------- */
+function newGoal(){ return { title:'', desc:'', reason:'', start:3, target:8,
+  inds:[{t:'',freq:'주 1회'},{t:'',freq:'주 1회'}], memo:'' }; }
+function blankState(){ return { step:1, comps:[], goals:[newGoal()], coachMemo:'' }; }
+function saveDraft(){ try{ localStorage.setItem(DRAFT_KEY, JSON.stringify(S)); }catch(e){} }
+var _sv;
+function autoSave(){ clearTimeout(_sv); _sv = setTimeout(saveDraft, 350); }
+function submitted(){ try{ return JSON.parse(localStorage.getItem(SUB_KEY)); }catch(e){ return null; } }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+/* ---------- 공통 조각 ---------- */
+function stepperHTML(cur){
+  return '<div class="stepper">' + LABELS.map(function(l,i){
+    var n = i+1, cls = n===cur ? 'on' : (n<cur ? 'done' : '');
+    return '<div class="st '+cls+'" onclick="gotoStep('+n+')" style="cursor:pointer">'
+      + '<span class="n">'+(n<cur?ico('check'):n)+'</span><span class="lb">'+l+'</span></div>'
+      + (n<LABELS.length ? '<span class="bar"></span>' : '');
+  }).join('') + '</div>';
+}
+function compChips(list, removable){
+  if(!list.length) return '<span class="none">선택된 역량이 없습니다. 아래에서 역량을 선택해주세요.</span>';
+  return list.map(function(c,i){
+    return '<span class="chip on">'+esc(c)+(removable?'<span class="x" onclick="toggleComp(\''+esc(c).replace(/'/g,'')+'\')">✕</span>':'')+'</span>';
+  }).join('');
+}
+function scale10(start, target, now){
+  var h = '';
+  for(var i=1;i<=10;i++){
+    var cls = i<=start ? 's' : (i<=now ? 'f' : (i<=target ? 't' : ''));
+    h += '<i class="'+cls+'" title="'+i+'점"></i>';
+  }
+  return '<div class="sc10">'+h+'</div>';
+}
+
+/* ============================================================
+   위저드 (role = member)
+   ============================================================ */
+function renderWizard(){
+  $('#page').innerHTML = ''
+  + '<div class="page-narrow">'
+  +   '<div class="card no-print mb16"><div class="card-b" style="padding:16px 18px">'+stepperHTML(S.step)+'</div></div>'
+  +   '<div id="wzBody"></div>'
+  +   '<div class="wz-nav no-print">'
+  +     '<button class="btn" id="btnPrev">'+ico('arrow','')+' 이전 단계</button>'
+  +     '<span class="sp">'+S.step+' / 4 단계</span>'
+  +     '<button class="btn pri" id="btnNext">다음 단계 '+ico('arrow')+'</button>'
+  +   '</div>'
+  + '</div>';
+  $('#btnPrev').style.transform = 'none';
+  $('#btnPrev').querySelector('svg').style.transform = 'rotate(180deg)';
+  $('#btnPrev').onclick = function(){ prevStep(); };
+  $('#btnNext').onclick = function(){ nextStep(); };
+  renderStep();
+}
+function stepHead(){
+  var h = HEADS[S.step-1];
+  return '<div class="wz-head"><div class="wz-title">'+h[0]+'</div><div class="wz-sub">'+h[1]+'</div></div>';
+}
+function renderStep(){
+  var b = $('#wzBody');
+  if(S.step===1) b.innerHTML = step1();
+  if(S.step===2) b.innerHTML = step2();
+  if(S.step===3) b.innerHTML = step3();
+  if(S.step===4) b.innerHTML = step4();
+  var nx = $('#btnNext');
+  if(nx) nx.innerHTML = S.step===4 ? '제출하기 '+ico('send') : '다음 단계 '+ico('arrow');
+  var pv = $('#btnPrev'); if(pv) pv.disabled = S.step===1;
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+/* --- 1단계 : 역량 선택 --- */
+function step1(){
+  return '<div class="card">'+stepHead()
+    + '<div class="card-b" style="padding-top:0">'
+    +   '<div class="sec-t">선택한 역량 <span class="pill">'+S.comps.length+'</span></div>'
+    +   '<div class="selbar mb16" id="selbar">'+compChips(S.comps, true)+'</div>'
+    +   '<div class="divider"></div>'
+    +   COMPETENCY.map(function(c,ci){
+          return '<div class="cat open" id="cat'+ci+'">'
+          + '<div class="cat-h" onclick="document.getElementById(\'cat'+ci+'\').classList.toggle(\'open\')">'
+          +   '<span class="ci" style="background:'+c.color+'1A;color:'+c.color+'">'+ico(c.icon)+'</span>'
+          +   '<b>'+c.cat+' 역량</b><span class="n">'+c.items.length+'개 항목</span>'
+          +   '<span class="ar">'+ico('arrow')+'</span>'
+          + '</div>'
+          + '<div class="cat-b"><div class="chips">'
+          +   c.items.map(function(it){
+                var key = c.cat+' > '+it, on = S.comps.indexOf(key)>=0;
+                return '<button class="chip '+(on?'on':'')+'" onclick="toggleComp(\''+key+'\')">'+(on?'✓ ':'')+esc(it)+'</button>';
+              }).join('')
+          + '</div></div></div>';
+        }).join('')
+    +   '<div class="insight mt16"><div class="ih">'+ico('bulb')+'역량 선택 안내</div><ul>'
+    +     '<li>사전 진단 결과에서 <b>성장 필요 영역</b>으로 도출된 역량을 우선 고려해 보세요.</li>'
+    +     '<li>선택한 역량은 성과 대시보드에서 <b>그룹·고객사 단위로 집계</b>됩니다.</li>'
+    +   '</ul></div>'
+    + '</div></div>';
+}
+function toggleComp(key){
+  var i = S.comps.indexOf(key);
+  if(i>=0) S.comps.splice(i,1);
+  else{
+    if(S.comps.length>=6){ toast('역량은 최대 6개까지 선택할 수 있습니다.', true); return; }
+    S.comps.push(key);
+  }
+  autoSave();
+  if(S.step===1) renderStep();
+}
+
+/* --- 2단계 : 코칭목표 작성 --- */
+function step2(){
+  return '<div class="card">'+stepHead()
+    + '<div class="card-b" style="padding-top:0">'
+    +   '<div class="sec-t">선택한 역량</div>'
+    +   '<div class="selbar mb16">'+compChips(S.comps, false)+'</div>'
+    +   '<div class="divider"></div>'
+    +   S.goals.map(goalBlock).join('')
+    +   (S.goals.length<MAXG
+        ? '<button class="btn soft block" onclick="addGoal()">'+ico('plus')+' 코칭목표 추가 ('+S.goals.length+'/'+MAXG+')</button>'
+        : '<div class="hint tc">코칭목표는 최대 '+MAXG+'개까지 작성할 수 있습니다.</div>')
+    + '</div></div>';
+}
+function goalBlock(g, i){
+  return '<div class="gblock'+(i%2?' alt':'')+'">'
+  + '<div class="gb-h"><span class="no">'+(i+1)+'</span><b>코칭목표 '+(i+1)+'</b>'
+  +   (S.goals.length>1 ? '<button class="del" title="삭제" onclick="delGoal('+i+')">'+ico('x')+'</button>' : '')
+  + '</div>'
+  + '<div class="field"><label>코칭목표 제목<span class="req">*</span></label>'
+  +   '<input class="inp" maxlength="60" placeholder="예) 효과적인 의사소통 역량 강화" value="'+esc(g.title)+'"'
+  +   ' oninput="setG('+i+',\'title\',this.value);txt(\'ct'+i+'\',this.value.length)"/>'
+  +   '<div class="inp-cnt"><span id="ct'+i+'">'+g.title.length+'</span>/60</div></div>'
+  + '<div class="field"><label>코칭목표 설명<span class="req">*</span></label>'
+  +   '<textarea class="inp" maxlength="500" placeholder="이 목표를 통해 무엇을 달성하고 싶은지 구체적으로 작성해주세요."'
+  +   ' oninput="setG('+i+',\'desc\',this.value);txt(\'cd'+i+'\',this.value.length)">'+esc(g.desc)+'</textarea>'
+  +   '<div class="inp-cnt"><span id="cd'+i+'">'+g.desc.length+'</span>/500</div></div>'
+  + '<div class="field"><label>목표 설정 이유<span class="req">*</span></label>'
+  +   '<textarea class="inp" maxlength="500" placeholder="왜 이 목표가 지금 필요한지, 어떤 상황에서 필요성을 느꼈는지 작성해주세요."'
+  +   ' oninput="setG('+i+',\'reason\',this.value);txt(\'cr'+i+'\',this.value.length)">'+esc(g.reason)+'</textarea>'
+  +   '<div class="inp-cnt"><span id="cr'+i+'">'+g.reason.length+'</span>/500</div></div>'
+  + '<div class="scores">'
+  +   '<div><span class="sc-l">시작 점수 (현재 수준)</span><div class="rg">'
+  +     '<input type="range" min="1" max="10" value="'+g.start+'" oninput="setScore('+i+',\'start\',this.value)"/><b id="ss'+i+'">'+g.start+'</b></div></div>'
+  +   '<div><span class="sc-l">기대 점수 (코칭 완료 시)</span><div class="rg">'
+  +     '<input type="range" min="1" max="10" value="'+g.target+'" oninput="setScore('+i+',\'target\',this.value)"/><b id="st'+i+'">'+g.target+'</b></div></div>'
+  +   '<div class="sc-hint" id="sp'+i+'">'+ico('chart')+' 시작 '+g.start+'점 → 기대 '+g.target+'점 (성장 목표 '+(g.target-g.start)+'점) · 정량 데이터로 별도 저장됩니다.</div>'
+  + '</div></div>';
+}
+function setG(i, k, v){ S.goals[i][k] = v; autoSave(); }
+function txt(id, v){ var e = document.getElementById(id); if(e) e.textContent = v; }
+function setScore(i, k, v){
+  S.goals[i][k] = parseInt(v,10);
+  txt(k==='start'?'ss'+i:'st'+i, v);
+  var g = S.goals[i], p = document.getElementById('sp'+i);
+  if(p) p.innerHTML = ico('chart')+' 시작 '+g.start+'점 → 기대 '+g.target+'점 (성장 목표 '+(g.target-g.start)+'점) · 정량 데이터로 별도 저장됩니다.';
+  autoSave();
+}
+function addGoal(){
+  if(S.goals.length>=MAXG){ toast('코칭목표는 최대 '+MAXG+'개까지 작성할 수 있습니다.', true); return; }
+  S.goals.push(newGoal()); autoSave(); renderStep(); toast('코칭목표가 추가되었습니다.');
+}
+function delGoal(i){
+  if(S.goals.length<=1){ toast('코칭목표는 최소 1개가 필요합니다.', true); return; }
+  S.goals.splice(i,1); autoSave(); renderStep(); toast('코칭목표가 삭제되었습니다.');
+}
+
+/* --- 3단계 : 행동지표 --- */
+function step3(){
+  return '<div class="card">'+stepHead()
+    + '<div class="card-b" style="padding-top:0">'
+    +   S.goals.map(function(g,i){
+          return '<div class="gblock'+(i%2?' alt':'')+'">'
+          + '<div class="gb-h"><span class="no">'+(i+1)+'</span><b>'+esc(g.title||'(제목 미입력) 코칭목표 '+(i+1))+'</b>'
+          +   '<button class="btn ghost sm" onclick="gotoStep(2)">'+ico('doc')+' 목표 수정</button></div>'
+          + '<div class="sec-t">행동지표 <span class="pill">'+g.inds.length+'/'+MAXI+'</span></div>'
+          + g.inds.map(function(ind, j){
+              return '<div class="ind">'
+              + '<span class="n">'+(j+1)+'</span>'
+              + '<div class="t"><textarea class="inp" maxlength="200" style="min-height:62px" placeholder="예) 회의 전에 안건과 목적을 확인하고, 관련 자료를 미리 정리한다."'
+              +   ' oninput="setInd('+i+','+j+',\'t\',this.value);txt(\'ci'+i+'_'+j+'\',this.value.length)">'+esc(ind.t)+'</textarea>'
+              +   '<div class="inp-cnt"><span id="ci'+i+'_'+j+'">'+ind.t.length+'</span>/200</div></div>'
+              + '<div class="f"><select class="inp" onchange="setInd('+i+','+j+',\'freq\',this.value)">'
+              +   FREQS.map(function(f){ return '<option '+(f===ind.freq?'selected':'')+'>'+f+'</option>'; }).join('')
+              +   '</select><div class="inp-cnt" style="text-align:left">실행 주기</div></div>'
+              + (g.inds.length>1 ? '<button class="del" title="지표 삭제" onclick="delInd('+i+','+j+')">'+ico('x')+'</button>' : '<span></span>')
+              + '</div>';
+            }).join('')
+          + (g.inds.length<MAXI
+            ? '<button class="btn sm soft" onclick="addInd('+i+')">'+ico('plus')+' 행동지표 추가</button>'
+            : '<div class="hint">행동지표는 최대 '+MAXI+'개까지 추가할 수 있습니다.</div>')
+          + '<div class="field mt16" style="margin-bottom:0"><label>실천 예시 메모 (선택)</label>'
+          +   '<textarea class="inp" maxlength="300" style="min-height:70px" placeholder="구체적인 실천 장면이나 상황을 메모해두면 체크인 작성이 쉬워집니다."'
+          +   ' oninput="setG('+i+',\'memo\',this.value);txt(\'cm'+i+'\',this.value.length)">'+esc(g.memo)+'</textarea>'
+          +   '<div class="inp-cnt"><span id="cm'+i+'">'+g.memo.length+'</span>/300</div></div>'
+          + '</div>';
+        }).join('')
+    +   '<div class="insight"><div class="ih">'+ico('bulb')+'좋은 행동지표란?</div><ul>'
+    +     '<li><b>관찰 가능한 행동</b>으로 작성합니다. (예: "경청한다" → "상대 발언을 요약해 확인한다")</li>'
+    +     '<li>실행 주기를 정하면 <b>주간 체크인</b>에서 자동으로 실행률이 집계됩니다.</li>'
+    +   '</ul></div>'
+    + '</div></div>';
+}
+function setInd(i, j, k, v){ S.goals[i].inds[j][k] = v; autoSave(); }
+function addInd(i){
+  if(S.goals[i].inds.length>=MAXI){ toast('행동지표는 최대 '+MAXI+'개까지 추가할 수 있습니다.', true); return; }
+  S.goals[i].inds.push({ t:'', freq:'주 1회' }); autoSave(); renderStep();
+}
+function delInd(i, j){
+  if(S.goals[i].inds.length<=1){ toast('행동지표는 최소 1개가 필요합니다.', true); return; }
+  S.goals[i].inds.splice(j,1); autoSave(); renderStep(); toast('행동지표가 삭제되었습니다.');
+}
+
+/* --- 4단계 : 확인 --- */
+function step4(){
+  return '<div class="card">'+stepHead()
+    + '<div class="card-b" style="padding-top:0">'
+    +   '<div class="sec-t">선택한 역량 <span class="pill">'+S.comps.length+'</span></div>'
+    +   '<div class="selbar mb16">'+compChips(S.comps, false)+'</div>'
+    +   S.goals.map(function(g,i){
+          return '<div class="sum">'
+          + '<div class="sum-h"><span class="badge brand">코칭목표 '+(i+1)+'</span><b>'+esc(g.title||'(제목 미입력)')+'</b>'
+          +   '<button class="btn sm" onclick="gotoStep(2)">수정</button></div>'
+          + '<div class="sum-b">'
+          +   '<div class="kv"><div class="k">코칭목표 설명</div><div class="v">'+esc(g.desc||'-')+'</div></div>'
+          +   '<div class="kv"><div class="k">목표 설정 이유</div><div class="v">'+esc(g.reason||'-')+'</div></div>'
+          +   '<div class="kv"><div class="k">정량 목표 (시작 → 기대)</div>'
+          +     '<div class="row" style="gap:8px"><b style="font-size:15px">'+g.start+'점</b>'+ico('arrow','')
+          +     '<b style="font-size:15px;color:var(--brand)">'+g.target+'점</b>'
+          +     '<span class="badge brand">+'+(g.target-g.start)+'점 성장</span></div>'
+          +     scale10(g.start, g.target, g.start)+'</div>'
+          +   '<div class="kv" style="margin-bottom:0"><div class="k">행동지표 <button class="btn sm ghost" onclick="gotoStep(3)">수정</button></div>'
+          +     '<ul class="ol">'+g.inds.filter(function(x){return x.t.trim();}).map(function(x){
+                  return '<li>'+esc(x.t)+'<span class="fq">'+esc(x.freq)+'</span></li>'; }).join('')+'</ul>'
+          +     (g.memo ? '<div class="hint mt8">실천 예시 메모 : '+esc(g.memo)+'</div>' : '')
+          +   '</div>'
+          + '</div></div>';
+        }).join('')
+    +   '<div class="field"><label>코치 메모 (선택)</label>'
+    +     '<textarea class="inp" maxlength="300" placeholder="코치님께 미리 전달하고 싶은 내용이 있다면 작성해주세요."'
+    +     ' oninput="S.coachMemo=this.value;txt(\'cc\',this.value.length);autoSave()">'+esc(S.coachMemo)+'</textarea>'
+    +     '<div class="inp-cnt"><span id="cc">'+S.coachMemo.length+'</span>/300</div></div>'
+    +   '<div class="insight" style="background:var(--brand-50);border-color:var(--brand-100)">'
+    +     '<div class="ih">'+ico('shield')+'제출 안내</div><ul>'
+    +     '<li>제출 시 담당 코치에게 알림이 발송되며, 코치 확인 후 <b>확정</b> 상태가 됩니다.</li>'
+    +     '<li>정량(점수)·정성(서술) 데이터는 <b>별도 필드로 저장</b>되어 성과 대시보드에 집계됩니다.</li>'
+    +   '</ul></div>'
+    + '</div>'
+    + '<div class="card-f no-print" style="justify-content:flex-end">'
+    +   '<button class="btn" onclick="manualSave()">'+ico('doc')+' 임시저장</button>'
+    +   '<button class="btn pri" onclick="askSubmit()">'+ico('send')+' 제출하기</button>'
+    + '</div></div>';
+}
+function manualSave(){ saveDraft(); toast('작성 내용이 임시저장되었습니다.'); }
+
+/* --- 단계 이동 / 검증 --- */
+function validate(step){
+  if(step===1){
+    if(!S.comps.length){ toast('역량을 1개 이상 선택해주세요.', true); return false; }
+  }
+  if(step===2){
+    for(var i=0;i<S.goals.length;i++){
+      var g = S.goals[i];
+      if(!g.title.trim()){ toast('코칭목표 '+(i+1)+'의 제목을 입력해주세요.', true); return false; }
+      if(!g.desc.trim()){ toast('코칭목표 '+(i+1)+'의 설명을 입력해주세요.', true); return false; }
+      if(!g.reason.trim()){ toast('코칭목표 '+(i+1)+'의 목표 설정 이유를 입력해주세요.', true); return false; }
+      if(g.target <= g.start){ toast('코칭목표 '+(i+1)+'의 기대 점수는 시작 점수보다 높아야 합니다.', true); return false; }
+    }
+  }
+  if(step===3){
+    for(var k=0;k<S.goals.length;k++){
+      var gg = S.goals[k], filled = gg.inds.filter(function(x){ return x.t.trim(); });
+      if(!filled.length){ toast('코칭목표 '+(k+1)+'의 행동지표를 1개 이상 작성해주세요.', true); return false; }
+      if(filled.length !== gg.inds.length){ toast('코칭목표 '+(k+1)+'에 비어 있는 행동지표가 있습니다. 작성하거나 삭제해주세요.', true); return false; }
+    }
+  }
+  return true;
+}
+function nextStep(){
+  if(S.step===4){ askSubmit(); return; }
+  if(!validate(S.step)) return;
+  S.step++; saveDraft(); renderWizard();
+}
+function prevStep(){ if(S.step>1){ S.step--; saveDraft(); renderWizard(); } }
+function gotoStep(n){
+  if(n === S.step) return;
+  if(n > S.step){ for(var i=S.step;i<n;i++){ if(!validate(i)) return; } }
+  S.step = n; saveDraft(); renderWizard();
+}
+
+/* --- 제출 --- */
+function askSubmit(){
+  if(!validate(1)||!validate(2)||!validate(3)) return;
+  $('#subSum').innerHTML = '<li>선택 역량 <b>'+S.comps.length+'개</b> · 코칭목표 <b>'+S.goals.length+'개</b> · 행동지표 <b>'
+    + S.goals.reduce(function(a,g){ return a + g.inds.filter(function(x){ return x.t.trim(); }).length; }, 0)+'개</b></li>'
+    + S.goals.map(function(g,i){ return '<li>목표'+(i+1)+' : '+esc(g.title)+' ('+g.start+'점 → '+g.target+'점)</li>'; }).join('');
+  openM('subM');
+}
+function doSubmit(){
+  closeM('subM');
+  var payload = { userId:ME.id, at:today(), comps:S.comps, goals:S.goals, coachMemo:S.coachMemo };
+  try{ localStorage.setItem(SUB_KEY, JSON.stringify(payload)); localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  toast('코칭목표합의서가 제출되었습니다. 코치에게 알림이 발송됩니다.');
+  VIEW_UID = ME.id;
+  setTimeout(function(){ renderView(); }, 350);
+}
+function restartWizard(){
+  try{ localStorage.removeItem(SUB_KEY); localStorage.removeItem(DRAFT_KEY); }catch(e){}
+  S = blankState(); renderWizard(); toast('새로 작성합니다.');
+}
+
+/* ============================================================
+   열람 모드
+   ============================================================ */
+function targetList(){
+  var ms = USERS.filter(function(x){ return x.role==='member'; });
+  if(ROLE==='coach') return ms.filter(function(x){ return x.coachId===ME.id; });
+  if(ROLE==='hr')    return ms.filter(function(x){ return x.org===ME.org; });
+  return ms;
+}
+function goalsOf(uid){
+  var gs = GOALS.filter(function(g){ return g.userId===uid; });
+  if(gs.length) return gs;
+  var sub = submitted();
+  if(sub && sub.userId===uid){
+    return sub.goals.map(function(g,i){
+      return { id:'s'+i, userId:uid, comp:sub.comps.slice(), title:g.title, desc:g.desc, reason:g.reason,
+        startScore:g.start, targetScore:g.target, nowScore:g.start,
+        indicators:g.inds.filter(function(x){return x.t.trim();}).map(function(x,j){
+          return { id:'si'+j, t:x.t, freq:x.freq, done:0, total:0, status:'대기' }; }),
+        status:'제출완료', signedAt:sub.at, memo:g.memo };
+    });
+  }
+  return [];
+}
+function renderView(){
+  var list = targetList();
+  if(!VIEW_UID) VIEW_UID = (list.filter(function(x){ return goalsOf(x.id).length; })[0] || list[0] || ME).id;
+  var t = uById(VIEW_UID);
+  var gs = goalsOf(VIEW_UID);
+  var coach = t.coachId ? uById(t.coachId) : null;
+  var proj = PROJECTS.filter(function(p){ return p.id===t.projectId; })[0];
+  var isHR = ROLE==='hr';
+  var isSelf = ROLE==='member';
+  var signed = gs.length ? (gs[0].signedAt||'-') : '-';
+  var st = gs.length ? gs[0].status : '미제출';
+
+  $('#page').innerHTML = ''
+  + '<div class="page-narrow">'
+  /* 인쇄 전용 문서 헤더 */
+  + '<div class="print-only doc-head">'
+  +   '<h2>코 칭 목 표 합 의 서</h2>'
+  +   '<div class="dm">'
+  +     '<span>프로젝트 <b>'+esc(proj?proj.name:'-')+'</b></span>'
+  +     '<span>대상자 <b>'+esc(t.name)+' ('+esc(t.title||'')+')</b></span>'
+  +     '<span>담당 코치 <b>'+esc(coach?coach.name:'-')+'</b></span>'
+  +     '<span>확정일 <b>'+esc(signed)+'</b></span>'
+  +   '</div>'
+  +   '<div class="doc-sign">HOW COACHING · 하우코칭</div>'
+  + '</div>'
+  /* 대상자 선택 */
+  + (isSelf ? '' :
+      '<div class="card no-print mb16"><div class="card-b row wrap" style="gap:10px">'
+    +   '<div class="sec-t" style="margin:0">'+ico('users')+' 대상자 선택</div>'
+    +   '<select class="inp" style="max-width:280px" id="tSel">'
+    +     list.map(function(m){ var has = goalsOf(m.id).length;
+            return '<option value="'+m.id+'" '+(m.id===VIEW_UID?'selected':'')+'>'+esc(m.name)+' · '+esc(m.title)+(has?'':' (미제출)')+'</option>'; }).join('')
+    +   '</select>'
+    +   '<span class="hint">'+ROLES[ROLE].label+' 권한 · '+ROLES[ROLE].scope+'</span>'
+    + '</div></div>')
+  /* 프로필 헤더 */
+  + '<div class="card mb16"><div class="vh">'
+  +   '<span class="av xl" style="background:'+(t.color||'#8B90A6')+'">'+esc(t.name.slice(-2))+'</span>'
+  +   '<div class="col"><div class="row" style="gap:8px"><h2>'+esc(t.name)+'</h2>'
+  +     '<span class="badge '+(st==='확정'?'ok':(st==='제출완료'?'info':'gray'))+' dot">'+esc(st)+'</span></div>'
+  +     '<div class="meta">'+esc(t.org)+' · '+esc(t.title)+' &nbsp;|&nbsp; 담당 코치 <b>'+esc(coach?coach.name:'-')+'</b>'
+  +     ' &nbsp;|&nbsp; '+(st==='확정'?'확정일':'제출일')+' <b>'+esc(signed)+'</b></div>'
+  +     '<div class="meta">'+esc(proj?proj.name:'-')+'</div>'
+  +   '</div>'
+  +   '<div class="row no-print" style="gap:8px">'
+  +     (isSelf ? '<button class="btn" onclick="restartWizard()">'+ico('doc')+' 다시 작성</button>' : '')
+  +     '<button class="btn" onclick="downloadPDF()">'+ico('dl')+' PDF 다운로드</button>'
+  +     (isHR ? '' : '<button class="btn soft" onclick="openM(\'reqM\')">'+ico('chat')+' 수정 요청</button>')
+  +   '</div>'
+  + '</div></div>'
+  /* HR 안내 */
+  + (isHR ? '<div class="insight" style="background:var(--warn-bg);border-color:#F5DFB4"><div class="ih">'+ico('shield')+'HR 권한 열람 범위</div><ul>'
+      + '<li>개인정보 보호를 위해 <b>서술형(정성) 원문</b>은 제공되지 않으며, <b>역량·정량 점수 요약</b>만 열람할 수 있습니다.</li>'
+      + '<li>서술형 데이터는 익명 집계된 형태로 <b>성과 대시보드</b>에서 확인하실 수 있습니다.</li></ul></div>' : '')
+  /* 본문 */
+  + (gs.length ? gs.map(function(g,i){ return isHR ? viewGoalHR(g,i) : viewGoal(g,i); }).join('')
+     : '<div class="card"><div class="empty"><b>제출된 코칭목표합의서가 없습니다.</b>'+esc(t.name)+'님은 아직 합의서를 작성하지 않았습니다.<div class="mt12 no-print"><button class="btn soft" onclick="toast(\'작성 요청 알림을 발송했습니다.\')">'+ico('send')+' 작성 요청 알림 보내기</button></div></div></div>')
+  /* 정량 저장 구조 안내 */
+  + '<div class="insight mt16"><div class="ih">'+ico('chart')+'정량 데이터 저장 구조</div><ul>'
+  +   '<li>본 합의서의 <b>정량(점수)·정성(서술) 데이터는 별도 필드로 DB에 저장</b>되어 성과 대시보드에서 그룹·고객사 단위로 집계됩니다.</li>'
+  +   '<li>정량 필드 : <code>start_score</code> · <code>target_score</code> · <code>now_score</code> · 행동지표 <code>done/total</code></li>'
+  +   '<li>정성 필드 : <code>title</code> · <code>description</code> · <code>reason</code> · <code>indicator_text</code></li>'
+  + '</ul></div>'
+  + '</div>';
+
+  if(!isSelf){ var sel = $('#tSel'); if(sel) sel.onchange = function(e){ VIEW_UID = e.target.value; renderView(); }; }
+  gs.forEach(function(g,i){
+    var el = document.getElementById('ring'+i);
+    if(el){
+      var rate = g.targetScore>g.startScore ? Math.round((g.nowScore-g.startScore)/(g.targetScore-g.startScore)*100) : 0;
+      ring('#ring'+i, Math.max(0,Math.min(100,rate)), { size:96, sw:9, color:'#5B4BE8', track:'#EDEFF6', sub:'목표 달성률' });
+    }
+  });
+}
+function viewGoal(g, i){
+  var done = g.indicators.reduce(function(a,b){ return a + (b.done||0); }, 0);
+  var total = g.indicators.reduce(function(a,b){ return a + (b.total||0); }, 0);
+  return '<div class="card vgoal"><div class="card-h">'
+  + '<span class="badge brand">코칭목표 '+(i+1)+'</span><h3>'+esc(g.title)+'</h3><span class="spacer"></span>'
+  + '<span class="badge '+(g.status==='확정'?'ok':'info')+'">'+esc(g.status)+'</span></div>'
+  + '<div class="card-b">'
+  +   '<div class="row wrap mb16" style="gap:6px">'+g.comp.map(function(c){ return '<span class="chip on">'+esc(c)+'</span>'; }).join('')+'</div>'
+  +   '<div class="kv"><div class="k">코칭목표 설명</div><div class="v">'+esc(g.desc)+'</div></div>'
+  +   '<div class="kv"><div class="k">목표 설정 이유</div><div class="v">'+esc(g.reason)+'</div></div>'
+  +   (g.memo ? '<div class="kv"><div class="k">실천 예시 메모</div><div class="v">'+esc(g.memo)+'</div></div>' : '')
+  +   '<div class="sec-t mt16">'+ico('chart')+' 정량 목표</div>'
+  +   '<div class="qbox mb16">'
+  +     '<div id="ring'+i+'"></div>'
+  +     '<div><div class="stats">'
+  +       '<div class="stat"><div class="l">시작 점수</div><div class="v">'+g.startScore+'</div></div>'
+  +       '<div class="stat now"><div class="l">현재 점수</div><div class="v">'+g.nowScore+'</div></div>'
+  +       '<div class="stat"><div class="l">기대 점수</div><div class="v">'+g.targetScore+'</div></div>'
+  +     '</div>'
+  +     scale10(g.startScore, g.targetScore, g.nowScore)
+  +     '<div class="sc-lg"><span><i style="background:#C9CDDC"></i>시작</span><span><i style="background:var(--brand)"></i>현재</span><span><i style="background:var(--brand-100)"></i>기대</span></div>'
+  +     '</div>'
+  +   '</div>'
+  +   '<div class="sec-t">'+ico('checkbox')+' 행동지표 <span class="pill">'+g.indicators.length+'개</span></div>'
+  +   '<div class="tbl-wrap"><table class="tbl"><thead><tr>'
+  +     '<th style="width:34px">#</th><th>행동지표</th><th style="width:88px">실행 주기</th><th style="width:120px">실행</th><th style="width:80px">상태</th>'
+  +   '</tr></thead><tbody>'
+  +   g.indicators.map(function(x,j){
+        var p = x.total ? Math.round(x.done/x.total*100) : 0;
+        return '<tr><td class="num muted">'+(j+1)+'</td><td class="nm" style="font-weight:600">'+esc(x.t)+'</td>'
+        + '<td><span class="pill">'+esc(x.freq)+'</span></td>'
+        + '<td><div class="pcell"><b class="num">'+(x.total?x.done+' / '+x.total+'회':'-')+'</b>'
+        +   '<span class="pbar '+(p>=100?'ok':'')+'"><i style="width:'+p+'%"></i></span></div></td>'
+        + '<td><span class="badge '+(x.status==='완료'?'ok':(x.status==='대기'?'gray':'info'))+'">'+esc(x.status)+'</span></td></tr>';
+      }).join('')
+  +   '</tbody></table></div>'
+  +   '<div class="hint mt12">누적 실행 '+done+' / '+total+'회 · 실행률 '+(total?Math.round(done/total*100):0)+'%</div>'
+  + '</div></div>';
+}
+function viewGoalHR(g, i){
+  var done = g.indicators.reduce(function(a,b){ return a + (b.done||0); }, 0);
+  var total = g.indicators.reduce(function(a,b){ return a + (b.total||0); }, 0);
+  var rate = total ? Math.round(done/total*100) : 0;
+  return '<div class="card vgoal"><div class="card-h">'
+  + '<span class="badge brand">코칭목표 '+(i+1)+'</span><h3>'+esc(g.title)+'</h3><span class="spacer"></span>'
+  + '<span class="badge gray">요약 열람</span></div>'
+  + '<div class="card-b">'
+  +   '<div class="row wrap mb16" style="gap:6px">'+g.comp.map(function(c){ return '<span class="chip on">'+esc(c)+'</span>'; }).join('')+'</div>'
+  +   '<div class="qbox mb16">'
+  +     '<div id="ring'+i+'"></div>'
+  +     '<div><div class="stats">'
+  +       '<div class="stat"><div class="l">시작 점수</div><div class="v">'+g.startScore+'</div></div>'
+  +       '<div class="stat now"><div class="l">현재 점수</div><div class="v">'+g.nowScore+'</div></div>'
+  +       '<div class="stat"><div class="l">기대 점수</div><div class="v">'+g.targetScore+'</div></div>'
+  +     '</div>'
+  +     scale10(g.startScore, g.targetScore, g.nowScore)
+  +     '<div class="sc-lg"><span><i style="background:#C9CDDC"></i>시작</span><span><i style="background:var(--brand)"></i>현재</span><span><i style="background:var(--brand-100)"></i>기대</span></div></div>'
+  +   '</div>'
+  +   '<div class="grid g2">'
+  +     '<div class="insight" style="margin:0"><div class="ih">'+ico('checkbox')+'행동지표 실행 요약</div><ul>'
+  +       '<li>등록 행동지표 <b>'+g.indicators.length+'개</b></li>'
+  +       '<li>누적 실행 <b>'+done+' / '+total+'회</b> (실행률 '+rate+'%)</li>'
+  +       '<li>완료 지표 <b>'+g.indicators.filter(function(x){return x.status==='완료';}).length+'개</b></li>'
+  +     '</ul></div>'
+  +     '<div class="insight" style="margin:0"><div class="ih">'+ico('flag')+'정성 데이터</div><ul>'
+  +       '<li>서술형 항목(설명 · 설정 이유 · 지표 원문)은 <b>HR 권한에서 비공개</b>입니다.</li>'
+  +       '<li>텍스트는 익명 집계되어 성과 대시보드의 <b>키워드 분석</b>에 반영됩니다.</li>'
+  +     '</ul></div>'
+  +   '</div>'
+  + '</div></div>';
+}
+
+/* ============================================================
+   부트스트랩
+   ============================================================ */
+var u = shell('goal');
+if(u){
+  ME = u; ROLE = session().role;
+
+  /* 모달 */
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="mask" id="subM"><div class="modal">'
+  +   '<div class="modal-h"><h3>코칭목표합의서를 제출할까요?</h3><button class="x" onclick="closeM(\'subM\')">'+ico('x')+'</button></div>'
+  +   '<div class="modal-b"><p class="hint">제출하면 담당 코치에게 알림이 발송되며, 코치 확인 후 <b>확정</b> 상태가 됩니다. 확정 후 수정하려면 코치에게 <b>수정 요청</b>을 보내야 합니다.</p>'
+  +     '<div class="insight mt16" style="margin-bottom:0"><div class="ih">'+ico('check')+'제출 내용 요약</div><ul id="subSum"></ul></div></div>'
+  +   '<div class="modal-f"><button class="btn" onclick="closeM(\'subM\')">취소</button>'
+  +     '<button class="btn pri" onclick="doSubmit()">'+ico('send')+' 제출하기</button></div>'
+  + '</div></div>'
+  + '<div class="mask" id="reqM"><div class="modal">'
+  +   '<div class="modal-h"><h3>합의서 수정 요청</h3><button class="x" onclick="closeM(\'reqM\')">'+ico('x')+'</button></div>'
+  +   '<div class="modal-b"><div class="field" style="margin-bottom:0"><label>수정이 필요한 내용<span class="req">*</span></label>'
+  +     '<textarea class="inp" id="reqT" maxlength="300" placeholder="예) 코칭목표 2의 기대 점수를 조정하고 싶습니다."></textarea>'
+  +     '<div class="inp-cnt">최대 300자</div></div></div>'
+  +   '<div class="modal-f"><button class="btn" onclick="closeM(\'reqM\')">취소</button>'
+  +     '<button class="btn pri" onclick="sendReq()">'+ico('send')+' 요청 보내기</button></div>'
+  + '</div></div>'
+  + '<div class="mask" id="resM"><div class="modal" style="max-width:440px">'
+  +   '<div class="modal-h"><h3>임시저장된 내용이 있습니다</h3></div>'
+  +   '<div class="modal-b"><p class="hint">작성 중이던 코칭목표합의서가 있습니다. 이어서 작성하시겠습니까?</p><div id="resInfo" class="insight mt12" style="margin-bottom:0"></div></div>'
+  +   '<div class="modal-f"><button class="btn" onclick="closeM(\'resM\');restartWizard()">새로 작성</button>'
+  +     '<button class="btn pri" onclick="closeM(\'resM\')">이어서 작성</button></div>'
+  + '</div></div>');
+  bindMask();
+
+  if(ROLE === 'member'){
+    var sub = submitted();
+    if(sub && sub.userId === ME.id){
+      VIEW_UID = ME.id; renderView();
+    }else{
+      var draft = null;
+      try{ draft = JSON.parse(localStorage.getItem(DRAFT_KEY)); }catch(e){}
+      S = (draft && draft.goals) ? draft : blankState();
+      renderWizard();
+      if(draft && draft.goals){
+        $('#resInfo').innerHTML = '<ul><li>역량 <b>'+(draft.comps||[]).length+'개</b> · 코칭목표 <b>'+draft.goals.length+'개</b> 작성 중</li>'
+          + '<li>마지막 작성 단계 : <b>'+LABELS[(draft.step||1)-1]+'</b></li></ul>';
+        openM('resM');
+      }
+    }
+  }else{
+    renderView();
+  }
+}
+function sendReq(){
+  var t = $('#reqT');
+  if(!t.value.trim()){ toast('수정이 필요한 내용을 입력해주세요.', true); return; }
+  closeM('reqM'); t.value = '';
+  toast('수정 요청이 전달되었습니다. 담당자에게 알림이 발송됩니다.');
+}
+</script>
+</body>
+</html>

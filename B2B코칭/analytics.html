@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>성과 대시보드 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .kpi .ico.ring-ico{background:var(--brand-50);padding:0}
+  .kpi .ico.ring-ico svg{width:44px;height:44px}
+  .filterbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:10px;align-items:end}
+  .filterbar .field{margin:0}
+  .filterbar .dates{display:flex;align-items:center;gap:6px}
+  .filterbar .dates .inp{padding:9px 8px;font-size:12.5px}
+  .lg-list li{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:13px}
+  .lg-list li:last-child{border-bottom:0}
+  .lg-list .sw-c{width:10px;height:10px;border-radius:3px;flex:0 0 10px}
+  .lg-list .nm{font-weight:700;flex:1}
+  .lg-list .pc{font-weight:800;color:var(--ink)}
+  .lg-list .vv{color:var(--muted);font-size:12px;width:56px;text-align:right}
+  .lg-list li.sum{border-top:1px solid var(--line);margin-top:4px;font-weight:800}
+  .reco{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-2)}
+  .reco:last-child{border-bottom:0}
+  .reco .ri{width:30px;height:30px;border-radius:9px;background:var(--brand-50);color:var(--brand);display:grid;place-items:center;flex:0 0 30px}
+  .reco .ri svg{width:15px;height:15px;stroke-width:1.9;fill:none}
+  .reco p{font-size:12.8px;color:var(--ink-2);line-height:1.5}
+  .banner{display:flex;align-items:center;gap:10px;background:var(--warn-bg);border:1px solid #F6DFB4;color:#8A5B08;border-radius:var(--r);padding:11px 14px;font-size:13px;font-weight:600;margin-bottom:16px}
+  .banner svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;flex:0 0 17px}
+  .chartcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .sidecol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .colopt{display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line-2);font-size:13.5px;font-weight:600;cursor:pointer}
+  .colopt:last-child{border-bottom:0}
+  @media(max-width:1100px){ .filterbar{grid-template-columns:1fr 1fr} .filterbar .fb-act{grid-column:1/-1} }
+  @media(max-width:640px){ .filterbar{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('analytics');
+if(u){
+  const role = session().role;
+
+  /* ---------- 역할별 데이터 범위 ---------- */
+  const ROLE_F = role === 'hr' ? 0.34 : role === 'coach' ? 0.14 : 1;
+  const myOrg  = role === 'hr' ? (u.org || 'A기업') : null;
+
+  /* ---------- 참여자 시드 (USERS member 8명 반복 → 20행) ---------- */
+  const BASE = USERS.filter(x => x.role === 'member');
+  const EXTRA = ['서지훈','문가영','노태현','배수지','임재현','조은서','신동욱','권나라','황민준','고아라','류시원','남지현'];
+  const PARTS = [];
+  for(let i=0; i<20; i++){
+    const b = BASE[i % BASE.length];
+    const nm = i < BASE.length ? b.name : EXTRA[i - BASE.length];
+    const goals = 2 + (i * 3) % 4;                    // 2~5
+    const inds  = goals * 3 + (i % 3);                // 6~17
+    const prog  = Math.max(8, [88,74,62,45,93,58,37,70,66,51,79,42,84,33,71,60,95,48,57,68][i]);
+    const ck    = [true,true,false,true,true,false,true,true,true,false,true,true,true,false,true,true,true,false,true,true][i];
+    PARTS.push({
+      id:'pt'+i, name:nm, color:b.color, org:b.org, title:b.title, group:b.group,
+      coachId:b.coachId, projectId:b.projectId,
+      goals, inds, prog, ck,
+      last: ck ? ['5/26','5/25','5/26','5/24','5/26','5/23','5/26','5/25'][i % 8] : ['5/12','5/08','5/15','5/10'][i % 4],
+      proj: (PROJECTS.find(p => p.id === b.projectId) || PROJECTS[0]).name,
+    });
+  }
+  const SCOPED = PARTS.filter(p =>
+    role === 'coach' ? p.coachId === u.id :
+    role === 'hr'    ? p.org === myOrg : true);
+
+  /* ---------- 필터 상태 ---------- */
+  const st = { proj:'', group:'', from:'2024-05-05', to:'2024-06-01', title:'', comp:'', q:'' };
+  const COLS = [
+    { k:'group', l:'그룹', on:true }, { k:'goals', l:'코칭목표 수', on:true },
+    { k:'inds', l:'행동지표 수', on:true }, { k:'prog', l:'진행률', on:true },
+    { k:'ck', l:'이번 주 체크인', on:true }, { k:'last', l:'최근 체크인', on:true },
+    { k:'proj', l:'프로젝트', on:true },
+  ];
+  const shown = k => (COLS.find(c => c.k === k) || {}).on;
+  const activeN = () => ['proj','group','title','comp'].filter(k => st[k]).length;
+  const factor = () => {
+    let f = ROLE_F;
+    if(st.proj)  f *= 0.42;
+    if(st.group) f *= 0.38;
+    if(st.title) f *= 0.55;
+    if(st.comp)  f *= 0.50;
+    return f;
+  };
+  const S  = v => Math.max(1, Math.round(v * factor()));
+  const Sp = v => Math.max(0, Math.min(100, v - activeN() * 3));   // 퍼센트 지표 보정
+  const n0 = v => v.toLocaleString('ko-KR');
+
+  const TITLES = ['팀장','파트장','과장','대리','차장'];
+
+  /* ---------- 화면 ---------- */
+  $('#page').innerHTML = `
+  ${role === 'hr' ? `<div class="banner">${ico('shield')}<span><b>자사 데이터 범위</b> — ${esc(myOrg)} 소속 프로젝트·참여자 데이터만 조회됩니다. (고객사 HR 권한)</span></div>` : ''}
+  ${role === 'coach' ? `<div class="banner">${ico('shield')}<span><b>담당 피코치 범위</b> — 배정된 피코치의 목표·행동지표 데이터만 조회됩니다. (파트너 코치 권한)</span></div>` : ''}
+
+  <div class="kpis mb16" id="kpis"></div>
+
+  <div class="card mb16">
+    <div class="card-b">
+      <div class="filterbar">
+        <div class="field">
+          <label>프로젝트</label>
+          <select class="inp" id="fProj">
+            <option value="">전체 프로젝트</option>
+            ${PROJECTS.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>그룹</label>
+          <select class="inp" id="fGroup">
+            <option value="">전체 그룹</option>
+            <option value="1조">1조</option><option value="2조">2조</option><option value="3조">3조</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>기간</label>
+          <div class="dates">
+            <input type="date" class="inp" id="fFrom" value="2024-05-05"/>
+            <span class="muted small">~</span>
+            <input type="date" class="inp" id="fTo" value="2024-06-01"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>직급</label>
+          <select class="inp" id="fTitle">
+            <option value="">전체 직급</option>
+            ${TITLES.map(t => `<option value="${t}">${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>역량 분류</label>
+          <select class="inp" id="fComp">
+            <option value="">전체 역량</option>
+            ${COMPETENCY.map(c => `<option value="${c.cat}">${c.cat} 역량</option>`).join('')}
+          </select>
+        </div>
+        <div class="field fb-act">
+          <button class="btn" id="fReset">${ico('x')}필터 초기화</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g-3-1 mb16">
+    <div class="chartcol">
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-h"><h3>많이 설정한 코칭목표 Top 10</h3><span class="spacer"></span><span class="pill">단위: 개</span></div>
+          <div class="card-b"><div id="cGoals"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>많이 작성한 행동지표 Top 10</h3><span class="spacer"></span><span class="pill">단위: 개</span></div>
+          <div class="card-b"><div id="cInds"></div></div>
+        </div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <div class="card-h"><h3>역량 분류별 비중</h3></div>
+          <div class="card-b">
+            <div class="row" style="gap:18px;align-items:center;flex-wrap:wrap">
+              <div id="cMix" style="flex:0 0 auto"></div>
+              <ul class="lg-list" style="flex:1;min-width:170px" id="cMixLg"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>핵심 키워드</h3><span class="spacer"></span><span class="small muted">코칭목표·행동지표 텍스트 분석</span></div>
+          <div class="card-b"><div id="cWords"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>목표–행동지표 연결 현황</h3><span class="spacer"></span><span class="small muted">셀에 마우스를 올리면 연결 수가 표시됩니다</span></div>
+        <div class="card-b"><div id="cHeat"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>주간 체크인 및 실행 추이</h3><span class="spacer"></span><span class="badge brand">최근 6주</span></div>
+        <div class="card-b"><div id="cTrend"></div></div>
+      </div>
+    </div>
+
+    <div class="sidecol">
+      <div class="card">
+        <div class="card-h"><h3>주요 인사이트</h3></div>
+        <div class="card-b" id="cIns"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>추천 활동</h3></div>
+        <div class="card-b">
+          ${ANALYTICS.recos.map(r => `<div class="reco"><span class="ri">${ico(r.i)}</span><p>${esc(r.t)}</p></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <h3>참여자별 목표 입력 현황</h3>
+      <span class="badge gray" id="tCount"></span>
+      <span class="spacer"></span>
+      <div class="toolbar">
+        <div class="search" style="min-width:210px">
+          ${ico('search')}<input class="inp" id="tQ" placeholder="이름 · 그룹 검색"/>
+        </div>
+        <button class="btn sm" id="tCsv">${ico('dl')}엑셀 다운로드</button>
+        <button class="btn sm" id="tCol">${ico('gear')}컬럼 설정</button>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
+    <div class="card-f"><span class="small muted" id="tFoot"></span></div>
+  </div>
+
+  <div class="mask" id="colM">
+    <div class="modal" style="max-width:400px">
+      <div class="modal-h"><h3>컬럼 설정</h3><button class="x" onclick="closeM('colM')">${ico('x')}</button></div>
+      <div class="modal-b" style="padding:8px 20px">
+        <label class="colopt"><input type="checkbox" checked disabled/><span>이름 <span class="small muted">(고정)</span></span></label>
+        ${COLS.map(c => `<label class="colopt"><input type="checkbox" data-col="${c.k}" ${c.on?'checked':''}/><span>${esc(c.l)}</span></label>`).join('')}
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('colM')">취소</button>
+        <button class="btn pri" id="colApply">${ico('check')}적용</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mask" id="ptM">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-h"><h3>참여자 상세</h3><button class="x" onclick="closeM('ptM')">${ico('x')}</button></div>
+      <div class="modal-b" id="ptB"></div>
+      <div class="modal-f"><button class="btn" onclick="closeM('ptM')">닫기</button></div>
+    </div>
+  </div>`;
+
+  bindMask();
+
+  /* ---------- KPI ---------- */
+  function renderKpis(){
+    const k = ANALYTICS.kpi, f = factor();
+    const mem  = Math.max(1, Math.round(k.members * f));
+    const gl   = Math.max(1, Math.round(k.goals * f));
+    const ind  = Math.max(1, Math.round(k.indicators * f));
+    const prog = Sp(k.progress), ckr = Sp(k.checkin);
+    $('#kpis').innerHTML = `
+      <div class="kpi"><span class="ico" style="background:var(--brand-50);color:var(--brand)">${ico('users')}</span>
+        <span class="col"><span class="t">전체 참여자</span><span class="v num">${n0(mem)}<small>명</small></span><span class="d"><span class="up">▲ 12명</span> 지난달 대비</span></span></div>
+      <div class="kpi"><span class="ico" style="background:var(--info-bg);color:var(--info)">${ico('target')}</span>
+        <span class="col"><span class="t">코칭목표 수</span><span class="v num">${n0(gl)}<small>개</small></span><span class="d"><span class="up">▲ 28개</span> 지난달 대비</span></span></div>
+      <div class="kpi"><span class="ico" style="background:#E7FBF4;color:#0EA5A0">${ico('checkbox')}</span>
+        <span class="col"><span class="t">행동지표 수</span><span class="v num">${n0(ind)}<small>개</small></span><span class="d"><span class="up">▲ 73개</span> 지난달 대비</span></span></div>
+      <div class="kpi"><span class="ico ring-ico" id="kRing"></span>
+        <span class="col"><span class="t">평균 진행률</span><span class="v num">${prog}<small>%</small></span><span class="d"><span class="up">▲ 5%p</span> 지난달 대비</span></span></div>
+      <div class="kpi"><span class="ico" style="background:var(--warn-bg);color:var(--warn)">${ico('zap')}</span>
+        <span class="col"><span class="t">이번 주 체크인율</span><span class="v num">${ckr}<small>%</small></span><span class="d"><span class="up">▲ 8%p</span> 지난주 대비</span></span></div>`;
+    ring('#kRing', prog, { size:44, sw:5, color:'#5B4BE8', track:'#E5E2FD', sub:'' });
+  }
+
+  /* ---------- 차트 ---------- */
+  function renderCharts(){
+    hbar('#cGoals', ANALYTICS.topGoals.map(r => [r[0], S(r[1]), r[2]]), { color:'#5B4BE8', labelW:118 });
+    hbar('#cInds',  ANALYTICS.topIndicators.map(r => [r[0], S(r[1]), r[2]]), { color:'#3B82F6', labelW:122 });
+
+    const mix = (st.comp ? ANALYTICS.compMix.filter(m => m.n === st.comp) : ANALYTICS.compMix)
+      .map(m => ({ n:m.n, v:S(m.v), p:m.p, c:m.c }));
+    const tot = mix.reduce((a, b) => a + b.v, 0);
+    donut('#cMix', mix, '전체', n0(tot) + '개');
+    $('#cMixLg').innerHTML = mix.map(m => `
+      <li><span class="sw-c" style="background:${m.c}"></span><span class="nm">${esc(m.n)}</span>
+        <span class="pc">${st.comp?100:m.p}%</span><span class="vv num">${n0(m.v)}개</span></li>`).join('')
+      + `<li class="sum"><span class="sw-c" style="background:transparent"></span><span class="nm">합계</span><span class="pc">100%</span><span class="vv num">${n0(tot)}개</span></li>`;
+
+    const hs = st.comp || st.proj || st.group
+      ? ANALYTICS.heat.map(r => r.map(v => Math.max(0, Math.min(10, Math.round(v * 0.86)))))
+      : ANALYTICS.heat;
+    heatmap('#cHeat', ANALYTICS.heatRows, ANALYTICS.heatCols, hs);
+
+    words('#cWords', ANALYTICS.words);
+
+    const t = ANALYTICS.trend;
+    line('#cTrend', {
+      labels: t.labels,
+      series: [
+        { n:'체크인율(%)',   data: t.checkin.map(Sp),  c:'#3B82F6' },
+        { n:'평균 진행률(%)', data: t.progress.map(Sp), c:'#5B4BE8' },
+      ],
+    });
+
+    $('#cIns').innerHTML = ANALYTICS.insights.map(s => `
+      <div class="insight"><div class="ih">💡 인사이트</div><ul><li>${esc(s)}</li></ul></div>`).join('');
+  }
+
+  /* ---------- 테이블 ---------- */
+  const rows = () => {
+    const q = st.q.trim().toLowerCase();
+    return SCOPED.filter(p => {
+      if(st.proj  && p.projectId !== st.proj) return false;
+      if(st.group && p.group !== st.group)    return false;
+      if(st.title && !(p.title || '').includes(st.title)) return false;
+      if(q && !((p.name + p.group).toLowerCase().includes(q))) return false;
+      return true;
+    });
+  };
+  function renderTable(){
+    const rs = rows();
+    const th = ['<th>이름</th>']
+      .concat(shown('group') ? ['<th>그룹</th>'] : [])
+      .concat(shown('goals') ? ['<th class="tr">코칭목표 수</th>'] : [])
+      .concat(shown('inds')  ? ['<th class="tr">행동지표 수</th>'] : [])
+      .concat(shown('prog')  ? ['<th>진행률</th>'] : [])
+      .concat(shown('ck')    ? ['<th>이번 주 체크인</th>'] : [])
+      .concat(shown('last')  ? ['<th>최근 체크인</th>'] : [])
+      .concat(shown('proj')  ? ['<th>프로젝트</th>'] : [])
+      .concat(['<th style="width:40px"></th>']).join('');
+    const body = rs.length ? rs.map(p => `
+      <tr>
+        <td><div class="row" style="gap:9px">${avatar({name:p.name,color:p.color},'sm')}
+          <span class="col"><span class="nm">${esc(p.name)}</span><span class="sub">${esc(p.org)} · ${esc(p.title)}</span></span></div></td>
+        ${shown('group') ? `<td><span class="badge gray">${esc(p.group)}</span></td>` : ''}
+        ${shown('goals') ? `<td class="tr num">${p.goals}</td>` : ''}
+        ${shown('inds')  ? `<td class="tr num">${p.inds}</td>` : ''}
+        ${shown('prog')  ? `<td><div class="pcell"><b class="num">${p.prog}%</b><span class="pbar ${p.prog>=80?'ok':p.prog<45?'warn':''}"><i style="width:${p.prog}%"></i></span></div></td>` : ''}
+        ${shown('ck')    ? `<td><span class="badge ${p.ck?'ok':'danger'} dot">${p.ck?'완료':'미완료'}</span></td>` : ''}
+        ${shown('last')  ? `<td class="muted small num">${esc(p.last)}</td>` : ''}
+        ${shown('proj')  ? `<td class="small ellip" style="max-width:180px">${esc(p.proj)}</td>` : ''}
+        <td><button class="btn ghost sm" data-pt="${p.id}" title="상세 보기">⋯</button></td>
+      </tr>`).join('')
+      : `<tr><td colspan="9"><div class="tbl-empty">${ico('search')}<b>조건에 맞는 참여자가 없습니다.</b><div class="small">필터 또는 검색어를 변경해 보세요.</div></div></td></tr>`;
+    $('#tbl').innerHTML = `<thead><tr>${th}</tr></thead><tbody>${body}</tbody>`;
+
+    const total = role === 'admin' || role === 'pm' ? ANALYTICS.kpi.members : SCOPED.length;
+    $('#tCount').textContent = `총 ${n0(total)}명`;
+    $('#tFoot').textContent = `${rs.length}명 표시 중 · 전체 ${n0(total)}명 (데모: 상위 ${SCOPED.length}명 샘플)`;
+    $$('[data-pt]').forEach(b => b.onclick = () => {
+      const p = SCOPED.find(x => x.id === b.dataset.pt);
+      $('#ptB').innerHTML = `
+        <div class="row mb16" style="gap:12px">${avatar({name:p.name,color:p.color},'lg')}
+          <span class="col"><b style="font-size:16px">${esc(p.name)}</b><span class="muted small">${esc(p.org)} · ${esc(p.title)} · ${esc(p.group)}</span></span></div>
+        <div class="li"><span class="col"><b>코칭목표 / 행동지표</b></span><span class="num">${p.goals}개 / ${p.inds}개</span></div>
+        <div class="li"><span class="col"><b>진행률</b></span><span class="num">${p.prog}%</span></div>
+        <div class="li"><span class="col"><b>이번 주 체크인</b></span><span class="badge ${p.ck?'ok':'danger'} dot">${p.ck?'완료':'미완료'}</span></div>
+        <div class="li"><span class="col"><b>최근 체크인</b></span><span class="num">${esc(p.last)}</span></div>
+        <div class="li"><span class="col"><b>프로젝트</b></span><span class="small">${esc(p.proj)}</span></div>`;
+      openM('ptM');
+    });
+  }
+
+  function renderAll(){ renderKpis(); renderCharts(); renderTable(); }
+  renderAll();
+
+  /* ---------- 필터 바인딩 ---------- */
+  const lbl = { proj:'프로젝트', group:'그룹', title:'직급', comp:'역량 분류' };
+  const onFilter = (key, val, name) => {
+    st[key] = val;
+    renderAll();
+    toast(val ? `${lbl[key]} 필터 적용: ${name}` : `${lbl[key]} 필터 해제 — 전체 데이터로 복원했습니다.`);
+  };
+  $('#fProj').onchange  = e => onFilter('proj',  e.target.value, e.target.selectedOptions[0].text);
+  $('#fGroup').onchange = e => onFilter('group', e.target.value, e.target.selectedOptions[0].text);
+  $('#fTitle').onchange = e => onFilter('title', e.target.value, e.target.selectedOptions[0].text);
+  $('#fComp').onchange  = e => onFilter('comp',  e.target.value, e.target.selectedOptions[0].text);
+  const onDate = () => {
+    st.from = $('#fFrom').value; st.to = $('#fTo').value;
+    renderAll(); toast(`기간 적용: ${st.from} ~ ${st.to}`);
+  };
+  $('#fFrom').onchange = onDate;
+  $('#fTo').onchange   = onDate;
+  $('#fReset').onclick = () => {
+    st.proj = st.group = st.title = st.comp = ''; st.from = '2024-05-05'; st.to = '2024-06-01';
+    $('#fProj').value = ''; $('#fGroup').value = ''; $('#fTitle').value = ''; $('#fComp').value = '';
+    $('#fFrom').value = st.from; $('#fTo').value = st.to;
+    renderAll(); toast('필터를 초기화했습니다.');
+  };
+
+  /* ---------- 테이블 액션 ---------- */
+  $('#tQ').oninput = e => { st.q = e.target.value; renderTable(); };
+  $('#tCsv').onclick = () => {
+    const head = ['이름','소속','직급','그룹','코칭목표 수','행동지표 수','진행률(%)','이번 주 체크인','최근 체크인','프로젝트'];
+    const data = rows().map(p => [p.name, p.org, p.title, p.group, p.goals, p.inds, p.prog, p.ck ? '완료' : '미완료', p.last, p.proj]);
+    downloadCSV('참여자별_목표입력현황.csv', [head].concat(data));
+  };
+  $('#tCol').onclick = () => openM('colM');
+  $('#colApply').onclick = () => {
+    $$('[data-col]').forEach(c => { const o = COLS.find(x => x.k === c.dataset.col); if(o) o.on = c.checked; });
+    renderTable(); closeM('colM'); toast('컬럼 설정을 적용했습니다.');
+  };
+}
+</script>
+</body>
+</html>

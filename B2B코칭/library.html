@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>자료실 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .page svg[viewBox="0 0 24 24"]{width:16px;height:16px;stroke-width:1.8;flex:0 0 auto;vertical-align:-3px}
+  .page .kpi .ico svg{width:21px;height:21px}
+  .page .btn.sm svg{width:14px;height:14px}
+  .fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .fcard{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:16px;display:flex;flex-direction:column;gap:11px;transition:.2s;overflow:hidden}
+  .fcard:hover{box-shadow:var(--sh-2);transform:translateY(-2px)}
+  .fico{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-size:10.5px;font-weight:900;color:#fff;letter-spacing:.02em;flex:0 0 42px}
+  .fcard .meta{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted)}
+  .fcard.lock .inner{filter:blur(3.5px);opacity:.5;pointer-events:none;user-select:none}
+  .lockmask{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,.62);backdrop-filter:blur(1px);z-index:2}
+  .lockmask b{font-size:13px;color:var(--ink-2)}
+  .lockmask svg{width:22px!important;height:22px!important;stroke:var(--muted)}
+  .drop{border:2px dashed var(--brand-100);background:var(--brand-50);border-radius:14px;padding:26px 16px;text-align:center;cursor:pointer;transition:.15s}
+  .drop:hover,.drop.over{background:var(--brand-100);border-color:var(--brand)}
+  .drop svg{width:28px!important;height:28px!important;stroke:var(--brand);margin-bottom:6px}
+  .drop b{display:block;font-size:13.5px}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('library');
+const role = u ? session().role : null;
+
+/* ---------- 공개범위 → 접근 가능 역할 (정보보안 · 권한별 접근 제한) ---------- */
+const VIS = {
+  '전체 공개': ['admin','pm','coach','hr','member'],
+  'PM·코치만': ['admin','pm','coach'],
+  'HR·PM':     ['admin','pm','hr'],
+};
+const VIS_BADGE = { '전체 공개':'ok', 'PM·코치만':'warn', 'HR·PM':'info' };
+const TCOLOR = { PDF:'#EF4444', DOCX:'#3B82F6', XLSX:'#16A34A', PPTX:'#F59E0B', ZIP:'#8B5CF6' };
+const CATS = ['전체','진단','워크시트','학습자료','리포트'];
+
+let LIB = LIBRARY.map(d => Object.assign({}, d));
+const F = { q:'', proj:'', cat:'전체', vis:'' };
+
+const can = d => (VIS[d.vis] || []).includes(role);
+const toMB = s => s.toUpperCase().endsWith('KB') ? parseFloat(s) / 1000 : parseFloat(s);
+const totalMB = () => LIB.reduce((a, d) => a + toMB(d.s), 0).toFixed(1);
+const thisMonth = () => LIB.filter(d => d.at.startsWith('2024-05') || d.at === '오늘').length;
+
+function filtered(){
+  return LIB.filter(d => {
+    if(F.q && !(d.n.toLowerCase().includes(F.q.toLowerCase()) || d.by.includes(F.q))) return false;
+    if(F.proj && d.proj !== F.proj) return false;
+    if(F.cat !== '전체' && d.cat !== F.cat) return false;
+    if(F.vis && d.vis !== F.vis) return false;
+    return true;
+  });
+}
+const projNames = () => Array.from(new Set(LIBRARY.map(d => d.proj)));
+
+function render(){
+  const locked = LIB.filter(d => !can(d)).length;
+  $('#page').innerHTML = `
+  <div class="between mb16">
+    <div><h2 style="font-size:18px">자료실</h2><div class="hint">진단 결과지 · 워크시트 · 학습자료를 관리합니다.</div></div>
+    <span class="pill">${ROLES[role].label} · ${esc(ROLES[role].scope)}</span>
+  </div>
+
+  <div class="insight mb16" style="border-color:var(--brand-100);background:var(--brand-50)">
+    <div class="ih">${ico('shield')} 권한별 접근 제한이 적용 중입니다</div>
+    <ul>
+      <li>현재 로그인 역할은 <b>${ROLES[role].label}</b>입니다. 공개범위가 허용되지 않은 자료는 <b>열람·다운로드가 차단</b>됩니다.
+        (전체 공개 = 모든 참여자 / PM·코치만 = 관리자·PM·코치 / HR·PM = 관리자·PM·고객사 HR)</li>
+      <li id="lockLine">현재 역할에서 열람할 수 없는 자료: <b>${locked}건</b></li>
+    </ul>
+  </div>
+
+  <div class="kpis mb16">
+    <div class="kpi"><span class="ico" style="background:var(--brand-50);color:var(--brand)">${ico('folder')}</span>
+      <span class="col"><span class="t">전체 자료</span><span class="v num" id="kAll">0<small>건</small></span><span class="d">열람 가능 <b id="kOpen">0</b>건</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--ok-bg);color:var(--ok)">${ico('up')}</span>
+      <span class="col"><span class="t">이번 달 업로드</span><span class="v num" id="kNew">0<small>건</small></span><span class="d">2024년 5월 기준</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--info-bg);color:var(--info)">${ico('doc')}</span>
+      <span class="col"><span class="t">총 용량</span><span class="v num" id="kSize">0<small>MB</small></span><span class="d">보관함 한도 2GB</span></span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-b" style="padding:14px 16px;border-bottom:1px solid var(--line-2)">
+      <div class="toolbar mb12">
+        <div class="search">${ico('search')}<input class="inp" id="q" placeholder="파일명 · 업로더 검색"/></div>
+        <select class="inp" id="fProj" style="width:auto;min-width:200px">
+          <option value="">전체 프로젝트</option>
+          ${projNames().map(p => `<option>${esc(p)}</option>`).join('')}
+        </select>
+        <select class="inp" id="fVis" style="width:auto;min-width:150px">
+          <option value="">전체 공개범위</option>
+          ${Object.keys(VIS).map(v => `<option>${esc(v)}</option>`).join('')}
+        </select>
+        <span style="flex:1"></span>
+        <button class="btn pri sm" id="upBtn">${ico('plus')} 자료 업로드</button>
+      </div>
+      <div class="toolbar" id="cats">
+        ${CATS.map(c => `<button class="chip ${F.cat===c?'on':''}" data-c="${c}">${c}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card-b">
+      <div class="fgrid" id="grid"></div>
+    </div>
+    <div class="card-f"><span class="hint" id="cnt"></span></div>
+  </div>
+
+  <div class="mask" id="upM">
+    <div class="modal">
+      <div class="modal-h"><h3>자료 업로드</h3><button class="x" onclick="closeM('upM')">${ico('x')}</button></div>
+      <div class="modal-b">
+        <div class="drop mb16" id="drop">
+          ${ico('up')}
+          <b>파일을 여기에 끌어다 놓으세요</b>
+          <span class="small muted">또는 클릭하여 파일 선택 · PDF, DOCX, XLSX, PPTX (최대 50MB)</span>
+          <input type="file" id="file" style="display:none"/>
+          <div class="mt8" id="fname"></div>
+        </div>
+        <div class="field"><label>파일명 <span class="req">*</span></label><input class="inp" id="uName" placeholder="1:1 면담 가이드"/></div>
+        <div class="f-row c2">
+          <div class="field"><label>카테고리</label>
+            <select class="inp" id="uCat">${CATS.filter(c=>c!=='전체').map(c => `<option>${c}</option>`).join('')}</select></div>
+          <div class="field"><label>공개 범위</label>
+            <select class="inp" id="uVis">${Object.keys(VIS).map(v => `<option>${esc(v)}</option>`).join('')}</select></div>
+        </div>
+        <div class="field"><label>프로젝트</label>
+          <select class="inp" id="uProj">${projNames().map(p => `<option>${esc(p)}</option>`).join('')}</select></div>
+        <div class="field" style="margin-bottom:0"><label>설명</label>
+          <textarea class="inp" id="uDesc" placeholder="자료에 대한 설명을 입력하세요." style="min-height:70px"></textarea></div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('upM')">취소</button>
+        <button class="btn pri" id="upOk">${ico('up')} 업로드</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+  $('#q').oninput = e => { F.q = e.target.value; grid(); };
+  $('#fProj').onchange = e => { F.proj = e.target.value; grid(); };
+  $('#fVis').onchange = e => { F.vis = e.target.value; grid(); };
+  $$('#cats .chip').forEach(b => b.onclick = () => {
+    F.cat = b.dataset.c;
+    $$('#cats .chip').forEach(x => x.classList.toggle('on', x === b));
+    grid();
+  });
+  $('#upBtn').onclick = () => openM('upM');
+  $('#upOk').onclick = upload;
+
+  const drop = $('#drop'), file = $('#file');
+  drop.onclick = () => file.click();
+  drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); };
+  file.onchange = e => { if(e.target.files[0]) setFile(e.target.files[0]); };
+
+  grid();
+}
+
+let picked = null;
+function setFile(f){
+  picked = f;
+  $('#fname').innerHTML = `<span class="badge brand">${ico('doc')} ${esc(f.name)} · ${(f.size/1024/1024).toFixed(2)}MB</span>`;
+  if(!$('#uName').value) $('#uName').value = f.name.replace(/\.[^.]+$/, '');
+}
+
+function grid(){
+  const list = filtered();
+  $('#grid').innerHTML = list.length ? list.map(d => {
+    const ok = can(d);
+    return `<div class="fcard ${ok ? '' : 'lock'}">
+      ${ok ? '' : `<div class="lockmask">${ico('shield')}<b>열람 권한 없음</b><span class="small muted">${esc(d.vis)} 자료입니다</span></div>`}
+      <div class="inner" style="display:flex;flex-direction:column;gap:11px">
+        <div class="row" style="gap:11px">
+          <span class="fico" style="background:${TCOLOR[d.t] || '#8B90A6'}">${esc(d.t)}</span>
+          <span class="col" style="flex:1">
+            <b style="font-size:13.5px;line-height:1.4">${esc(d.n)}</b>
+            <small class="muted">${esc(d.t)} · ${esc(d.s)}</small>
+          </span>
+        </div>
+        <div class="row wrap" style="gap:5px">
+          <span class="badge ${VIS_BADGE[d.vis]}">${esc(d.vis)}</span>
+          <span class="badge gray">${esc(d.cat)}</span>
+        </div>
+        <div class="meta">${ico('folder')}<span class="ellip">${esc(d.proj)}</span></div>
+        <div class="row between" style="border-top:1px solid var(--line-2);padding-top:10px">
+          <span class="row" style="gap:6px">
+            ${avatar(USERS.find(x => x.name === d.by) || {name:d.by, color:'#8B90A6'}, 'sm')}
+            <span class="col"><span class="small" style="font-weight:700">${esc(d.by)}</span><span class="muted" style="font-size:11px">${esc(d.at)}</span></span>
+          </span>
+          <button class="btn sm" onclick="dl('${d.id}')" ${ok ? '' : 'disabled'}>${ico('dl')} 다운로드</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty" style="grid-column:1/-1"><b>자료가 없습니다</b><span class="small">조건을 변경하거나 새 자료를 업로드하세요.</span></div>`;
+
+  const openN = LIB.filter(can).length;
+  $('#kAll').innerHTML = LIB.length + '<small>건</small>';
+  $('#kOpen').textContent = openN;
+  $('#kNew').innerHTML = thisMonth() + '<small>건</small>';
+  $('#kSize').innerHTML = totalMB() + '<small>MB</small>';
+  $('#lockLine').innerHTML = '현재 역할에서 열람할 수 없는 자료: <b>' + (LIB.length - openN) + '건</b>';
+  $('#cnt').textContent = '전체 ' + LIB.length + '건 중 ' + list.length + '건 표시 · 열람 가능 ' + list.filter(can).length + '건';
+}
+
+function dl(id){
+  const d = LIB.find(x => x.id === id);
+  if(!can(d)){ toast('열람 권한이 없는 자료입니다.', true); return; }
+  toast(d.n + ' 다운로드를 시작합니다.');
+}
+
+function upload(){
+  const n = $('#uName').value.trim();
+  if(!n){ toast('파일명을 입력하세요.', true); return; }
+  const t = picked ? (picked.name.split('.').pop() || 'PDF').toUpperCase() : 'PDF';
+  const size = picked ? (picked.size / 1024 / 1024 >= 1 ? (picked.size/1024/1024).toFixed(1) + 'MB' : Math.round(picked.size/1024) + 'KB') : '1.0MB';
+  LIB.unshift({
+    id:'d' + (LIB.length + 100), n:n, t:(TCOLOR[t] ? t : 'PDF'), s:size, at:'오늘',
+    by:u.name, proj:$('#uProj').value, vis:$('#uVis').value, cat:$('#uCat').value,
+  });
+  closeM('upM');
+  picked = null; $('#uName').value = ''; $('#uDesc').value = ''; $('#fname').innerHTML = '';
+  grid();
+  toast(n + ' 업로드 완료 — 공개범위: ' + $('#uVis').value);
+}
+
+if(u) render();
+</script>
+</body>
+</html>

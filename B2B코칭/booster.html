@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>부스터 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+/* ===== booster 전용 ===== */
+.hero{background:var(--grad);color:#fff;border-radius:var(--r-xl);padding:22px 26px;display:flex;align-items:center;gap:22px;box-shadow:var(--sh-brand);margin-bottom:16px}
+.hero .hl{flex:1;min-width:0}
+.hero .htag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);border-radius:99px;padding:4px 11px;font-size:11.5px;font-weight:800}
+.hero h2{font-size:26px;letter-spacing:-.03em;margin:9px 0 4px}
+.hero p{font-size:13.5px;opacity:.88}
+.hero .hst{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hero .hst span{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:99px;padding:5px 11px;font-size:12px;font-weight:700}
+.hero svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9}
+.subcopy{display:flex;align-items:center;gap:8px;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:var(--r);padding:11px 14px;margin-bottom:16px;color:var(--brand-700);font-weight:700;font-size:13px}
+.subcopy svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;flex:0 0 17px}
+
+.bst{display:flex;gap:12px;padding:14px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:9px;cursor:pointer;transition:.16s;background:#fff}
+.bst:hover{border-color:var(--brand-100);background:var(--brand-50);transform:translateY(-1px);box-shadow:var(--sh-2)}
+.bst .bic{width:38px;height:38px;flex:0 0 38px;border-radius:11px;display:grid;place-items:center;background:var(--brand-50);color:var(--brand)}
+.bst .bic svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9}
+.bst .bb{flex:1;min-width:0}
+.bst b{font-size:14px;display:block}
+.bst .bq{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bst .bm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--muted-2)}
+.bst.done{background:#FBFCFE}
+
+.qbox{position:relative;background:var(--grad-soft);border:1px solid var(--brand-100);border-radius:14px;padding:18px 20px 18px 46px;margin-bottom:16px}
+.qbox::before{content:"\201C";position:absolute;left:14px;top:2px;font-size:44px;line-height:1;color:var(--brand);opacity:.42;font-family:Georgia,serif}
+.qbox b{display:block;font-size:11.5px;color:var(--brand-700);letter-spacing:.04em;margin-bottom:5px}
+.qbox p{font-size:15px;font-weight:700;color:var(--ink);line-height:1.6;letter-spacing:-.01em}
+
+.opt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.15s;background:#fff;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+.opt:hover{border-color:var(--brand-100);background:var(--brand-50)}
+.opt.on{border-color:var(--brand);background:var(--brand-50);color:var(--brand-700);box-shadow:0 0 0 3px rgba(91,75,232,.1)}
+
+.rep{border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden;margin-top:14px}
+.rep .rh{display:flex;align-items:center;gap:8px;padding:11px 13px;background:var(--brand-50);border-bottom:1px solid var(--brand-100)}
+.rep .rr{padding:12px 13px;border-bottom:1px solid var(--line-2)}
+.rep .rr:last-child{border-bottom:0}
+.rep .rl{font-size:11.5px;font-weight:800;color:var(--brand-700);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.rep .rl svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.1}
+.rep .rt{font-size:13px;color:var(--ink-2);line-height:1.65}
+
+.optin{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.optin .n{width:26px;height:26px;flex:0 0 26px;border-radius:8px;background:var(--brand-50);color:var(--brand-700);display:grid;place-items:center;font-size:11.5px;font-weight:800}
+.sched{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:.15s}
+.sched:hover{border-color:var(--brand-100)}
+.sched.on{border-color:var(--brand);background:var(--brand-50)}
+.sched .sh{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:var(--ink-2)}
+.sched .sb{display:none;margin-top:10px}
+.sched.on .sb{display:block}
+
+@media(max-width:900px){
+  .hero{flex-direction:column;align-items:flex-start;padding:20px}
+  .hero h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+/* ============================================================
+   부스터 — 세션 간 관리 (질문/퀴즈/코칭/제안 발송 · 응답 · 피드백)
+   ============================================================ */
+const u = shell('booster');
+const role = u ? session().role : null;
+
+const TYPE_ICO = { '질문':'chat', '퀴즈':'checkbox', '코칭':'bulb', '제안':'zap' };
+const S = {
+  mid:'m1', mine:[], cur:null, pick:null,       // member
+  sent:[], type:'질문', sched:'now', to:'m1', goal:'g1', // coach
+  fbType:'조언', fbOn:null,
+};
+
+/* 데모용 추가 부스터 (m1) — 히어로의 "5개 중 2개 완료"와 정합 */
+const EXTRA = [
+  { id:'b5', coachId:'c1', userId:'m1', type:'코칭', topic:'주간 회고 루틴 만들기', at:'2024-05-03', state:'완료',
+    q:'이번 주 실행 중 가장 잘한 행동 하나와, 그렇게 만든 조건은 무엇이었나요?',
+    a:'화요일 오전을 1:1 전용 시간으로 블로킹한 것. 방해받지 않는 고정 시간이 있으니 준비도 대화도 깊어졌습니다.', due:'2024-05-07',
+    reply:'"조건을 설계하면 행동이 따라온다"를 정확히 경험하셨습니다. 이 루틴을 다른 실행과제에도 복제해 보세요.',
+    next:'회의 준비 시간도 동일하게 캘린더 블로킹', more:'블로킹이 깨질 때 나를 되돌리는 신호는 무엇인가요?' },
+  { id:'b6', coachId:'c1', userId:'m1', type:'질문', topic:'팀 우선순위 충돌 다루기', at:'2024-05-13', state:'진행중',
+    q:'팀 내 우선순위가 충돌할 때, 당신이 가장 먼저 확인하는 기준은 무엇인가요?', a:'', due:'2024-05-17' },
+];
+/* 코치 화면 — 피코치별 응답 현황 */
+const RESP = [
+  { uid:'m1', sent:5, done:2, last:'2024-05-12', avg:'1.2일' },
+  { uid:'m2', sent:4, done:3, last:'2024-05-11', avg:'0.8일' },
+  { uid:'m3', sent:3, done:3, last:'2024-05-10', avg:'0.6일' },
+];
+
+const rate = (a,b) => b ? Math.round(a/b*100) : 0;
+
+if(u){
+  S.mid = BOOSTERS.some(b => b.userId === u.id) ? u.id : 'm1';
+  S.mine = BOOSTERS.filter(b => b.userId === S.mid).concat(EXTRA.filter(b => b.userId === S.mid))
+            .map(b => Object.assign({}, b)).sort((a,b) => b.at.localeCompare(a.at));
+  S.sent = BOOSTERS.map(b => Object.assign({}, b)).sort((a,b) => b.at.localeCompare(a.at));
+
+  if(role === 'member') renderMember(); else renderCoach();
+  bindMask();
+}
+
+/* ============================================================
+   1) 코칭 대상자 — 부스터 응답
+   ============================================================ */
+function renderMember(){
+  const done = S.mine.filter(b => b.state === '완료').length;
+  $('#page').innerHTML = `
+  <div class="hero">
+    <div class="hl">
+      <span class="htag">${ico('zap')} 이번 주 부스터</span>
+      <h2>이번 주 응답 현황 — ${S.mine.length}개 중 ${done}개 완료</h2>
+      <p>부스터는 코칭 세션 사이의 '성장을 잇는 다리'입니다.</p>
+      <div class="hst"><span>🔥 연속 응답 2</span><span>단계 01/2</span><span>레벨 1</span></div>
+    </div>
+    <div id="heroRing"></div>
+  </div>
+
+  <div class="grid g-2-1">
+    <div>
+      <div class="card mb16">
+        <div class="card-h">${ico('zap')}<h3>최근 부스터</h3><span class="spacer"></span><span class="hint">항목을 클릭하면 응답할 수 있습니다</span></div>
+        <div class="card-b" id="bList"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-h">${ico('chart')}<h3>내 응답 현황</h3></div>
+        <div class="card-b">
+          <div class="row" style="justify-content:center"><div id="mRing"></div></div>
+          <div class="divider"></div>
+          <div class="li"><span class="col"><b>받은 부스터</b></span><b id="sTot">${S.mine.length}</b></div>
+          <div class="li"><span class="col"><b>응답 완료</b></span><b id="sDone" style="color:var(--ok)">${done}</b></div>
+          <div class="li"><span class="col"><b>응답 대기</b></span><b id="sWait" style="color:var(--warn)">${S.mine.length-done}</b></div>
+          <div class="insight mt12" style="margin-bottom:0">
+            <div class="ih">${ico('bulb')} 부스터 활용 팁</div>
+            <ul><li>답변은 짧아도 좋습니다. 꾸준함이 변화를 만듭니다.</li><li>답변 후 코치 피드백이 24시간 내 도착합니다.</li></ul>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h">${ico('clock')}<h3>응답 이력</h3></div>
+        <div class="card-b"><div class="tl" id="tl"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 응답 모달 -->
+  <div class="mask" id="ansM">
+    <div class="modal wide">
+      <div class="modal-h"><h3 id="anT">부스터 응답</h3><button class="x" onclick="closeM('ansM')">${ico('x')}</button></div>
+      <div class="modal-b" id="anB"></div>
+      <div class="modal-f" id="anF"></div>
+    </div>
+  </div>`;
+
+  ring('#heroRing', rate(done, S.mine.length), { size:92, color:'#fff', track:'rgba(255,255,255,.28)', sub:'응답률' });
+  drawMine();
+  bindMask();
+}
+
+function drawMine(){
+  const done = S.mine.filter(b => b.state === '완료').length;
+  $('#bList').innerHTML = S.mine.map(b => {
+    const c = uById(b.coachId);
+    const d = Math.max(1, Math.round((new Date('2024-05-15') - new Date(b.at)) / 864e5));
+    return `<div class="bst ${b.state==='완료'?'done':''}" onclick="openAns('${b.id}')">
+      <span class="bic">${ico(TYPE_ICO[b.type] || 'zap')}</span>
+      <div class="bb">
+        <div class="row between">
+          <div class="row" style="gap:6px"><span class="badge ${b.state==='완료'?'ok':'warn'}">${esc(b.state)}</span><span class="pill">${esc(b.type)}</span></div>
+          <small class="muted">${esc(b.due.slice(5).replace('-','/'))} 마감</small>
+        </div>
+        <b class="mt8">${esc(b.topic)}</b>
+        <div class="bq">${esc(b.q)}</div>
+        <div class="bm">${avatar(c,'sm')} <span>${esc(c.name)} · ${d}일 전</span>
+          ${b.state==='완료' ? `<span class="badge brand" style="margin-left:auto">${ico('chat')} 코치 피드백 도착</span>` : `<span class="badge danger" style="margin-left:auto">응답 대기</span>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  $('#sTot').textContent = S.mine.length;
+  $('#sDone').textContent = done;
+  $('#sWait').textContent = S.mine.length - done;
+  ring('#mRing', rate(done, S.mine.length), { size:120, sw:11, color:'#5B4BE8', track:'#EDEFF6', sub:'응답 완료' });
+  $('#tl').innerHTML = S.mine.map(b => `
+    <div class="tl-i ${b.state==='완료'?'':'gray'}">
+      <b>${esc(b.topic)}</b>
+      <small>${esc(b.at)} · ${esc(b.type)} · ${esc(b.state)}</small>
+    </div>`).join('');
+}
+
+function openAns(id){
+  const b = S.mine.find(x => x.id === id); if(!b) return;
+  S.cur = id; S.pick = null;
+  const c = uById(b.coachId);
+  $('#anT').textContent = b.topic;
+
+  const head = `
+    <div class="row between mb12">
+      <div class="row" style="gap:8px">${avatar(c,'sm')}<div class="col"><b style="font-size:13px">${esc(c.name)}</b><small class="muted">${esc(b.at)} 발송 · ${esc(b.due.slice(5).replace('-','/'))} 마감</small></div></div>
+      <div class="row" style="gap:6px"><span class="pill">${esc(b.type)}</span><span class="badge ${b.state==='완료'?'ok':'warn'}">${esc(b.state)}</span></div>
+    </div>
+    <div class="qbox"><b>${esc(b.type)} · ${esc(b.topic)}</b><p>${esc(b.q)}</p></div>`;
+
+  if(b.state === '완료'){
+    $('#anB').innerHTML = head + `
+      <div class="rep">
+        <div class="rh">${ico('check')}<b style="font-size:13px">코치 피드백이 도착했습니다</b></div>
+        <div class="rr"><div class="rl">${ico('user')} 내 답변</div><div class="rt">${esc(b.a || (b.pick||''))}</div></div>
+        <div class="rr"><div class="rl">${ico('chat')} 코치 피드백</div><div class="rt">${esc(b.reply || '좋은 통찰입니다. 이 관점을 다음 세션에서 더 확장해 봅시다.')}</div></div>
+        <div class="rr"><div class="rl">${ico('target')} 다음 행동 제안</div><div class="rt">${esc(b.next || '이번 주 회의에서 오프닝 질문 2개를 준비해 실행해 보세요.')}</div></div>
+        <div class="rr"><div class="rl">${ico('bulb')} 하나 더 생각해볼 질문</div><div class="rt">${esc(b.more || '그 행동을 지속하게 만드는 나만의 조건은 무엇인가요?')}</div></div>
+      </div>`;
+    $('#anF').innerHTML = `<button class="btn" onclick="closeM('ansM')">닫기</button>
+      <button class="btn soft" onclick="toast('코치에게 감사 메시지를 보냈습니다.')">${ico('heart')} 고마워요</button>`;
+  } else if(b.type === '퀴즈'){
+    $('#anB').innerHTML = head + `
+      <div class="field" style="margin-bottom:0">
+        <label>보기 중 하나를 선택하세요<span class="req">*</span></label>
+        <div id="opts">${(b.opts||[]).map((o,i) => `<div class="opt" onclick="pickOpt(${i},this)">${ico('checkbox')}<span>${esc(o)}</span></div>`).join('')}</div>
+      </div>`;
+    $('#anF').innerHTML = `<button class="btn" onclick="closeM('ansM')">취소</button>
+      <button class="btn pri" onclick="submitAns()">${ico('send')} 답변 제출</button>`;
+  } else {
+    $('#anB').innerHTML = head + `
+      <div class="field" style="margin-bottom:0">
+        <label>내 답변<span class="req">*</span></label>
+        <textarea class="inp" id="anTa" maxlength="1000" style="min-height:130px" placeholder="떠오르는 생각을 자유롭게 적어주세요. 짧아도 괜찮습니다."></textarea>
+        <div class="inp-cnt"><span id="anCnt">0</span>/1000</div>
+      </div>`;
+    $('#anF').innerHTML = `<button class="btn" onclick="toast('임시 저장되었습니다.')">임시 저장</button>
+      <button class="btn pri" onclick="submitAns()">${ico('send')} 답변 제출</button>`;
+    $('#anTa').addEventListener('input', e => { $('#anCnt').textContent = e.target.value.length; });
+  }
+  openM('ansM');
+}
+function pickOpt(i, el){
+  S.pick = i;
+  $$('#opts .opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+}
+function submitAns(){
+  const b = S.mine.find(x => x.id === S.cur); if(!b) return;
+  if(b.type === '퀴즈'){
+    if(S.pick == null){ toast('보기를 선택해주세요.', true); return; }
+    b.a = b.opts[S.pick];
+    b.reply = '정답입니다! 침묵은 생각이 정리되는 시간입니다. 3초를 견디면 팀원의 언어가 나옵니다.';
+    b.next = '다음 회의에서 질문 후 5초간 기다려 보세요.';
+    b.more = '내가 침묵을 견디기 어려워하는 이유는 무엇일까요?';
+  } else {
+    const v = $('#anTa').value.trim();
+    if(!v){ toast('답변을 입력해주세요.', true); $('#anTa').focus(); return; }
+    b.a = v;
+    b.reply = b.reply || '실행 관점이 잘 담겼습니다. 이 답변을 다음 세션의 출발점으로 삼겠습니다. 👍';
+    b.next = b.next || '이번 주 안에 답변에 적은 행동 1가지를 실제로 실행해 보세요.';
+    b.more = b.more || '그 행동을 방해하는 가장 큰 요인은 무엇인가요?';
+  }
+  b.state = '완료';
+  drawMine();
+  toast('답변을 제출했습니다. 코치 피드백이 도착하면 알려드릴게요.');
+  openAns(b.id);
+}
+
+/* ============================================================
+   2) 코치 · PM · 관리자 — 부스터 작성/발송 + 피드백
+   ============================================================ */
+function renderCoach(){
+  const members = USERS.filter(x => x.role === 'member');
+  const sentTot = 12, respTot = 8;
+  $('#page').innerHTML = `
+  <div class="subcopy">${ico('zap')} 부스터는 코칭 세션 사이의 '성장을 잇는 다리'입니다 — 질문·퀴즈·코칭·제안으로 실행을 이어갑니다.</div>
+
+  <div class="grid g-2-1">
+    <div>
+      <!-- 부스터 작성/발송 -->
+      <div class="card mb16">
+        <div class="card-h">${ico('send')}<h3>부스터 작성 · 발송</h3></div>
+        <div class="card-b">
+          <div class="f-row c2">
+            <div class="field">
+              <label>클라이언트 (피코치)<span class="req">*</span></label>
+              <select class="inp" id="bTo">
+                ${members.map(m => `<option value="${m.id}">${esc(m.name)} · ${esc(m.org)} ${esc(m.title)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>연결된 코칭목표</label>
+              <select class="inp" id="bGoal">
+                ${GOALS.map(g => `<option value="${g.id}">${esc(g.title)}</option>`).join('')}
+                <option value="none">연결 안 함</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>부스터 유형<span class="req">*</span></label>
+            <div class="toolbar" id="bTypes">
+              ${['질문','퀴즈','코칭','제안'].map(t => `<button class="chip ${t==='질문'?'on':''}" onclick="setType('${t}')">${ico(TYPE_ICO[t])} ${t}</button>`).join('')}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>질문 내용<span class="req">*</span></label>
+            <textarea class="inp" id="bQ" maxlength="300" style="min-height:96px" placeholder="세션 사이 실행을 이어줄 질문을 작성하세요.">이번 주 가장 집중할 실행 행동은 무엇이며, 그것을 방해하는 요인은 무엇인가요?</textarea>
+            <div class="inp-cnt"><span id="bCnt">54</span>/300</div>
+          </div>
+
+          <div class="field" id="quizWrap" style="display:none">
+            <label>퀴즈 보기 (4지선다)<span class="req">*</span></label>
+            <div id="opts4"></div>
+          </div>
+
+          <div class="field">
+            <label>전송 일정</label>
+            <div class="sched on" id="sc-now" onclick="setSched('now')">
+              <div class="sh"><input type="radio" name="sc" checked/> ${ico('send')} 지금 바로 보내기</div>
+            </div>
+            <div class="sched" id="sc-at" onclick="setSched('at')">
+              <div class="sh"><input type="radio" name="sc"/> ${ico('cal')} 예약 전송</div>
+              <div class="sb"><div class="f-row c2">
+                <input type="date" class="inp" id="scDate" value="2024-05-31"/>
+                <input type="time" class="inp" id="scTime" value="09:00"/>
+              </div></div>
+            </div>
+            <div class="sched" id="sc-rep" onclick="setSched('rep')" style="margin-bottom:0">
+              <div class="sh"><input type="radio" name="sc"/> ${ico('clock')} 주기 전송</div>
+              <div class="sb"><div class="f-row c2">
+                <select class="inp" id="scDay"><option>매주 금요일</option><option>매주 월요일</option><option>매주 수요일</option><option>격주 금요일</option></select>
+                <select class="inp" id="scHour"><option>오전 9시</option><option>오전 11시</option><option>오후 2시</option><option>오후 5시</option></select>
+              </div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-f">
+          <span class="hint">발송 시 피코치에게 앱 알림과 이메일이 전송됩니다.</span>
+          <span class="spacer" style="flex:1"></span>
+          <button class="btn" onclick="toast('임시 저장되었습니다.')">임시 저장</button>
+          <button class="btn pri" onclick="sendBooster()">${ico('zap')} 부스터 보내기</button>
+        </div>
+      </div>
+
+      <!-- 발송 이력 -->
+      <div class="card">
+        <div class="card-h">${ico('clock')}<h3>발송 이력</h3><span class="spacer"></span><span class="hint">응답 도착 항목을 클릭하면 피드백을 작성합니다</span></div>
+        <div class="card-b" id="sList"></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- 응답률 -->
+      <div class="card mb16">
+        <div class="card-h">${ico('chart')}<h3>응답률</h3></div>
+        <div class="card-b">
+          <div class="row" style="justify-content:center"><div id="rRing"></div></div>
+          <div class="divider"></div>
+          <div class="li"><span class="col"><b>전체 발송</b></span><b>${sentTot}</b></div>
+          <div class="li"><span class="col"><b>응답 완료</b></span><b style="color:var(--ok)">${respTot}</b></div>
+          <div class="li"><span class="col"><b>응답 대기</b></span><b style="color:var(--warn)">${sentTot-respTot}</b></div>
+          <div class="li"><span class="col"><b>평균 응답 소요</b></span><b>1.1일</b></div>
+        </div>
+      </div>
+
+      <!-- 피코치별 응답 현황 -->
+      <div class="card">
+        <div class="card-h">${ico('users')}<h3>피코치별 응답 현황</h3></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>피코치</th><th>발송</th><th>응답</th><th>응답률</th></tr></thead>
+            <tbody>
+              ${RESP.map(r => { const m = uById(r.uid); const p = rate(r.done, r.sent);
+                return `<tr>
+                  <td><div class="row">${avatar(m,'sm')}<div class="col"><span class="nm">${esc(m.name)}</span><span class="sub">최근 ${esc(r.last.slice(5))}</span></div></div></td>
+                  <td class="num">${r.sent}</td><td class="num">${r.done}</td>
+                  <td><div class="pcell"><b>${p}%</b><span class="pbar ${p>=80?'ok':p<50?'warn':''}"><i style="width:${p}%"></i></span></div></td>
+                </tr>`; }).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-f"><button class="btn sm block" onclick="expResp()">${ico('dl')} 응답 현황 내보내기</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 피드백 작성 모달 -->
+  <div class="mask" id="fbM">
+    <div class="modal wide">
+      <div class="modal-h"><h3 id="fbT">피드백 작성</h3><button class="x" onclick="closeM('fbM')">${ico('x')}</button></div>
+      <div class="modal-b" id="fbB"></div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('fbM')">취소</button>
+        <button class="btn pri" onclick="saveFb()">${ico('check')} 피드백 등록</button>
+      </div>
+    </div>
+  </div>`;
+
+  ring('#rRing', rate(respTot, sentTot), { size:126, sw:12, color:'#5B4BE8', track:'#EDEFF6', sub:'응답률' });
+  drawOpts(); drawSent();
+  $('#bQ').addEventListener('input', e => { $('#bCnt').textContent = e.target.value.length; });
+  bindMask();
+}
+
+function setType(t){
+  S.type = t;
+  $$('#bTypes .chip').forEach(b => b.classList.toggle('on', b.textContent.trim() === t));
+  $('#quizWrap').style.display = t === '퀴즈' ? 'block' : 'none';
+  const ph = { '질문':'이번 주 가장 집중할 실행 행동은 무엇이며, 그것을 방해하는 요인은 무엇인가요?',
+               '퀴즈':'팀원이 침묵할 때 리더가 가장 먼저 해야 할 행동은?',
+               '코칭':'지난 세션에서 합의한 행동 중 실제로 실행한 것은 무엇인가요?',
+               '제안':'오늘 가장 중요한 3가지 일을 선택하고 이유를 적어보세요.' };
+  $('#bQ').value = ph[t];
+  $('#bCnt').textContent = $('#bQ').value.length;
+}
+function drawOpts(){
+  const def = ['바로 결론을 제시한다','생각할 시간을 주고 기다린다','다른 사람에게 질문을 넘긴다','회의를 종료한다'];
+  $('#opts4').innerHTML = def.map((d,i) => `
+    <div class="optin">
+      <span class="n">${String.fromCharCode(65+i)}</span>
+      <input class="inp opt4" maxlength="60" value="${esc(d)}" placeholder="보기 ${String.fromCharCode(65+i)}"/>
+    </div>`).join('');
+}
+function setSched(k){
+  S.sched = k;
+  ['now','at','rep'].forEach(x => {
+    const el = $('#sc-' + x);
+    el.classList.toggle('on', x === k);
+    $('input[type=radio]', el).checked = (x === k);
+  });
+}
+function sendBooster(){
+  const q = $('#bQ').value.trim();
+  if(!q){ toast('질문 내용을 입력해주세요.', true); $('#bQ').focus(); return; }
+  if(S.type === '퀴즈' && $$('.opt4').some(i => !i.value.trim())){ toast('퀴즈 보기 4개를 모두 입력해주세요.', true); return; }
+  const to = $('#bTo').value;
+  const when = S.sched === 'now' ? '즉시'
+    : S.sched === 'at' ? ($('#scDate').value + ' ' + $('#scTime').value + ' 예약')
+    : ($('#scDay').value + ' ' + $('#scHour').value + ' 주기');
+  S.sent.unshift({
+    id:'b' + Date.now(), coachId:(u.role === 'coach' ? u.id : 'c1'), userId:to, type:S.type,
+    topic:q.length > 22 ? q.slice(0,22) + '…' : q, at:'2024-05-30', state:'진행중', q,
+    opts:S.type === '퀴즈' ? $$('.opt4').map((i,n) => String.fromCharCode(65+n) + '. ' + i.value.trim()) : undefined,
+    a:'', due:'2024-06-03', when,
+  });
+  drawSent();
+  toast('부스터를 발송했습니다. (' + uById(to).name + ' · ' + when + ')');
+}
+function drawSent(){
+  $('#sList').innerHTML = S.sent.map(b => {
+    const m = uById(b.userId);
+    const has = b.state === '완료';
+    return `<div class="bst ${has?'':'done'}" onclick="${has ? `openFb('${b.id}')` : `toast('아직 응답이 도착하지 않았습니다.')`}">
+      <span class="bic">${ico(TYPE_ICO[b.type] || 'zap')}</span>
+      <div class="bb">
+        <div class="row between">
+          <div class="row" style="gap:6px">${avatar(m,'sm')}<b>${esc(m.name)}</b><span class="pill">${esc(b.type)}</span></div>
+          <span class="badge ${has?'ok':'warn'}">${has?'응답 도착':'응답 대기'}</span>
+        </div>
+        <div class="bq">${esc(b.q)}</div>
+        <div class="bm"><span>발송 ${esc(b.at)}</span><span>·</span><span>마감 ${esc(b.due.slice(5).replace('-','/'))}</span>
+          ${b.when ? `<span class="badge info" style="margin-left:auto">${esc(b.when)}</span>` : (has ? `<span class="badge brand" style="margin-left:auto">${ico('chat')} 피드백 작성</span>` : '')}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openFb(id){
+  const b = S.sent.find(x => x.id === id); if(!b) return;
+  S.fbOn = id; S.fbType = '조언';
+  const m = uById(b.userId);
+  $('#fbT').textContent = m.name + '님 응답에 피드백';
+  $('#fbB').innerHTML = `
+    <div class="qbox"><b>${esc(b.type)} · ${esc(b.topic)}</b><p>${esc(b.q)}</p></div>
+    <div class="rep" style="margin-top:0;margin-bottom:16px">
+      <div class="rh">${avatar(m,'sm')}<b style="font-size:13px">${esc(m.name)}님의 답변</b><small class="muted" style="margin-left:auto">${esc(b.due)}</small></div>
+      <div class="rr"><div class="rt">${esc(b.a || '-')}</div></div>
+    </div>
+    <div class="field">
+      <label>피드백 유형</label>
+      <div class="toolbar" id="fbTypes">
+        ${['질문','조언','격려','수정 제안'].map(t => `<button class="chip ${t==='조언'?'on':''}" onclick="setFbType('${t}')">${t}</button>`).join('')}
+      </div>
+    </div>
+    <div class="field">
+      <label>코치 코멘트<span class="req">*</span></label>
+      <textarea class="inp" id="fbBody" maxlength="1000" style="min-height:110px" placeholder="피코치의 답변에 대한 피드백을 작성하세요.">${esc(b.reply || '')}</textarea>
+      <div class="inp-cnt"><span id="fbCnt">${(b.reply||'').length}</span>/1000</div>
+    </div>
+    <div class="field">
+      <label>다음 세션에서 다룰 주제</label>
+      <input class="inp" id="fbNext" maxlength="60" placeholder="예) 성장 지원 범위 합의" value="${esc(b.next || '')}"/>
+    </div>
+    <div class="field" style="margin-bottom:0">
+      <div class="row" style="gap:8px"><input type="checkbox" id="fbOpen" checked/><label for="fbOpen" style="font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer">피코치에게 공개 (체크 해제 시 코치 · PM만 열람)</label></div>
+    </div>`;
+  $('#fbBody').addEventListener('input', e => { $('#fbCnt').textContent = e.target.value.length; });
+  openM('fbM');
+}
+function setFbType(t){
+  S.fbType = t;
+  $$('#fbTypes .chip').forEach(b => b.classList.toggle('on', b.textContent.trim() === t));
+}
+function saveFb(){
+  const b = S.sent.find(x => x.id === S.fbOn); if(!b) return;
+  const v = $('#fbBody').value.trim();
+  if(!v){ toast('코치 코멘트를 입력해주세요.', true); $('#fbBody').focus(); return; }
+  b.reply = v; b.next = $('#fbNext').value.trim();
+  const open = $('#fbOpen').checked;
+  closeM('fbM'); drawSent();
+  toast('피드백을 등록했습니다.' + (open ? ' 피코치에게 알림이 발송됩니다.' : ' (비공개 저장)'));
+}
+function expResp(){
+  downloadCSV('부스터_응답현황.csv', [
+    ['피코치','소속','발송','응답','응답률(%)','최근 응답일','평균 응답 소요'],
+    ...RESP.map(r => { const m = uById(r.uid);
+      return [m.name, m.org, r.sent, r.done, rate(r.done, r.sent), r.last, r.avg]; }),
+  ]);
+}
+</script>
+</body>
+</html>

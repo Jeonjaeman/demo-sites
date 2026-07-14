@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>역량 진단 결과 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .phead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .phead .spacer{flex:1}
+  .prof{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--grad-soft);margin-bottom:14px}
+  .prof b{font-size:15px;display:block}
+  .prof small{color:var(--muted);font-size:12px}
+  .toplist{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;background:#fff}
+  .toplist .ih{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;margin-bottom:9px}
+  .toplist li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px}
+  .toplist li .rk{width:18px;height:18px;border-radius:6px;display:grid;place-items:center;font-size:10px;font-weight:800;color:#fff;flex:0 0 18px}
+  .toplist li .nm{flex:1;font-weight:700}
+  .toplist li .sc{font-weight:800;font-variant-numeric:tabular-nums}
+  .dist-t{width:100%;border-collapse:collapse;font-size:13px}
+  .dist-t th{text-align:left;font-size:11.5px;color:var(--muted);font-weight:800;padding:7px 6px;border-bottom:1px solid var(--line)}
+  .dist-t td{padding:9px 6px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+  .dist-t tr:last-child td{border-bottom:0}
+  .dist-t tr.sum td{font-weight:800;border-top:1px solid var(--line);background:#FBFCFE}
+  .pager{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .pager button{min-width:31px;height:31px;border:1px solid var(--line);background:#fff;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--ink-2);cursor:pointer;padding:0 7px}
+  .pager button:hover:not(:disabled){background:var(--hover)}
+  .pager button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  .pager button:disabled{opacity:.4;cursor:not-allowed}
+  .sortable{cursor:pointer;user-select:none}
+  .sortable:hover{color:var(--brand)}
+  .fpanel{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .maincol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .banner{display:flex;align-items:center;gap:10px;background:var(--info-bg);border:1px solid #CFE1FD;color:#1D4ED8;border-radius:var(--r);padding:11px 14px;font-size:13px;font-weight:600;margin-bottom:16px}
+  .banner svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.9;fill:none;flex:0 0 17px}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('diagnosis');
+if(u){
+  const role = session().role;
+  const D = DIAGNOSIS;
+  const isMember = role === 'member';
+
+  /* ---------- 참여자 결과 126명 생성 (앞 5명은 시드 데이터) ---------- */
+  const POOL = ['한소영','오세훈','강하나','서지훈','문가영','노태현','배수지','임재현','조은서','신동욱','권나라','황민준','고아라','류시원','남지현','조민석','백승우','전예린','추민아','하람','유진우','심가은','채원석','우현서','기태윤'];
+  const ORGS = ['마케팅팀 팀장','영업1팀 파트장','HR팀 대리','경영지원 과장','개발팀 팀장','전략기획 차장','재무팀 과장','CS팀 팀장','생산관리 과장','품질팀 대리'];
+  const AX = D.axes;
+  const LIST = D.list.map(x => Object.assign({}, x));
+  for(let i = LIST.length; i < 126; i++){
+    const s = +(2.9 + ((i * 37) % 17) / 10).toFixed(1);         // 2.9 ~ 4.5
+    const a = AX[(i * 3) % AX.length], b = AX[(i * 5 + 2) % AX.length];
+    const g1 = AX[(i * 7 + 4) % AX.length], g2 = AX[(i * 11 + 1) % AX.length];
+    LIST.push({
+      n: POOL[i % POOL.length] + (i > 30 ? String.fromCharCode(65 + (i % 26)) : ''),
+      o: ORGS[(i * 3) % ORGS.length],
+      s, st: a + ', ' + (b === a ? AX[(AX.indexOf(a)+1) % AX.length] : b),
+      g:  g1 + ', ' + (g2 === g1 ? AX[(AX.indexOf(g1)+1) % AX.length] : g2),
+      done: (i % 100) < 84,
+    });
+  }
+  /** 개인별 레이더 값 (종합점수 기반, 축별 결정적 편차) */
+  const radarOf = p => {
+    const self = AX.map((_, i) => Math.max(1, Math.min(5, +(p.s + [0.35,-0.25,0.15,-0.4,0.5,-0.15][i]).toFixed(1))));
+    const multi = self.map((v, i) => Math.max(1, +(v - [0.2,0.2,0.2,0.3,0.2,0.2][i]).toFixed(1)));
+    return { self, multi };
+  };
+
+  const st = { sort:'', asc:false, per:5, page:1, proj:'', group:'', type:'', from:'2024-05-05', to:'2024-06-01' };
+
+  $('#page').innerHTML = `
+  ${isMember ? `<div class="banner">${ico('shield')}<span><b>본인 결과만 표시</b> — 코칭 대상자 권한에서는 본인의 진단 결과와 인사이트만 조회할 수 있습니다.</span></div>` : ''}
+
+  <div class="phead">
+    <h2 style="font-size:18px">역량 진단 결과</h2>
+    <span class="pill">${ico('bulb')} 본 기능은 2차 고도화 대상입니다</span>
+    <span class="spacer"></span>
+    <button class="btn" id="bShare">${ico('send')}결과 공유</button>
+  </div>
+
+  ${isMember ? '' : `
+  <div class="kpis mb16">
+    <div class="kpi"><span class="ico" style="background:var(--brand-50);color:var(--brand)">${ico('users')}</span>
+      <span class="col"><span class="t">전체 응답자</span><span class="v num">${D.respondents}<small>명</small></span><span class="d">진단 대상 150명 중</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--ok-bg);color:var(--ok)">${ico('check')}</span>
+      <span class="col"><span class="t">진단 완료율</span><span class="v num">${D.doneRate}<small>%</small></span><span class="d"><span class="up">▲ 6%p</span> 지난 회차 대비</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--info-bg);color:var(--info)">${ico('star')}</span>
+      <span class="col"><span class="t">평균 종합점수</span><span class="v num">${D.avg}<small>/5</small></span><span class="d">5점 만점 기준</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--warn-bg);color:var(--warn)">${ico('flag')}</span>
+      <span class="col"><span class="t">성장 우선 영역</span><span class="v num">${D.growthAreas}<small>개</small></span><span class="d">전략적 사고 · 육성</span></span></div>
+  </div>`}
+
+  <div class="grid ${isMember ? '' : 'g-3-1'} mb16">
+    <div class="maincol">
+
+      <div class="card">
+        <div class="card-h"><h3>개인 결과 요약</h3><span class="spacer"></span><span class="badge brand">${esc(D.project)}</span></div>
+        <div class="card-b">
+          <div class="prof">
+            ${avatar({ name:D.target, color:'#EC4899' }, 'lg')}
+            <span class="col"><b>${esc(D.target)}</b><small>${esc(D.project)} · 마케팅팀 팀장</small></span>
+            <span class="spacer" style="flex:1"></span>
+            <span class="col" style="text-align:right"><b class="num" style="color:var(--brand)">${D.avg} / 5.0</b><small>종합점수</small></span>
+          </div>
+          <div class="grid g2" style="gap:18px;align-items:center">
+            <div id="cRadar"></div>
+            <div>
+              <div class="toplist">
+                <div class="ih" style="color:var(--ok)">${ico('up')} 강점 Top 3</div>
+                <ul>${D.strengths.map((s, i) => `<li><span class="rk" style="background:var(--ok)">${i+1}</span><span class="nm">${esc(s[0])}</span><span class="sc" style="color:var(--ok)">${s[1]}</span></li>`).join('')}</ul>
+              </div>
+              <div class="toplist">
+                <div class="ih" style="color:var(--warn)">${ico('target')} 성장 필요 Top 3</div>
+                <ul>${D.growth.map((s, i) => `<li><span class="rk" style="background:var(--warn)">${i+1}</span><span class="nm">${esc(s[0])}</span><span class="sc" style="color:var(--warn)">${s[1]}</span></li>`).join('')}</ul>
+              </div>
+              <button class="btn soft block" id="bDetail">${ico('chart')}상세 결과 보기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>종합 인사이트</h3></div>
+        <div class="card-b">
+          <div class="insight" style="border-color:#BFEBD3;background:#F4FCF7">
+            <div class="ih" style="color:var(--ok)">${ico('star')} 강점</div>
+            <ul>${D.insight.strong.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+          </div>
+          <div class="insight" style="border-color:#F6DFB4;background:#FFFBF3">
+            <div class="ih" style="color:#B4700A">${ico('flag')} 성장 포인트</div>
+            <ul>${D.insight.grow.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+          </div>
+          <div class="insight" style="border-color:var(--brand-100);background:var(--brand-50);margin-bottom:0">
+            <div class="ih" style="color:var(--brand-700)">${ico('bulb')} 권장 액션</div>
+            <ul>${D.insight.act.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>역량별 점수 비교</h3><span class="spacer"></span><span class="small muted">5점 만점</span></div>
+        <div class="card-b"><div id="cCmp"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>응답 분포</h3><span class="spacer"></span><span class="badge gray">응답자 ${D.respondents}명</span></div>
+        <div class="card-b">
+          <div class="row" style="gap:20px;align-items:center;flex-wrap:wrap">
+            <div id="cDist" style="flex:0 0 auto"></div>
+            <div style="flex:1;min-width:250px">
+              <table class="dist-t">
+                <thead><tr><th>점수 구간</th><th class="tr">응답자</th><th class="tr">비율</th><th style="width:34%">　</th></tr></thead>
+                <tbody>
+                  ${D.dist.map(d => `<tr>
+                    <td><span class="row" style="gap:7px"><i style="width:10px;height:10px;border-radius:3px;background:${d.c};display:block"></i><b>${esc(d.r)}</b></span></td>
+                    <td class="tr num">${d.n}명</td>
+                    <td class="tr num">${d.p}%</td>
+                    <td><span class="pbar"><i style="width:${d.p * 2}%;background:${d.c}"></i></span></td>
+                  </tr>`).join('')}
+                  <tr class="sum"><td>합계</td><td class="tr num">${D.dist.reduce((a,b)=>a+b.n,0)}명</td><td class="tr num">100%</td><td></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    ${isMember ? '' : `
+    <div class="fpanel">
+      <div class="card">
+        <div class="card-h"><h3>필터</h3></div>
+        <div class="card-b">
+          <div class="field"><label>프로젝트</label>
+            <select class="inp" id="fProj"><option value="">전체 프로젝트</option>${PROJECTS.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>그룹</label>
+            <select class="inp" id="fGroup"><option value="">전체 그룹</option><option>1조</option><option>2조</option><option>3조</option></select></div>
+          <div class="field"><label>진단 유형</label>
+            <select class="inp" id="fType"><option value="">전체</option><option value="self">자가진단</option><option value="multi">다면진단</option></select></div>
+          <div class="field"><label>기간</label>
+            <div class="row" style="gap:6px">
+              <input type="date" class="inp" id="fFrom" value="2024-05-05" style="padding:9px 8px;font-size:12.5px"/>
+              <span class="muted small">~</span>
+              <input type="date" class="inp" id="fTo" value="2024-06-01" style="padding:9px 8px;font-size:12.5px"/>
+            </div>
+          </div>
+          <button class="btn pri block" id="bReport">${ico('dl')}리포트 다운로드</button>
+          <button class="btn block mt8" id="bResetF">${ico('x')}필터 초기화</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>진단 안내</h3></div>
+        <div class="card-b">
+          <div class="li"><span class="av sm" style="background:var(--brand)">${ico('doc')}</span><span class="col"><b>자가진단</b><small>본인이 응답한 6개 역량 점수</small></span></div>
+          <div class="li"><span class="av sm" style="background:var(--violet)">${ico('users')}</span><span class="col"><b>다면진단</b><small>상사·동료·구성원 응답 평균</small></span></div>
+          <div class="li"><span class="av sm" style="background:var(--warn)">${ico('bulb')}</span><span class="col"><b>갭 분석</b><small>자가 – 다면 차이로 인식 격차 확인</small></span></div>
+        </div>
+      </div>
+    </div>`}
+  </div>
+
+  ${isMember ? '' : `
+  <div class="card">
+    <div class="card-h">
+      <h3>참여자 결과 목록</h3><span class="badge gray" id="lCount"></span>
+      <span class="spacer"></span>
+      <div class="toolbar">
+        <div class="search" style="min-width:190px">${ico('search')}<input class="inp" id="lQ" placeholder="이름 · 소속 검색"/></div>
+        <select class="inp" id="lPer" style="width:120px"><option value="5">5개씩 보기</option><option value="10">10개씩 보기</option><option value="20">20개씩 보기</option></select>
+      </div>
+    </div>
+    <div class="tbl-wrap"><table class="tbl" id="lTbl"></table></div>
+    <div class="card-f"><span class="small muted" id="lInfo"></span><span class="spacer" style="flex:1"></span><div class="pager" id="lPager"></div></div>
+  </div>`}
+
+  <div class="mask" id="rM">
+    <div class="modal wide">
+      <div class="modal-h"><h3 id="rTitle">진단 결과</h3><button class="x" onclick="closeM('rM')">${ico('x')}</button></div>
+      <div class="modal-b" id="rB"></div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('rM')">닫기</button>
+        <button class="btn pri" onclick="downloadPDF()">${ico('dl')}리포트 저장</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+
+  /* ---------- 개인 차트 ---------- */
+  radar('#cRadar', D.axes, [
+    { n:'자가진단', data:D.self,  c:'#5B4BE8' },
+    { n:'다면진단', data:D.multi, c:'#A78BFA', dash:true },
+  ], 5);
+  cmpbar('#cCmp', D.axes.map((a, i) => [a, D.self[i], D.multi[i]]), '자가진단', '다면진단');
+  donut('#cDist', D.dist.map(d => ({ n:d.r, v:d.n, p:d.p, c:d.c })), '응답자', D.respondents + '명');
+
+  /* ---------- 결과 모달 ---------- */
+  function openResult(p){
+    const r = radarOf(p);
+    $('#rTitle').textContent = p.n + ' 님 진단 결과';
+    $('#rB').innerHTML = `
+      <div class="prof">
+        ${avatar({ name:p.n, color:'#5B4BE8' }, 'lg')}
+        <span class="col"><b>${esc(p.n)}</b><small>${esc(p.o)} · ${esc(D.project)}</small></span>
+        <span class="spacer" style="flex:1"></span>
+        <span class="badge ${p.done ? 'ok' : 'warn'} dot">${p.done ? '완료' : '진행중'}</span>
+      </div>
+      <div class="grid g2" style="gap:18px;align-items:center">
+        <div id="mRadar"></div>
+        <div>
+          <div class="li"><span class="col"><b>종합점수</b><small>5점 만점</small></span><b class="num" style="color:var(--brand);font-size:18px">${p.s}</b></div>
+          <div class="li"><span class="col"><b>강점 역량</b></span><span class="row" style="gap:4px">${p.st.split(', ').map(x => `<span class="badge ok">${esc(x)}</span>`).join('')}</span></div>
+          <div class="li"><span class="col"><b>성장 역량</b></span><span class="row" style="gap:4px">${p.g.split(', ').map(x => `<span class="badge warn">${esc(x)}</span>`).join('')}</span></div>
+          <div class="insight mt12" style="margin-bottom:0"><div class="ih">💡 코멘트</div>
+            <ul><li>${esc(p.st.split(', ')[0])} 역량이 상대적으로 높습니다. 팀 내 롤모델 활동을 권장합니다.</li>
+                <li>${esc(p.g.split(', ')[0])} 역량은 1:1 코칭과 실행 과제로 보완해 보세요.</li></ul></div>
+        </div>
+      </div>
+      <div class="mt16"><div class="sec-t">역량별 점수 비교</div><div id="mCmp"></div></div>`;
+    openM('rM');
+    radar('#mRadar', D.axes, [
+      { n:'자가진단', data:r.self,  c:'#5B4BE8' },
+      { n:'다면진단', data:r.multi, c:'#A78BFA', dash:true },
+    ], 5);
+    cmpbar('#mCmp', D.axes.map((a, i) => [a, r.self[i], r.multi[i]]), '자가진단', '다면진단');
+  }
+
+  $('#bShare').onclick  = () => toast('진단 결과 공유 링크를 복사했습니다. (데모)');
+  $('#bDetail').onclick = () => openResult(LIST[0]);
+
+  /* ---------- 참여자 목록 (member 제외) ---------- */
+  if(!isMember){
+    const filtered = () => {
+      const q = (st.q || '').trim().toLowerCase();
+      let rs = LIST.filter(p => !q || (p.n + p.o).toLowerCase().includes(q));
+      if(st.sort === 's') rs = rs.slice().sort((a, b) => st.asc ? a.s - b.s : b.s - a.s);
+      return rs;
+    };
+    function renderList(){
+      const rs = filtered(), per = st.per;
+      const pages = Math.max(1, Math.ceil(rs.length / per));
+      if(st.page > pages) st.page = pages;
+      const view = rs.slice((st.page - 1) * per, st.page * per);
+      $('#lTbl').innerHTML = `
+        <thead><tr>
+          <th>이름</th><th>소속</th>
+          <th class="tr sortable" id="thS">종합점수 ${st.sort === 's' ? (st.asc ? '▲' : '▼') : '↕'}</th>
+          <th>강점 역량</th><th>성장 역량</th><th>상태</th><th style="width:96px"></th>
+        </tr></thead>
+        <tbody>${view.length ? view.map((p, i) => `
+          <tr>
+            <td><div class="row" style="gap:9px">${avatar({ name:p.n, color:['#5B4BE8','#3B82F6','#14B8A6','#EC4899','#F59E0B'][i % 5] }, 'sm')}<span class="nm">${esc(p.n)}</span></div></td>
+            <td class="small muted">${esc(p.o)}</td>
+            <td class="tr"><b class="num" style="color:${p.s >= 4 ? 'var(--ok)' : p.s >= 3.5 ? 'var(--brand)' : 'var(--warn)'}">${p.s}</b></td>
+            <td class="small">${esc(p.st)}</td>
+            <td class="small">${esc(p.g)}</td>
+            <td><span class="badge ${p.done ? 'ok' : 'warn'} dot">${p.done ? '완료' : '진행중'}</span></td>
+            <td><button class="btn sm" data-r="${(st.page - 1) * per + i}">결과 보기</button></td>
+          </tr>`).join('')
+          : `<tr><td colspan="7"><div class="tbl-empty">${ico('search')}<b>검색 결과가 없습니다.</b></div></td></tr>`}
+        </tbody>`;
+      $('#lCount').textContent = `총 ${rs.length}명`;
+      $('#lInfo').textContent = `${rs.length ? (st.page - 1) * per + 1 : 0}–${Math.min(st.page * per, rs.length)} / ${rs.length}명 · ${pages}페이지`;
+
+      // 페이지네이션 (앞뒤 + 현재 주변)
+      const nums = [];
+      for(let i = 1; i <= pages; i++){
+        if(i === 1 || i === pages || Math.abs(i - st.page) <= 1) nums.push(i);
+        else if(nums[nums.length - 1] !== '…') nums.push('…');
+      }
+      $('#lPager').innerHTML =
+        `<button ${st.page === 1 ? 'disabled' : ''} data-p="${st.page - 1}">‹</button>` +
+        nums.map(n => n === '…' ? '<button disabled>…</button>' : `<button class="${n === st.page ? 'on' : ''}" data-p="${n}">${n}</button>`).join('') +
+        `<button ${st.page === pages ? 'disabled' : ''} data-p="${st.page + 1}">›</button>`;
+
+      $('#thS').onclick = () => { st.asc = st.sort === 's' ? !st.asc : false; st.sort = 's'; renderList(); };
+      $$('#lPager [data-p]').forEach(b => b.onclick = () => { st.page = +b.dataset.p; renderList(); });
+      $$('[data-r]').forEach(b => b.onclick = () => openResult(filtered()[+b.dataset.r]));
+    }
+    renderList();
+
+    $('#lQ').oninput   = e => { st.q = e.target.value; st.page = 1; renderList(); };
+    $('#lPer').onchange = e => { st.per = +e.target.value; st.page = 1; renderList(); toast(`${st.per}개씩 보기로 변경했습니다.`); };
+
+    const F = { fProj:'프로젝트', fGroup:'그룹', fType:'진단 유형' };
+    Object.keys(F).forEach(id => {
+      $('#' + id).onchange = e => {
+        const t = e.target.selectedOptions[0].text;
+        toast(e.target.value ? `${F[id]} 필터 적용: ${t} — 결과를 다시 집계했습니다.` : `${F[id]} 필터를 해제했습니다.`);
+      };
+    });
+    const onDate = () => toast(`기간 적용: ${$('#fFrom').value} ~ ${$('#fTo').value}`);
+    $('#fFrom').onchange = onDate; $('#fTo').onchange = onDate;
+    $('#bResetF').onclick = () => {
+      ['fProj','fGroup','fType'].forEach(id => $('#' + id).value = '');
+      $('#fFrom').value = '2024-05-05'; $('#fTo').value = '2024-06-01';
+      st.q = ''; $('#lQ').value = ''; st.sort = ''; st.page = 1; renderList();
+      toast('필터를 초기화했습니다.');
+    };
+    $('#bReport').onclick = () => downloadPDF();
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>코칭로그 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+/* ===== coachlog 전용 ===== */
+.clbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 16px;box-shadow:var(--sh-1);margin-bottom:16px}
+.clbar .sel{min-width:230px}
+.clbar .spacer{flex:1}
+
+.logi{display:flex;gap:11px;padding:12px;border:1px solid var(--line);border-radius:var(--r);margin-bottom:8px;cursor:pointer;transition:.16s;background:#fff}
+.logi:hover{border-color:var(--brand-100);background:var(--brand-50)}
+.logi.on{border-color:var(--brand);background:var(--brand-50);box-shadow:0 0 0 3px rgba(91,75,232,.09)}
+.logi .n{width:36px;height:36px;flex:0 0 36px;border-radius:11px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:800;box-shadow:var(--sh-brand)}
+.logi.draft .n{background:#C9CDDC;box-shadow:none}
+.logi b{font-size:13.5px;display:block;letter-spacing:-.01em}
+.logi small{color:var(--muted-2);font-size:11.5px}
+.logi .lm{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+
+.dbf{border-left:2px solid var(--brand-100);padding-left:10px;margin-bottom:14px}
+.dbf .k{font-size:10px;font-weight:800;color:var(--brand);letter-spacing:.06em;text-transform:uppercase;display:flex;align-items:center;gap:4px;margin-bottom:4px}
+.dbf .k svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.4}
+
+.rng{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:#EDEFF6;outline:none;cursor:pointer;margin:10px 0 4px}
+.rng::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:99px;background:var(--brand);border:3px solid #fff;box-shadow:0 2px 8px rgba(91,75,232,.45);cursor:pointer}
+.rng::-moz-range-thumb{width:14px;height:14px;border-radius:99px;background:var(--brand);border:3px solid #fff;box-shadow:0 2px 8px rgba(91,75,232,.45);cursor:pointer}
+.rng-h{display:flex;align-items:center;justify-content:space-between}
+.rng-v{font-size:19px;font-weight:800;color:var(--brand)}
+.rng-s{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted-2);font-weight:700}
+
+.arow{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.arow .n{width:24px;height:24px;flex:0 0 24px;border-radius:8px;background:var(--brand-50);color:var(--brand-700);display:grid;place-items:center;font-size:11px;font-weight:800}
+.arow .del{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px;cursor:pointer;color:var(--muted-2);display:grid;place-items:center;flex:0 0 auto}
+.arow .del:hover{background:var(--danger-bg);color:var(--danger);border-color:#F6D6D6}
+.arow .del svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2}
+
+.ro{background:#FAFAFE!important;color:var(--ink)}
+.viewb{font-size:13.5px;color:var(--ink-2);line-height:1.7;white-space:pre-wrap;border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:#FAFAFE}
+
+/* 인쇄 */
+.print-h{display:none}
+@media print{
+  .print-h{display:block!important;border-bottom:2px solid #171A28;padding-bottom:10px;margin-bottom:16px}
+  .print-h h1{font-size:20px}
+  .print-h .pm{display:flex;gap:16px;font-size:11px;color:#555;margin-top:6px}
+  .clbar,.logside,.no-print,.card-f,.tabs{display:none!important}
+  .grid.g-1-2{display:block!important}
+  .card{border:1px solid #DDD!important;break-inside:avoid}
+  .card-h{border-bottom:1px solid #DDD}
+  .rng{display:none}
+  .inp,textarea.inp,select.inp{border:0!important;padding:0!important;background:#fff!important;font-size:12.5px}
+  .viewb{border:0;padding:0;background:#fff}
+  .dbf{border-left:2px solid #CCC}
+}
+@media(max-width:900px){
+  .clbar .sel{min-width:100%}
+  .clbar .spacer{display:none}
+}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+/* ============================================================
+   코칭로그 — 세션 기록 · 항목별 DB 저장 · PDF/Excel 다운로드
+   ============================================================ */
+const u = shell('coachlog');
+const role = u ? session().role : null;
+const canEdit = role === 'coach';
+
+const MODES = ['대면','화상(Teams)','전화'];
+const S = { mid:'m1', logs:[], cur:null, acts:[], score:6 };
+
+const curLog = () => S.logs.find(l => l.id === S.cur);
+
+if(u){
+  S.mid = 'm1';
+  S.logs = COACHLOGS.map(l => Object.assign({}, l)).sort((a,b) => b.session - a.session);
+  S.cur = S.logs[0].id;
+  render();
+  bindMask();
+}
+
+function render(){
+  const m = uById(S.mid);
+  const c = uById(curLog() ? curLog().coachId : 'c1');
+  $('#page').innerHTML = `
+  <div class="clbar no-print">
+    <div class="row" style="gap:8px">
+      ${ico('user')}
+      <select class="inp sel" id="mSel" onchange="switchMember(this.value)">
+        ${USERS.filter(x => x.role === 'member').map(x => `<option value="${x.id}" ${x.id===S.mid?'selected':''}>${esc(x.name)} · ${esc(x.org)} ${esc(x.title)}</option>`).join('')}
+      </select>
+    </div>
+    <span class="badge brand">${S.logs.length}회차 기록 · 총 6회 세션</span>
+    <span class="badge ${canEdit?'ok':'gray'}">${canEdit ? '작성 권한' : '열람 · 다운로드 전용'}</span>
+    <span class="spacer"></span>
+    <button class="btn sm" onclick="downloadPDF()">${ico('doc')} PDF 다운로드</button>
+    <button class="btn sm" onclick="expExcel()">${ico('dl')} Excel 다운로드</button>
+    ${canEdit ? `<button class="btn sm pri" onclick="newLog()">${ico('plus')} 새 코칭로그</button>` : ''}
+  </div>
+
+  <!-- 인쇄 전용 문서 헤더 -->
+  <div class="print-h print-only">
+    <h1>코칭로그 (Coaching Log)</h1>
+    <div class="pm">
+      <span><b>피코치</b> ${esc(m.name)} (${esc(m.org)} ${esc(m.title)})</span>
+      <span><b>코치</b> ${esc(c.name)}</span>
+      <span><b>프로젝트</b> 2024 리더십 코칭 프로그램 1기</span>
+      <span><b>발행</b> 하우 부스터 · 2024-05-30</span>
+    </div>
+  </div>
+
+  <div class="grid g-1-2">
+    <div class="logside">
+      <div class="card">
+        <div class="card-h">${ico('book')}<h3>코칭로그 목록</h3><span class="spacer"></span><span class="badge gray" id="lgCnt">${S.logs.length}</span></div>
+        <div class="card-b" id="logList"></div>
+        <div class="card-f"><span class="hint">${esc(m.name)}님의 세션 기록입니다.</span></div>
+      </div>
+      <div class="card mt16">
+        <div class="card-h">${ico('chart')}<h3>세션 요약</h3></div>
+        <div class="card-b">
+          <div class="li"><span class="col"><b>진행 세션</b><small>총 6회 중</small></span><b>${S.logs.length}회</b></div>
+          <div class="li"><span class="col"><b>총 코칭 시간</b></span><b>${S.logs.reduce((a,b)=>a+(+b.dur||0),0)}분</b></div>
+          <div class="li"><span class="col"><b>평균 자가평가</b></span><b style="color:var(--brand)">${(S.logs.reduce((a,b)=>a+(+b.score||0),0)/Math.max(1,S.logs.length)).toFixed(1)} / 10</b></div>
+          <div class="li"><span class="col"><b>다음 세션</b></span><b>${esc(S.logs[0] ? S.logs[0].next : '-')}</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-h">${ico('doc')}<h3 id="fT">코칭로그 작성</h3><span class="spacer"></span><span class="badge" id="fSt"></span></div>
+        <div class="card-b" id="form"></div>
+        <div class="card-f no-print">
+          <span class="hint">항목별로 구조화되어 저장됩니다.</span>
+          <span class="spacer" style="flex:1"></span>
+          ${canEdit ? `<button class="btn" onclick="saveLog(true)">임시저장</button>
+          <button class="btn pri" onclick="saveLog(false)">${ico('check')} 작성 완료</button>` : `<button class="btn soft" onclick="downloadPDF()">${ico('doc')} PDF로 저장</button>`}
+        </div>
+      </div>
+
+      <div class="insight mt16">
+        <div class="ih">${ico('bulb')} 항목별 DB 저장</div>
+        <ul><li>코칭로그에 작성된 내용은 항목별로 구조화되어 DB에 저장되며, 성과 대시보드 집계 및 결과 리포트 자동 생성에 활용됩니다.</li></ul>
+      </div>
+    </div>
+  </div>`;
+
+  drawLogs(); drawForm();
+}
+
+function drawLogs(){
+  $('#logList').innerHTML = S.logs.map(l => `
+    <div class="logi ${l.id===S.cur?'on':''} ${l.state!=='작성완료'?'draft':''}" onclick="pick('${l.id}')">
+      <span class="n">${l.session}회</span>
+      <div class="col" style="flex:1">
+        <b>${esc(l.topic || '(제목 없음)')}</b>
+        <small>${esc(l.date)} · ${l.dur}분</small>
+        <div class="lm">
+          <span class="badge gray">${esc(l.mode)}</span>
+          <span class="badge ${l.state==='작성완료'?'ok':'warn'}">${esc(l.state)}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  $('#lgCnt').textContent = S.logs.length;
+}
+function pick(id){ S.cur = id; drawLogs(); drawForm(); }
+function switchMember(id){
+  S.mid = id;
+  const m = uById(id);
+  toast(m.name + '님의 코칭로그를 불러왔습니다.');
+  render();
+}
+
+function drawForm(){
+  const l = curLog(); if(!l) return;
+  S.acts = String(l.action || '').split('/').map(s => s.trim()).filter(Boolean);
+  S.score = +l.score || 5;
+  const ro = canEdit ? '' : 'disabled';
+  const roc = canEdit ? '' : 'ro';
+  $('#fT').textContent = canEdit ? `${l.session}회차 코칭로그 ${l.state==='작성완료'?'수정':'작성'}` : `${l.session}회차 코칭로그`;
+  $('#fSt').textContent = l.state;
+  $('#fSt').className = 'badge ' + (l.state === '작성완료' ? 'ok' : 'warn');
+
+  $('#form').innerHTML = `
+    <div class="dbf">
+      <div class="k">${ico('doc')} session_info</div>
+      <div class="f-row c2">
+        <div class="field"><label>세션 회차<span class="req">*</span></label><input class="inp ${roc}" id="fSession" type="number" min="1" max="12" value="${l.session}" ${ro}/></div>
+        <div class="field"><label>일자<span class="req">*</span></label><input class="inp ${roc}" id="fDate" type="date" value="${esc(l.date)}" ${ro}/></div>
+      </div>
+      <div class="f-row c2" style="margin-bottom:0">
+        <div class="field"><label>소요 시간 (분)</label><input class="inp ${roc}" id="fDur" type="number" min="10" max="240" step="10" value="${l.dur}" ${ro}/></div>
+        <div class="field"><label>진행 방식</label>
+          <select class="inp ${roc}" id="fMode" ${ro}>${MODES.map(m => `<option ${m===l.mode?'selected':''}>${m}</option>`).join('')}</select>
+        </div>
+      </div>
+    </div>
+
+    <div class="dbf">
+      <div class="k">${ico('target')} topic · goal_ref</div>
+      <div class="field"><label>코칭 주제<span class="req">*</span></label>
+        <input class="inp ${roc}" id="fTopic" maxlength="80" value="${esc(l.topic)}" placeholder="이번 세션에서 다룬 핵심 주제" ${ro}/></div>
+      <div class="field" style="margin-bottom:0"><label>연결된 코칭목표</label>
+        <select class="inp ${roc}" id="fGoal" ${ro}>
+          ${GOALS.map(g => `<option value="${g.id}">${esc(g.title)}</option>`).join('')}
+          <option value="none">연결 안 함</option>
+        </select>
+        <div class="inp-cnt" style="text-align:left">현재 기록: ${esc(l.goal || '-')}</div>
+      </div>
+    </div>
+
+    <div class="dbf">
+      <div class="k">${ico('chat')} session_content</div>
+      <div class="field" style="margin-bottom:0"><label>세션 내용<span class="req">*</span></label>
+        <textarea class="inp ${roc}" id="fContent" maxlength="1000" style="min-height:110px" placeholder="세션에서 다룬 대화와 진행 내용을 기록하세요." ${ro}>${esc(l.content)}</textarea>
+        <div class="inp-cnt"><span id="cContent">${(l.content||'').length}</span>/1000</div>
+      </div>
+    </div>
+
+    <div class="dbf">
+      <div class="k">${ico('bulb')} coach_insight</div>
+      <div class="field" style="margin-bottom:0"><label>코치 인사이트 / 관찰</label>
+        <textarea class="inp ${roc}" id="fInsight" maxlength="500" style="min-height:90px" placeholder="피코치의 변화·패턴·관찰 사항을 기록하세요." ${ro}>${esc(l.insight)}</textarea>
+        <div class="inp-cnt"><span id="cInsight">${(l.insight||'').length}</span>/500</div>
+      </div>
+    </div>
+
+    <div class="dbf">
+      <div class="k">${ico('checkbox')} agreed_actions[]</div>
+      <div class="field" style="margin-bottom:0">
+        <label>합의된 실행 과제</label>
+        <div id="actRows"></div>
+        ${canEdit ? `<button class="btn sm soft mt8" onclick="addAct()">${ico('plus')} 실행 과제 추가</button>` : ''}
+      </div>
+    </div>
+
+    <div class="dbf">
+      <div class="k">${ico('star')} self_score (1~10)</div>
+      <div class="field" style="margin-bottom:0">
+        <div class="rng-h"><label style="margin:0">목표 달성도 자가평가</label><span class="rng-v" id="scV">${S.score} / 10</span></div>
+        <input type="range" class="rng" id="fScore" min="1" max="10" step="1" value="${S.score}" ${ro}/>
+        <div class="rng-s"><span>1 · 시작 단계</span><span>5 · 진행 중</span><span>10 · 목표 달성</span></div>
+      </div>
+    </div>
+
+    <div class="dbf" style="margin-bottom:0">
+      <div class="k">${ico('cal')} next_session</div>
+      <div class="field" style="margin-bottom:0"><label>다음 세션 일정</label>
+        <input class="inp ${roc}" id="fNext" type="date" value="${esc(l.next)}" style="max-width:240px" ${ro}/></div>
+    </div>`;
+
+  drawActs();
+  const sc = $('#fScore');
+  sc.addEventListener('input', () => { S.score = +sc.value; $('#scV').textContent = sc.value + ' / 10'; });
+  [['fContent','cContent'],['fInsight','cInsight']].forEach(([a,b]) => {
+    $('#'+a).addEventListener('input', e => { $('#'+b).textContent = e.target.value.length; });
+  });
+}
+
+function drawActs(){
+  if(!S.acts.length && !canEdit){ $('#actRows').innerHTML = '<div class="viewb">-</div>'; return; }
+  $('#actRows').innerHTML = S.acts.map((a,i) => `
+    <div class="arow">
+      <span class="n">${i+1}</span>
+      <input class="inp act-i ${canEdit?'':'ro'}" maxlength="80" value="${esc(a)}" placeholder="예) 회의 전 오프닝 질문 2개 준비" ${canEdit?'':'disabled'} oninput="S.acts[${i}]=this.value"/>
+      ${canEdit ? `<button class="del" onclick="delAct(${i})" title="삭제">${ico('x')}</button>` : ''}
+    </div>`).join('') || '<div class="hint">추가된 실행 과제가 없습니다.</div>';
+}
+function addAct(){ S.acts.push(''); drawActs(); const rows = $$('.act-i'); if(rows.length) rows[rows.length-1].focus(); }
+function delAct(i){ S.acts.splice(i,1); drawActs(); toast('실행 과제를 삭제했습니다.'); }
+
+function newLog(){
+  const nxt = Math.max(0, ...S.logs.map(l => l.session)) + 1;
+  S.logs.unshift({ id:'l'+Date.now(), coachId:(u.role==='coach'?u.id:'c1'), userId:S.mid, session:nxt,
+    date:'2024-06-07', dur:60, mode:'화상(Teams)', topic:'', goal:GOALS[0].title, content:'', insight:'',
+    action:'', next:'2024-06-21', score:5, state:'임시저장' });
+  S.cur = S.logs[0].id;
+  drawLogs(); drawForm();
+  toast(nxt + '회차 코칭로그를 생성했습니다.');
+  $('#fTopic').focus();
+}
+
+function saveLog(draft){
+  const l = curLog(); if(!l) return;
+  const topic = $('#fTopic').value.trim();
+  const content = $('#fContent').value.trim();
+  if(!draft && (!topic || !content)){ toast('코칭 주제와 세션 내용은 필수 항목입니다.', true); (!topic ? $('#fTopic') : $('#fContent')).focus(); return; }
+  l.session = +$('#fSession').value || l.session;
+  l.date    = $('#fDate').value;
+  l.dur     = +$('#fDur').value || 0;
+  l.mode    = $('#fMode').value;
+  l.topic   = topic;
+  l.goal    = $('#fGoal').selectedOptions[0].textContent;
+  l.content = content;
+  l.insight = $('#fInsight').value.trim();
+  l.action  = S.acts.filter(a => a.trim()).join(' / ');
+  l.score   = +$('#fScore').value;
+  l.next    = $('#fNext').value;
+  l.state   = draft ? '임시저장' : '작성완료';
+  S.logs.sort((a,b) => b.session - a.session);
+  drawLogs(); drawForm();
+  toast(draft ? '임시저장되었습니다.' : l.session + '회차 코칭로그 작성을 완료했습니다. (항목별 DB 저장)');
+}
+
+function expExcel(){
+  const m = uById(S.mid);
+  downloadCSV('코칭로그_' + m.name + '.csv', [
+    ['회차','일자','소요시간(분)','진행방식','코칭주제','연결 코칭목표','세션내용','코치 인사이트','합의된 실행과제','자가평가(1-10)','다음 세션','상태'],
+    ...S.logs.slice().sort((a,b) => a.session - b.session).map(l =>
+      [l.session, l.date, l.dur, l.mode, l.topic, l.goal, l.content, l.insight, l.action, l.score, l.next, l.state]),
+  ]);
+}
+</script>
+</body>
+</html>

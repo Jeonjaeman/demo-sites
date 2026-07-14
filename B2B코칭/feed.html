@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>그룹 코칭 피드 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .hero{background:var(--grad);border-radius:var(--r-lg);padding:20px 22px;color:#fff;box-shadow:var(--sh-brand);margin-bottom:16px}
+  .hero h2{font-size:17px;letter-spacing:-.02em}
+  .hero .dt{font-size:12px;opacity:.86;margin-top:2px}
+  .hero .st{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .hero .st > div{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:11px 12px}
+  .hero .st b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+  .hero .st small{font-size:11.5px;opacity:.88}
+  .phead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .phead .spacer{flex:1}
+
+  .post{margin-bottom:16px}
+  .post .ph{display:flex;align-items:flex-start;gap:10px;padding:15px 18px 0}
+  .post .ph .col{flex:1}
+  .post .ph b{font-size:13.8px}
+  .post .ph small{color:var(--muted-2);font-size:11.5px}
+  .post .body{padding:12px 18px 0;font-size:14px;line-height:1.7;color:var(--ink-2);white-space:pre-wrap}
+  .post .goal{margin:12px 18px 0}
+  .post .goal .g{display:inline-flex;align-items:center;gap:5px;background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-700);border-radius:99px;padding:4px 11px;font-size:12px;font-weight:700}
+  .post .goal .g svg{width:13px;height:13px;stroke-width:2;fill:none}
+  .post .acts{display:flex;align-items:center;gap:4px;padding:12px 12px;margin-top:12px;border-top:1px solid var(--line-2)}
+  .abtn{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted);font-weight:700;font-size:12.8px;padding:7px 11px;border-radius:9px;cursor:pointer;transition:.15s}
+  .abtn:hover{background:var(--hover);color:var(--ink)}
+  .abtn svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none}
+  .abtn.on{color:var(--pink)}
+  .abtn.on svg{fill:var(--pink);stroke:var(--pink)}
+  .abtn.sv.on{color:var(--brand)}
+  .abtn.sv.on svg{fill:var(--brand-100);stroke:var(--brand)}
+  .abtn.cheer{margin-left:auto;color:var(--brand-700);background:var(--brand-50)}
+  .abtn.cheer:hover{background:var(--brand-100)}
+
+  .cmts{border-top:1px solid var(--line-2);padding:6px 18px 14px;background:#FBFCFE;border-radius:0 0 var(--r-lg) var(--r-lg)}
+  .cmt{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-2)}
+  .cmt:last-of-type{border-bottom:0}
+  .cmt .cb{flex:1;min-width:0}
+  .cmt .ch{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .cmt .ch b{font-size:13px}
+  .cmt .ch small{color:var(--muted-2);font-size:11px}
+  .cmt p{font-size:13.2px;line-height:1.65;color:var(--ink-2);margin-top:3px}
+  .cmt .cact{display:flex;gap:2px;margin-top:4px}
+  .cmt .cact button{border:0;background:transparent;color:var(--muted-2);font-size:11.5px;font-weight:700;cursor:pointer;padding:3px 6px;border-radius:6px}
+  .cmt .cact button:hover{background:var(--hover);color:var(--ink-2)}
+  .cmt .cact button.on{color:var(--pink)}
+  .file{display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;margin-top:8px}
+  .file .fi{width:30px;height:30px;border-radius:8px;background:var(--danger-bg);color:var(--danger);display:grid;place-items:center;flex:0 0 30px}
+  .file .fi svg{width:15px;height:15px;stroke-width:1.9;fill:none}
+  .file b{font-size:12.5px;display:block}
+  .file small{color:var(--muted-2);font-size:11px}
+  .file button{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px;cursor:pointer;color:var(--muted);display:grid;place-items:center}
+  .file button:hover{background:var(--hover);color:var(--brand)}
+  .file button svg{width:15px;height:15px;stroke:currentColor;stroke-width:1.9;fill:none}
+  .cwrite{display:flex;gap:9px;align-items:center;padding-top:12px;border-top:1px solid var(--line-2)}
+  .cwrite .inp{flex:1;border-radius:99px;padding:9px 14px}
+  .cwrite .snd{width:38px;height:38px;flex:0 0 38px;border-radius:99px;border:0;background:var(--brand);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-brand)}
+  .cwrite .snd:hover{background:var(--brand-600)}
+  .cwrite .snd svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.9;fill:none}
+
+  .kw{display:flex;flex-wrap:wrap;gap:6px}
+  .kw span{display:inline-flex;align-items:center;gap:5px;background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-700);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:700}
+  .kw span i{font-style:normal;color:var(--brand);opacity:.7;font-size:11px}
+  .rec{display:flex;gap:9px;padding:10px 0;border-bottom:1px solid var(--line-2);cursor:pointer}
+  .rec:last-child{border-bottom:0}
+  .rec:hover b{color:var(--brand)}
+  .rec .col{flex:1;min-width:0}
+  .rec b{font-size:12.8px;line-height:1.45;display:block}
+  .rec small{color:var(--muted-2);font-size:11px}
+
+  .fab{position:fixed;right:26px;bottom:26px;z-index:80;width:56px;height:56px;border-radius:99px;border:0;background:var(--grad);color:#fff;box-shadow:var(--sh-brand);cursor:pointer;display:grid;place-items:center;transition:.2s}
+  .fab:hover{transform:translateY(-2px) scale(1.03)}
+  .fab svg{width:24px;height:24px;stroke:currentColor;stroke-width:2.2;fill:none}
+  .reacts{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  .react{border:1.5px solid var(--line);border-radius:12px;padding:12px;background:#fff;cursor:pointer;text-align:center;transition:.15s;font-weight:700;font-size:13px;color:var(--ink-2)}
+  .react:hover{border-color:var(--brand-100);background:var(--brand-50)}
+  .react.on{border-color:var(--brand);background:var(--brand-50);box-shadow:0 0 0 3px rgba(91,75,232,.1);color:var(--brand-700)}
+  .react .e{display:block;font-size:22px;margin-bottom:3px}
+  .feedcol{display:flex;flex-direction:column;min-width:0}
+  .sidecol{display:flex;flex-direction:column;gap:16px;min-width:0}
+  @media(max-width:900px){
+    .hero .st{grid-template-columns:repeat(2,1fr)}
+    .fab{right:16px;bottom:78px;width:52px;height:52px}
+    .abtn{padding:7px 8px;font-size:12px}
+    .abtn.cheer span{display:none}
+  }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('feed');
+if(u){
+  const role = session().role;
+
+  /* ---------- 상태 ---------- */
+  const FOLLOWING = ['m6','m3','c3'];
+  const POSTS = FEED.map(p => Object.assign({}, p, {
+    liked:false,
+    open:false,
+    replies:(p.replies || []).map(r => Object.assign({}, r, { liked:false })),
+  }));
+  const st = { tab:'all' };
+  const BADGE = { '주간 목표 공유':'brand', '진행 상황 공유':'ok', '도움 요청':'warn', '정보 공유':'info' };
+  const TAGS = ['의사소통','우선순위','피드백','리더십','1:1 면담','실행 관리','이해관계자 관리','팀 소통'];
+  const TYPES = ['주간 목표 공유','진행 상황 공유','도움 요청','정보 공유'];
+  const GOALSEL = GOALS.map(g => g.title).concat(['1:1 면담 퀄리티 높이기','피드백 대화 스킬 향상','우선순위 설정 및 집중력 향상']);
+  const REACTS = [['🎉','응원'],['❤️','좋아요'],['💡','배웠어요'],['👥','함께해요']];
+  const draft = { type:TYPES[0], tags:[], react:'🎉 응원', target:null };
+
+  $('#page').innerHTML = `
+  <div class="hero">
+    <div class="between" style="align-items:flex-start">
+      <div>
+        <h2>이번 주 커뮤니티 활동</h2>
+        <div class="dt">5.20 – 5.26 · ${esc((PROJECTS[0] || {}).name || '리더십 코칭 1기')}</div>
+      </div>
+      <span class="badge" style="background:rgba(255,255,255,.18);color:#fff">${ico('chat')} 그룹 코칭 피드</span>
+    </div>
+    <div class="st">
+      <div><b class="num">18</b><small>게시글</small></div>
+      <div><b class="num">86</b><small>응원</small></div>
+      <div><b class="num">42</b><small>댓글</small></div>
+      <div><b class="num">9</b><small>자료 공유</small></div>
+    </div>
+  </div>
+
+  <div class="phead">
+    <span class="pill">${ico('bulb')} 2차 고도화 대상</span>
+    <span class="spacer"></span>
+    <button class="btn pri" id="bNew">${ico('plus')}게시글 작성</button>
+  </div>
+
+  <div class="grid g-3-1">
+    <div class="feedcol">
+      <div class="tabs" id="tabs">
+        <button class="on" data-t="all">전체</button>
+        <button data-t="follow">팔로잉</button>
+        <button data-t="mine">내 게시글</button>
+        <button data-t="saved">저장한 글</button>
+      </div>
+      <div id="list"></div>
+    </div>
+
+    <div class="sidecol">
+      <div class="card">
+        <div class="card-h"><h3>인사이트</h3><span class="spacer"></span><span class="small muted">이번 주</span></div>
+        <div class="card-b">
+          <div class="sec-t">${ico('zap')} 많이 언급된 키워드</div>
+          <div class="kw">
+            ${[['1:1 면담',24],['우선순위',20],['피드백',18],['팀 소통',16],['실행 관리',14]]
+              .map(k => `<span>${esc(k[0])}<i>${k[1]}</i></span>`).join('')}
+          </div>
+          <div class="divider"></div>
+          <div class="sec-t">${ico('star')} 추천 게시글</div>
+          ${[
+            ['우선순위 매트릭스로 집중 시간 30% 확보','한소영 · 응원 18'],
+            ['1:1 면담 전에 꼭 준비하는 3가지','박서준 · 응원 15'],
+            ['피드백 대화, 이렇게 시작했더니 달라졌어요','최유리 · 응원 11'],
+          ].map(r => `<div class="rec" data-rec="${esc(r[0])}">${ico('doc')}<span class="col"><b>${esc(r[0])}</b><small>${esc(r[1])}</small></span></div>`).join('')}
+          <div class="divider"></div>
+          <div class="sec-t">${ico('book')} 코치 추천 자료</div>
+          ${LIBRARY.filter(l => l.cat === '학습자료').slice(0, 2).map(l => `
+            <div class="file"><span class="fi">${ico('doc')}</span>
+              <span class="col"><b>${esc(l.n)}</b><small>${esc(l.t)} · ${esc(l.s)} · ${esc(l.by)}</small></span>
+              <button data-dl="${esc(l.n)}" title="다운로드">${ico('dl')}</button></div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab" id="fab" title="게시글 작성">${ico('plus')}</button>
+
+  <!-- 게시글 작성 -->
+  <div class="mask" id="newM">
+    <div class="modal wide">
+      <div class="modal-h"><h3>게시글 작성</h3><button class="x" onclick="closeM('newM')">${ico('x')}</button></div>
+      <div class="modal-b">
+        <div class="field">
+          <label>관련 목표</label>
+          <select class="inp" id="nGoal">${GOALSEL.map(g => `<option>${esc(g)}</option>`).join('')}</select>
+        </div>
+        <div class="field">
+          <label>게시글 유형</label>
+          <div class="row wrap" id="nType">${TYPES.map((t, i) => `<button class="chip ${i === 0 ? 'on' : ''}" data-ty="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+        </div>
+        <div class="field">
+          <label>주제 태그 <span class="muted small">(최대 3개)</span></label>
+          <div class="row wrap" id="nTags">${TAGS.map(t => `<button class="chip" data-tag="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+        </div>
+        <div class="field">
+          <label>내용 <span class="req" style="color:var(--danger)">*</span></label>
+          <textarea class="inp" id="nBody" maxlength="1000" placeholder="이번 주 목표나 실행 경험을 그룹과 나눠 보세요."></textarea>
+          <div class="inp-cnt"><span id="nCnt">0</span>/1000</div>
+        </div>
+        <div class="field">
+          <label>첨부</label>
+          <div class="row wrap">
+            <button class="btn sm" data-at="사진">${ico('star')}사진</button>
+            <button class="btn sm" data-at="파일">${ico('doc')}파일</button>
+            <button class="btn sm" data-at="링크">${ico('pin')}링크</button>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>공개 범위</label>
+          <select class="inp" id="nVis">
+            <option>우리 그룹 내 전체 공개</option>
+            <option>코치에게만</option>
+            <option>전체 프로젝트</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('newM')">취소</button>
+        <button class="btn pri" id="nSubmit">${ico('send')}등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 응원 보내기 -->
+  <div class="mask" id="cheerM">
+    <div class="modal" style="max-width:440px">
+      <div class="modal-h"><h3>응원 보내기</h3><button class="x" onclick="closeM('cheerM')">${ico('x')}</button></div>
+      <div class="modal-b">
+        <div class="hint mb12" id="cheerTo"></div>
+        <div class="reacts" id="cReacts">
+          ${REACTS.map((r, i) => `<button class="react ${i === 0 ? 'on' : ''}" data-rc="${r[0]} ${r[1]}"><span class="e">${r[0]}</span>${esc(r[1])}</button>`).join('')}
+        </div>
+        <div class="field mt16" style="margin-bottom:0">
+          <label>응원 메시지</label>
+          <textarea class="inp" id="cMsg" maxlength="120" style="min-height:70px" placeholder="따뜻한 한마디를 전해 보세요."></textarea>
+          <div class="inp-cnt"><span id="cCnt">0</span>/120</div>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('cheerM')">취소</button>
+        <button class="btn pri" id="cSend">${ico('heart')}보내기</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+
+  /* ---------- 피드 렌더 ---------- */
+  const visible = () => POSTS.filter(p =>
+    st.tab === 'follow' ? FOLLOWING.includes(p.userId) :
+    st.tab === 'mine'   ? p.userId === u.id :
+    st.tab === 'saved'  ? p.saved : true);
+
+  const EMPTY = {
+    follow:['팔로우한 멤버의 글이 없습니다.','관심 있는 멤버를 팔로우하면 이곳에 모아 볼 수 있습니다.'],
+    mine:['작성한 게시글이 없습니다.','우측 하단 + 버튼으로 첫 글을 남겨 보세요.'],
+    saved:['저장한 게시글이 없습니다.','게시글 하단의 저장 버튼으로 나중에 다시 볼 수 있습니다.'],
+    all:['게시글이 없습니다.','첫 글을 남겨 보세요.'],
+  };
+
+  function renderFeed(){
+    const ps = visible();
+    if(!ps.length){
+      const e = EMPTY[st.tab];
+      $('#list').innerHTML = `<div class="card"><div class="empty">${ico('chat')}<b>${esc(e[0])}</b><div class="small">${esc(e[1])}</div></div></div>`;
+      return;
+    }
+    $('#list').innerHTML = ps.map(p => {
+      const au = uById(p.userId);
+      return `
+      <div class="card post">
+        <div class="ph">
+          ${avatar(au)}
+          <span class="col"><span class="row" style="gap:6px"><b>${esc(au.name)}</b>
+            ${au.role === 'coach' ? '<span class="badge ok">코치</span>' : ''}
+            <span class="badge ${BADGE[p.tag] || 'gray'}">${esc(p.tag)}</span></span>
+            <small>${esc(au.org || '')}${au.title ? ' · ' + esc(au.title) : ''} · ${esc(p.at)}</small></span>
+        </div>
+        <div class="body">${esc(p.body)}</div>
+        ${p.goal ? `<div class="goal"><span class="g">${ico('target')}관련 목표 · ${esc(p.goal)}</span></div>` : ''}
+        <div class="acts">
+          <button class="abtn ${p.liked ? 'on' : ''}" data-like="${p.id}">${ico('heart')}<span>응원 ${p.likes}</span></button>
+          <button class="abtn" data-cmt="${p.id}">${ico('chat')}<span>댓글 ${p.comments}</span></button>
+          <button class="abtn sv ${p.saved ? 'on' : ''}" data-save="${p.id}">${ico('star')}<span>${p.saved ? '저장됨' : '저장'}</span></button>
+          <button class="abtn cheer" data-cheer="${p.id}">${ico('zap')}<span>응원 보내기</span></button>
+        </div>
+        ${p.open ? renderCmts(p) : ''}
+      </div>`;
+    }).join('');
+    bindFeed();
+  }
+
+  function renderCmts(p){
+    return `<div class="cmts">
+      ${p.replies.length ? p.replies.map((r, i) => {
+        const ru = uById(r.userId);
+        return `<div class="cmt">
+          ${avatar(ru, 'sm')}
+          <div class="cb">
+            <div class="ch"><b>${esc(ru.name)}</b>
+              ${r.isCoach ? '<span class="badge ok">코치</span>' : ''}
+              ${r.isAuthor ? '<span class="badge brand">작성자</span>' : ''}
+              <small>${esc(r.at)}</small></div>
+            <p>${esc(r.body)}</p>
+            ${r.file ? `<div class="file"><span class="fi">${ico('doc')}</span>
+              <span class="col"><b>${esc(r.file.n)}</b><small>${esc(r.file.s)}</small></span>
+              <button data-dl="${esc(r.file.n)}" title="다운로드">${ico('dl')}</button></div>` : ''}
+            <div class="cact">
+              <button class="${r.liked ? 'on' : ''}" data-rlike="${p.id}:${i}">♥ 좋아요 ${r.likes}</button>
+              <button data-reply="${esc(ru.name)}">답글</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('') : '<div class="small muted" style="padding:14px 0 4px">첫 번째 응원 댓글을 남겨 보세요.</div>'}
+      <div class="cwrite">
+        ${avatar(u, 'sm')}
+        <input class="inp" data-ci="${p.id}" placeholder="따뜻한 응원을 남겨주세요"/>
+        <button class="snd" data-cs="${p.id}" title="전송">${ico('send')}</button>
+      </div>
+    </div>`;
+  }
+
+  const byId = id => POSTS.find(p => p.id === id);
+
+  function bindFeed(){
+    $$('[data-like]').forEach(b => b.onclick = () => {
+      const p = byId(b.dataset.like);
+      p.liked = !p.liked; p.likes += p.liked ? 1 : -1;
+      renderFeed(); if(p.liked) toast('응원을 보냈습니다! 💪');
+    });
+    $$('[data-save]').forEach(b => b.onclick = () => {
+      const p = byId(b.dataset.save);
+      p.saved = !p.saved;
+      renderFeed(); toast(p.saved ? '게시글을 저장했습니다.' : '저장을 해제했습니다.');
+    });
+    $$('[data-cmt]').forEach(b => b.onclick = () => {
+      const p = byId(b.dataset.cmt); p.open = !p.open; renderFeed();
+    });
+    $$('[data-cheer]').forEach(b => b.onclick = () => {
+      draft.target = b.dataset.cheer;
+      const p = byId(draft.target);
+      $('#cheerTo').textContent = `${uById(p.userId).name} 님의 게시글에 응원을 보냅니다.`;
+      $('#cMsg').value = ''; $('#cCnt').textContent = '0';
+      openM('cheerM');
+    });
+    $$('[data-rlike]').forEach(b => b.onclick = () => {
+      const [pid, i] = b.dataset.rlike.split(':');
+      const r = byId(pid).replies[+i];
+      r.liked = !r.liked; r.likes += r.liked ? 1 : -1;
+      renderFeed();
+    });
+    $$('[data-reply]').forEach(b => b.onclick = () => {
+      const inp = $('[data-ci]', b.closest('.cmts'));
+      if(inp){ inp.value = '@' + b.dataset.reply + ' '; inp.focus(); }
+    });
+    $$('[data-cs]').forEach(b => b.onclick = () => addCmt(b.dataset.cs));
+    $$('[data-ci]').forEach(i => i.onkeydown = e => { if(e.key === 'Enter') addCmt(i.dataset.ci); });
+    $$('[data-dl]').forEach(b => b.onclick = () => toast(b.dataset.dl + ' 다운로드를 시작합니다.'));
+  }
+
+  function addCmt(id){
+    const p = byId(id), box = $(`[data-ci="${id}"]`);
+    const v = (box.value || '').trim();
+    if(!v){ toast('댓글 내용을 입력해 주세요.', true); box.focus(); return; }
+    p.replies.push({ userId:u.id, at:'방금 전', body:v, likes:0, liked:false,
+      isAuthor:p.userId === u.id, isCoach:role === 'coach' });
+    p.comments += 1; p.open = true;
+    renderFeed(); toast('댓글을 등록했습니다.');
+  }
+
+  renderFeed();
+
+  /* ---------- 탭 ---------- */
+  $$('#tabs button').forEach(b => b.onclick = () => {
+    st.tab = b.dataset.t;
+    $$('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+    renderFeed();
+  });
+
+  /* ---------- 추천 게시글 / 사이드 ---------- */
+  $$('[data-rec]').forEach(b => b.onclick = () => toast(`"${b.dataset.rec}" 게시글로 이동합니다. (데모)`));
+
+  /* ---------- 작성 모달 ---------- */
+  const openNew = () => {
+    draft.type = TYPES[0]; draft.tags = [];
+    $$('#nType .chip').forEach((c, i) => c.classList.toggle('on', i === 0));
+    $$('#nTags .chip').forEach(c => c.classList.remove('on'));
+    $('#nBody').value = ''; $('#nCnt').textContent = '0';
+    openM('newM');
+  };
+  $('#bNew').onclick = openNew;
+  $('#fab').onclick  = openNew;
+
+  $$('#nType .chip').forEach(c => c.onclick = () => {
+    draft.type = c.dataset.ty;
+    $$('#nType .chip').forEach(x => x.classList.toggle('on', x === c));
+  });
+  $$('#nTags .chip').forEach(c => c.onclick = () => {
+    const t = c.dataset.tag, i = draft.tags.indexOf(t);
+    if(i >= 0){ draft.tags.splice(i, 1); c.classList.remove('on'); }
+    else if(draft.tags.length >= 3){ toast('주제 태그는 최대 3개까지 선택할 수 있습니다.', true); }
+    else { draft.tags.push(t); c.classList.add('on'); }
+  });
+  $('#nBody').oninput = e => $('#nCnt').textContent = e.target.value.length;
+  $$('[data-at]').forEach(b => b.onclick = () => toast(`${b.dataset.at} 첨부 — 데모에서는 업로드가 시뮬레이션됩니다.`));
+  $('#nSubmit').onclick = () => {
+    const body = $('#nBody').value.trim();
+    if(!body){ toast('게시글 내용을 입력해 주세요.', true); $('#nBody').focus(); return; }
+    POSTS.unshift({
+      id:'fd' + Date.now(), userId:u.id, at:'방금 전', tag:draft.type,
+      body: body + (draft.tags.length ? '\n\n' + draft.tags.map(t => '#' + t).join(' ') : ''),
+      goal:$('#nGoal').value, likes:0, comments:0, saved:false, liked:false, open:false, replies:[],
+    });
+    closeM('newM');
+    if(st.tab === 'saved' || st.tab === 'follow'){ st.tab = 'all'; $$('#tabs button').forEach(x => x.classList.toggle('on', x.dataset.t === 'all')); }
+    renderFeed();
+    toast(`게시글을 등록했습니다. (공개 범위: ${$('#nVis').value})`);
+    window.scrollTo({ top:0, behavior:'smooth' });
+  };
+
+  /* ---------- 응원 모달 ---------- */
+  $$('#cReacts .react').forEach(r => r.onclick = () => {
+    draft.react = r.dataset.rc;
+    $$('#cReacts .react').forEach(x => x.classList.toggle('on', x === r));
+  });
+  $('#cMsg').oninput = e => $('#cCnt').textContent = e.target.value.length;
+  $('#cSend').onclick = () => {
+    const p = byId(draft.target);
+    if(p && !p.liked){ p.liked = true; p.likes += 1; }
+    const msg = $('#cMsg').value.trim();
+    closeM('cheerM'); renderFeed();
+    toast(`${draft.react} 응원을 보냈습니다.${msg ? ' “' + msg.slice(0, 20) + (msg.length > 20 ? '…' : '') + '”' : ''}`);
+  };
+}
+</script>
+</body>
+</html>

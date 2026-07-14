@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>코칭 결과 리뷰 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+/* ---------- review.html 전용 ---------- */
+.rv-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 18px}
+.rv-bar .spacer{flex:1}
+.rv-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;margin-top:16px}
+.rv-col{min-width:0}
+.rv-h{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rv-h .n{width:24px;height:24px;border-radius:8px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;flex:0 0 24px;box-shadow:var(--sh-brand)}
+.rv-h b{font-size:14.5px;letter-spacing:-.01em}
+
+/* 목표 아코디언 */
+.gcard{border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;margin-bottom:12px;overflow:hidden;box-shadow:var(--sh-1)}
+.gcard-h{display:flex;align-items:center;gap:8px;padding:13px 14px;cursor:pointer;background:#FBFCFE;transition:.15s}
+.gcard-h:hover{background:var(--hover)}
+.gcard-h .no{font-size:11px;font-weight:800;color:var(--brand-700);background:var(--brand-50);border:1px solid var(--brand-100);border-radius:99px;padding:2px 8px;flex:0 0 auto}
+.gcard-h b{font-size:13.2px;flex:1;line-height:1.4}
+.gcard-h .ar{color:var(--muted-2);transition:transform .2s;flex:0 0 auto}
+.gcard-h .ar svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;display:block}
+.gcard.open .gcard-h{border-bottom:1px solid var(--line-2)}
+.gcard.open .gcard-h .ar{transform:rotate(90deg)}
+.gcard-b{display:none;padding:14px}
+.gcard.open .gcard-b{display:block}
+
+.lab{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.03em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.lab svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none}
+.del{border:0;background:transparent;color:var(--muted-2);cursor:pointer;padding:5px;border-radius:8px;display:grid;place-items:center;flex:0 0 auto}
+.del:hover{background:var(--danger-bg);color:var(--danger)}
+.del svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;display:block}
+
+/* 체크리스트 */
+.ck{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line-2)}
+.ck:last-child{border-bottom:0}
+.ck input{margin-top:2px;flex:0 0 15px}
+.ck span{font-size:12.8px;color:var(--ink-2);line-height:1.6;flex:1}
+.ck.done span{color:var(--muted)}
+
+/* 정량화 결과 */
+.sc3{display:grid;grid-template-columns:1fr 14px 1fr 14px 1fr;gap:6px;align-items:stretch;margin-top:4px}
+.sbox{border:1px solid var(--line);border-radius:12px;padding:10px 9px;text-align:center;background:#FBFCFE}
+.sbox .t{font-size:10.5px;font-weight:800;color:var(--muted);white-space:nowrap}
+.sbox .v{font-size:22px;font-weight:800;letter-spacing:-.03em;line-height:1.3}
+.sbox .v small{font-size:12px;font-weight:700;color:var(--muted)}
+.sbox .d{font-size:10.8px;color:var(--muted);line-height:1.5;margin-top:5px;text-align:left}
+.sbox.fin{background:linear-gradient(135deg,#FFF7E6,#FFEFD0);border-color:#F5D9A0;box-shadow:0 8px 20px -14px rgba(245,158,11,.7)}
+.sbox.fin .t{color:#B4700A}
+.sbox.fin .v{color:#B4700A}
+.sbox.fin .d{color:#8A5A08}
+.sbox .tp{width:22px;height:22px;margin:0 auto 2px;color:#F59E0B}
+.sbox .tp svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.7;fill:none}
+.sarrow{display:grid;place-items:center;color:var(--muted-2)}
+.sarrow svg{width:14px;height:14px;stroke:currentColor;stroke-width:2.2;fill:none}
+.sbox select.inp{padding:4px 6px;font-size:13px;font-weight:800;text-align:center;border-radius:8px;margin-top:2px}
+.sbox textarea.inp{min-height:52px;font-size:11.5px;padding:6px 8px;margin-top:5px}
+
+/* 미션 / 인용 */
+.mbox{border:1px solid var(--brand-100);background:var(--grad-soft);border-radius:var(--r);padding:12px 13px;margin-top:12px}
+.arrowline{display:flex;align-items:center;gap:8px;margin-top:8px}
+.arrowline .c{flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:12.2px;color:var(--ink-2);line-height:1.55}
+.arrowline .c b{display:block;font-size:10.5px;color:var(--muted);margin-bottom:3px}
+.arrowline .a{color:var(--brand);flex:0 0 auto}
+.arrowline .a svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.2;fill:none;display:block}
+.quote{border-left:3px solid var(--brand);background:#FBFBFF;border-radius:0 10px 10px 0;padding:9px 12px;font-size:12.5px;color:var(--ink-2);margin-top:7px;line-height:1.6;font-style:italic}
+
+/* 변화 리스트 */
+.chg{margin-bottom:12px}
+.chg-t{font-size:12px;font-weight:800;color:var(--brand-700);background:var(--brand-50);border:1px solid var(--brand-100);border-radius:99px;padding:3px 10px;display:inline-block;margin-bottom:7px}
+.chg li{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12.7px;color:var(--ink-2);line-height:1.6}
+.chg li i{width:18px;height:18px;border-radius:99px;background:var(--brand-50);color:var(--brand-700);font-size:10px;font-weight:800;display:grid;place-items:center;flex:0 0 18px;margin-top:2px;font-style:normal}
+
+/* 변화요인 */
+.fac{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line-2)}
+.fac:last-child{border-bottom:0}
+.fac span{flex:1;font-size:12.5px;color:var(--ink-2)}
+.fac select{width:78px;flex:0 0 78px;padding:5px 8px;font-size:12px}
+.fac.rk1{background:linear-gradient(90deg,rgba(91,75,232,.07),transparent);border-radius:8px;padding-left:6px}
+
+/* 다짐 */
+.plan{background:linear-gradient(135deg,#FFF9E8,#FFF3D6);border:1px solid #F3DFAE;border-radius:var(--r);padding:12px 13px;margin-top:6px}
+.plan .ih{display:flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px;color:#B4700A;margin-bottom:6px}
+.plan .ih svg{width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none}
+.plan textarea.inp{background:rgba(255,255,255,.75);border-color:#EBD6A6}
+.limg{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;position:relative;background:#F7F8FC}
+.limg img{width:100%;height:auto;display:block;aspect-ratio:16/10;object-fit:cover}
+.limg .rm{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:8px;border:0;background:rgba(23,26,40,.62);color:#fff;display:grid;place-items:center;cursor:pointer}
+.limg .rm svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.2;fill:none}
+.limg .rm:hover{background:var(--danger)}
+.imgempty{border:1.5px dashed var(--line);border-radius:var(--r);padding:26px 14px;text-align:center;color:var(--muted-2);background:#FBFCFE}
+.sublist li{display:flex;gap:7px;align-items:flex-start;font-size:12.7px;color:var(--ink-2);padding:5px 0;line-height:1.6}
+.sublist li svg{width:14px;height:14px;stroke:var(--ok);stroke-width:2.4;fill:none;flex:0 0 14px;margin-top:3px}
+
+/* 인쇄 문서 헤더 */
+.doc-head{text-align:center;border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:16px}
+.doc-head h2{font-size:22px;letter-spacing:.06em}
+.doc-head .dm{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-top:9px;font-size:12px;color:#444}
+.doc-head .dm b{color:#111}
+.doc-sign{margin-top:8px;font-size:12px;font-weight:800;letter-spacing:.1em}
+
+@media(max-width:1100px){
+  .rv-cols{grid-template-columns:1fr}
+  .rv-col{display:none}
+  .rv-col.on{display:block}
+}
+@media(max-width:560px){
+  .sc3{grid-template-columns:1fr;gap:8px}
+  .sarrow{transform:rotate(90deg);height:14px}
+}
+@media print{
+  .rv-cols{display:block}
+  .rv-col{display:block!important;break-inside:auto;margin-bottom:14px}
+  .gcard-b{display:block!important}
+  .card,.gcard{break-inside:avoid;box-shadow:none}
+  .btn,.tabs,.stepper{display:none!important}
+  .print-only.doc-head{display:block!important}
+  .plan,.sbox.fin{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+/* ============================================================
+   코칭 결과 리뷰 — 3단계 (목표 및 성과 / 변화 리뷰 / 앞으로의 다짐)
+   role: member=작성, coach=코치 작성 영역, hr·pm·admin=읽기전용
+   ============================================================ */
+var RKEY = 'hb_review_draft';
+var FACTORS = ['행동의 변화','생각(관점)의 전환','지식과 기술의 습득','정서(감정)의 해소','피드백과 직면','(코치, 동료의) 벤치마킹','실수를 통한 학습 독려','기타'];
+var STEPS = ['목표 및 성과','변화 리뷰','앞으로의 다짐'];
+var TROPHY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
+
+var R = null, ME = null, ROLE = null, RO = true, IS_COACH = false, VIEW_UID = null;
+
+/* ---------- 상태 ---------- */
+function initState(){
+  return {
+    step:1,
+    open:REVIEW.goals.map(function(_,i){ return i===0; }),
+    goals:REVIEW.goals.map(function(g){
+      return { title:g.title, comp:g.comp, acts:g.acts.map(function(a){ return { t:a, done:true }; }),
+        start:g.start, expect:g.expect, final:g.final,
+        startDesc:g.startDesc, expectDesc:g.expectDesc, finalDesc:g.finalDesc, isNew:false };
+    }),
+    qa:REVIEW.qa.map(function(x){ return x.a; }),
+    ranks:FACTORS.map(function(){ return ''; }),
+    etc:'',
+    plan:REVIEW.plan,
+    vow:REVIEW.vow,
+    img:'assets/media/leadership.webp',
+    coachSummary:'',
+    coachSuggest:'',
+    status:'작성중',
+  };
+}
+function loadState(){
+  try{
+    var d = JSON.parse(localStorage.getItem(RKEY));
+    if(d && d.goals && d.goals.length) return d;
+  }catch(e){}
+  return initState();
+}
+function saveR(silent){
+  try{ localStorage.setItem(RKEY, JSON.stringify(R)); }catch(e){}
+  if(!silent) toast('작성 내용이 임시저장되었습니다.');
+}
+var _t;
+function autoSave(){ clearTimeout(_t); _t = setTimeout(function(){ saveR(true); }, 350); }
+function newRGoal(){
+  return { title:'', comp:'', acts:[{ t:'', done:false }], start:3, expect:7, final:5,
+    startDesc:'', expectDesc:'', finalDesc:'', isNew:true };
+}
+function opt10(v){
+  var s = '';
+  for(var i=1;i<=10;i++) s += '<option value="'+i+'" '+(i===v?'selected':'')+'>'+i+'점</option>';
+  return s;
+}
+
+/* ============================================================
+   렌더
+   ============================================================ */
+function render(){
+  var t = uById(VIEW_UID);
+  var coach = t.coachId ? uById(t.coachId) : null;
+  var proj = PROJECTS.filter(function(p){ return p.id===t.projectId; })[0];
+  var hasData = (VIEW_UID === REVIEW.userId);
+  var list = targetList();
+
+  $('#page').innerHTML = ''
+  + '<div class="print-only doc-head">'
+  +   '<h2>코 칭 결 과 리 뷰</h2>'
+  +   '<div class="dm"><span>프로젝트 <b>'+esc(proj?proj.name:'-')+'</b></span>'
+  +     '<span>대상자 <b>'+esc(t.name)+' ('+esc(t.title||'')+')</b></span>'
+  +     '<span>담당 코치 <b>'+esc(coach?coach.name:'-')+'</b></span>'
+  +     '<span>작성일 <b>'+esc(REVIEW.userId===VIEW_UID?'2024-07-26':'-')+'</b></span></div>'
+  +   '<div class="doc-sign">HOW COACHING · 하우코칭</div>'
+  + '</div>'
+
+  /* 액션 바 */
+  + '<div class="card no-print"><div class="rv-bar">'
+  +   '<span class="av lg" style="background:'+(t.color||'#8B90A6')+'">'+esc(t.name.slice(-2))+'</span>'
+  +   '<div class="col"><div class="row" style="gap:7px"><b style="font-size:15px">코칭 결과 리뷰</b>'
+  +     '<span class="badge '+(R.status==='제출완료'?'ok':'warn')+' dot" id="stBadge">'+esc(R.status)+'</span></div>'
+  +     '<small class="muted">'+esc(t.name)+' · '+esc(t.org)+' '+esc(t.title)+' | 담당 코치 '+esc(coach?coach.name:'-')+'</small></div>'
+  +   '<span class="spacer"></span>'
+  +   (ROLE!=='member'
+      ? '<select class="inp no-print" style="max-width:220px" id="tSel" title="대상자 선택">'
+        + list.map(function(m){ return '<option value="'+m.id+'" '+(m.id===VIEW_UID?'selected':'')+'>'+esc(m.name)+' · '+esc(m.title)+'</option>'; }).join('')
+        + '</select>' : '')
+  +   '<button class="btn" onclick="downloadPDF()">'+ico('dl')+' PDF 다운로드</button>'
+  +   (RO && !IS_COACH ? '<span class="badge gray">읽기 전용 ('+ROLES[ROLE].label+')</span>'
+      : '<button class="btn" onclick="saveR()">'+ico('doc')+' 임시저장</button>'
+        + '<button class="btn pri" onclick="askSubmit()">'+ico('send')+' 제출하기</button>')
+  + '</div></div>'
+
+  /* 스텝 헤더 */
+  + '<div class="card no-print mt16"><div class="card-b" style="padding:16px 18px">'
+  +   '<div class="stepper">'
+  +     STEPS.map(function(l,i){
+          var n = i+1;
+          return '<div class="st '+(n===R.step?'on':(n<R.step?'done':''))+'" style="cursor:pointer" onclick="setStep('+n+')">'
+            + '<span class="n">'+n+'</span><span class="lb">'+l+'</span></div>'
+            + (n<3 ? '<span class="bar"></span>' : '');
+        }).join('')
+  +   '</div>'
+  +   '<div class="hint tc mt8">데스크톱에서는 세 섹션이 나란히 표시되며, 단계를 클릭하면 해당 섹션으로 이동합니다.</div>'
+  + '</div></div>'
+
+  + (hasData ? ''
+     : '<div class="card mt16"><div class="empty"><b>제출된 결과 리뷰가 없습니다.</b>'+esc(t.name)+'님은 아직 코칭 결과 리뷰를 작성하지 않았습니다.'
+       + '<div class="mt12 no-print"><button class="btn soft" onclick="toast(\'결과 리뷰 작성 요청 알림을 발송했습니다.\')">'+ico('send')+' 작성 요청 알림 보내기</button></div></div></div>')
+
+  + (hasData ?
+      '<div class="rv-cols">'
+    +   '<div class="rv-col '+(R.step===1?'on':'')+'" id="col1">'+sec1()+'</div>'
+    +   '<div class="rv-col '+(R.step===2?'on':'')+'" id="col2">'+sec2()+'</div>'
+    +   '<div class="rv-col '+(R.step===3?'on':'')+'" id="col3">'+sec3()+'</div>'
+    + '</div>'
+    + (IS_COACH ? coachSec() : '')
+    + '<div class="insight mt16"><div class="ih">'+ico('chart')+'결과 데이터 활용</div><ul>'
+    +   '<li>정량화 결과(시작 · 기대 · 최종 점수)는 <b>성과 대시보드</b>에서 그룹·고객사 단위로 집계됩니다.</li>'
+    +   '<li>변화요인 순위와 서술형 응답은 <b>익명 집계</b> 후 프로그램 개선 인사이트로 활용됩니다.</li>'
+    + '</ul></div>'
+    : '');
+
+  var sel = $('#tSel');
+  if(sel) sel.onchange = function(e){ VIEW_UID = e.target.value; render(); };
+}
+
+/* --- 1. 목표 및 성과 --- */
+function sec1(){
+  return '<div class="rv-h"><span class="n">1</span><b>비즈니스 코칭 목표 및 성과</b></div>'
+  + '<div>'+R.goals.map(goalCard).join('')+'</div>'
+  + (RO ? '' : '<button class="btn soft block no-print mb16" onclick="addRGoal()">'+ico('plus')+' 목표 추가</button>')
+  + '<div class="card"><div class="card-h"><h3>미션</h3></div><div class="card-b">'
+  +   '<div class="mbox"><div class="lab">'+ico('flag')+'나의 미션</div>'
+  +     '<div style="font-size:12.8px;color:var(--ink-2);line-height:1.65">'+esc(REVIEW.mission)+'</div>'
+  +     '<div class="arrowline">'
+  +       '<div class="c"><b>현재 모습</b>'+esc(REVIEW.now)+'</div>'
+  +       '<span class="a">'+ico('arrow')+'</span>'
+  +       '<div class="c"><b>1년 후 모습</b>'+esc(REVIEW.future)+'</div>'
+  +     '</div>'
+  +   '</div>'
+  +   '<div class="lab mt16">'+ico('bulb')+'목표 설정 이유</div>'
+  +   '<div style="font-size:12.8px;color:var(--ink-2);line-height:1.65">'+esc(REVIEW.reason)+'</div>'
+  +   '<div class="lab mt16">'+ico('chat')+'[단기 목표] 코칭 종료 시 주변에서 듣고 싶은 말</div>'
+  +   REVIEW.hear.map(function(h){ return '<div class="quote">'+esc(h)+'</div>'; }).join('')
+  + '</div></div>';
+}
+function goalCard(g, i){
+  var open = R.open[i];
+  return '<div class="gcard'+(open?' open':'')+'" id="gc'+i+'">'
+  + '<div class="gcard-h" onclick="toggleGoal('+i+')">'
+  +   '<span class="no">목표 '+(i+1)+'</span><b>'+esc(g.title || '(제목 미입력)')+'</b>'
+  +   (g.isNew && !RO ? '<button class="del" onclick="event.stopPropagation();delRGoal('+i+')" title="목표 삭제">'+ico('x')+'</button>' : '')
+  +   '<span class="ar">'+ico('arrow')+'</span>'
+  + '</div>'
+  + '<div class="gcard-b">'
+  +   (g.isNew && !RO
+      ? '<div class="field"><label>코칭 목표<span class="req">*</span></label>'
+        + '<input class="inp" maxlength="60" value="'+esc(g.title)+'" placeholder="예) 위임과 육성을 통해 팀 성과를 만드는 리더" oninput="setG('+i+',\'title\',this.value)"/></div>'
+        + '<div class="field"><label>해당 역량<span class="req">*</span></label>'
+        + '<input class="inp" maxlength="30" value="'+esc(g.comp)+'" placeholder="예) 구성원 육성" oninput="setG('+i+',\'comp\',this.value)"/></div>'
+      : '<div class="lab">'+ico('target')+'코칭 목표</div>'
+        + '<div style="font-size:13px;font-weight:700;color:var(--ink);line-height:1.55;margin-bottom:10px">'+esc(g.title)+'</div>'
+        + '<div class="lab">'+ico('star')+'해당 역량</div>'
+        + '<div class="mb16"><span class="badge brand">'+esc(g.comp)+'</span></div>')
+  +   '<div class="lab">'+ico('checkbox')+'실제 실행 행동 및 성과</div>'
+  +   '<div class="mb16">'
+  +     g.acts.map(function(a, j){
+          if(g.isNew && !RO){
+            return '<div style="display:grid;grid-template-columns:1fr 28px;gap:6px;margin-bottom:6px;align-items:center">'
+            + '<input class="inp" maxlength="120" value="'+esc(a.t)+'" placeholder="실행한 행동과 성과를 입력하세요" oninput="setAct('+i+','+j+',this.value)"/>'
+            + (g.acts.length>1 ? '<button class="del" onclick="delAct('+i+','+j+')" title="삭제">'+ico('x')+'</button>' : '<span></span>')
+            + '</div>';
+          }
+          return '<label class="ck'+(a.done?' done':'')+'">'
+          + '<input type="checkbox" '+(a.done?'checked':'')+' '+(RO?'disabled':'')+' onchange="setActDone('+i+','+j+',this.checked)"/>'
+          + '<span>'+esc(a.t)+'</span></label>';
+        }).join('')
+  +     (g.isNew && !RO ? '<button class="btn sm soft" onclick="addAct('+i+')">'+ico('plus')+' 실행 행동 추가</button>' : '')
+  +   '</div>'
+  +   '<div class="lab">'+ico('chart')+'정량화 결과</div>'
+  +   '<div class="sc3">'
+  +     '<div class="sbox"><div class="t">코칭 시작 시</div><div class="v">'+g.start+'<small>점</small></div>'
+  +       '<div class="d">'+esc(g.startDesc || '-')+'</div></div>'
+  +     '<span class="sarrow">'+ico('arrow')+'</span>'
+  +     '<div class="sbox"><div class="t">완료 시 기대</div><div class="v">'+g.expect+'<small>점</small></div>'
+  +       '<div class="d">'+esc(g.expectDesc || '-')+'</div></div>'
+  +     '<span class="sarrow">'+ico('arrow')+'</span>'
+  +     '<div class="sbox fin"><div class="tp">'+TROPHY+'</div><div class="t">최종 결과</div>'
+  +       (RO ? '<div class="v">'+g.final+'<small>점</small></div>'
+            : '<select class="inp" onchange="setG('+i+',\'final\',parseInt(this.value,10))">'+opt10(g.final)+'</select>')
+  +       (RO ? '<div class="d">'+esc(g.finalDesc || '-')+'</div>'
+            : '<textarea class="inp" maxlength="120" placeholder="최종 결과에 대한 설명" oninput="setG('+i+',\'finalDesc\',this.value)">'+esc(g.finalDesc)+'</textarea>')
+  +     '</div>'
+  +   '</div>'
+  +   '<div class="row mt12" style="gap:6px;flex-wrap:wrap">'
+  +     '<span class="badge '+(g.final>=g.expect?'ok':'warn')+'">'+(g.final>=g.expect?'기대 수준 달성':'기대 수준 미달')+'</span>'
+  +     '<span class="badge brand">시작 대비 +'+(g.final-g.start)+'점</span>'
+  +     '<span class="hint">달성률 '+(g.expect>g.start?Math.round((g.final-g.start)/(g.expect-g.start)*100):0)+'%</span>'
+  +   '</div>'
+  + '</div></div>';
+}
+function toggleGoal(i){ R.open[i] = !R.open[i]; var e = document.getElementById('gc'+i); if(e) e.classList.toggle('open'); autoSave(); }
+function setG(i, k, v){
+  R.goals[i][k] = v; autoSave();
+  if(k==='final'){ render(); return; }
+  if(k==='title'){ /* 카드 헤더만 즉시 갱신 (입력 포커스 유지) */
+    var h = document.querySelector('#gc'+i+' .gcard-h b');
+    if(h) h.textContent = v || '(제목 미입력)';
+  }
+}
+function setAct(i, j, v){ R.goals[i].acts[j].t = v; autoSave(); }
+function setActDone(i, j, v){ R.goals[i].acts[j].done = v; autoSave(); toast(v?'실행 항목을 체크했습니다.':'체크를 해제했습니다.'); }
+function addAct(i){ R.goals[i].acts.push({ t:'', done:false }); autoSave(); render(); }
+function delAct(i, j){
+  if(R.goals[i].acts.length<=1){ toast('실행 행동은 최소 1개가 필요합니다.', true); return; }
+  R.goals[i].acts.splice(j,1); autoSave(); render();
+}
+function addRGoal(){
+  if(R.goals.length>=5){ toast('목표는 최대 5개까지 추가할 수 있습니다.', true); return; }
+  R.goals.push(newRGoal()); R.open = R.goals.map(function(_,i){ return i===R.goals.length-1; });
+  autoSave(); render(); toast('목표가 추가되었습니다.');
+}
+function delRGoal(i){
+  R.goals.splice(i,1); R.open.splice(i,1); autoSave(); render(); toast('목표가 삭제되었습니다.');
+}
+
+/* --- 2. 변화 리뷰 --- */
+function sec2(){
+  var keys = Object.keys(REVIEW.changes);
+  return '<div class="rv-h"><span class="n">2</span><b>변화 리뷰</b></div>'
+  + '<div class="card mb16"><div class="card-h"><h3>측면별 변화</h3><span class="spacer"></span><span class="pill">코칭 전 → 후</span></div>'
+  +   '<div class="card-b">'
+  +   keys.map(function(k){
+        return '<div class="chg"><span class="chg-t">'+esc(k)+' 측면에서의 변화</span><ul>'
+        + REVIEW.changes[k].map(function(v, i){ return '<li><i>'+(i+1)+'</i><span>'+esc(v)+'</span></li>'; }).join('')
+        + '</ul></div>';
+      }).join('')
+  +   '</div></div>'
+  + '<div class="card mb16"><div class="card-h"><h3>서술형 리뷰</h3></div><div class="card-b">'
+  +   REVIEW.qa.map(function(x, i){
+        return '<div class="field'+(i?'':' mb16')+'"><label>Q'+(i+1)+'. '+esc(x.q)+'</label>'
+        + '<textarea class="inp" maxlength="500" style="min-height:110px" '+(RO?'readonly':'')+' placeholder="답변을 작성해주세요."'
+        + ' oninput="setQA('+i+',this.value);txt(\'qc'+i+'\',this.value.length)">'+esc(R.qa[i])+'</textarea>'
+        + '<div class="inp-cnt"><span id="qc'+i+'">'+R.qa[i].length+'</span>/500</div></div>';
+      }).join('')
+  + '</div></div>'
+  + '<div class="card"><div class="card-h"><h3>변화요인 분석</h3><span class="spacer"></span><span class="hint">1~3순위 (중복 불가)</span></div>'
+  +   '<div class="card-b">'
+  +   FACTORS.map(function(f, i){
+        var v = R.ranks[i];
+        return '<div class="fac'+(v==='1'?' rk1':'')+'"><span>'+esc(f)+'</span>'
+        + '<select class="inp" '+(RO?'disabled':'')+' onchange="setRank('+i+',this.value)">'
+        +   '<option value="">-</option>'
+        +   ['1','2','3'].map(function(r){
+              var usedBy = R.ranks.indexOf(r);
+              var dis = (usedBy>=0 && usedBy!==i) ? 'disabled' : '';
+              return '<option value="'+r+'" '+(v===r?'selected':'')+' '+dis+'>'+r+'순위</option>';
+            }).join('')
+        + '</select></div>'
+        + (f==='기타' ? '<input class="inp mt8" maxlength="60" '+(RO?'readonly':'')+' placeholder="기타 변화요인을 입력해주세요." value="'+esc(R.etc)+'" oninput="R.etc=this.value;autoSave()"/>' : '');
+      }).join('')
+  +   '<div class="hint mt12">'+ico('bulb')+' 선택한 순위는 프로그램 개선을 위한 통계 자료로 활용됩니다.</div>'
+  + '</div></div>';
+}
+function setQA(i, v){ R.qa[i] = v; autoSave(); }
+function txt(id, v){ var e = document.getElementById(id); if(e) e.textContent = v; }
+function setRank(i, v){
+  if(v){
+    var used = R.ranks.indexOf(v);
+    if(used>=0 && used!==i){ toast(v+'순위는 이미 다른 항목에 지정되어 있습니다.', true); render(); return; }
+  }
+  R.ranks[i] = v; autoSave(); render();
+}
+
+/* --- 3. 앞으로의 다짐 --- */
+function sec3(){
+  return '<div class="rv-h"><span class="n">3</span><b>앞으로의 다짐</b></div>'
+  + '<div class="card mb16"><div class="card-h"><h3>'+esc(REVIEW.project)+'</h3><span class="spacer"></span><span class="badge brand">프로젝트</span></div>'
+  +   '<div class="card-b">'
+  +     '<div class="lab">'+ico('target')+'하위 목표</div>'
+  +     '<ul class="sublist mb16">'+REVIEW.subgoals.map(function(s){ return '<li>'+ico('check')+'<span>'+esc(s)+'</span></li>'; }).join('')+'</ul>'
+  +     '<div class="lab">'+ico('zap')+'집중 · 노력 사항</div>'
+  +     '<div style="font-size:12.8px;color:var(--ink-2);line-height:1.65">'+esc(REVIEW.effort)+'</div>'
+  +     '<div class="plan"><div class="ih">'+ico('flag')+'On Going Action Plan</div>'
+  +       (RO ? '<div style="font-size:12.7px;color:#7A4E05;line-height:1.65">'+esc(R.plan)+'</div>'
+            : '<textarea class="inp" maxlength="300" style="min-height:76px" placeholder="지속적으로 실행할 액션 플랜을 작성해주세요."'
+              + ' oninput="R.plan=this.value;txt(\'pc\',this.value.length);autoSave()">'+esc(R.plan)+'</textarea>'
+              + '<div class="inp-cnt"><span id="pc">'+R.plan.length+'</span>/300</div>')
+  +     '</div>'
+  +   '</div></div>'
+  + '<div class="card"><div class="card-h"><h3>내가 지향하는 리더십 Image</h3></div><div class="card-b">'
+  +   (R.img
+      ? '<div class="limg">'+(RO?'':'<button class="rm no-print" title="이미지 삭제" onclick="rmImg()">'+ico('x')+'</button>')
+        + '<img src="'+esc(R.img)+'" alt="내가 지향하는 리더십 이미지"/></div>'
+      : '<div class="imgempty"><b>등록된 이미지가 없습니다.</b><div class="small mt8">리더십을 상징하는 이미지를 등록해주세요.</div></div>')
+  +   (RO ? '' :
+        '<div class="row mt12 no-print" style="gap:8px">'
+      + '<input type="file" id="imgIn" accept="image/*" style="display:none" onchange="chImg(this)"/>'
+      + '<button class="btn sm" onclick="document.getElementById(\'imgIn\').click()">'+ico('plus')+' 이미지 '+(R.img?'변경':'추가')+'</button>'
+      + (R.img ? '<button class="btn sm danger" onclick="rmImg()">'+ico('x')+' 이미지 삭제</button>' : '')
+      + '</div>')
+  +   '<div class="field mt16" style="margin-bottom:0"><label>위 Image의 리더십을 달성하기 위한 스스로 다짐 한마디<span class="req">*</span></label>'
+  +     '<textarea class="inp" maxlength="300" style="min-height:96px" '+(RO?'readonly':'')+' placeholder="다짐 한마디를 작성해주세요."'
+  +     ' oninput="R.vow=this.value;txt(\'vc\',this.value.length);autoSave()">'+esc(R.vow)+'</textarea>'
+  +     '<div class="inp-cnt"><span id="vc">'+R.vow.length+'</span>/300</div></div>'
+  + '</div></div>';
+}
+function chImg(el){
+  var f = el.files && el.files[0];
+  if(!f) return;
+  if(!/^image\//.test(f.type)){ toast('이미지 파일만 등록할 수 있습니다.', true); return; }
+  var rd = new FileReader();
+  rd.onload = function(e){ R.img = e.target.result; autoSave(); render(); toast('리더십 이미지가 변경되었습니다.'); };
+  rd.readAsDataURL(f);
+}
+function rmImg(){ R.img = ''; autoSave(); render(); toast('리더십 이미지를 삭제했습니다.'); }
+
+/* --- 코치 작성 영역 --- */
+function coachSec(){
+  return '<div class="card mt16"><div class="card-h">'+ico('user')+'<h3>코치 작성 영역</h3><span class="spacer"></span>'
+  + '<span class="badge info">코치 전용 · 대상자 제출 내용은 읽기 전용</span></div><div class="card-b">'
+  + '<div class="f-row c2">'
+  +   '<div class="field" style="margin-bottom:0"><label>코칭 성과 총평<span class="req">*</span></label>'
+  +     '<textarea class="inp" maxlength="500" style="min-height:130px" placeholder="대상자의 코칭 성과에 대한 총평을 작성해주세요."'
+  +     ' oninput="R.coachSummary=this.value;txt(\'csc\',this.value.length);autoSave()">'+esc(R.coachSummary)+'</textarea>'
+  +     '<div class="inp-cnt"><span id="csc">'+R.coachSummary.length+'</span>/500</div></div>'
+  +   '<div class="field" style="margin-bottom:0"><label>향후 제안<span class="req">*</span></label>'
+  +     '<textarea class="inp" maxlength="500" style="min-height:130px" placeholder="코칭 종료 이후 지속 성장을 위한 제안을 작성해주세요."'
+  +     ' oninput="R.coachSuggest=this.value;txt(\'cgc\',this.value.length);autoSave()">'+esc(R.coachSuggest)+'</textarea>'
+  +     '<div class="inp-cnt"><span id="cgc">'+R.coachSuggest.length+'</span>/500</div></div>'
+  + '</div></div></div>';
+}
+
+/* --- 단계 이동 --- */
+function setStep(n){
+  R.step = n; autoSave(); render();
+  if(window.innerWidth > 1100){
+    var c = document.getElementById('col'+n);
+    if(c) c.scrollIntoView({ behavior:'smooth', block:'start' });
+  }else{
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+}
+
+/* --- 제출 --- */
+function askSubmit(){
+  if(IS_COACH){
+    if(!R.coachSummary.trim()){ toast('코칭 성과 총평을 작성해주세요.', true); return; }
+    if(!R.coachSuggest.trim()){ toast('향후 제안을 작성해주세요.', true); return; }
+  }else{
+    for(var i=0;i<R.goals.length;i++){
+      if(!R.goals[i].title.trim()){ toast('목표 '+(i+1)+'의 코칭 목표를 입력해주세요.', true); R.step=1; render(); return; }
+      if(!R.goals[i].finalDesc.trim()){ toast('목표 '+(i+1)+'의 최종 결과 설명을 작성해주세요.', true); R.step=1; render(); return; }
+    }
+    if(!R.qa[0].trim() || !R.qa[1].trim()){ toast('변화 리뷰의 서술형 답변을 모두 작성해주세요.', true); R.step=2; render(); return; }
+    if(R.ranks.filter(function(x){ return x; }).length < 3){ toast('변화요인 1~3순위를 모두 선택해주세요.', true); R.step=2; render(); return; }
+    if(!R.vow.trim()){ toast('다짐 한마디를 작성해주세요.', true); R.step=3; render(); return; }
+  }
+  $('#subSum').innerHTML = IS_COACH
+    ? '<li>코치 총평 <b>'+R.coachSummary.length+'자</b> · 향후 제안 <b>'+R.coachSuggest.length+'자</b></li>'
+      + '<li>제출 시 PM과 대상자에게 알림이 발송됩니다.</li>'
+    : R.goals.map(function(g,i){ return '<li>목표'+(i+1)+' : '+esc(g.title)+' ('+g.start+'점 → 최종 '+g.final+'점)</li>'; }).join('')
+      + '<li>변화요인 1~3순위 · 서술형 답변 · 다짐 한마디 작성 완료</li>';
+  openM('subM');
+}
+function doSubmit(){
+  closeM('subM');
+  R.status = '제출완료';
+  saveR(true);
+  render();
+  toast(IS_COACH ? '코치 리뷰가 제출되었습니다. PM에게 알림이 발송됩니다.' : '코칭 결과 리뷰가 제출되었습니다. 코치에게 알림이 발송됩니다.');
+}
+
+/* --- 대상자 목록 --- */
+function targetList(){
+  var ms = USERS.filter(function(x){ return x.role==='member'; });
+  if(ROLE==='coach') return ms.filter(function(x){ return x.coachId===ME.id; });
+  if(ROLE==='hr')    return ms.filter(function(x){ return x.org===ME.org; });
+  return ms;
+}
+
+/* ============================================================
+   부트스트랩
+   ============================================================ */
+var u = shell('review');
+if(u){
+  ME = u; ROLE = session().role;
+  IS_COACH = (ROLE==='coach');
+  RO = (ROLE!=='member');
+  R = loadState();
+
+  var list = targetList();
+  VIEW_UID = (ROLE==='member') ? ME.id
+    : ((list.filter(function(m){ return m.id===REVIEW.userId; })[0] || list[0] || ME).id);
+
+  document.body.insertAdjacentHTML('beforeend',
+    '<div class="mask" id="subM"><div class="modal">'
+  +   '<div class="modal-h"><h3>코칭 결과 리뷰를 제출할까요?</h3><button class="x" onclick="closeM(\'subM\')">'+ico('x')+'</button></div>'
+  +   '<div class="modal-b"><p class="hint">제출 후에는 담당자 확인 전까지 수정할 수 없습니다. 작성 내용을 확인해주세요.</p>'
+  +     '<div class="insight mt16" style="margin-bottom:0"><div class="ih">'+ico('check')+'제출 내용 요약</div><ul id="subSum"></ul></div></div>'
+  +   '<div class="modal-f"><button class="btn" onclick="closeM(\'subM\')">취소</button>'
+  +     '<button class="btn pri" onclick="doSubmit()">'+ico('send')+' 제출하기</button></div>'
+  + '</div></div>');
+  bindMask();
+  render();
+}
+</script>
+</body>
+</html>

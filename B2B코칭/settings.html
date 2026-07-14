@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>계정 · 권한 · 알림 설정 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .page svg[viewBox="0 0 24 24"]{width:16px;height:16px;stroke-width:1.8;flex:0 0 auto;vertical-align:-3px}
+  .page .kpi .ico svg{width:21px;height:21px}
+  .page .btn.sm svg{width:14px;height:14px}
+  .rolegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+  .rolec{border:1px solid var(--line);border-radius:12px;padding:13px;background:#fff;border-top:3px solid var(--brand)}
+  .rolec b{display:block;font-size:13.5px}
+  .rolec small{color:var(--muted);font-size:11.5px;line-height:1.5;display:block;margin-top:2px}
+  .rolec .sc{margin-top:8px;font-size:11px;font-weight:800;color:var(--ink-2);background:var(--hover);border-radius:8px;padding:5px 8px}
+  .perm td:first-child{font-weight:700}
+  .perm td.c{text-align:center}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--muted);margin-top:12px}
+  .nrow{display:grid;grid-template-columns:1fr 90px 110px 90px;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--line-2)}
+  .nrow:last-of-type{border-bottom:0}
+  .nrow .sw{margin:0 auto}
+  .nhead{display:grid;grid-template-columns:1fr 90px 110px 90px;gap:10px;padding-bottom:8px;border-bottom:1px solid var(--line);font-size:11.5px;font-weight:800;color:var(--muted);text-align:center}
+  .nhead span:first-child{text-align:left}
+  .vbox{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#FBFBFF}
+  @media(max-width:900px){
+    .nrow,.nhead{grid-template-columns:1fr 62px 68px 62px;gap:4px}
+    table.perm{min-width:640px}
+  }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('settings');
+const role = u ? session().role : null;
+
+let tab = 'account';
+const isAdmin = () => role === 'admin';
+const RKEYS = ['admin','pm','coach','hr','member'];
+const PBADGE = { 'CRUD':'brand', 'CRU':'brand', 'R':'info', 'R*':'warn', '✓':'ok', '-':'gray' };
+const myDomain = (u ? u.email.split('@')[1] : '');
+
+/* 알림 설정 상태 (NOTI_RULES 복사) */
+let RULES = NOTI_RULES.map(r => Object.assign({}, r));
+let twofa = true;
+const SEND = { day:'금', time:'10:00' };
+
+function render(){
+  $('#page').innerHTML = `
+  <div class="between mb16">
+    <div><h2 style="font-size:18px">설정</h2><div class="hint">계정 · 권한 · 알림 설정을 관리합니다.</div></div>
+    <span class="pill">${ROLES[role].label} · ${esc(ROLES[role].scope)}</span>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button data-t="account" class="${tab==='account'?'on':''}">계정</button>
+    <button data-t="perm" class="${tab==='perm'?'on':''}">권한 관리</button>
+    <button data-t="noti" class="${tab==='noti'?'on':''}">알림 설정</button>
+  </div>
+
+  <div id="tab"></div>
+
+  <div class="card mt20">
+    <div class="card-b row between">
+      <span class="col"><b>로그아웃</b><small class="muted">현재 기기에서 계정을 로그아웃합니다.</small></span>
+      <button class="btn danger" onclick="logout()">${ico('out')} 로그아웃</button>
+    </div>
+  </div>`;
+
+  $$('#tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.t;
+    $$('#tabs button').forEach(x => x.classList.toggle('on', x === b));
+    body();
+  });
+  body();
+}
+
+function body(){
+  if(tab === 'account') account();
+  else if(tab === 'perm') perm();
+  else noti();
+  bindMask();
+}
+
+/* ---------------- 계정 ---------------- */
+function account(){
+  $('#tab').innerHTML = `
+  <div class="grid g-2-1">
+    <div class="col" style="gap:16px">
+      <div class="card">
+        <div class="card-h">${ico('user')}<h3>프로필</h3></div>
+        <div class="card-b">
+          <div class="row mb20" style="gap:14px">
+            ${avatar(u,'xl')}
+            <div class="col" style="gap:3px;flex:1">
+              <b style="font-size:17px">${esc(u.name)}</b>
+              <span class="muted small">${esc(u.email)}</span>
+              <span class="row" style="gap:6px;margin-top:4px">
+                <span class="badge brand">${ROLES[role].label}</span>
+                <span class="badge gray">${esc(u.org)}</span>
+              </span>
+            </div>
+            <button class="btn sm" onclick="toast('프로필 이미지 업로드 창을 엽니다.')">${ico('up')} 사진 변경</button>
+          </div>
+          <div class="f-row c2">
+            <div class="field"><label>이름</label><input class="inp" id="aName" value="${esc(u.name)}"/></div>
+            <div class="field"><label>이메일 (회사 메일)</label><input class="inp" id="aMail" value="${esc(u.email)}" disabled/></div>
+          </div>
+          <div class="f-row c2">
+            <div class="field"><label>소속</label><input class="inp" id="aOrg" value="${esc(u.org)}"/></div>
+            <div class="field" style="margin-bottom:0"><label>직급</label><input class="inp" id="aTitle" value="${esc(u.title)}"/></div>
+          </div>
+        </div>
+        <div class="card-f">
+          <span class="hint">이메일은 회사 메일 인증에 사용되므로 변경할 수 없습니다.</span>
+          <span style="flex:1"></span>
+          <button class="btn pri" onclick="toast('프로필이 저장되었습니다.')">${ico('check')} 저장</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">${ico('shield')}<h3>비밀번호 변경</h3></div>
+        <div class="card-b">
+          <div class="field"><label>현재 비밀번호</label><input class="inp" type="password" id="pw0" placeholder="••••••••"/></div>
+          <div class="f-row c2">
+            <div class="field"><label>새 비밀번호</label><input class="inp" type="password" id="pw1" placeholder="영문+숫자+특수문자 8자 이상"/></div>
+            <div class="field"><label>새 비밀번호 확인</label><input class="inp" type="password" id="pw2" placeholder="다시 입력"/></div>
+          </div>
+          <div class="row between vbox">
+            <span class="col"><b>2단계 인증 (2FA)</b><small class="muted">로그인 시 회사 메일로 인증 코드를 발송합니다.</small></span>
+            <button class="sw ${twofa?'on':''}" id="fa"></button>
+          </div>
+        </div>
+        <div class="card-f">
+          <span style="flex:1"></span>
+          <button class="btn pri" id="pwSave">${ico('check')} 비밀번호 저장</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="gap:16px">
+      <div class="card">
+        <div class="card-h">${ico('mail')}<h3>회사 메일 인증 상태</h3></div>
+        <div class="card-b">
+          <div class="row mb16" style="gap:10px">
+            <span class="av lg" style="background:var(--ok-bg);color:var(--ok)">${ico('check')}</span>
+            <span class="col" style="flex:1"><b>인증 완료</b><small class="muted">2024-04-02 인증</small></span>
+            <span class="badge ok">${ico('check')} 인증됨</span>
+          </div>
+          <div class="vbox mb12">
+            <div class="row between" style="margin-bottom:6px"><span class="small muted">인증 도메인</span>
+              <span class="badge brand">${esc(myDomain)}</span></div>
+            <div class="row between"><span class="small muted">인증 메일</span>
+              <b class="small">${esc(u.email)}</b></div>
+          </div>
+          <div class="insight" style="margin-bottom:12px">
+            <div class="ih">${ico('shield')} 회사 메일 기반 본인 인증</div>
+            <ul><li>등록된 고객사 도메인의 회사 메일만 가입·로그인할 수 있습니다. 도메인이 변경된 경우 재인증이 필요합니다.</li></ul>
+          </div>
+          <button class="btn block" onclick="toast('${esc(u.email)}로 재인증 메일을 발송했습니다.')">${ico('send')} 재인증 메일 발송</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">${ico('clock')}<h3>로그인 기록</h3></div>
+        <div class="card-b">
+          <div class="li"><span class="col"><b>Chrome · Windows</b><small>서울 · 방금 전 (현재 기기)</small></span><span class="badge ok">현재</span></div>
+          <div class="li"><span class="col"><b>Safari · iPhone</b><small>서울 · 어제 21:14</small></span><span class="badge gray">모바일</span></div>
+          <div class="li"><span class="col"><b>Chrome · macOS</b><small>성남 · 2024-05-26</small></span><span class="badge gray">PC</span></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  $('#fa').onclick = () => {
+    twofa = !twofa;
+    $('#fa').classList.toggle('on', twofa);
+    toast('2단계 인증을 ' + (twofa ? '사용합니다.' : '해제했습니다.'));
+  };
+  $('#pwSave').onclick = () => {
+    const a = $('#pw0').value, b = $('#pw1').value, c = $('#pw2').value;
+    if(!a || !b){ toast('현재 비밀번호와 새 비밀번호를 입력하세요.', true); return; }
+    if(b !== c){ toast('새 비밀번호가 일치하지 않습니다.', true); return; }
+    if(b.length < 8){ toast('비밀번호는 8자 이상이어야 합니다.', true); return; }
+    ['pw0','pw1','pw2'].forEach(i => $('#' + i).value = '');
+    toast('비밀번호가 변경되었습니다.');
+  };
+}
+
+/* ---------------- 권한 관리 ---------------- */
+function perm(){
+  $('#tab').innerHTML = `
+  ${isAdmin() ? '' : `<div class="insight mb16" style="border-color:#F6D6D6;background:var(--danger-bg)">
+    <div class="ih">${ico('shield')} 읽기 전용</div>
+    <ul><li>권한 매트릭스는 <b>관리자</b>만 수정할 수 있습니다. 현재 역할(${ROLES[role].label})에서는 조회만 가능합니다.</li></ul>
+  </div>`}
+
+  <div class="sec-t">${ico('users')} 사용자 역할 (5종)</div>
+  <div class="rolegrid mb20">
+    ${RKEYS.map(k => `<div class="rolec" style="border-top-color:${ROLES[k].color}">
+      <b>${ROLES[k].label}</b>
+      <small>${esc(ROLES[k].desc)}</small>
+      <div class="sc">${ico('shield')} ${esc(ROLES[k].scope)}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="card-h">${ico('checkbox')}<h3>권한 매트릭스</h3><span class="spacer"></span>
+      ${isAdmin() ? `<button class="btn sm" onclick="downloadCSV('권한매트릭스.csv', permCSV())">${ico('dl')} 내보내기</button>
+      <button class="btn pri sm" onclick="toast('권한 설정이 저장되었습니다.')">${ico('check')} 저장</button>` : '<span class="badge gray">읽기 전용</span>'}
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl perm">
+        <thead><tr>
+          <th style="min-width:170px">기능</th>
+          ${RKEYS.map(k => `<th class="tc">${ROLES[k].label}</th>`).join('')}
+        </tr></thead>
+        <tbody>
+          ${PERMS.map((p, i) => `<tr>
+            <td>${esc(p.m)}</td>
+            ${RKEYS.map(k => `<td class="c"><span class="badge ${PBADGE[p[k]] || 'gray'}">${esc(p[k])}</span></td>`).join('')}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="card-b" style="padding-top:14px">
+      <div class="legend">
+        <span><b>C</b> 생성</span><span><b>R</b> 조회</span><span><b>U</b> 수정</span><span><b>D</b> 삭제</span>
+        <span><b>R*</b> 담당 대상자만</span><span><b>✓</b> 실행 가능</span><span><b>-</b> 접근 불가</span>
+      </div>
+      <div class="insight mt16" style="margin-bottom:0">
+        <div class="ih">${ico('shield')} 정보보안 · 접근 제한</div>
+        <ul>
+          <li>파트너 코치는 <b>담당 대상자의 자료만</b> 열람할 수 있습니다. (R*)</li>
+          <li>고객사 HR은 <b>자사 프로젝트</b> 범위의 자료만 조회·내보내기할 수 있습니다.</li>
+          <li>코칭 대상자는 <b>본인 자료와 코치가 공유한 자료</b>만 접근할 수 있습니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>`;
+}
+function permCSV(){
+  const rows = [['기능', ...RKEYS.map(k => ROLES[k].label)]];
+  PERMS.forEach(p => rows.push([p.m, ...RKEYS.map(k => p[k])]));
+  return rows;
+}
+
+/* ---------------- 알림 설정 ---------------- */
+function noti(){
+  $('#tab').innerHTML = `
+  <div class="grid g-2-1">
+    <div class="card">
+      <div class="card-h">${ico('bell')}<h3>알림 규칙 · 채널</h3><span class="spacer"></span>
+        <span class="hint">채널별로 발송 여부를 설정합니다.</span></div>
+      <div class="card-b">
+        <div class="nhead"><span>알림 규칙</span><span>이메일</span><span>카카오 알림톡</span><span>Teams</span></div>
+        ${RULES.map((r, i) => `<div class="nrow">
+          <span class="col"><b>${esc(r.k)}</b><small class="muted">${esc(r.d)}</small></span>
+          <button class="sw ${r.email?'on':''}" onclick="tog(${i},'email',this)"></button>
+          <button class="sw ${r.kakao?'on':''}" onclick="tog(${i},'kakao',this)"></button>
+          <button class="sw ${r.teams?'on':''}" onclick="tog(${i},'teams',this)"></button>
+        </div>`).join('')}
+        <div class="mt16"><span class="pill">카카오 알림톡 · Teams 연동은 2차 고도화 대상입니다.</span></div>
+      </div>
+    </div>
+
+    <div class="col" style="gap:16px">
+      <div class="card">
+        <div class="card-h">${ico('clock')}<h3>발송 시각</h3></div>
+        <div class="card-b">
+          <div class="field"><label>체크인 리마인드 요일</label>
+            <select class="inp" id="sDay">${['월','화','수','목','금','토','일'].map(d => `<option ${SEND.day===d?'selected':''}>${d}</option>`).join('')}</select>
+          </div>
+          <div class="field"><label>발송 시각</label>
+            <select class="inp" id="sTime">${['09:00','10:00','11:00','14:00','17:00','18:00'].map(t => `<option ${SEND.time===t?'selected':''}>${t}</option>`).join('')}</select>
+          </div>
+          <div class="vbox">
+            <div class="row" style="gap:8px">${ico('bulb')}<span class="small muted" id="sPrev">매주 ${SEND.day}요일 ${SEND.time}에 미작성 대상자에게 리마인드가 발송됩니다.</span></div>
+          </div>
+        </div>
+        <div class="card-f">
+          <span style="flex:1"></span>
+          <button class="btn pri" id="sSave">${ico('check')} 저장</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">${ico('mail')}<h3>수신 메일</h3></div>
+        <div class="card-b">
+          <div class="li"><span class="col"><b>${esc(u.email)}</b><small>기본 수신 주소 (회사 메일)</small></span><span class="badge ok">인증됨</span></div>
+          <div class="li"><span class="col"><b>주간 요약 메일</b><small>매주 월요일 09:00 발송</small></span>
+            <button class="sw on" onclick="this.classList.toggle('on');toast('주간 요약 메일 설정을 변경했습니다.')"></button></div>
+          <div class="li"><span class="col"><b>마케팅 · 뉴스레터</b><small>하우코칭 소식 및 콘텐츠</small></span>
+            <button class="sw" onclick="this.classList.toggle('on');toast('수신 설정을 변경했습니다.')"></button></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  $('#sDay').onchange = $('#sTime').onchange = () => {
+    SEND.day = $('#sDay').value; SEND.time = $('#sTime').value;
+    $('#sPrev').textContent = '매주 ' + SEND.day + '요일 ' + SEND.time + '에 미작성 대상자에게 리마인드가 발송됩니다.';
+  };
+  $('#sSave').onclick = () => toast('발송 시각을 매주 ' + SEND.day + '요일 ' + SEND.time + '으로 저장했습니다.');
+}
+function tog(i, ch, el){
+  RULES[i][ch] = !RULES[i][ch];
+  el.classList.toggle('on', RULES[i][ch]);
+  const name = { email:'이메일', kakao:'카카오 알림톡', teams:'Teams' }[ch];
+  toast('[' + RULES[i].k + '] ' + name + ' 알림을 ' + (RULES[i][ch] ? '켰습니다.' : '껐습니다.'));
+}
+
+if(u) render();
+</script>
+</body>
+</html>

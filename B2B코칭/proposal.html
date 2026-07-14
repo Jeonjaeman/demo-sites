@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>1차 MVP 제안 범위 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  body{background:#fff}
+  .lp-nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .lp-nav .in{max-width:1080px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px}
+  .lp-brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .lp-brand .mark{width:32px;height:32px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:#fff}
+  .lp-brand .mark svg{width:17px;height:17px;stroke:#fff;stroke-width:2;fill:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .ph{padding:56px 0 30px;text-align:center}
+  .ph .ey{font-size:12px;font-weight:800;color:var(--brand);letter-spacing:.14em}
+  .ph h1{font-size:clamp(26px,4vw,40px);letter-spacing:-.035em;margin:10px 0 12px;line-height:1.25}
+  .ph p{color:var(--muted);font-size:15px;line-height:1.75;max-width:680px;margin:0 auto}
+  .sec{padding:34px 0}
+  .sec > h2{font-size:20px;letter-spacing:-.02em;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .sec > h2 .no{width:26px;height:26px;border-radius:8px;background:var(--grad);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+  .sec > .lead{color:var(--muted);font-size:13.6px;line-height:1.7;margin:0 0 16px 34px}
+  .box{border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .scope{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .scope .c{border:1px solid var(--line);border-radius:16px;padding:20px}
+  .scope .c.in{border-color:#BBF0CF;background:#F4FDF7}
+  .scope .c.out{border-color:#E7E9F2;background:#FAFAFC}
+  .scope .c h3{font-size:15px;display:flex;align-items:center;gap:7px;margin-bottom:12px}
+  .scope .c li{display:flex;gap:8px;padding:5px 0;font-size:13.2px;color:var(--ink-2);line-height:1.55}
+  .scope .c li svg{width:15px;height:15px;flex:0 0 15px;margin-top:3px;stroke-width:2.2;fill:none}
+  .gantt td.b{position:relative;height:34px}
+  .gantt .bar{position:absolute;top:9px;height:16px;border-radius:99px;background:var(--grad);box-shadow:var(--sh-brand);display:flex;align-items:center;padding:0 8px;color:#fff;font-size:9.5px;font-weight:800;white-space:nowrap}
+  .gantt .bar.g2{background:linear-gradient(135deg,#34D399,#10B981)}
+  .gantt .bar.g3{background:linear-gradient(135deg,#60A5FA,#3B82F6)}
+  .gantt .bar.g4{background:linear-gradient(135deg,#FBBF24,#F59E0B)}
+  .price td:last-child{text-align:right;font-weight:800}
+  .price tfoot td{background:var(--brand-50);color:var(--brand-700);font-weight:900;font-size:15px;padding:14px}
+  .stack{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .stack .s{border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stack .s .k{font-size:10.5px;font-weight:800;color:var(--muted-2);letter-spacing:.1em}
+  .stack .s b{display:block;font-size:14.5px;margin:5px 0 4px}
+  .stack .s small{color:var(--muted);font-size:12px;line-height:1.6}
+  .why{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .why .w{border:1px solid var(--line);border-radius:14px;padding:18px}
+  .why .w .n{font-family:monospace;font-size:11px;font-weight:800;color:var(--brand)}
+  .why .w b{display:block;font-size:15px;margin:6px 0 6px}
+  .why .w p{color:var(--muted);font-size:12.8px;line-height:1.72}
+  .cta-band{background:var(--grad);border-radius:22px;padding:40px;color:#fff;text-align:center;margin:20px 0 60px;box-shadow:0 40px 70px -35px rgba(91,75,232,.7)}
+  .cta-band h2{font-size:24px;margin-bottom:10px;letter-spacing:-.02em}
+  .cta-band p{opacity:.9;font-size:14px;margin-bottom:20px}
+  .cta-band .btn{background:#fff;color:var(--brand-700);border:0}
+  @media(max-width:860px){ .scope,.why{grid-template-columns:1fr} .stack{grid-template-columns:1fr 1fr} }
+</style>
+</head>
+<body>
+
+<nav class="lp-nav">
+  <div class="in">
+    <a class="lp-brand" href="index.html">
+      <span class="mark"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+      <span>하우 부스터</span>
+    </a>
+    <span style="flex:1"></span>
+    <a class="btn" href="index.html">← 데모로 돌아가기</a>
+    <button class="btn pri" onclick="window.print()">제안서 PDF 저장</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="ph">
+    <div class="ey">1ST PHASE PROPOSAL</div>
+    <h1>700만 원 · 60일 안에<br />“실제로 운영되는” 코칭 플랫폼을 만듭니다.</h1>
+    <p>
+      첨부해 주신 요구사항 정의서 PPT는 <b>최종 완성 목표</b>로 이해했습니다.
+      1차에서는 코칭 운영의 핵심 루프 — <b>목표 → 실행 → 피드백 → 성과</b> — 를 완결시키고,
+      2차·3차 고도화를 얹을 수 있는 확장 구조를 남기는 것을 제안합니다.
+      아래 범위는 <b>이 데모에 실제로 구현되어 있는 화면</b> 기준이며,
+      1인 개발 체제로 <b>책정 예산(1,000만 원)보다 300만 원 낮은 700만 원</b>에 제안드립니다.
+    </p>
+  </div>
+
+  <!-- 1. 범위 -->
+  <section class="sec">
+    <h2><span class="no">1</span> 1차 MVP 범위 — 무엇을 넣고, 무엇을 뺐는가</h2>
+    <p class="lead">우선순위 1순위가 “산출물 완성도”이므로, 기능을 얇게 많이 넣기보다 <b>핵심 기능을 끝까지 쓸 수 있게</b> 만드는 데 예산을 집중합니다.</p>
+    <div class="scope">
+      <div class="c in">
+        <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> 1차 포함 (본 데모 구현 완료)</h3>
+        <ul id="scopeIn"></ul>
+      </div>
+      <div class="c out">
+        <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> 2차·3차 고도화 (설계만 반영)</h3>
+        <ul id="scopeOut"></ul>
+        <div class="insight mt12" style="background:#fff">
+          <div class="ih">확장을 전제로 한 설계</div>
+          <ul>
+            <li>역량 진단 · 그룹 피드 화면은 <b>데모에 미리 구현</b>해 두었습니다(2차 대상 표기).</li>
+            <li>알림은 <b>채널 어댑터 구조</b>로 만들어 카카오/Teams는 어댑터만 추가하면 됩니다.</li>
+            <li>결제·과금은 도메인 분리로 향후 모듈 추가가 가능하도록 설계합니다.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 화면 목록 -->
+  <section class="sec">
+    <h2><span class="no">2</span> 구현 화면 (16종) — 데모에서 바로 확인 가능</h2>
+    <p class="lead">모든 화면은 PC · 모바일 반응형이며, 5개 권한별로 다른 메뉴와 데이터를 표시합니다.</p>
+    <div class="box tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th style="width:110px">단계</th><th>화면</th><th>주 사용자</th><th>핵심 기능</th></tr></thead>
+        <tbody id="screens"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 3. 일정 -->
+  <section class="sec">
+    <h2><span class="no">3</span> 60일 개발 일정</h2>
+    <p class="lead">계약 체결 즉시 착수 · 주 1회 진행 상황 공유 · 2주 단위 데모 리뷰. 발주처 담당자 1명과의 협업을 전제로 산정했습니다.</p>
+    <div class="box tbl-wrap">
+      <table class="tbl gantt">
+        <thead><tr><th style="width:190px">단계</th><th>1주</th><th>2주</th><th>3주</th><th>4주</th><th>5주</th><th>6주</th><th>7주</th><th>8주</th><th style="width:100px">산출물</th></tr></thead>
+        <tbody id="gantt"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4. 견적 -->
+  <section class="sec">
+    <h2><span class="no">4</span> 견적 — <b style="color:var(--brand)">700만 원</b> (VAT 별도)</h2>
+    <p class="lead">책정하신 예산은 1,000만 원이지만, <b>1인 개발 체제로 700만 원에 제안</b>드립니다. 기획·디자인·개발·배포를 한 사람이 일관되게 수행하므로 <b>외주 재하청 마진과 인력 간 커뮤니케이션 비용이 발생하지 않습니다.</b></p>
+    <div class="box tbl-wrap">
+      <table class="tbl price">
+        <thead><tr><th>구분</th><th>세부 내용</th><th style="width:130px">금액</th></tr></thead>
+        <tbody>
+          <tr><td><b>상세 기획</b></td><td>요구사항 확정 · 화면 설계서(IA/와이어프레임) · 기능 명세</td><td class="num">800,000</td></tr>
+          <tr><td><b>UI/UX 디자인</b></td><td>디자인 시스템 · 반응형 웹 표준 디자인 (16종 화면)</td><td class="num">1,000,000</td></tr>
+          <tr><td><b>프런트엔드</b></td><td>PC·모바일 반응형 화면 구현 · 대시보드 시각화</td><td class="num">2,400,000</td></tr>
+          <tr><td><b>백엔드</b></td><td>권한별 시스템 설계 · API · 데이터 처리 · PDF/Excel 생성 · 이메일 알림</td><td class="num">2,000,000</td></tr>
+          <tr><td><b>서버 / DB / 인프라</b></td><td>DB 설계 · 클라우드 세팅 · 배포 파이프라인 · 도메인/SSL</td><td class="num">500,000</td></tr>
+          <tr><td><b>QA · 산출물</b></td><td>통합 테스트 · 관리자 매뉴얼 · 소스 코드 · 디자인 원본 인계</td><td class="num">300,000</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">합계</td><td class="num">7,000,000 원</td></tr></tfoot>
+      </table>
+    </div>
+    <div class="insight mt16" style="border-color:#BBF0CF;background:#F4FDF7">
+      <div class="ih">남는 300만 원은 2차 고도화 재원으로 남겨두시길 제안합니다</div>
+      <ul>
+        <li>1차 오픈 후 실제로 써 보면 <b>반드시 수정하고 싶은 지점</b>이 나옵니다. 그때 쓰실 예산을 미리 깎아두지 않는 편이 낫습니다.</li>
+        <li>알림톡 연동 · 역량 진단 고도화 · 그룹코칭 피드 중 <b>가장 필요한 1개</b>를 2차로 추가할 수 있는 금액입니다.</li>
+      </ul>
+    </div>
+    <div class="insight mt12">
+      <div class="ih">💡 포함 사항</div>
+      <ul>
+        <li>검수 후 <b>1개월 무상 하자보수</b> (기능 결함 대응)</li>
+        <li>소스 코드 · 디자인 원본 · DB 스키마 전체 인계, <b>기술 종속 없음</b></li>
+        <li>클라우드 비용(월 5~10만 원 수준)은 발주처 계정으로 직접 과금 — 견적 미포함</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. 기술 스택 -->
+  <section class="sec">
+    <h2><span class="no">5</span> 기술 스택 제안</h2>
+    <p class="lead">“향후 2차·3차 고도화를 고려한 유연하고 확장성 있는 아키텍처”라는 우대 사항을 최우선으로 고려했습니다.</p>
+    <div class="stack">
+      <div class="s"><div class="k">FRONTEND</div><b>Next.js + TypeScript</b><small>SSR로 초기 로딩 최적화, 반응형 컴포넌트 기반. 본 데모는 프레임워크 없이 순수 HTML/CSS/JS로 제작되어 그대로 이식 가능합니다.</small></div>
+      <div class="s"><div class="k">BACKEND</div><b>NestJS + PostgreSQL</b><small>역할 기반 접근제어(RBAC)를 프레임워크 레벨에서 강제. 코칭목표·행동지표·체크인을 정규화 스키마로 저장.</small></div>
+      <div class="s"><div class="k">INFRA</div><b>AWS (또는 Supabase)</b><small>초기 비용 최소화 · 트래픽 증가 시 수평 확장. 파일은 S3 + 서명 URL로 권한별 접근 제어.</small></div>
+      <div class="s"><div class="k">확장 포인트</div><b>알림 어댑터 · 모듈 분리</b><small>이메일 → 카카오 알림톡 → Teams 순으로 채널 추가. 진단/그룹코칭/과금은 별도 모듈로 증설.</small></div>
+    </div>
+  </section>
+
+  <!-- 6. 데이터 구조 -->
+  <section class="sec">
+    <h2><span class="no">6</span> 데이터 구조 — “데이터화·시각화”의 전제</h2>
+    <p class="lead">요구사항의 핵심은 <b>“코칭목표를 정량/정성으로 나눠 별도 DB에 저장해 시각화한다”</b> 입니다. 그래서 1차부터 아래 구조를 잡습니다.</p>
+    <div class="box tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th style="width:150px">테이블</th><th>주요 컬럼</th><th style="width:230px">이렇게 쓰입니다</th></tr></thead>
+        <tbody>
+          <tr><td><b>projects</b></td><td>고객사 · 유형 · 기간 · 코칭횟수 · 인원 · 그룹수 · 담당PM</td><td>프로젝트 보드 · 고객사별 집계</td></tr>
+          <tr><td><b>coaching_goals</b></td><td>대상자 · 역량(분류/항목) · 제목 · 설명 · 설정이유 · <b>시작점수 · 기대점수</b></td><td>“많이 설정한 코칭목표 Top 10”, 역량 비중 도넛</td></tr>
+          <tr><td><b>action_indicators</b></td><td>목표ID · 지표 문구 · 실행주기 · 목표횟수 · 실행횟수</td><td>“많이 작성한 행동지표 Top 10”, 목표-지표 히트맵</td></tr>
+          <tr><td><b>checkins</b></td><td>대상자 · 주차 · 달성률 · 실행내용 · 장애요인 · 필요지원</td><td>주간 체크인율 · 실행 추이 라인차트</td></tr>
+          <tr><td><b>coach_feedbacks</b></td><td>코치 · 대상자 · 유형(질문/조언/격려) · 내용 · 공개여부</td><td>코치 피드백률 · 대상자 알림</td></tr>
+          <tr><td><b>coach_logs</b></td><td>세션회차 · 일자 · 주제 · 내용 · 인사이트 · 합의 실행과제 · 자가평가</td><td>PDF/Excel 다운로드 · 결과 리포트 자동 생성</td></tr>
+          <tr><td><b>result_reviews</b></td><td>목표별 시작/기대/<b>최종 점수</b> · 인식·행동·조직 변화 · 변화요인 순위</td><td>최종 성과 리포트 · 코칭 효과 정량 증명</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 7. 왜 우리 -->
+  <section class="sec">
+    <h2><span class="no">7</span> 이 제안의 차별점</h2>
+    <div class="why">
+      <div class="w"><div class="n">01</div><b>말이 아니라 화면으로</b><p>제안서 대신 <b>동작하는 프로토타입</b>을 먼저 만들었습니다. 16개 화면을 5개 권한으로 직접 클릭해 보시고, 이 방향이 맞는지 계약 전에 확인하실 수 있습니다.</p></div>
+      <div class="w"><div class="n">02</div><b>1인 개발 · 700만 원</b><p>기획·디자인·개발·배포를 한 사람이 끝까지 책임집니다. 재하청 마진도, 인력 간 인수인계 손실도 없기에 <b>예산보다 300만 원 낮게</b> 제안드립니다.</p></div>
+      <div class="w"><div class="n">03</div><b>IT 경험이 없어도 됩니다</b><p>발주처에 IT 프로젝트 관리 경험이 없다고 하셨습니다. 2주 단위로 <b>클릭 가능한 결과물</b>을 보여드리며 진행하므로, 문서로 상상하실 필요가 없습니다. 창구도 저 한 명입니다.</p></div>
+    </div>
+  </section>
+
+  <!-- 8. 산출물 -->
+  <section class="sec">
+    <h2><span class="no">8</span> 최종 산출물</h2>
+    <div class="box tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th style="width:200px">산출물</th><th>형태</th><th style="width:120px">인계 시점</th></tr></thead>
+        <tbody>
+          <tr><td><b>화면 설계서</b></td><td>IA · 와이어프레임 · 기능 명세 (Figma + PDF)</td><td>2주차</td></tr>
+          <tr><td><b>디자인 원본 파일</b></td><td>Figma 원본 (컴포넌트/디자인 시스템 포함)</td><td>4주차</td></tr>
+          <tr><td><b>소스 코드 원본</b></td><td>Git 저장소 전체 (프런트 · 백엔드 · 인프라 코드)</td><td>8주차</td></tr>
+          <tr><td><b>관리자용 시스템 사용 매뉴얼</b></td><td>PDF + 화면 캡처 기반 가이드 (권한별 사용법 포함)</td><td>8주차</td></tr>
+          <tr><td><b>DB 스키마 · API 문서</b></td><td>ERD + Swagger (추가 제공)</td><td>8주차</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="cta-band">
+    <h2>먼저 데모를 눌러 보시고, 범위를 함께 확정하시죠.</h2>
+    <p>미팅에서 “무엇을 1차에 넣을지”를 함께 정리하면, 그대로 계약 범위가 됩니다.</p>
+    <a class="btn lg" href="index.html">5개 권한으로 데모 체험하기 →</a>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  const ckIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  const dtIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="#C2C7D8" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg>';
+  $('#scopeIn').innerHTML  = MVP.in.map(t => `<li>${ckIcon}<span>${esc(t)}</span></li>`).join('');
+  $('#scopeOut').innerHTML = MVP.later.map(t => `<li>${dtIcon}<span>${esc(t)}</span></li>`).join('');
+
+  const SCREENS = [
+    ['사전 준비','로그인 · 회원가입(회사메일 인증)','전체','도메인 검증 · 인증코드 · 권한별 진입'],
+    ['사전 준비','프로젝트 관리 / 개설','관리자 · PM','프로젝트 보드 개설 · 코치 매칭 · 사전자료 업로드'],
+    ['사전 준비','프로젝트 상세','관리자 · PM · HR','대상자·코치 배정 · 자료실 · 세션 일정 · 진행현황'],
+    ['사전 준비','고객사 관리','관리자','허용 도메인 등록 · HR 계정 관리'],
+    ['사전 준비','코치 관리 · 배정','관리자 · PM','코치 프로필 · 대상자 일괄 배정 · 피드백률'],
+    ['코칭','코칭목표합의서 (4단계)','코칭 대상자','역량 선택 → 목표 → 행동지표 → 확인 · PDF'],
+    ['코칭','코칭로그','파트너 코치','세션 기록 항목별 저장 · PDF/Excel'],
+    ['세션 간','실행 트래킹 · 주간 체크인','대상자 · 코치','달성률 자가진단 · 장애요인 · 필요지원'],
+    ['세션 간','부스터 (Boosting)','코치 · 대상자','질문/퀴즈/코칭/제안 발송 · 답변 · 피드백'],
+    ['세션 간','체크인 현황 대시보드','관리자 · PM','미제출자 관리 · 일괄 리마인드'],
+    ['마무리','코칭 결과 리뷰 (3단계)','대상자 · 코치','성과 정량화 · 변화 리뷰 · 다짐'],
+    ['성과','통합 성과 대시보드','관리자 · PM · HR','목표/지표 Top10 · 역량 비중 · 히트맵 · 추이'],
+    ['성과','역량 진단 결과 (2차)','전체','레이더 차트 · 자가/다면 비교 · 인사이트'],
+    ['성과','그룹 코칭 피드 (2차)','대상자 · 코치','목표 공유 · 응원 · 댓글 · 자료 공유'],
+    ['운영','자료실','전체','공개 범위별 접근 제어 · 업로드/다운로드'],
+    ['운영','리포트 · 내보내기 / 설정','관리자 · PM · HR','리포트 생성 · Excel 내보내기 · 권한 매트릭스 · 알림'],
+  ];
+  $('#screens').innerHTML = SCREENS.map(s => `<tr>
+    <td><span class="badge ${s[0]==='사전 준비'?'brand':s[0]==='코칭'?'info':s[0]==='세션 간'?'ok':s[0]==='마무리'?'warn':'gray'}">${s[0]}</span></td>
+    <td class="nm">${esc(s[1])}</td><td class="small muted">${esc(s[2])}</td><td class="small">${esc(s[3])}</td>
+  </tr>`).join('');
+
+  /* 간트: [단계, 시작주(1~8), 기간, 색상클래스, 산출물] */
+  const G = [
+    ['상세 기획 · 요구사항 확정', 1, 2, '',   '화면 설계서'],
+    ['UI/UX 디자인',             2, 2, 'g2', '디자인 원본'],
+    ['DB 설계 · 인프라 세팅',     2, 1, 'g3', 'ERD'],
+    ['백엔드 (권한·API·데이터)',  3, 4, 'g3', 'API 문서'],
+    ['프런트엔드 (16종 화면)',    3, 4, '',   '반응형 웹'],
+    ['대시보드 · 리포트',         6, 2, 'g4', 'PDF/Excel'],
+    ['통합 테스트 · QA',          7, 1.5,'g2','테스트 결과'],
+    ['배포 · 매뉴얼 · 인계',      8, 1, 'g4', '사용 매뉴얼'],
+  ];
+  $('#gantt').innerHTML = G.map(g => {
+    const left = (g[1]-1)/8*100, w = g[2]/8*100;
+    return `<tr>
+      <td class="nm small">${esc(g[0])}</td>
+      <td class="b" colspan="8" style="padding:0">
+        <div style="position:relative;height:34px">
+          <div class="bar ${g[3]}" style="left:${left}%;width:calc(${w}% - 4px)">${g[2]}주</div>
+        </div>
+      </td>
+      <td class="small muted">${esc(g[4])}</td>
+    </tr>`;
+  }).join('');
+</script>
+</body>
+</html>

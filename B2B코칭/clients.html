@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>고객사 관리 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .page svg[viewBox="0 0 24 24"]{width:16px;height:16px;stroke-width:1.8;flex:0 0 auto;vertical-align:-3px}
+  .page .kpi .ico svg{width:21px;height:21px}
+  .page .btn.sm svg{width:14px;height:14px}
+  .page .tbl-empty svg{width:40px;height:40px}
+  .dscrim{position:fixed;inset:0;background:rgba(17,20,34,.44);backdrop-filter:blur(2px);z-index:94;display:none}
+  .dscrim.open{display:block}
+  .drawer-h{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line-2);flex:0 0 auto}
+  .drawer-h h3{font-size:16px;flex:1}
+  .drawer-h .x{border:0;background:transparent;cursor:pointer;color:var(--muted-2);padding:5px;border-radius:8px}
+  .drawer-b{padding:20px;overflow-y:auto;flex:1}
+  .drawer-f{padding:13px 20px;border-top:1px solid var(--line-2);display:flex;gap:8px;flex:0 0 auto}
+  .drawer-f .btn{flex:1}
+  .dom{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px}
+  .kv{display:grid;grid-template-columns:96px 1fr;gap:7px 10px;font-size:12.8px}
+  .kv dt{color:var(--muted);font-weight:700}
+  .kv dd{margin:0;color:var(--ink-2);font-weight:600}
+  .gbox{border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:9px;background:#FBFBFF}
+  .lg{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .lg .row{gap:7px;font-size:12px}
+  .lg i{width:10px;height:10px;border-radius:3px;display:block;flex:0 0 10px}
+  @media(max-width:900px){ table.tbl{min-width:980px} }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('clients');
+const role = u ? session().role : null;
+
+let CL = CLIENTS.map(c => Object.assign({}, c));
+const F = { q:'', biz:'', ct:'' };
+let curId = null;
+
+const cProjects = cid => PROJECTS.filter(p => p.clientId === cid);
+const hrUser = c => USERS.find(x => x.role === 'hr' && x.clientId === c.id) || { name:c.hr, email:c.hrEmail, color:'#F59E0B' };
+const pbarCls = p => p >= 80 ? ' ok' : p >= 40 ? '' : ' warn';
+const stBadge = s => s === '완료' ? '<span class="badge ok">완료</span>' : s === '진행중' ? '<span class="badge info">진행중</span>' : '<span class="badge gray">준비중</span>';
+
+function filtered(){
+  return CL.filter(c => {
+    if(F.q && !(c.name.toLowerCase().includes(F.q.toLowerCase()) || c.domain.includes(F.q.toLowerCase()) || c.biz.includes(F.q))) return false;
+    if(F.biz && c.biz !== F.biz) return false;
+    if(F.ct && c.contract !== F.ct) return false;
+    return true;
+  });
+}
+
+function render(){
+  $('#page').innerHTML = `
+  <div class="between mb16">
+    <div><h2 style="font-size:18px">고객사 관리</h2><div class="hint">고객사·HR 담당자·인증 도메인을 관리합니다.</div></div>
+    <span class="pill">관리자 전용 메뉴</span>
+  </div>
+
+  <div class="kpis mb16">
+    <div class="kpi"><span class="ico" style="background:var(--brand-50);color:var(--brand)">${ico('build')}</span>
+      <span class="col"><span class="t">고객사</span><span class="v num" id="kCl">6<small>개</small></span><span class="d">신규 2개 (올해)</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--info-bg);color:var(--info)">${ico('folder')}</span>
+      <span class="col"><span class="t">진행 프로젝트</span><span class="v num">8<small>개</small></span><span class="d">진행중 4 · 준비중 2 · 완료 2</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--ok-bg);color:var(--ok)">${ico('users')}</span>
+      <span class="col"><span class="t">전체 참여자</span><span class="v num">${TOTALS.members}<small>명</small></span><span class="d"><span class="up">▲ 18명</span> 전분기 대비</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--warn-bg);color:var(--warn)">${ico('doc')}</span>
+      <span class="col"><span class="t">연간 계약</span><span class="v num">3<small>개</small></span><span class="d">단건 3개</span></span></div>
+  </div>
+
+  <div class="insight mb16">
+    <div class="ih">${ico('shield')} 회사 메일 기반 회원가입 · 본인 인증</div>
+    <ul><li>고객사별 <b>허용 도메인</b>을 등록하면, 해당 도메인의 회사 메일로만 HR·코칭대상자 계정 가입이 가능합니다. (요구사항: 회사 메일 기반 회원가입 및 본인 인증)</li></ul>
+  </div>
+
+  <div class="card">
+    <div class="card-b" style="padding:14px 16px;border-bottom:1px solid var(--line-2)">
+      <div class="toolbar">
+        <div class="search">${ico('search')}<input class="inp" id="q" placeholder="고객사명 · 업종 · 도메인 검색" value="${esc(F.q)}"/></div>
+        <select class="inp" id="fBiz" style="width:auto;min-width:150px">
+          <option value="">전체 업종</option>
+          ${Array.from(new Set(CL.map(c => c.biz))).map(b => `<option ${F.biz===b?'selected':''}>${esc(b)}</option>`).join('')}
+        </select>
+        <select class="inp" id="fCt" style="width:auto;min-width:140px">
+          <option value="">전체 계약</option>
+          <option ${F.ct==='연간'?'selected':''}>연간</option>
+          <option ${F.ct==='단건'?'selected':''}>단건</option>
+        </select>
+        <span style="flex:1"></span>
+        <button class="btn sm" id="csv">${ico('dl')} 엑셀 내보내기</button>
+        <button class="btn pri sm" id="addBtn">${ico('plus')} 고객사 등록</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th>고객사명</th><th>업종</th><th>HR 담당자</th><th>인증 도메인</th>
+          <th class="tc">프로젝트</th><th class="tc">참여자</th><th class="tc">계약 유형</th><th>거래 시작</th><th class="tc">관리</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="card-f"><span class="hint" id="cnt"></span></div>
+  </div>
+
+  <div class="dscrim" id="dscrim"></div>
+  <aside class="drawer" id="dw">
+    <div class="drawer-h"><h3 id="dwT">고객사 상세</h3><button class="x" onclick="closeDW()">${ico('x')}</button></div>
+    <div class="drawer-b" id="dwB"></div>
+    <div class="drawer-f" id="dwF"></div>
+  </aside>
+
+  <div class="mask" id="addM">
+    <div class="modal">
+      <div class="modal-h"><h3>고객사 등록</h3><button class="x" onclick="closeM('addM')">${ico('x')}</button></div>
+      <div class="modal-b">
+        <div class="f-row c2">
+          <div class="field"><label>고객사명 <span class="req">*</span></label><input class="inp" id="nName" placeholder="A기업"/></div>
+          <div class="field"><label>업종</label>
+            <select class="inp" id="nBiz"><option>제조/전자</option><option>금융</option><option>IT/플랫폼</option><option>유통</option><option>바이오</option><option>건설</option><option>기타</option></select></div>
+        </div>
+        <div class="field"><label>사업자등록번호</label><input class="inp" id="nBn" placeholder="123-45-67890"/></div>
+        <div class="f-row c2">
+          <div class="field"><label>HR 담당자명 <span class="req">*</span></label><input class="inp" id="nHr" placeholder="정HR"/></div>
+          <div class="field"><label>HR 이메일 <span class="req">*</span></label><input class="inp" id="nHrMail" placeholder="hr@a-corp.co.kr"/></div>
+        </div>
+        <div class="f-row c2">
+          <div class="field"><label>허용 도메인 <span class="req">*</span></label><input class="inp" id="nDomain" placeholder="a-corp.co.kr"/></div>
+          <div class="field"><label>계약 유형</label>
+            <select class="inp" id="nCt"><option>연간</option><option>단건</option></select></div>
+        </div>
+        <div class="insight" style="margin-bottom:0">
+          <div class="ih">${ico('shield')} 중요</div>
+          <ul><li>여기에 등록한 <b>허용 도메인</b>의 회사 메일만 가입할 수 있습니다. 타 도메인 메일은 회원가입 단계에서 차단됩니다.</li></ul>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('addM')">취소</button>
+        <button class="btn pri" id="addOk">${ico('check')} 등록</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+  $('#q').oninput = e => { F.q = e.target.value; rows(); };
+  $('#fBiz').onchange = e => { F.biz = e.target.value; rows(); };
+  $('#fCt').onchange  = e => { F.ct = e.target.value; rows(); };
+  $('#csv').onclick = exportCSV;
+  $('#addBtn').onclick = () => openM('addM');
+  $('#addOk').onclick = addClient;
+  $('#dscrim').onclick = closeDW;
+  rows();
+}
+
+function rows(){
+  const list = filtered();
+  $('#rows').innerHTML = list.length ? list.map(c => {
+    const h = hrUser(c);
+    return `<tr onclick="openDW('${c.id}')" style="cursor:pointer">
+      <td><span class="row" style="gap:9px">
+        <span class="av sm" style="background:var(--brand-50);color:var(--brand-700)">${esc(c.name.slice(0,1))}</span>
+        <span class="nm">${esc(c.name)}</span></span></td>
+      <td class="muted">${esc(c.biz)}</td>
+      <td><span class="row" style="gap:7px">${avatar(h,'sm')}<span class="col"><span class="nm" style="font-size:12.8px">${esc(c.hr)}</span><span class="sub">${esc(c.hrEmail)}</span></span></span></td>
+      <td><span class="badge brand dom" title="회사메일 기반 가입 인증에 사용">${esc(c.domain)}</span></td>
+      <td class="tc"><b class="num">${cProjects(c.id).length || c.projects}</b></td>
+      <td class="tc"><b class="num">${c.members}</b><span class="muted small">명</span></td>
+      <td class="tc">${c.contract === '연간' ? '<span class="badge ok">연간</span>' : '<span class="badge gray">단건</span>'}</td>
+      <td class="muted small">${esc(c.since)}</td>
+      <td class="tc" onclick="event.stopPropagation()"><button class="btn sm" onclick="openDW('${c.id}')">상세</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="9"><div class="tbl-empty">${ico('build')}<div>조건에 맞는 고객사가 없습니다.</div></div></td></tr>`;
+  $('#cnt').textContent = '전체 ' + CL.length + '개 중 ' + list.length + '개 표시';
+  $('#kCl').innerHTML = CL.length + '<small>개</small>';
+}
+
+function exportCSV(){
+  const out = [['고객사명','업종','HR 담당자','HR 이메일','인증 도메인','진행 프로젝트','참여자','계약 유형','거래 시작']];
+  filtered().forEach(c => out.push([c.name, c.biz, c.hr, c.hrEmail, c.domain, cProjects(c.id).length || c.projects, c.members, c.contract, c.since]));
+  downloadCSV('고객사목록.csv', out);
+}
+
+function addClient(){
+  const n = $('#nName').value.trim(), hr = $('#nHr').value.trim(), mail = $('#nHrMail').value.trim(), d = $('#nDomain').value.trim().toLowerCase();
+  if(!n || !hr || !mail || !d){ toast('고객사명 · HR 담당자 · HR 이메일 · 허용 도메인은 필수입니다.', true); return; }
+  if(!mail.endsWith('@' + d)){ toast('HR 이메일이 허용 도메인(@' + d + ')과 일치하지 않습니다.', true); return; }
+  CL.unshift({
+    id:'cl' + (CL.length + 100), name:n, biz:$('#nBiz').value, hr:hr, hrEmail:mail, domain:d,
+    projects:0, members:0, since:new Date().toISOString().slice(0,7).replace('-','.'), contract:$('#nCt').value,
+  });
+  closeM('addM');
+  ['nName','nBn','nHr','nHrMail','nDomain'].forEach(i => $('#' + i).value = '');
+  rows();
+  toast(n + ' 등록 완료 — 허용 도메인 @' + d + ' 인증이 활성화되었습니다.');
+}
+
+function openDW(id){
+  const c = CL.find(x => x.id === id); if(!c) return;
+  curId = id;
+  const h = hrUser(c);
+  const prs = cProjects(c.id);
+  $('#dwT').textContent = c.name + ' 상세';
+  $('#dwB').innerHTML = `
+    <div class="row" style="gap:14px;padding-bottom:16px;border-bottom:1px solid var(--line-2)">
+      <span class="av xl" style="background:var(--grad)">${esc(c.name.slice(0,1))}</span>
+      <div class="col" style="gap:4px;flex:1">
+        <b style="font-size:17px">${esc(c.name)}</b>
+        <span class="muted small">${esc(c.biz)} · 거래 시작 ${esc(c.since)}</span>
+        <span class="row" style="gap:6px;margin-top:3px">
+          ${c.contract === '연간' ? '<span class="badge ok">연간 계약</span>' : '<span class="badge gray">단건 계약</span>'}
+          <span class="badge brand dom">${esc(c.domain)}</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="sec-t mt16">${ico('doc')} 기본 정보</div>
+    <dl class="kv">
+      <dt>고객사명</dt><dd>${esc(c.name)}</dd>
+      <dt>업종</dt><dd>${esc(c.biz)}</dd>
+      <dt>인증 도메인</dt><dd><span class="badge brand dom">${esc(c.domain)}</span> <span class="muted small">회사메일 기반 가입 인증에 사용</span></dd>
+      <dt>진행 프로젝트</dt><dd>${prs.length}개</dd>
+      <dt>참여자</dt><dd>${c.members}명</dd>
+      <dt>계약 유형</dt><dd>${esc(c.contract)}</dd>
+    </dl>
+
+    <div class="sec-t mt16">${ico('user')} HR 담당자 계정</div>
+    <div class="gbox">
+      <div class="row" style="gap:10px">
+        ${avatar(h,'lg')}
+        <span class="col" style="flex:1"><b>${esc(c.hr)}</b><small class="muted">${esc(c.hrEmail)}</small></span>
+        <span class="badge ok">${ico('check')} 인증 완료</span>
+      </div>
+      <div class="row between mt12 small muted">
+        <span>최근 로그인 2일 전</span>
+        <span>권한: 고객사 HR (자사 프로젝트 전체 자료)</span>
+      </div>
+    </div>
+
+    <div class="sec-t mt16">${ico('folder')} 진행 중 프로젝트 (${prs.length})</div>
+    ${prs.length ? prs.map(p => `<div class="gbox">
+      <div class="row between" style="margin-bottom:6px">
+        <b style="font-size:13.3px">${esc(p.name)}</b>${stBadge(p.status)}
+      </div>
+      <div class="row small muted" style="gap:10px;margin-bottom:7px">
+        <span>${esc(p.type)}</span><span>·</span><span>${esc(p.start)} ~ ${esc(p.end)}</span><span>·</span><span>${p.members}명</span>
+      </div>
+      <div class="row" style="gap:8px">
+        <span class="pbar${pbarCls(p.progress)}" style="flex:1"><i style="width:${p.progress}%"></i></span>
+        <b class="num small">${p.progress}%</b>
+      </div>
+    </div>`).join('') : '<div class="empty" style="padding:30px"><b>진행 중인 프로젝트가 없습니다</b></div>'}
+
+    <div class="sec-t mt16">${ico('chart')} 프로젝트별 성과 요약</div>
+    <div class="gbox">
+      ${prs.length ? '<div id="clChart"></div>' : '<div class="empty" style="padding:24px"><b>집계할 성과 데이터가 없습니다</b><span class="small">프로젝트 개설 후 진척도가 집계됩니다.</span></div>'}
+    </div>`;
+
+  $('#dwF').innerHTML = `
+    <button class="btn" onclick="location.href='projects.html'">${ico('folder')} 프로젝트 보기</button>
+    <button class="btn" onclick="location.href='reports.html'">${ico('dl')} 리포트 생성</button>
+    <button class="btn pri" onclick="toast('${esc(c.hr)}님에게 계정 안내 메일을 발송했습니다.')">${ico('mail')} HR 안내 발송</button>`;
+
+  $('#dw').classList.add('open'); $('#dscrim').classList.add('open');
+
+  if(prs.length){
+    const rowsC = prs.map(p => [p.name.length > 12 ? p.name.slice(0,12) + '…' : p.name, Math.max(p.progress, 1), null]);
+    hbar('#clChart', rowsC, { labelW:104, showPct:false, color:'#5B4BE8' });
+  }
+}
+function closeDW(){ $('#dw').classList.remove('open'); $('#dscrim').classList.remove('open'); }
+
+if(u) render();
+</script>
+</body>
+</html>

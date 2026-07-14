@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>프로젝트 상세 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .phead{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+  .phead .col{flex:1;min-width:240px}
+  .phead h2{font-size:21px;letter-spacing:-.025em;line-height:1.35}
+  .pmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:12.8px;font-weight:600;margin-top:5px}
+  .pmeta i{width:3px;height:3px;border-radius:99px;background:var(--muted-2);display:block}
+  .m-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(300px,1fr);gap:16px;align-items:start}
+  /* minmax(0,1fr): 트랙 최소값을 0으로 고정해야 넓은 테이블이 그리드를 밀어내지 않고 .tbl-wrap 안에서 가로 스크롤됩니다. */
+  @media(max-width:1200px){.m-grid{grid-template-columns:minmax(0,1fr)}}
+  table.tbl tbody tr[data-m]{cursor:pointer}
+  .ocard{border:1px solid var(--line);border-radius:12px;padding:12px 13px;display:flex;align-items:center;gap:10px;background:#FBFBFF}
+  .ocard .col{flex:1}
+  .goal-li{position:relative;padding-left:22px;font-size:13px;color:var(--ink-2);line-height:1.7;font-weight:600}
+  .goal-li::before{content:"";position:absolute;left:4px;top:9px;width:6px;height:6px;border-radius:99px;background:var(--brand)}
+  .ses{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:9px;transition:.15s}
+  .ses:hover{border-color:var(--brand-100);background:#FBFBFF}
+  .ses .n{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:12.5px;font-weight:800;flex:0 0 38px}
+  .ses .col{flex:1}
+  .ses .mode{display:flex;align-items:center;gap:5px;min-width:150px;font-size:12px;color:var(--muted)}
+  .ses .mode svg{width:14px;height:14px;stroke:currentColor;stroke-width:1.9;fill:none;flex:0 0 14px}
+  .ses .who{min-width:104px}
+  /* 좁은 화면: 세션 행이 가로로 넘치지 않도록 접기 */
+  @media(max-width:760px){
+    .ses{flex-wrap:wrap;row-gap:9px}
+    .ses .col{flex:1 1 auto;min-width:120px}
+    .ses .who{min-width:0}
+    .ses .mode{min-width:0;flex:1 1 100%;order:4}
+  }
+  .vis-note{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--brand-100);background:var(--brand-50);border-radius:12px;padding:11px 13px;font-size:12.5px;color:var(--brand-700);font-weight:600;line-height:1.6}
+  .vis-note svg{width:17px;height:17px;flex:0 0 17px;stroke:currentColor;stroke-width:1.9;fill:none;margin-top:1px}
+  .step-note{font-size:11.5px;color:var(--muted-2);text-align:center;margin-top:10px}
+  .ft{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:9px;font-size:9.5px;font-weight:800;color:#fff;letter-spacing:-.02em}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('project');
+
+if(u){
+  const role = session().role;
+  const PID  = new URLSearchParams(location.search).get('id');
+  const P    = PROJECTS.find(p => p.id === PID) || PROJECTS[0];
+
+  const canEdit = (role === 'admin' || role === 'pm');
+  const fd      = s => String(s||'').replace(/-/g, '.');
+  const stCls   = s => s==='완료' ? 'ok' : (s==='진행중' ? 'info' : 'warn');
+  const FT_C    = { PDF:'#EF4444', DOCX:'#3B82F6', XLSX:'#16A34A', PPTX:'#F59E0B' };
+  const VIS_C   = { '전체 공개':'ok', 'PM·코치만':'brand', 'HR·PM':'warn' };
+
+  /* ---------- 대상자 (실데이터 + 데모 보충) ---------- */
+  const NAMES = ['윤태호','서지훈','임채원','조은비','신동욱','배수진','문지호','권나연','황민석','안소미','류정우','고은서'];
+  const ORGS  = ['마케팅팀 파트장','영업2팀 과장','생산관리 팀장','품질보증 차장','R&D 파트장','구매팀 과장','물류팀 팀장','전략기획 대리'];
+
+  function buildMembers(){
+    const real = USERS.filter(x => x.role === 'member' && x.projectId === P.id);
+    const list = real.map((x,i) => ({
+      id:x.id, name:x.name, org:x.title, color:x.color,
+      group: x.group || (P.groups ? ((i % P.groups)+1) + '조' : '-'),
+      coach: (uById(x.coachId).name) || P.coaches[i % P.coaches.length],
+      goals: 2 + (i % 2),
+      prog:  Math.max(5, Math.min(100, P.progress + ((i*7) % 25) - 10)),
+      ci:    ['완료','완료','미작성','완료'][i % 4],
+    }));
+    const show = Math.min(P.members, 12);
+    for(let i = list.length; i < show; i++){
+      list.push({
+        id:'gm' + P.id + i,
+        name: NAMES[(i-1) % NAMES.length],
+        org:  ORGS[i % ORGS.length],
+        color:['#EC4899','#8B5CF6','#0EA5E9','#14B8A6','#F59E0B'][i % 5],
+        group: P.groups ? ((i % P.groups)+1) + '조' : '-',
+        coach: P.coaches[i % P.coaches.length],
+        goals: 2 + (i % 2),
+        prog:  Math.max(5, Math.min(100, P.progress + ((i*11) % 29) - 14)),
+        ci:    ['완료','미작성','완료','완료'][i % 4],
+      });
+    }
+    return list;
+  }
+  const MEM = buildMembers();
+
+  /* ---------- 세션 일정 ---------- */
+  function buildSessions(){
+    const d0 = new Date(P.start + 'T00:00:00');
+    const W  = ['일','월','화','수','목','금','토'];
+    return Array.from({ length:P.sessions }, (_,i) => {
+      const d = new Date(d0.getTime() + (i*14 + 7) * 86400000);
+      const st = i < P.done ? '완료' : (i === P.done ? '예정' : '대기');
+      return {
+        no: i+1,
+        date: `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${W[d.getDay()]})`,
+        time: i % 2 ? '14:00 ~ 15:00' : '10:00 ~ 11:00',
+        mode: i % 2 ? '화상 (Teams)' : '대면 (고객사 회의실)',
+        coach: P.coaches[i % P.coaches.length],
+        st,
+      };
+    });
+  }
+
+  /* ---------- 자료실 (프로젝트명 정규화 매칭) ---------- */
+  const norm = s => String(s||'').replace(/[\s]|프로그램/g, '');
+  function docs(){
+    const np = norm(P.name);
+    return LIBRARY.filter(d => {
+      const nd = norm(d.proj);
+      return nd === np || np.includes(nd) || nd.includes(np);
+    }).filter(d => {
+      if(role === 'hr')     return d.vis !== 'PM·코치만';
+      if(role === 'member') return d.vis === '전체 공개';
+      return true;
+    });
+  }
+
+  /* ---------- 헤더 + KPI + 탭 ---------- */
+  const TABS = [
+    ['ov',  '개요'],
+    ['asg', '대상자 · 코치 배정'],
+    ['lib', '자료실'],
+    ['ses', '세션 일정'],
+    ['prg', '진행 현황'],
+  ];
+
+  $('#page').innerHTML = `
+    <div class="card">
+      <div class="card-b">
+        <div class="phead">
+          <span class="col">
+            <span class="row" style="gap:8px;flex-wrap:wrap">
+              <h2 id="pTitle">${esc(P.name)}</h2>
+              <span class="badge ${stCls(P.status)} dot" id="pBadge">${esc(P.status)}</span>
+            </span>
+            <span class="pmeta">
+              ${ico('build')}<span>${esc(P.client)}</span><i></i>
+              <span class="num">${fd(P.start)} ~ ${fd(P.end)}</span><i></i>
+              <span>${esc(P.type)}</span><i></i>
+              <span>총 ${P.sessions}회 세션</span>
+            </span>
+          </span>
+          <span class="row no-print" style="gap:8px">
+            <button class="btn sm" id="pdfBtn">${ico('doc')}리포트 PDF</button>
+            <button class="btn sm" id="csvBtn">${ico('dl')}엑셀 내보내기</button>
+            ${canEdit ? `<button class="btn pri sm" id="editBtn">${ico('gear')}수정</button>` : ''}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis mt16">
+      <div class="kpi"><span class="ico" style="background:#EEF0FF;color:#5B4BE8">${ico('users')}</span>
+        <span class="col"><span class="t">대상자</span><span class="v num">${P.members}<small>명</small></span>
+        <span class="d">${P.groups ? P.groups + '개 그룹 편성' : '그룹 없이 진행'}</span></span></div>
+      <div class="kpi"><span class="ico" style="background:#E4F4FE;color:#0EA5E9">${ico('cal')}</span>
+        <span class="col"><span class="t">세션 진행</span><span class="v num" id="kSes">${P.done}<small>/ ${P.sessions}회</small></span>
+        <span class="d" id="kSesD">다음 세션 ${P.done < P.sessions ? P.done+1 : P.sessions}회차</span></span></div>
+      <div class="kpi"><span class="ico" style="background:#FDE9F3;color:#EC4899">${ico('target')}</span>
+        <span class="col"><span class="t">평균 진척도</span><span class="v num">${P.progress}<small>%</small></span>
+        <span class="d">코칭목표 달성 기준</span></span></div>
+      <div class="kpi"><span class="ico" style="background:#E7F7EE;color:#16A34A">${ico('checkbox')}</span>
+        <span class="col"><span class="t">체크인율</span><span class="v num">${P.checkin}<small>%</small></span>
+        <span class="d">이번 주 제출 기준</span></span></div>
+    </div>
+
+    <div class="tabs mt20" id="tabs">
+      ${TABS.map((t,i) => `<button data-t="${t[0]}" class="${i?'':'on'}">${t[1]}</button>`).join('')}
+    </div>
+    <div id="pane"></div>`;
+
+  /* ---------- 탭: 개요 ---------- */
+  function paneOv(){
+    const STEPS = ['사전 준비','코칭목표합의서','코칭로그','세션 간 관리','결과 리뷰'];
+    const cur = P.progress >= 100 ? 4 : P.progress >= 70 ? 3 : P.progress >= 40 ? 2 : P.progress >= 10 ? 1 : 0;
+    const pmU = USERS.find(x => x.name === P.pm) || { name:P.pm, color:'#0EA5E9', title:'프로젝트 매니저', email:'-' };
+    const acts = P.status === '준비중'
+      ? [ { b:`${P.pm} PM이 프로젝트를 개설했습니다.`, s:'2일 전', on:true },
+          { b:`매칭 코치 ${P.coaches.length}명이 배정되었습니다.`, s:'2일 전', on:true },
+          { b:'대상자 명단 업로드 대기 중입니다.', s:'-', on:false } ]
+      : [ { b:`${P.coaches[0]} 코치가 ${P.done}회차 코칭로그를 작성했습니다.`, s:'2시간 전', on:true },
+          { b:`대상자 ${Math.round(P.members*P.checkin/100)}명이 이번 주 체크인을 완료했습니다.`, s:'어제', on:true },
+          { b:`${P.pm} PM이 진행 리포트를 공유했습니다.`, s:'3일 전', on:true },
+          { b:`${P.done+1}회차 세션 일정이 확정되었습니다.`, s:'5일 전', on:false } ];
+
+    return `
+    <div class="m-grid">
+      <div class="col" style="gap:16px">
+        <section class="card">
+          <div class="card-h"><h3>프로젝트 개요</h3></div>
+          <div class="card-b">
+            <p style="color:var(--ink-2);line-height:1.75">${esc(P.desc)}</p>
+            <div class="divider"></div>
+            <div class="grid g2">
+              <div>
+                <div class="sec-t">${ico('flag')}코칭 목적</div>
+                <div class="goal-li">리더의 실행력과 구성원 육성 역량을 강화한다.</div>
+                <div class="goal-li">코칭목표합의서 기반의 자기주도 실행 습관을 정착시킨다.</div>
+                <div class="goal-li">세션 간 실행을 부스터로 이어 학습 전이를 높인다.</div>
+              </div>
+              <div>
+                <div class="sec-t">${ico('target')}달성 목표</div>
+                <div class="goal-li">대상자 1인당 코칭목표 2개 · 행동지표 3개 이상 수립</div>
+                <div class="goal-li">주간 체크인율 80% 이상 유지</div>
+                <div class="goal-li">코치 피드백 응답률 75% 이상 달성</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-h"><h3>진행 단계</h3><span class="spacer"></span>
+            <span class="badge brand">현재: ${STEPS[cur]}</span></div>
+          <div class="card-b">
+            <div class="stepper">
+              ${STEPS.map((s,i) => `
+                <span class="st ${i===cur?'on':(i<cur?'done':'')}">
+                  <span class="n">${i<cur ? '✓' : i+1}</span><span class="lb">${s}</span>
+                </span>${i<STEPS.length-1 ? '<span class="bar"></span>' : ''}`).join('')}
+            </div>
+            <div class="step-note">사전 준비 → 코칭목표합의서 → 코칭로그 → 세션 간 관리 → 결과 리뷰 순으로 진행됩니다.</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col" style="gap:16px">
+        <section class="card">
+          <div class="card-h"><h3>담당 PM · 코치</h3></div>
+          <div class="card-b" style="display:flex;flex-direction:column;gap:9px">
+            <div class="ocard">
+              ${avatar(pmU, 'lg')}
+              <span class="col"><b>${esc(pmU.name)}</b><small class="muted">${esc(pmU.title)}</small></span>
+              <span class="badge info">담당 PM</span>
+            </div>
+            ${P.coaches.map(c => {
+              const cu = USERS.find(x => x.name === c) || { name:c, color:'#10B981', title:'파트너 코치' };
+              const per = Math.max(1, Math.round(P.members / P.coaches.length));
+              return `<div class="ocard">
+                ${avatar(cu, 'lg')}
+                <span class="col"><b>${esc(cu.name)}</b><small class="muted">${esc(cu.title)}</small></span>
+                <span class="badge brand num">${per}명</span>
+              </div>`;
+            }).join('')}
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-h"><h3>최근 활동</h3></div>
+          <div class="card-b">
+            <div class="tl">
+              ${acts.map(a => `<div class="tl-i ${a.on?'':'gray'}"><b>${esc(a.b)}</b><small>${esc(a.s)}</small></div>`).join('')}
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>`;
+  }
+
+  /* ---------- 탭: 대상자 · 코치 배정 ---------- */
+  let ASG = null;
+  function paneAsg(){
+    return `
+    <div class="m-grid">
+      <section class="card">
+        <div class="card-h">
+          <h3>대상자 목록</h3>
+          <span class="spacer"></span>
+          <span class="hint">전체 ${P.members}명 중 ${MEM.length}명 표시</span>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>이름</th><th>소속</th><th class="tc">그룹</th><th>담당 코치</th>
+              <th class="tc">목표</th><th>진척도</th><th class="tc">체크인</th>
+            </tr></thead>
+            <tbody id="mtb">
+              ${MEM.map(m => `
+                <tr data-m="${m.id}">
+                  <td><span class="row" style="gap:8px">${avatar(m,'sm')}<b>${esc(m.name)}</b></span></td>
+                  <td class="small muted">${esc(m.org)}</td>
+                  <td class="tc"><span class="badge gray">${esc(m.group)}</span></td>
+                  <td class="small" data-c="${m.id}">${esc(m.coach)}</td>
+                  <td class="tc num">${m.goals}개</td>
+                  <td><div class="pcell"><b class="num">${m.prog}%</b>
+                    <span class="pbar ${m.prog>=80?'ok':(m.prog>=40?'':'warn')}"><i style="width:${m.prog}%"></i></span></div></td>
+                  <td class="tc"><span class="badge ${m.ci==='완료'?'ok':'danger'} dot">${esc(m.ci)}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="card">
+        <div class="card-h"><h3>코치 · 대상자 매칭</h3></div>
+        <div class="card-b">
+          <div class="hint mb12">목록에서 대상자를 선택한 뒤 담당 코치를 변경하세요.</div>
+          <div class="field">
+            <label>선택된 대상자</label>
+            <div class="inp" id="asgName" style="background:var(--hover);font-weight:700;color:var(--muted-2)">대상자를 선택하세요</div>
+          </div>
+          <div class="field">
+            <label>담당 코치</label>
+            <select class="inp" id="asgCoach">
+              ${P.coaches.map(c => `<option>${esc(c)}</option>`).join('')}
+            </select>
+          </div>
+          <button class="btn pri block" id="asgSave">${ico('check')}코치 재배정</button>
+          <div class="divider"></div>
+          <div class="sec-t">${ico('users')}코치별 배정 인원</div>
+          <div id="asgStat"></div>
+          <button class="btn soft block mt12" id="asgBulk">${ico('zap')}일괄 배정 (균등 분배)</button>
+          <div class="hint mt8">일괄 배정 시 그룹 순서에 따라 코치를 균등하게 재배정합니다.</div>
+        </div>
+      </aside>
+    </div>`;
+  }
+  function asgStat(){
+    const box = $('#asgStat'); if(!box) return;
+    const max = Math.max(1, ...P.coaches.map(c => MEM.filter(m => m.coach === c).length));
+    box.innerHTML = P.coaches.map(c => {
+      const n  = MEM.filter(m => m.coach === c).length;
+      const cu = USERS.find(x => x.name === c) || { name:c, color:'#10B981' };
+      return `<div class="li">
+        ${avatar(cu,'sm')}
+        <span class="col" style="gap:5px">
+          <span class="between"><b>${esc(c)}</b><span class="small muted num">${n}명</span></span>
+          <span class="pbar"><i style="width:${Math.round(n/max*100)}%"></i></span>
+        </span>
+      </div>`;
+    }).join('');
+  }
+  function bindAsg(){
+    asgStat();
+    $$('#mtb tr[data-m]').forEach(tr => tr.onclick = () => {
+      ASG = tr.dataset.m;
+      $$('#mtb tr[data-m]').forEach(x => x.classList.toggle('sel', x.dataset.m === ASG));
+      const m = MEM.find(x => x.id === ASG);
+      $('#asgName').textContent = m.name + ' · ' + m.org;
+      $('#asgName').style.color = 'var(--ink)';
+      $('#asgCoach').value = m.coach;
+    });
+    $('#asgSave').onclick = () => {
+      if(!ASG) return toast('먼저 대상자를 선택해 주세요.', true);
+      const m = MEM.find(x => x.id === ASG);
+      const c = $('#asgCoach').value;
+      if(m.coach === c) return toast('이미 해당 코치가 담당하고 있습니다.', true);
+      m.coach = c;
+      $(`#mtb td[data-c="${m.id}"]`).textContent = c;
+      asgStat();
+      toast(`${m.name} 님의 담당 코치를 ${c}님으로 변경했습니다.`);
+    };
+    $('#asgBulk').onclick = () => {
+      MEM.forEach((m,i) => { m.coach = P.coaches[i % P.coaches.length]; });
+      $$('#mtb td[data-c]').forEach(td => {
+        const m = MEM.find(x => x.id === td.dataset.c);
+        if(m) td.textContent = m.coach;
+      });
+      if(ASG){ const m = MEM.find(x => x.id === ASG); if(m) $('#asgCoach').value = m.coach; }
+      asgStat();
+      toast(`대상자 ${MEM.length}명을 코치 ${P.coaches.length}명에게 균등 배정했습니다.`);
+    };
+  }
+
+  /* ---------- 탭: 자료실 ---------- */
+  function paneLib(){
+    const list = docs();
+    const canUp = (role !== 'member');
+    return `
+    <section class="card">
+      <div class="card-h">
+        <h3>프로젝트 자료실</h3>
+        <span class="spacer"></span>
+        ${canUp ? `<button class="btn pri sm" id="upBtn">${ico('plus')}자료 업로드</button>` : ''}
+      </div>
+      <div class="card-b" style="padding-bottom:0">
+        <div class="vis-note">
+          ${ico('shield')}
+          <span><b>공개범위가 권한 제어의 핵심입니다.</b><br/>
+          <b>전체 공개</b>는 대상자까지, <b>PM·코치만</b>은 진단 결과지 등 민감 자료(대상자 열람 불가),
+          <b>HR·PM</b>은 고객사 리포트에 사용됩니다. 현재 권한(<b>${esc(ROLES[role].label)}</b>)에서 열람 가능한 자료만 표시됩니다.</span>
+        </div>
+      </div>
+      <div class="tbl-wrap mt12">
+        <table class="tbl">
+          <thead><tr>
+            <th>파일명</th><th class="tc">유형</th><th class="tc">크기</th><th>업로더</th>
+            <th>공개범위</th><th>업로드일</th><th class="tc">다운로드</th>
+          </tr></thead>
+          <tbody id="ltb">
+            ${list.length ? list.map(d => `
+              <tr>
+                <td><span class="row" style="gap:9px">
+                  <span class="ft" style="background:${FT_C[d.t] || '#8B90A6'}">${esc(d.t)}</span>
+                  <span class="col"><b>${esc(d.n)}</b><small class="muted">${esc(d.cat)}</small></span>
+                </span></td>
+                <td class="tc small muted">${esc(d.t)}</td>
+                <td class="tc small muted num">${esc(d.s)}</td>
+                <td class="small">${esc(d.by)}</td>
+                <td><span class="badge ${VIS_C[d.vis] || 'gray'}">${esc(d.vis)}</span></td>
+                <td class="small muted num">${fd(d.at)}</td>
+                <td class="tc"><button class="btn sm ghost" data-dl="${esc(d.n)}">${ico('dl')}</button></td>
+              </tr>`).join('')
+            : `<tr><td colspan="7"><div class="tbl-empty">${ico('book')}<b>등록된 자료가 없습니다.</b>
+                <div class="small">진단 결과지 · 워크시트 · 학습자료를 업로드해 보세요.</div></div></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-f"><span class="hint">열람 가능 자료 <b class="num">${list.length}</b>건</span></div>
+    </section>`;
+  }
+  function bindLib(){
+    $$('#ltb button[data-dl]').forEach(b => b.onclick = () => toast(`"${b.dataset.dl}" 다운로드를 시작합니다.`));
+    const up = $('#upBtn');
+    if(up) up.onclick = () => openM('upM');
+  }
+
+  /* ---------- 탭: 세션 일정 ---------- */
+  function paneSes(){
+    const S = buildSessions();
+    const C = { '완료':['#E7F7EE','#16A34A','ok'], '예정':['#EEF0FF','#5B4BE8','info'], '대기':['#F0F1F6','#9AA1B6','gray'] };
+    return `
+    <section class="card">
+      <div class="card-h">
+        <h3>세션 일정</h3>
+        <span class="spacer"></span>
+        <span class="hint">총 ${P.sessions}회 · 완료 <b class="num">${P.done}</b>회 · 잔여 <b class="num">${P.sessions-P.done}</b>회</span>
+        ${canEdit ? `<button class="btn sm" id="sesAdd">${ico('cal')}일정 조정</button>` : ''}
+      </div>
+      <div class="card-b">
+        ${S.map(s => {
+          const c = C[s.st];
+          return `<div class="ses">
+            <span class="n" style="background:${c[0]};color:${c[1]}">${s.no}회차</span>
+            <span class="col">
+              <b>${s.no}회차 코칭 세션</b>
+              <small class="muted num">${s.date} · ${s.time}</small>
+            </span>
+            <span class="mode">${ico('pin')}<span>${esc(s.mode)}</span></span>
+            <span class="row who" style="gap:6px">
+              ${avatar(USERS.find(x => x.name === s.coach) || { name:s.coach, color:'#10B981' }, 'sm')}
+              <span class="small">${esc(s.coach)}</span>
+            </span>
+            <span class="badge ${c[2]} dot">${s.st}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </section>`;
+  }
+  function bindSes(){
+    const b = $('#sesAdd');
+    if(b) b.onclick = () => toast('일정 조정 요청을 담당 코치에게 전달했습니다.');
+  }
+
+  /* ---------- 탭: 진행 현황 ---------- */
+  function panePrg(){
+    if(P.progress === 0 && P.checkin === 0){
+      return `<section class="card"><div class="card-b"><div class="empty">${ico('chart')}
+        <b>아직 진행 데이터가 없습니다.</b>
+        <div class="small">세션이 시작되고 첫 체크인이 제출되면 진행 현황이 표시됩니다.</div></div></div></section>`;
+    }
+    return `
+    <section class="card">
+      <div class="card-h"><h3>주차별 체크인 · 피드백률</h3><span class="spacer"></span>
+        <span class="badge ok dot">체크인율 ${P.checkin}%</span></div>
+      <div class="card-b"><div id="cLine"></div></div>
+    </section>
+    <div class="grid g2 mt16">
+      <section class="card">
+        <div class="card-h"><h3>대상자별 진척도</h3><span class="spacer"></span><span class="hint">상위 ${Math.min(10, MEM.length)}명</span></div>
+        <div class="card-b"><div id="cBar"></div></div>
+      </section>
+      <section class="card">
+        <div class="card-h"><h3>그룹별 평균 진척도</h3><span class="spacer"></span><span class="hint">단위: %</span></div>
+        <div class="card-b" id="cGrpWrap"><div id="cGrp"></div></div>
+      </section>
+    </div>`;
+  }
+  function bindPrg(){
+    if(!$('#cLine')) return;
+    const W  = ['1주','2주','3주','4주','5주','6주'];
+    const mk = (end) => { const b = Math.max(0, end - 34); return W.map((_,i) => Math.round(b + (end-b) * (i/(W.length-1)))); };
+    line('#cLine', { labels:W, series:[
+      { n:'체크인율',      data:mk(P.checkin),  c:'#5B4BE8' },
+      { n:'코치 피드백률', data:mk(P.feedback), c:'#16A34A' },
+    ]});
+
+    const top = MEM.slice().sort((a,b) => b.prog - a.prog).slice(0, 10);
+    hbar('#cBar', top.map(m => [m.name, m.prog]), { color:'#5B4BE8', labelW:64, showPct:false });
+
+    if(P.groups > 0){
+      const rows = Array.from({ length:P.groups }, (_,i) => {
+        const g  = (i+1) + '조';
+        const ms = MEM.filter(m => m.group === g);
+        const av = ms.length ? Math.round(ms.reduce((s,m) => s + m.prog, 0) / ms.length) : 0;
+        return [g, av];
+      });
+      vbar('#cGrp', rows, { color:'#0EA5E9', h:170 });
+    }else{
+      $('#cGrpWrap').innerHTML = `<div class="empty">${ico('users')}<b>그룹 없이 진행되는 프로젝트입니다.</b>
+        <div class="small">1:1 개인 코칭으로만 운영됩니다.</div></div>`;
+    }
+  }
+
+  /* ---------- 탭 전환 ---------- */
+  const PANES = { ov:[paneOv, null], asg:[paneAsg, bindAsg], lib:[paneLib, bindLib], ses:[paneSes, bindSes], prg:[panePrg, bindPrg] };
+  let TAB = 'ov';
+  function showTab(k){
+    TAB = k;
+    const [render, bind] = PANES[k];
+    $('#pane').innerHTML = render();
+    if(bind) bind();
+    $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === k));
+  }
+  $$('#tabs button').forEach(b => b.onclick = () => showTab(b.dataset.t));
+  showTab('ov');
+
+  /* ---------- 헤더 액션 ---------- */
+  $('#pdfBtn').onclick = () => downloadPDF();
+  $('#csvBtn').onclick = () => downloadCSV(
+    `${P.name}_대상자현황.csv`,
+    [['이름','소속','그룹','담당코치','목표수','진척도(%)','체크인']]
+      .concat(MEM.map(m => [m.name, m.org, m.group, m.coach, m.goals, m.prog, m.ci]))
+  );
+
+  /* ---------- 자료 업로드 모달 ---------- */
+  if(role !== 'member'){
+    document.body.insertAdjacentHTML('beforeend', `
+    <div class="mask" id="upM">
+      <div class="modal">
+        <div class="modal-h"><h3>자료 업로드</h3><button class="x" onclick="closeM('upM')">${ico('x')}</button></div>
+        <div class="modal-b">
+          <div class="field">
+            <label>파일<span class="req">*</span></label>
+            <input class="inp" type="file" id="upFile"/>
+          </div>
+          <div class="f-row c2">
+            <div class="field">
+              <label>자료 구분</label>
+              <select class="inp" id="upCat"><option>학습자료</option><option>진단</option><option>워크시트</option><option>리포트</option></select>
+            </div>
+            <div class="field">
+              <label>공개범위<span class="req">*</span></label>
+              <select class="inp" id="upVis">
+                <option value="전체 공개">전체 공개 (대상자 포함)</option>
+                <option value="PM·코치만">PM · 코치만 (민감 자료)</option>
+                <option value="HR·PM">HR · PM (고객사 리포트)</option>
+              </select>
+            </div>
+          </div>
+          <div class="vis-note">${ico('shield')}
+            <span>공개범위는 <b>권한별 열람 제어</b>에 직접 사용됩니다.
+            진단 결과지 등 민감 자료는 <b>PM·코치만</b>으로 지정하세요.</span></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn" onclick="closeM('upM')">취소</button>
+          <button class="btn pri" id="upSave">${ico('check')}업로드</button>
+        </div>
+      </div>
+    </div>`);
+  }
+
+  /* ---------- 수정 모달 ---------- */
+  if(canEdit){
+    document.body.insertAdjacentHTML('beforeend', `
+    <div class="mask" id="edM">
+      <div class="modal">
+        <div class="modal-h"><h3>프로젝트 수정</h3><button class="x" onclick="closeM('edM')">${ico('x')}</button></div>
+        <div class="modal-b">
+          <div class="field"><label>프로젝트명<span class="req">*</span></label>
+            <input class="inp" id="edName" value="${esc(P.name)}"/></div>
+          <div class="f-row c2">
+            <div class="field"><label>상태</label>
+              <select class="inp" id="edSt">
+                ${['준비중','진행중','완료'].map(s => `<option ${s===P.status?'selected':''}>${s}</option>`).join('')}
+              </select></div>
+            <div class="field"><label>완료 세션 수</label>
+              <input class="inp num" type="number" id="edDone" min="0" max="${P.sessions}" value="${P.done}"/></div>
+          </div>
+          <div class="field" style="margin-bottom:0"><label>설명</label>
+            <textarea class="inp" id="edDesc">${esc(P.desc)}</textarea></div>
+        </div>
+        <div class="modal-f">
+          <button class="btn" onclick="closeM('edM')">취소</button>
+          <button class="btn pri" id="edSave">${ico('check')}저장</button>
+        </div>
+      </div>
+    </div>`);
+  }
+
+  bindMask();
+
+  const upSave = $('#upSave');
+  if(upSave) upSave.onclick = () => {
+    const f = $('#upFile').files[0];
+    if(!f) return toast('업로드할 파일을 선택해 주세요.', true);
+    LIBRARY.unshift({
+      id:'d' + Date.now(),
+      n: f.name.replace(/\.[^.]+$/, ''),
+      t: (f.name.split('.').pop() || 'FILE').toUpperCase(),
+      s: f.size > 1048576 ? (f.size/1048576).toFixed(1) + 'MB' : Math.max(1, Math.round(f.size/1024)) + 'KB',
+      at: new Date().toISOString().slice(0,10),
+      by: u.name, proj: P.name, vis: $('#upVis').value, cat: $('#upCat').value,
+    });
+    closeM('upM');
+    $('#upFile').value = '';
+    showTab('lib');
+    toast('자료가 업로드되었습니다.');
+  };
+
+  const edBtn = $('#editBtn');
+  if(edBtn) edBtn.onclick = () => openM('edM');
+  const edSave = $('#edSave');
+  if(edSave) edSave.onclick = () => {
+    const n = $('#edName').value.trim();
+    if(!n) return toast('프로젝트명을 입력해 주세요.', true);
+    const d = Math.max(0, Math.min(P.sessions, parseInt($('#edDone').value, 10) || 0));
+    P.name = n; P.status = $('#edSt').value; P.done = d;
+    P.desc = $('#edDesc').value.trim() || P.desc;
+
+    $('#pTitle').textContent = P.name;
+    $('#pBadge').className   = 'badge ' + stCls(P.status) + ' dot';
+    $('#pBadge').textContent = P.status;
+    $('#kSes').innerHTML     = P.done + '<small>/ ' + P.sessions + '회</small>';
+    $('#kSesD').textContent  = '다음 세션 ' + (P.done < P.sessions ? P.done+1 : P.sessions) + '회차';
+    document.title = P.name + ' | 하우 부스터';
+
+    closeM('edM');
+    showTab(TAB);
+    toast('프로젝트 정보가 저장되었습니다.');
+  };
+}
+</script>
+</body>
+</html>

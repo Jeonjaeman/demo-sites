@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>대상자 관리 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  /* 아이콘(ico) 기본 크기 — 차트 SVG(viewBox 다름)에는 영향 없음 */
+  .page svg[viewBox="0 0 24 24"]{width:16px;height:16px;stroke-width:1.8;flex:0 0 auto;vertical-align:-3px}
+  .page .kpi .ico svg{width:21px;height:21px}
+  .page .btn.sm svg{width:14px;height:14px}
+  .page .tbl-empty svg{width:40px;height:40px}
+  .dscrim{position:fixed;inset:0;background:rgba(17,20,34,.44);backdrop-filter:blur(2px);z-index:94;display:none}
+  .dscrim.open{display:block}
+  .drawer-h{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line-2);flex:0 0 auto}
+  .drawer-h h3{font-size:16px;flex:1}
+  .drawer-h .x{border:0;background:transparent;cursor:pointer;color:var(--muted-2);padding:5px;border-radius:8px}
+  .drawer-h .x:hover{background:var(--hover);color:var(--ink)}
+  .drawer-b{padding:20px;overflow-y:auto;flex:1}
+  .drawer-f{padding:13px 20px;border-top:1px solid var(--line-2);display:flex;gap:8px;flex-wrap:wrap;flex:0 0 auto}
+  .drawer-f .btn{flex:1;min-width:120px}
+  .selbar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--brand-50);border:1px solid var(--brand-100);border-radius:12px;margin-bottom:12px}
+  .selbar.hide{display:none}
+  .prof{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line-2);margin-bottom:16px}
+  .kv{display:grid;grid-template-columns:82px 1fr;gap:6px 10px;font-size:12.8px}
+  .kv dt{color:var(--muted);font-weight:700}
+  .kv dd{margin:0;color:var(--ink-2);font-weight:600}
+  .gbox{border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:9px;background:#FBFBFF}
+  .gbox b{font-size:13.3px;display:block;margin-bottom:3px}
+  .mrow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line-2)}
+  .mrow:last-child{border-bottom:0}
+  .dots{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:28px;cursor:pointer;color:var(--muted);font-weight:800;line-height:1}
+  .dots:hover{background:var(--hover);color:var(--ink)}
+  @media(max-width:900px){ table.tbl{min-width:1000px} }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('members');
+const role = u ? session().role : null;
+
+/* ---------- 대상자 데이터 확장 (USERS의 member 8명 → 24명) ---------- */
+const DOMAIN = { 'A기업':'a-corp.co.kr','B그룹':'b-group.co.kr','C회사':'c-corp.co.kr','D기업':'d-corp.co.kr','E회사':'e-corp.co.kr','F그룹':'f-group.co.kr' };
+const PAL = ['#EC4899','#DB2777','#BE185D','#9D174D','#E11D48','#F43F5E','#FB7185','#F472B6','#8B5CF6','#7C3AED','#6366F1','#0EA5E9','#0891B2','#14B8A6','#10B981','#F59E0B'];
+const EXTRA = [
+  ['윤재현','jaehyun','A기업','생산관리 팀장','c1','p1','3조'],
+  ['임수빈','subin','A기업','품질보증 과장','c3','p1','3조'],
+  ['조현우','hyunwoo','A기업','구매팀 파트장','c2','p1','2조'],
+  ['신예린','yerin','A기업','재무회계 대리','c1','p1','1조'],
+  ['배준영','junyoung','B그룹','리스크관리 차장','c4','p2','2조'],
+  ['문가온','gaon','B그룹','IB영업 과장','c2','p2','1조'],
+  ['서지훈','jihoon','B그룹','디지털전략 팀장','c4','p2','2조'],
+  ['노아름','areum','B그룹','인사기획 대리','c2','p2','1조'],
+  ['권민준','minjun','C회사','플랫폼개발 팀장','c3','p3','2조'],
+  ['황다연','dayeon','C회사','프로덕트 매니저','c3','p3','1조'],
+  ['안태호','taeho','C회사','데이터분석 파트장','c3','p3','3조'],
+  ['유하늘','haneul','D기업','영업기획 팀장','c4','p4','1조'],
+  ['장서연','seoyeon','D기업','MD 과장','c4','p4','2조'],
+  ['고은지','eunji','E회사','연구기획 팀장','c1','p5','1조'],
+  ['남기훈','gihun','F그룹','해외법인 관리팀장','c2','p6','1조'],
+  ['백지호','jiho','F그룹','플랜트 영업 차장','c1','p6','2조'],
+];
+const CKS = ['완료','완료','완료','미작성','완료','지연','완료','완료','완료','미작성','완료','완료','지연','완료','완료','완료','미작성','완료','완료','지연','완료','완료','완료','미작성'];
+
+let MEM = [];
+(function buildMembers(){
+  const base = USERS.filter(x => x.role === 'member');
+  base.forEach((m, i) => MEM.push({
+    id:m.id, name:m.name, org:m.org, title:m.title, email:m.email, color:m.color,
+    coachId:m.coachId, projectId:m.projectId, group:m.group,
+    goals: 2 + (i % 2), progress: i===0 ? 63 : 40 + ((i*13) % 52),
+    checkin: CKS[i], last: (1 + (i % 7)) + '일 전',
+  }));
+  EXTRA.forEach((e, k) => {
+    const i = k + 8;
+    MEM.push({
+      id:'m' + (i+1), name:e[0], org:e[2], title:e[3], email:e[1] + '@' + DOMAIN[e[2]],
+      color:PAL[k % PAL.length], coachId:e[4], projectId:e[5], group:e[6],
+      goals: 2 + (i % 2), progress: 38 + ((i*17) % 55),
+      checkin: CKS[i], last: (1 + (i % 9)) + '일 전',
+    });
+  });
+})();
+
+/* ---------- 역할별 범위 ---------- */
+function scoped(){
+  if(role === 'coach') return MEM.filter(m => m.coachId === u.id);
+  if(role === 'hr')    return MEM.filter(m => m.org === u.org);
+  return MEM.slice();
+}
+const HEAD = {
+  admin:['전체 대상자','전 프로젝트의 코칭 대상자를 관리합니다.'],
+  pm:['담당 대상자','담당 프로젝트의 코칭 대상자를 관리합니다.'],
+  coach:['내 피코치','내가 담당하는 대상자만 조회할 수 있습니다.'],
+  hr:['참여자 현황','자사 임직원의 코칭 참여 현황만 조회할 수 있습니다.'],
+  member:['대상자','-'],
+};
+const canEdit = () => role === 'admin' || role === 'pm';
+
+/* ---------- 상태 ---------- */
+const F = { q:'', proj:'', group:'', coach:'', st:'' };
+const SEL = new Set();
+let curId = null;
+
+function filtered(){
+  return scoped().filter(m => {
+    if(F.q){
+      const q = F.q.toLowerCase();
+      if(!(m.name.toLowerCase().includes(q) || m.org.toLowerCase().includes(q) || m.title.toLowerCase().includes(q))) return false;
+    }
+    if(F.proj && m.projectId !== F.proj) return false;
+    if(F.group && m.group !== F.group) return false;
+    if(F.coach && m.coachId !== F.coach) return false;
+    if(F.st && m.checkin !== F.st) return false;
+    return true;
+  });
+}
+const pname = id => (PROJECTS.find(p => p.id === id) || {name:'-'}).name;
+const ckBadge = s => s === '완료' ? '<span class="badge ok">완료</span>' : s === '지연' ? '<span class="badge warn">지연</span>' : '<span class="badge danger">미작성</span>';
+const pbarCls = p => p >= 70 ? ' ok' : p >= 40 ? '' : ' warn';
+
+/* ---------- 렌더 ---------- */
+function render(){
+  const list = scoped();
+  const kpi = role === 'admin' || role === 'pm'
+    ? [['전체 대상자', String(TOTALS.members),'명','전 프로젝트 기준','users','var(--brand)','var(--brand-50)'],
+       ['목표 확정', String(TOTALS.active),'명','진행 중 프로젝트 대상자','target','var(--ok)','var(--ok-bg)'],
+       ['이번 주 체크인 완료', String(TOTALS.checkedIn),'명','완료율 ' + TOTALS.checkin + '%','checkbox','var(--info)','var(--info-bg)'],
+       ['평균 진척도', String(TOTALS.progress),'%','전주 대비 +5%p','chart','var(--warn)','var(--warn-bg)']]
+    : [[role==='coach'?'담당 대상자':'자사 참여자', String(list.length),'명', role==='coach'?'내 피코치 기준':u.org+' 기준','users','var(--brand)','var(--brand-50)'],
+       ['목표 확정', String(list.filter(m=>m.goals>0).length),'명','확정률 100%','target','var(--ok)','var(--ok-bg)'],
+       ['이번 주 체크인 완료', String(list.filter(m=>m.checkin==='완료').length),'명','미작성 ' + list.filter(m=>m.checkin!=='완료').length + '명','checkbox','var(--info)','var(--info-bg)'],
+       ['평균 진척도', String(Math.round(list.reduce((a,b)=>a+b.progress,0)/(list.length||1))),'%','담당 범위 평균','chart','var(--warn)','var(--warn-bg)']];
+
+  const projOpts = PROJECTS.filter(p => scoped().some(m => m.projectId === p.id));
+  const coachOpts = USERS.filter(x => x.role === 'coach' && (role !== 'coach' || x.id === u.id));
+
+  $('#page').innerHTML = `
+  <div class="between mb16">
+    <div><h2 style="font-size:18px">${esc(HEAD[role][0])}</h2><div class="hint">${esc(HEAD[role][1])}</div></div>
+    <span class="pill">${ROLES[role].label} · ${esc(ROLES[role].scope)}</span>
+  </div>
+
+  <div class="kpis mb16">
+    ${kpi.map(k => `<div class="kpi">
+      <span class="ico" style="background:${k[6]};color:${k[5]}">${ico(k[4])}</span>
+      <span class="col"><span class="t">${k[0]}</span><span class="v num">${k[1]}<small>${k[2]}</small></span><span class="d">${k[3]}</span></span>
+    </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <div class="card-b" style="padding:14px 16px;border-bottom:1px solid var(--line-2)">
+      <div class="toolbar">
+        <div class="search">${ico('search')}<input class="inp" id="q" placeholder="이름 · 소속 · 직급 검색" value="${esc(F.q)}"/></div>
+        <select class="inp" id="fProj" style="width:auto;min-width:170px">
+          <option value="">전체 프로젝트</option>
+          ${projOpts.map(p => `<option value="${p.id}" ${F.proj===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}
+        </select>
+        <select class="inp" id="fGroup" style="width:auto;min-width:110px">
+          <option value="">전체 그룹</option>
+          ${['1조','2조','3조'].map(g => `<option value="${g}" ${F.group===g?'selected':''}>${g}</option>`).join('')}
+        </select>
+        <select class="inp" id="fCoach" style="width:auto;min-width:130px">
+          <option value="">전체 코치</option>
+          ${coachOpts.map(c => `<option value="${c.id}" ${F.coach===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+        </select>
+        <select class="inp" id="fSt" style="width:auto;min-width:130px">
+          <option value="">체크인 전체</option>
+          ${['완료','지연','미작성'].map(s => `<option value="${s}" ${F.st===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <span style="flex:1"></span>
+        <button class="btn sm" id="csv">${ico('dl')} 엑셀 내보내기</button>
+        ${canEdit() ? `<button class="btn pri sm" id="addBtn">${ico('plus')} 대상자 등록</button>` : ''}
+      </div>
+    </div>
+    <div class="card-b" style="padding:14px 16px 0">
+      <div class="selbar hide" id="selbar">
+        ${ico('checkbox')}
+        <b id="selTxt">선택 0명</b>
+        <span style="flex:1"></span>
+        <button class="btn sm" id="selClear">선택 해제</button>
+        <button class="btn pri sm" id="remindBtn">${ico('send')} 일괄 리마인드</button>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr>
+          <th style="width:36px"><input type="checkbox" id="all"/></th>
+          <th>이름</th><th>소속</th><th>프로젝트</th><th>그룹</th><th>담당 코치</th>
+          <th class="tc">코칭목표</th><th>진척도</th><th class="tc">이번 주 체크인</th><th>최근 활동</th><th class="tc">관리</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="card-f"><span class="hint" id="cnt"></span></div>
+  </div>
+
+  <!-- 상세 드로어 -->
+  <div class="dscrim" id="dscrim"></div>
+  <aside class="drawer" id="dw">
+    <div class="drawer-h"><h3 id="dwT">대상자 상세</h3><button class="x" onclick="closeDW()">${ico('x')}</button></div>
+    <div class="drawer-b" id="dwB"></div>
+    <div class="drawer-f" id="dwF"></div>
+  </aside>
+
+  <!-- 등록 모달 -->
+  <div class="mask" id="addM">
+    <div class="modal">
+      <div class="modal-h"><h3>대상자 등록</h3><button class="x" onclick="closeM('addM')">${ico('x')}</button></div>
+      <div class="modal-b">
+        <div class="f-row c2">
+          <div class="field"><label>이름 <span class="req">*</span></label><input class="inp" id="nName" placeholder="김지연"/></div>
+          <div class="field"><label>회사 메일 <span class="req">*</span></label><input class="inp" id="nMail" placeholder="name@a-corp.co.kr"/></div>
+        </div>
+        <div class="f-row c2">
+          <div class="field"><label>소속(고객사)</label>
+            <select class="inp" id="nOrg">${CLIENTS.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>직급</label><input class="inp" id="nTitle" placeholder="마케팅팀 팀장"/></div>
+        </div>
+        <div class="f-row c3">
+          <div class="field"><label>프로젝트</label>
+            <select class="inp" id="nProj">${PROJECTS.filter(p=>p.status!=='완료').map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div>
+          <div class="field"><label>그룹</label>
+            <select class="inp" id="nGroup"><option>1조</option><option>2조</option><option>3조</option></select></div>
+          <div class="field"><label>담당 코치</label>
+            <select class="inp" id="nCoach">${USERS.filter(x=>x.role==='coach').map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></div>
+        </div>
+        <div class="insight" style="margin-bottom:0">
+          <div class="ih">${ico('shield')} 회사 메일 도메인 인증</div>
+          <ul><li>등록한 <b>회사 메일 도메인 인증</b> 후 가입 링크가 발송됩니다. 고객사에 등록된 허용 도메인이 아닌 메일은 가입이 차단됩니다.</li></ul>
+        </div>
+      </div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('addM')">취소</button>
+        <button class="btn pri" id="addOk">${ico('check')} 등록하고 가입 링크 발송</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리 메뉴 모달 -->
+  <div class="mask" id="actM">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-h"><h3 id="actT">대상자 관리</h3><button class="x" onclick="closeM('actM')">${ico('x')}</button></div>
+      <div class="modal-b" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn block" onclick="closeM('actM');openDW(curId)">${ico('user')} 상세 보기</button>
+        <button class="btn block" onclick="closeM('actM');toast('리마인드 알림을 발송했습니다.')">${ico('bell')} 체크인 리마인드 발송</button>
+        <button class="btn block" onclick="closeM('actM');location.href='goal.html'">${ico('target')} 코칭목표합의서</button>
+        ${canEdit() ? `<button class="btn block danger" onclick="removeMember()">${ico('x')} 프로젝트에서 제외</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+  $('#q').oninput      = e => { F.q = e.target.value; rows(); };
+  $('#fProj').onchange = e => { F.proj = e.target.value; rows(); };
+  $('#fGroup').onchange= e => { F.group = e.target.value; rows(); };
+  $('#fCoach').onchange= e => { F.coach = e.target.value; rows(); };
+  $('#fSt').onchange   = e => { F.st = e.target.value; rows(); };
+  $('#all').onchange   = e => { filtered().forEach(m => e.target.checked ? SEL.add(m.id) : SEL.delete(m.id)); rows(); };
+  $('#csv').onclick    = exportCSV;
+  $('#selClear').onclick = () => { SEL.clear(); rows(); };
+  $('#remindBtn').onclick = () => { toast(SEL.size + '명에게 체크인 리마인드를 발송했습니다.'); SEL.clear(); rows(); };
+  $('#dscrim').onclick = closeDW;
+  if($('#addBtn')){ $('#addBtn').onclick = () => openM('addM'); $('#addOk').onclick = addMember; }
+  rows();
+}
+
+function rows(){
+  const list = filtered();
+  $('#rows').innerHTML = list.length ? list.map(m => {
+    const c = uById(m.coachId);
+    return `<tr class="${SEL.has(m.id)?'sel':''}" onclick="openDW('${m.id}')" style="cursor:pointer">
+      <td onclick="event.stopPropagation()"><input type="checkbox" data-id="${m.id}" ${SEL.has(m.id)?'checked':''} onchange="toggleSel('${m.id}',this.checked)"/></td>
+      <td><span class="row">${avatar(m,'sm')}<span class="col"><span class="nm">${esc(m.name)}</span><span class="sub">${esc(m.title)}</span></span></span></td>
+      <td>${esc(m.org)}</td>
+      <td class="ellip" style="max-width:190px">${esc(pname(m.projectId))}</td>
+      <td><span class="badge gray">${esc(m.group)}</span></td>
+      <td><span class="row" style="gap:6px">${avatar(c,'sm')}<span>${esc(c.name)}</span></span></td>
+      <td class="tc"><b class="num">${m.goals}</b></td>
+      <td><span class="pcell"><b class="num">${m.progress}%</b><span class="pbar${pbarCls(m.progress)}"><i style="width:${m.progress}%"></i></span></span></td>
+      <td class="tc">${ckBadge(m.checkin)}</td>
+      <td class="muted small">${esc(m.last)}</td>
+      <td class="tc" onclick="event.stopPropagation()"><button class="dots" onclick="openAct('${m.id}')">⋯</button></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="11"><div class="tbl-empty">${ico('users')}<div>조건에 맞는 대상자가 없습니다.</div></div></td></tr>`;
+
+  $('#cnt').textContent = '전체 ' + scoped().length + '명 중 ' + list.length + '명 표시';
+  const sel = list.filter(m => SEL.has(m.id)).length;
+  $('#all').checked = list.length > 0 && sel === list.length;
+  $('#selbar').classList.toggle('hide', SEL.size === 0);
+  $('#selTxt').textContent = '선택 ' + SEL.size + '명';
+}
+function toggleSel(id, on){ on ? SEL.add(id) : SEL.delete(id); rows(); }
+function openAct(id){ curId = id; const m = MEM.find(x=>x.id===id); $('#actT').textContent = m.name + ' 관리'; openM('actM'); }
+function removeMember(){
+  MEM = MEM.filter(x => x.id !== curId); SEL.delete(curId); closeM('actM'); rows();
+  toast('대상자를 프로젝트에서 제외했습니다.');
+}
+function exportCSV(){
+  const rowsOut = [['이름','소속','직급','회사메일','프로젝트','그룹','담당코치','코칭목표 수','진척도(%)','이번 주 체크인','최근 활동']];
+  filtered().forEach(m => rowsOut.push([m.name, m.org, m.title, m.email, pname(m.projectId), m.group, uById(m.coachId).name, m.goals, m.progress, m.checkin, m.last]));
+  downloadCSV('대상자목록_' + new Date().toISOString().slice(0,10) + '.csv', rowsOut);
+}
+function addMember(){
+  const n = $('#nName').value.trim(), mail = $('#nMail').value.trim();
+  if(!n || !mail){ toast('이름과 회사 메일은 필수입니다.', true); return; }
+  const org = $('#nOrg').value;
+  const cl = CLIENTS.find(c => c.name === org);
+  if(cl && !mail.endsWith('@' + cl.domain)){ toast(org + '의 인증 도메인(@' + cl.domain + ') 메일만 등록할 수 있습니다.', true); return; }
+  MEM.unshift({
+    id:'m' + (MEM.length + 100), name:n, org:org, title:$('#nTitle').value.trim() || '-', email:mail,
+    color:PAL[MEM.length % PAL.length], coachId:$('#nCoach').value, projectId:$('#nProj').value,
+    group:$('#nGroup').value, goals:0, progress:0, checkin:'미작성', last:'방금',
+  });
+  closeM('addM');
+  ['nName','nMail','nTitle'].forEach(i => $('#' + i).value = '');
+  rows();
+  toast(n + '님에게 회사 메일 인증 및 가입 링크를 발송했습니다.');
+}
+
+/* ---------- 상세 드로어 ---------- */
+const GOAL_POOL = [
+  ['효과적인 의사소통 역량 강화','대인 > 의사소통'],
+  ['업무 계획 수립 및 일정 관리 개선','결과 > 목표달성'],
+  ['구성원 피드백 · 육성 역량 강화','개인 > 주도성'],
+  ['전략적 사고 기반 의사결정','사고 > 전략적 사고'],
+  ['협업 · 이해관계자 관리 강화','대인 > 협업'],
+  ['실행력 및 우선순위 관리','결과 > 실행력'],
+];
+function memGoals(m){
+  const i = MEM.indexOf(m) < 0 ? 0 : MEM.indexOf(m);
+  const now = 3 + Math.round((m.progress/100) * 5);
+  return [0,1].map(k => {
+    const g = GOAL_POOL[(i + k*2) % GOAL_POOL.length];
+    return { title:g[0], comp:g[1], start:3, target:8, now:Math.max(3, Math.min(8, now - k)) };
+  });
+}
+function openDW(id){
+  const m = MEM.find(x => x.id === id); if(!m) return;
+  curId = id;
+  const c = uById(m.coachId);
+  const gs = memGoals(m);
+  const acts = ACTIONS.map((a, i) => ({ t:a.t, comp:a.comp, freq:a.freq,
+    p: Math.max(0, Math.min(100, Math.round((a.progress + m.progress) / 2 / 5) * 5)) }));
+  const cks = m.id === 'm1' ? CHECKINS.filter(x => x.state === '완료') : [
+    { week:'2024-05-20 ~ 05-26', rate: Math.min(100, m.progress + 9), done:'담당 팀원과 1:1을 진행하고, 목표·진행 상황·필요 지원을 논의했습니다.', at:'2024-05-26' },
+    { week:'2024-05-13 ~ 05-19', rate: Math.max(0, m.progress - 6), done:'회의 시작 시 팀원 의견을 먼저 묻는 오프닝 질문을 적용했습니다.', at:'2024-05-19' },
+  ];
+  const fbs = FEEDBACKS.filter(f => f.userId === m.id);
+  const fb = fbs.length >= 2 ? fbs.slice(0,2) : [
+    { coachId:m.coachId, type:'질문', at:'2024-05-24 10:30', body:'이번 주 실행에서 가장 어려웠던 지점은 무엇이었나요? 다음 회의에서 "다른 관점이 있을까요?"를 먼저 질문해 보세요.' },
+    { coachId:m.coachId, type:'격려', at:'2024-05-17 09:10', body:'체크인을 꾸준히 작성해 주셔서 좋습니다! 다음에는 실행 결과에 대한 팀원 반응도 함께 기록해 보세요. 👍' },
+  ].slice(0, 2);
+
+  $('#dwT').textContent = m.name + ' 상세';
+  $('#dwB').innerHTML = `
+    <div class="prof">
+      ${avatar(m,'xl')}
+      <div class="col" style="gap:3px">
+        <b style="font-size:17px">${esc(m.name)}</b>
+        <span class="muted small">${esc(m.org)} · ${esc(m.title)}</span>
+        <span class="muted small">${esc(m.email)}</span>
+        <span class="row" style="gap:6px;margin-top:4px">
+          <span class="badge brand">담당 ${esc(c.name)}</span><span class="badge gray">${esc(m.group)}</span>${ckBadge(m.checkin)}
+        </span>
+      </div>
+    </div>
+
+    <div class="sec-t">${ico('target')} 코칭목표 (${gs.length})</div>
+    ${gs.map(g => {
+      const p = Math.round(((g.now - g.start) / (g.target - g.start)) * 100);
+      return `<div class="gbox">
+        <b>${esc(g.title)}</b>
+        <span class="muted small">${esc(g.comp)}</span>
+        <div class="row mt8" style="gap:8px">
+          <span class="small" style="font-weight:800;color:var(--muted)">${g.start}점</span>
+          <span class="pbar${pbarCls(p)}" style="flex:1"><i style="width:${p}%"></i></span>
+          <span class="small" style="font-weight:800;color:var(--brand-700)">현재 ${g.now} / 목표 ${g.target}점</span>
+        </div>
+      </div>`;
+    }).join('')}
+
+    <div class="sec-t mt16">${ico('checkbox')} 실행과제 진척도</div>
+    ${acts.map(a => `<div class="mrow">
+      <span class="col" style="flex:1">
+        <b style="font-size:13px">${esc(a.t)}</b>
+        <small>${esc(a.comp)} · ${esc(a.freq)}</small>
+      </span>
+      <span class="pcell" style="flex:0 0 96px"><b class="num">${a.p}%</b><span class="pbar${pbarCls(a.p)}"><i style="width:${a.p}%"></i></span></span>
+    </div>`).join('')}
+
+    <div class="sec-t mt16">${ico('clock')} 최근 체크인</div>
+    <div class="tl">
+      ${cks.map(k => `<div class="tl-i">
+        <b>${esc(k.week)} · 실행률 ${k.rate}%</b>
+        <small>${esc(k.at)}</small>
+        <div class="small muted mt8" style="line-height:1.6">${esc(k.done)}</div>
+      </div>`).join('')}
+    </div>
+
+    <div class="sec-t mt16">${ico('chat')} 코치 피드백</div>
+    ${fb.map(f => `<div class="gbox">
+      <span class="row" style="gap:7px;margin-bottom:5px">
+        ${avatar(uById(f.coachId),'sm')}<b style="font-size:13px">${esc(uById(f.coachId).name)}</b>
+        <span class="badge info">${esc(f.type)}</span><span class="muted small" style="margin-left:auto">${esc(f.at)}</span>
+      </span>
+      <span class="small" style="color:var(--ink-2);line-height:1.65">${esc(f.body)}</span>
+    </div>`).join('')}`;
+
+  $('#dwF').innerHTML = `
+    <button class="btn" onclick="location.href='goal.html'">${ico('target')} 코칭목표 보기</button>
+    <button class="btn" onclick="location.href='booster.html'">${ico('zap')} 부스터 보내기</button>
+    <button class="btn pri" onclick="toast('${esc(m.name)}님에게 체크인 리마인드를 발송했습니다.')">${ico('send')} 리마인드 발송</button>`;
+
+  $('#dw').classList.add('open'); $('#dscrim').classList.add('open');
+}
+function closeDW(){ $('#dw').classList.remove('open'); $('#dscrim').classList.remove('open'); }
+
+if(u) render();
+</script>
+</body>
+</html>

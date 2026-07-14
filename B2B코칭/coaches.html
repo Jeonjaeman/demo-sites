@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>코치 관리 | 하우 부스터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<style>
+  .page svg[viewBox="0 0 24 24"]{width:16px;height:16px;stroke-width:1.8;flex:0 0 auto;vertical-align:-3px}
+  .page .kpi .ico svg{width:21px;height:21px}
+  .page .btn.sm svg{width:14px;height:14px}
+  .page .tbl-empty svg{width:40px;height:40px}
+  .cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
+  .ccard{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:16px;transition:.2s;display:flex;flex-direction:column;gap:11px}
+  .ccard:hover{box-shadow:var(--sh-2);transform:translateY(-2px)}
+  .ccard .st{display:flex;gap:10px;text-align:center}
+  .ccard .st div{flex:1;background:var(--hover);border-radius:10px;padding:8px 4px}
+  .ccard .st b{display:block;font-size:16px;letter-spacing:-.02em}
+  .ccard .st small{color:var(--muted);font-size:11px}
+  .assign{display:grid;grid-template-columns:1fr 280px;gap:16px}
+  .plist{border:1px solid var(--line);border-radius:12px;max-height:340px;overflow-y:auto}
+  .pitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line-2);cursor:pointer}
+  .pitem:last-child{border-bottom:0}
+  .pitem:hover{background:var(--hover)}
+  .pitem.on{background:var(--brand-50)}
+  .abox{border:1px solid var(--brand-100);background:var(--brand-50);border-radius:12px;padding:14px}
+  .star{color:#F59E0B;font-weight:800}
+  @media(max-width:1000px){ .assign{grid-template-columns:1fr} }
+  @media(max-width:900px){ table.tbl{min-width:760px} }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/charts.js"></script>
+<script>
+const u = shell('coaches');
+const role = u ? session().role : null;
+
+/* ---------- 대상자 풀 (일부 미배정) ---------- */
+const DOMAIN = { 'A기업':'a-corp.co.kr','B그룹':'b-group.co.kr','C회사':'c-corp.co.kr','D기업':'d-corp.co.kr','E회사':'e-corp.co.kr','F그룹':'f-group.co.kr' };
+const PAL = ['#EC4899','#DB2777','#BE185D','#9D174D','#E11D48','#F43F5E','#FB7185','#F472B6','#8B5CF6','#6366F1','#0EA5E9','#14B8A6'];
+const EXTRA = [
+  ['윤재현','A기업','생산관리 팀장','c1','p1'], ['임수빈','A기업','품질보증 과장','c3','p1'],
+  ['조현우','A기업','구매팀 파트장','','p1'],  ['신예린','A기업','재무회계 대리','','p1'],
+  ['배준영','B그룹','리스크관리 차장','c4','p2'], ['문가온','B그룹','IB영업 과장','','p2'],
+  ['서지훈','B그룹','디지털전략 팀장','c4','p2'], ['노아름','B그룹','인사기획 대리','','p2'],
+  ['권민준','C회사','플랫폼개발 팀장','c3','p3'], ['황다연','C회사','프로덕트 매니저','','p3'],
+  ['안태호','C회사','데이터분석 파트장','c3','p3'], ['유하늘','F그룹','해외법인 관리팀장','','p6'],
+  ['장서연','F그룹','플랜트 영업 차장','','p6'], ['고은지','F그룹','전략기획 과장','','p6'],
+];
+let MEM = [];
+(function(){
+  USERS.filter(x => x.role === 'member').forEach(m =>
+    MEM.push({ id:m.id, name:m.name, org:m.org, title:m.title, coachId:m.coachId, projectId:m.projectId, color:m.color }));
+  EXTRA.forEach((e, i) => MEM.push({
+    id:'m' + (i+9), name:e[0], org:e[1], title:e[2], coachId:e[3], projectId:e[4], color:PAL[i % PAL.length],
+  }));
+})();
+
+const COACHES = USERS.filter(x => x.role === 'coach');
+const FBRATE = { c1:88, c2:74, c3:92, c4:65 };
+const MISS   = { c1:2, c2:5, c3:1, c4:7 };
+const SPEC_LABEL = { c1:'KPC', c2:'PCC', c3:'KAC', c4:'PCC' };
+
+const SEL = new Set();
+let poolMode = 'un';   // un | all
+let curCoach = null;
+
+const cMembers = cid => MEM.filter(m => m.coachId === cid);
+const cProjects = cid => Array.from(new Set(cMembers(cid).map(m => m.projectId)));
+const pname = id => (PROJECTS.find(p => p.id === id) || {name:'-'}).name;
+const pbarCls = p => p >= 80 ? ' ok' : p >= 60 ? '' : ' warn';
+
+function render(){
+  $('#page').innerHTML = `
+  <div class="between mb16">
+    <div><h2 style="font-size:18px">파트너 코치 관리</h2><div class="hint">코치 프로필과 코치–대상자 배정을 관리합니다.</div></div>
+    <span class="pill">${ROLES[role].label} · 배정 권한 ${role==='admin'||role==='pm'?'있음':'없음'}</span>
+  </div>
+
+  <div class="kpis mb16">
+    <div class="kpi"><span class="ico" style="background:var(--brand-50);color:var(--brand)">${ico('user')}</span>
+      <span class="col"><span class="t">파트너 코치</span><span class="v num">4<small>명</small></span><span class="d">활동 중 4명</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--info-bg);color:var(--info)">${ico('folder')}</span>
+      <span class="col"><span class="t">참여 중 프로젝트</span><span class="v num">6<small>개</small></span><span class="d">진행중 4 · 완료 2</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--ok-bg);color:var(--ok)">${ico('users')}</span>
+      <span class="col"><span class="t">담당 대상자</span><span class="v num">102<small>명</small></span><span class="d">미배정 <b id="unKpi">0</b>명</span></span></div>
+    <div class="kpi"><span class="ico" style="background:var(--warn-bg);color:var(--warn)">${ico('star')}</span>
+      <span class="col"><span class="t">평균 만족도</span><span class="v num">4.8<small>/5</small></span><span class="d"><span class="up">▲ 0.1</span> 전분기 대비</span></span></div>
+  </div>
+
+  <div class="sec-t">${ico('user')} 코치 프로필</div>
+  <div class="cgrid mb20" id="cgrid"></div>
+
+  <div class="card mb16">
+    <div class="card-h">${ico('users')}<h3>코치 – 대상자 배정</h3><span class="spacer"></span>
+      <span class="hint">미배정 대상자를 선택하고 코치에게 배정하세요.</span></div>
+    <div class="card-b">
+      <div class="assign">
+        <div>
+          <div class="toolbar mb12">
+            <button class="chip ${poolMode==='un'?'on':''}" id="mUn">미배정만</button>
+            <button class="chip ${poolMode==='all'?'on':''}" id="mAll">전체 대상자</button>
+            <div class="search" style="max-width:220px">${ico('search')}<input class="inp" id="pq" placeholder="이름 검색"/></div>
+            <span style="flex:1"></span>
+            <label class="row small" style="gap:6px;font-weight:700;color:var(--muted)">
+              <input type="checkbox" id="pAll"/> 전체 선택</label>
+          </div>
+          <div class="plist" id="plist"></div>
+        </div>
+        <div>
+          <div class="abox">
+            <div class="sec-t" style="margin-bottom:8px">${ico('arrow')} 배정 대상 코치</div>
+            <select class="inp" id="tCoach" style="background:#fff">
+              ${COACHES.map(c => `<option value="${c.id}">${esc(c.name)} · ${esc(c.title)}</option>`).join('')}
+            </select>
+            <div class="row mt12" style="justify-content:space-between">
+              <span class="small muted">선택된 대상자</span><b class="num" id="selN">0명</b>
+            </div>
+            <button class="btn pri block mt12" id="doAssign" disabled>${ico('check')} 배정하기</button>
+            <div class="hint mt8" style="font-size:11.5px">배정 즉시 해당 코치에게 알림이 발송되며, 대상자는 코치의 자료·피드백에 접근할 수 있습니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">${ico('chart')}<h3>배정 현황 · 피드백 작성률</h3><span class="spacer"></span>
+      <button class="btn sm" id="csv">${ico('dl')} 내보내기</button></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>코치</th><th class="tc">담당 대상자</th><th>참여 프로젝트</th><th>이번 주 피드백 작성률</th><th class="tc">미작성</th><th class="tc">관리</th></tr></thead>
+        <tbody id="arows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mask" id="cM">
+    <div class="modal wide">
+      <div class="modal-h"><h3 id="cmT">코치 상세</h3><button class="x" onclick="closeM('cM')">${ico('x')}</button></div>
+      <div class="modal-b" id="cmB"></div>
+      <div class="modal-f">
+        <button class="btn" onclick="closeM('cM')">닫기</button>
+        <button class="btn pri" id="cmRemind">${ico('send')} 피드백 작성 리마인드</button>
+      </div>
+    </div>
+  </div>`;
+
+  bindMask();
+  $('#mUn').onclick  = () => { poolMode = 'un';  $('#mUn').classList.add('on'); $('#mAll').classList.remove('on'); pool(); };
+  $('#mAll').onclick = () => { poolMode = 'all'; $('#mAll').classList.add('on'); $('#mUn').classList.remove('on'); pool(); };
+  $('#pq').oninput = pool;
+  $('#pAll').onchange = e => { poolList().forEach(m => e.target.checked ? SEL.add(m.id) : SEL.delete(m.id)); pool(); };
+  $('#doAssign').onclick = doAssign;
+  $('#csv').onclick = () => {
+    const rows = [['코치','자격','전문 분야','담당 대상자','참여 프로젝트','피드백 작성률(%)','미작성 건수','만족도']];
+    COACHES.forEach(c => rows.push([c.name, SPEC_LABEL[c.id], (c.spec||[]).join(' / '), cMembers(c.id).length, cProjects(c.id).length, FBRATE[c.id], MISS[c.id], c.rating]));
+    downloadCSV('코치배정현황.csv', rows);
+  };
+  cards(); pool(); arows();
+}
+
+function cards(){
+  $('#cgrid').innerHTML = COACHES.map(c => {
+    const n = cMembers(c.id).length, pr = cProjects(c.id).length, rate = FBRATE[c.id];
+    return `<div class="ccard">
+      <div class="row" style="gap:11px">
+        ${avatar(c,'lg')}
+        <span class="col" style="flex:1">
+          <b style="font-size:15px">${esc(c.name)}</b>
+          <small class="muted">${esc(c.title)}</small>
+        </span>
+        <span class="badge brand">${SPEC_LABEL[c.id]}</span>
+      </div>
+      <div class="row wrap" style="gap:5px">${(c.spec||[]).map(s => `<span class="chip" style="cursor:default;font-size:11px;padding:3px 9px">${esc(s)}</span>`).join('')}</div>
+      <div class="row between small muted">
+        <span>${ico('cal','')} 활동 시작 ${esc(c.since)}년</span>
+        <span class="star">★ ${c.rating}</span>
+      </div>
+      <div class="st">
+        <div><b class="num">${n}</b><small>담당 대상자</small></div>
+        <div><b class="num">${pr}</b><small>참여 프로젝트</small></div>
+      </div>
+      <div>
+        <div class="row between small" style="margin-bottom:4px"><span class="muted">진행 중 세션</span><b class="num">${rate}%</b></div>
+        <span class="pbar${pbarCls(rate)}"><i style="width:${rate}%"></i></span>
+      </div>
+      <button class="btn soft sm block" onclick="openCoach('${c.id}')">${ico('user')} 상세 보기</button>
+    </div>`;
+  }).join('');
+}
+
+function poolList(){
+  const q = ($('#pq') ? $('#pq').value : '').trim().toLowerCase();
+  return MEM.filter(m => (poolMode === 'un' ? !m.coachId : true))
+            .filter(m => !q || m.name.toLowerCase().includes(q) || m.org.toLowerCase().includes(q));
+}
+function pool(){
+  const list = poolList();
+  $('#plist').innerHTML = list.length ? list.map(m => {
+    const c = m.coachId ? uById(m.coachId) : null;
+    return `<label class="pitem ${SEL.has(m.id)?'on':''}">
+      <input type="checkbox" ${SEL.has(m.id)?'checked':''} onchange="togglePool('${m.id}',this.checked)"/>
+      ${avatar(m,'sm')}
+      <span class="col" style="flex:1"><b style="font-size:13px">${esc(m.name)}</b><small class="muted">${esc(m.org)} · ${esc(m.title)}</small></span>
+      ${c ? `<span class="badge gray">${esc(c.name)}</span>` : '<span class="badge warn">미배정</span>'}
+    </label>`;
+  }).join('') : `<div class="empty" style="padding:36px 16px"><b>대상자가 없습니다</b><span class="small">모든 대상자가 코치에게 배정되었습니다.</span></div>`;
+
+  const n = SEL.size;
+  $('#selN').textContent = n + '명';
+  $('#doAssign').disabled = n === 0;
+  $('#pAll').checked = list.length > 0 && list.every(m => SEL.has(m.id));
+  $('#unKpi').textContent = MEM.filter(m => !m.coachId).length;
+}
+function togglePool(id, on){ on ? SEL.add(id) : SEL.delete(id); pool(); }
+
+function doAssign(){
+  const cid = $('#tCoach').value, c = uById(cid);
+  const n = SEL.size;
+  MEM.forEach(m => { if(SEL.has(m.id)) m.coachId = cid; });
+  SEL.clear();
+  pool(); cards(); arows();
+  toast(n + '명을 ' + c.name + '에게 배정했습니다.');
+}
+
+function arows(){
+  $('#arows').innerHTML = COACHES.map(c => {
+    const rate = FBRATE[c.id], miss = MISS[c.id];
+    const prs = cProjects(c.id).map(pname);
+    return `<tr>
+      <td><span class="row" style="gap:8px">${avatar(c,'sm')}<span class="col"><span class="nm">${esc(c.name)}</span><span class="sub">${esc(c.title)}</span></span></span></td>
+      <td class="tc"><b class="num">${cMembers(c.id).length}</b><span class="muted small">명</span></td>
+      <td class="small">${prs.length ? prs.map(p => `<span class="badge gray" style="margin:1px 2px 1px 0">${esc(p)}</span>`).join('') : '<span class="muted">-</span>'}</td>
+      <td><span class="pcell"><b class="num">${rate}%</b><span class="pbar${pbarCls(rate)}"><i style="width:${rate}%"></i></span></span></td>
+      <td class="tc">${miss > 4 ? `<span class="badge danger">${miss}건</span>` : miss > 0 ? `<span class="badge warn">${miss}건</span>` : '<span class="badge ok">0건</span>'}</td>
+      <td class="tc"><button class="btn sm" onclick="remind('${c.id}')">${ico('bell')} 리마인드</button></td>
+    </tr>`;
+  }).join('');
+}
+function remind(cid){ toast(uById(cid).name + '에게 피드백 작성 리마인드를 발송했습니다.'); }
+
+function openCoach(cid){
+  curCoach = cid;
+  const c = uById(cid), ms = cMembers(cid), rate = FBRATE[cid];
+  $('#cmT').textContent = c.name + ' 상세';
+  $('#cmB').innerHTML = `
+    <div class="row" style="gap:14px;padding-bottom:16px;border-bottom:1px solid var(--line-2)">
+      ${avatar(c,'xl')}
+      <div class="col" style="gap:3px;flex:1">
+        <b style="font-size:17px">${esc(c.name)} <span class="badge brand">${SPEC_LABEL[cid]}</span></b>
+        <span class="muted small">${esc(c.title)} · ${esc(c.email)}</span>
+        <span class="row wrap" style="gap:5px;margin-top:4px">
+          ${(c.spec||[]).map(s => `<span class="chip" style="cursor:default;font-size:11px;padding:3px 9px">${esc(s)}</span>`).join('')}
+          <span class="badge warn">★ ${c.rating}</span>
+          <span class="badge gray">${esc(c.since)}년~</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="grid g2 mt16">
+      <div>
+        <div class="sec-t">${ico('users')} 담당 대상자 (${ms.length})</div>
+        <div style="max-height:210px;overflow-y:auto">
+          ${ms.length ? ms.map(m => `<div class="li">
+            ${avatar(m,'sm')}
+            <span class="col"><b>${esc(m.name)}</b><small>${esc(m.org)} · ${esc(m.title)}</small></span>
+            <span class="badge gray">${esc(pname(m.projectId))}</span>
+          </div>`).join('') : '<div class="empty" style="padding:30px"><b>배정된 대상자가 없습니다</b></div>'}
+        </div>
+      </div>
+      <div>
+        <div class="sec-t">${ico('doc')} 코칭로그 작성 현황</div>
+        <div class="li"><span class="col"><b>세션 로그 작성</b><small>총 ${ms.length * 4}회 세션 기준</small></span>
+          <span class="badge ok">${Math.round(rate * 0.96)}%</span></div>
+        <div class="li"><span class="col"><b>주간 피드백</b><small>이번 주 마감 D-2</small></span>
+          <span class="badge ${MISS[cid] > 4 ? 'danger' : 'warn'}">미작성 ${MISS[cid]}건</span></div>
+        <div class="li"><span class="col"><b>부스터 발송</b><small>세션 간 실행 관리</small></span>
+          <span class="badge info">${ms.length * 2}건</span></div>
+        <div class="sec-t mt16">${ico('bars')} 항목별 피드백률</div>
+        <div id="cmChart"></div>
+      </div>
+    </div>`;
+  openM('cM');
+  $('#cmRemind').onclick = () => { remind(cid); closeM('cM'); };
+  hbar('#cmChart', [
+    ['코칭로그', Math.round(rate*0.96), null],
+    ['주간 피드백', rate, null],
+    ['부스터 응답', Math.round(rate*0.88), null],
+    ['체크인 코멘트', Math.round(rate*0.79), null],
+  ], { labelW:74, unit:'%', showPct:false, color:c.color });
+}
+
+if(u) render();
+</script>
+</body>
+</html>
