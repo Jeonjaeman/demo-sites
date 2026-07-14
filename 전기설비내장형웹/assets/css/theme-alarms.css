@@ -1,0 +1,1 @@
+body[data-theme="alarms"]{--theme-accent:var(--color-warning);--theme-accent-dark:var(--color-warning);--theme-tint:var(--color-surface-pressed);--theme-sub-active:var(--color-chrome-700)}body[data-theme="alarms"] .brand__mark{border-color:var(--color-warning)}

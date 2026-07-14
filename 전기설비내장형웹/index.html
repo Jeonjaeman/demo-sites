@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="폐쇄망 전기설비 임베디드 PC용 로컬 웹 대시보드">
+  <link rel="icon" href="data:,">
+  <title>VoltGuard Console · 설비 개요</title>
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <link id="menu-theme" rel="stylesheet" href="assets/css/theme-overview.css">
+  <script defer src="assets/js/mock-db.js"></script>
+  <script defer src="assets/js/local-chart.js"></script>
+  <script defer src="assets/js/app.js"></script>
+</head>
+<body data-theme="overview" data-drawer-open="false">
+  <a class="skip-link" href="#main-content">본문으로 건너뛰기</a>
+  <header class="app-header">
+    <button class="icon-button app-header__menu" id="menu-toggle" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sidebar"><span class="hamburger" aria-hidden="true"></span></button>
+    <a class="brand" href="#overview">
+      <span class="brand__mark" aria-hidden="true">VG</span>
+      <span><strong>VoltGuard</strong><small>Electrical Console</small></span>
+    </a>
+    <div class="app-header__site"><span class="eyebrow">SITE</span><strong>서부 제1배전반</strong></div>
+    <div class="app-header__status">
+      <span class="status status--offline">폐쇄망 · 로컬</span>
+      <span class="header-clock u-mono" id="header-clock">--:--:--</span>
+      <span class="operator">운전원 01</span>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="주 메뉴">
+      <div class="sidebar__system"><span class="status status--normal">시스템 정상</span><span class="u-mono">VG-IPC-01</span></div>
+      <nav aria-label="대시보드 메뉴">
+        <section class="nav-group" data-main="overview">
+          <button class="nav-main" type="button" data-main-target="overview" aria-expanded="true"><span class="nav-icon nav-icon--overview" aria-hidden="true"></span><span>개요</span></button>
+          <div class="nav-sub" role="group" aria-label="개요 보조 메뉴"><a href="#overview" data-view="overview">설비 개요</a></div>
+        </section>
+        <section class="nav-group" data-main="power">
+          <button class="nav-main" type="button" data-main-target="power" aria-expanded="false"><span class="nav-icon nav-icon--power" aria-hidden="true"></span><span>전력 계측</span></button>
+          <div class="nav-sub" role="group" aria-label="전력 계측 보조 메뉴" hidden>
+            <a href="#realtime" data-view="realtime">실시간 값</a>
+            <a href="#load-trend" data-view="load-trend">부하 추이</a>
+            <a href="#power-quality" data-view="power-quality">전력 품질</a>
+          </div>
+        </section>
+        <section class="nav-group" data-main="equipment">
+          <button class="nav-main" type="button" data-main-target="equipment" aria-expanded="false"><span class="nav-icon nav-icon--equipment" aria-hidden="true"></span><span>설비 관리</span></button>
+          <div class="nav-sub" role="group" aria-label="설비 관리 보조 메뉴" hidden>
+            <a href="#equipment-list" data-view="equipment-list">설비 목록</a>
+            <a href="#inspection-history" data-view="inspection-history">점검 이력</a>
+          </div>
+        </section>
+        <section class="nav-group" data-main="alarms">
+          <button class="nav-main" type="button" data-main-target="alarms" aria-expanded="false"><span class="nav-icon nav-icon--alarms" aria-hidden="true"></span><span>알람 관리</span><span class="nav-count"><span class="sr-only">미확인 알람 </span>2<span class="sr-only">건</span></span></button>
+          <div class="nav-sub" role="group" aria-label="알람 관리 보조 메뉴" hidden>
+            <a href="#alarm-status" data-view="alarm-status">알람 현황</a>
+            <a href="#alarm-history" data-view="alarm-history">알람 이력</a>
+          </div>
+        </section>
+      </nav>
+      <div class="sidebar__footer"><span>Ubuntu 24.04 LTS</span><span class="u-mono">APP v0.9.4</span></div>
+    </aside>
+    <button class="sidebar-scrim" id="sidebar-scrim" type="button" aria-label="메뉴 닫기" tabindex="-1"></button>
+
+    <main class="workspace" id="main-content" tabindex="-1">
+      <header class="page-header">
+        <div>
+          <p class="breadcrumb"><span id="breadcrumb-main">개요</span><span aria-hidden="true">/</span><strong id="breadcrumb-sub">설비 개요</strong></p>
+          <h1 id="page-title">설비 개요</h1>
+          <p class="page-description" id="page-description">배전반 상태와 전력 흐름을 통합 조회합니다.</p>
+        </div>
+        <div class="page-header__meta"><span>마지막 집계</span><strong class="u-mono">2026-07-14 21:16:00</strong><span class="status status--normal">수집 정상</span></div>
+      </header>
+      <!-- FUTURE CONTENT INSERTION POINT: PHP/MariaDB 응답으로 교체될 본문 영역 -->
+      <div class="view-root" id="view-root" aria-live="polite"></div>
+    </main>
+  </div>
+  <div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <template id="template-overview">
+    <div class="dashboard-grid">
+      <section class="metric-strip panel" aria-label="핵심 전력 지표">
+        <div class="metric-cell" data-metric="voltage"></div><div class="metric-cell" data-metric="current"></div><div class="metric-cell" data-metric="frequency"></div>
+        <div class="metric-cell" data-metric="activePower"></div><div class="metric-cell" data-metric="powerFactor"></div><div class="metric-cell" data-metric="todayEnergy"></div>
+      </section>
+      <section class="panel chart-panel grid-span-8" aria-labelledby="overview-chart-title">
+        <div class="panel__header">
+          <div><h2 id="overview-chart-title">24시간 유효전력</h2><span class="panel__meta">MAIN ACB · 15분 집계</span></div>
+          <div class="chart-actions"><div class="segmented" role="group" aria-label="조회 기간"><button type="button" aria-pressed="true" data-range="24h">24시간</button><button type="button" aria-pressed="false" data-range="7d">7일</button></div><button class="text-button" type="button" data-table-toggle aria-expanded="false">데이터 표</button></div>
+        </div>
+        <div class="panel__body chart-host" data-chart="load">
+          <p class="chart-summary" data-chart-summary></p><div class="chart-legend" data-chart-legend></div>
+          <div class="canvas-wrap"><canvas data-chart-canvas tabindex="0" role="img" aria-label="유효전력과 목표 부하 추이"></canvas><div class="chart-tooltip" data-chart-tooltip hidden></div></div>
+          <p class="sr-only" aria-live="polite" data-chart-live></p>
+          <div class="chart-table-wrap" data-chart-table-wrap hidden><table class="data-table"><caption>유효전력 상세 데이터</caption><thead><tr><th scope="col">시각</th><th scope="col">유효전력(kW)</th><th scope="col">목표 부하(kW)</th></tr></thead><tbody data-chart-table></tbody></table></div>
+        </div>
+      </section>
+      <section class="panel phase-panel grid-span-4" aria-labelledby="phase-title"><div class="panel__header"><div><h2 id="phase-title">상별 부하율</h2><span class="panel__meta">정격 2,000A</span></div></div><div class="panel__body" data-phase-bars></div></section>
+      <section class="panel grid-span-8" aria-labelledby="equipment-title">
+        <div class="panel__header"><div><h2 id="equipment-title">주요 설비 상태</h2><span class="panel__meta">6대 중 5대 정상</span></div><button class="text-button" type="button" data-go-view="equipment-list">전체 보기</button></div>
+        <div class="table-scroll" tabindex="0" aria-label="주요 설비 상태 표"><table class="data-table equipment-table"><thead><tr><th scope="col">설비명</th><th scope="col">운전</th><th scope="col">부하율</th><th scope="col">온도</th><th scope="col">상태</th></tr></thead><tbody data-equipment-rows></tbody></table></div>
+      </section>
+      <section class="panel grid-span-4 status-summary" aria-labelledby="summary-title"><div class="panel__header"><h2 id="summary-title">운전 요약</h2></div><div class="summary-list"><div><span>정상 설비</span><strong class="u-mono">5</strong><small>/ 6</small></div><div><span>금일 경보</span><strong class="u-mono">2</strong><small>건</small></div><div><span>통신 상태</span><strong class="status status--normal">6 / 6 연결</strong></div></div></section>
+      <section class="alarm-strip grid-span-12" aria-labelledby="recent-alarm-title">
+        <div><span class="alarm-strip__kicker">최근 알람</span><h2 id="recent-alarm-title">CAP BANK #1 온도 상승</h2></div>
+        <dl><div><dt>발생</dt><dd class="u-mono">20:42:18</dd></div><div><dt>현재</dt><dd>71.2°C</dd></div><div><dt>등급</dt><dd><span class="status status--warning">주의</span></dd></div></dl>
+        <button class="text-button text-button--dark" type="button" data-go-view="alarm-status">알람 현황 보기</button>
+      </section>
+    </div>
+  </template>
+
+  <template id="template-load-trend">
+    <div class="single-view">
+      <section class="panel chart-panel" aria-labelledby="trend-chart-title">
+        <div class="panel__header">
+          <div><h2 id="trend-chart-title">MAIN ACB 부하 추이</h2><span class="panel__meta">로컬 더미 테이블 · 자동 집계</span></div>
+          <div class="chart-actions"><div class="segmented" role="group" aria-label="조회 기간"><button type="button" aria-pressed="true" data-range="24h">24시간</button><button type="button" aria-pressed="false" data-range="7d">7일</button></div><button class="text-button" type="button" data-table-toggle aria-expanded="false">데이터 표</button></div>
+        </div>
+        <div class="panel__body chart-host chart-host--large" data-chart="load">
+          <p class="chart-summary" data-chart-summary></p><div class="chart-legend" data-chart-legend></div>
+          <div class="canvas-wrap"><canvas data-chart-canvas tabindex="0" role="img" aria-label="유효전력과 목표 부하 추이"></canvas><div class="chart-tooltip" data-chart-tooltip hidden></div></div>
+          <p class="sr-only" aria-live="polite" data-chart-live></p>
+          <div class="chart-table-wrap" data-chart-table-wrap hidden><table class="data-table"><caption>부하 추이 상세 데이터</caption><thead><tr><th scope="col">시각</th><th scope="col">유효전력(kW)</th><th scope="col">목표 부하(kW)</th></tr></thead><tbody data-chart-table></tbody></table></div>
+        </div>
+      </section>
+      <aside class="adapter-note" aria-label="데이터 어댑터 안내"><strong>로컬 데이터 어댑터</strong><span>현재는 결정적 JavaScript 더미 데이터를 사용합니다. 운영 단계에서 같은 응답 형식의 PHP/MariaDB API로 교체할 수 있습니다.</span><code>GET /api/power/load?range=24h</code></aside>
+    </div>
+  </template>
+</body>
+</html>

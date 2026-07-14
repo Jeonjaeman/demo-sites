@@ -1,0 +1,12 @@
+@media (max-width: 63.9375rem) {
+  .phase-panel,
+  .chart-panel {
+    order: initial;
+  }
+}
+
+@media (max-width: 39.9375rem) {
+  .equipment-table {
+    min-width: 35rem;
+  }
+}

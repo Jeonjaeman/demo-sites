@@ -1,0 +1,1 @@
+body[data-theme="power"]{--theme-accent:var(--color-data-cyan);--theme-accent-dark:var(--color-data-cyan);--theme-tint:var(--color-surface-pressed);--theme-sub-active:var(--color-chrome-700)}body[data-theme="power"] .brand__mark{border-color:var(--color-data-cyan)}

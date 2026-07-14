@@ -1,0 +1,75 @@
+:root {
+  color-scheme: light;
+  --color-chrome-900: #111820;
+  --color-chrome-800: #1b2630;
+  --color-chrome-700: #263746;
+  --color-canvas: #eef1f4;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f6f8fa;
+  --color-surface-pressed: #e7eef7;
+  --color-text-900: #17212b;
+  --color-text-600: #52606d;
+  --color-text-500: #697782;
+  --color-text-on-dark: #f4f7fa;
+  --color-text-on-dark-muted: #b9c4cd;
+  --color-border: #c7d0d8;
+  --color-border-subtle: #dce2e7;
+  --color-signal-600: #0f62fe;
+  --color-signal-700: #0043ce;
+  --color-signal-100: #e5f0ff;
+  --color-data-cyan: #007d95;
+  --color-success: #198038;
+  --color-success-on-dark: #42be65;
+  --color-warning: #b25e09;
+  --color-warning-on-dark: #f1c21b;
+  --color-danger: #da1e28;
+  --color-danger-on-dark: #fa4d56;
+  --color-offline: #5c6f7b;
+  --color-scrim: rgba(17, 24, 32, 0.62);
+  --shadow-overlay: 0 8px 32px rgba(0, 0, 0, 0.28);
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --text-display: 2rem;
+  --text-h1: 1.5rem;
+  --text-h2: 1.125rem;
+  --text-h3: 1rem;
+  --text-body: 0.9375rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-data-lg: 1.875rem;
+  --text-data: 1rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --size-header: 3.5rem;
+  --size-sidebar: 15rem;
+  --size-target: 2.75rem;
+  --border-default: 1px solid var(--color-border);
+  --border-subtle: 1px solid var(--color-border-subtle);
+  --focus-ring: 2px solid var(--color-signal-600);
+  --motion-micro: 120ms;
+  --motion-standard: 220ms;
+  --motion-emphasis: 320ms;
+  --ease-standard: ease-in-out;
+  --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-drawer: 30;
+  --z-toast: 50;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-border: var(--color-text-900);
+    --color-border-subtle: var(--color-text-600);
+  }
+}

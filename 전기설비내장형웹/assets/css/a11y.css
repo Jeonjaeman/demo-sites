@@ -1,0 +1,28 @@
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.app-header .status--offline {
+  --status-color: var(--color-text-on-dark-muted);
+}
+
+.sidebar .status--normal {
+  --status-color: var(--color-success-on-dark);
+}
+
+.alarm-strip .status--warning {
+  --status-color: var(--color-warning-on-dark);
+}
+
+.brand small,
+.sidebar__footer {
+  font-size: var(--text-caption);
+}
