@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-density="comfortable">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>디자인 시스템 — VOLTA Scheduler</title>
+<meta name="description" content="VOLTA Scheduler 컴포넌트 가이드 — 개발 적용을 위한 라이브 코드 디자인 시스템" />
+<meta name="theme-color" content="#0b0d11" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='19' font-size='19'>⚡</text></svg>" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  :root{ --code-bg:#12151b; --code-fg:#e7ebf2; --code-fg-2:#9aa5b8; --code-key:#7ba2ff; --code-str:#8bd17c; --code-attr:#f0b429; }
+  html[data-theme="dark"]{ --code-bg:#1b2028; --code-fg:#e7ebf2; --code-fg-2:#8b95a8; }
+
+  /* ---------- doc shell ---------- */
+  .docshell{display:flex;min-height:100vh;align-items:flex-start}
+  .docnav{
+    width:266px;flex:0 0 266px;background:var(--surface);border-right:1px solid var(--line);
+    height:100vh;position:sticky;top:0;display:flex;flex-direction:column;z-index:40;
+  }
+  .docnav__brand{height:var(--top-h);display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--line);flex:0 0 auto}
+  .docnav__brand b{font-size:14.5px;letter-spacing:-.01em;display:block;line-height:1.15}
+  .docnav__brand small{display:block;font-size:9.5px;letter-spacing:.16em;color:var(--faint);font-weight:700}
+  .docnav__list{flex:1;overflow-y:auto;padding:12px 10px}
+  .docnav__gtitle{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--faint);text-transform:uppercase;padding:14px 10px 6px}
+  .docnav__list a{
+    display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:var(--r-md);color:var(--ink-2);
+    font-size:13px;font-weight:600;transition:background var(--fast),color var(--fast);position:relative;
+  }
+  .docnav__list a:hover{background:var(--surface-3);color:var(--ink)}
+  .docnav__list a.is-on{background:var(--surface-3);color:var(--ink);font-weight:700}
+  .docnav__list a.is-on::before{content:"";position:absolute;left:-10px;top:50%;transform:translateY(-50%);width:3px;height:15px;border-radius:0 3px 3px 0;background:var(--accent)}
+  .docnav__list a b{font-variant-numeric:tabular-nums;font-size:10.5px;color:var(--faint);width:15px;flex:0 0 auto}
+  .docnav__foot{padding:12px 14px 16px;border-top:1px solid var(--line);flex:0 0 auto;font-size:11px;color:var(--faint);line-height:1.6}
+
+  .docmain{flex:1;min-width:0;display:flex;flex-direction:column}
+  .doctop{
+    height:var(--top-h);flex:0 0 var(--top-h);
+    background:color-mix(in srgb,var(--surface) 88%,transparent);
+    backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:14px;padding:0 26px;position:sticky;top:0;z-index:30;
+  }
+  .backlink{font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .backlink:hover{color:var(--ink)}
+  .doctop__tools{margin-left:auto;display:flex;align-items:center;gap:10px}
+  .docprogress{height:2px;background:var(--surface-2);position:sticky;top:var(--top-h);z-index:29}
+  .docprogress i{display:block;height:100%;width:0%;background:var(--accent);transition:width .08s linear}
+
+  .docbody{padding:42px 46px 130px;max-width:1180px;width:100%}
+  .sectioneyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;display:flex;align-items:center;gap:9px}
+  .sectioneyebrow b{font-variant-numeric:tabular-nums;background:var(--accent-soft);color:var(--accent);width:22px;height:22px;border-radius:99px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}
+  .sectiontitle{font-size:25px;font-weight:800;letter-spacing:-.02em;margin-top:10px}
+  .sectiondesc{font-size:13.5px;color:var(--muted);margin-top:7px;max-width:74ch;line-height:1.65}
+  section.docsec{padding-top:60px;scroll-margin-top:calc(var(--top-h) + 18px)}
+  section.docsec:first-of-type{padding-top:0}
+
+  .principles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px}
+  .principle{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh-1)}
+  .principle .pic{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:12px}
+  .principle .pic svg{width:18px;height:18px}
+  .principle h4{font-size:14.5px;font-weight:800;margin-bottom:6px}
+  .principle p{font-size:12.5px;color:var(--muted);line-height:1.65}
+
+  .groupbar{display:flex;align-items:baseline;gap:10px;margin:34px 0 2px}
+  .groupbar:first-of-type{margin-top:18px}
+  .groupbar h3{font-size:15px;font-weight:800}
+  .groupbar span{font-size:11.5px;color:var(--muted)}
+
+  .note--callout{margin-top:14px}
+
+  .swatchgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(184px,1fr));gap:14px;margin-top:16px}
+  .swatch{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);box-shadow:var(--sh-1)}
+  .swatch__fill{height:60px;position:relative}
+  .swatch__fill.checker{background-image:linear-gradient(45deg,var(--surface-3) 25%,transparent 25%),linear-gradient(-45deg,var(--surface-3) 25%,transparent 25%),linear-gradient(45deg,transparent 75%,var(--surface-3) 75%),linear-gradient(-45deg,transparent 75%,var(--surface-3) 75%);background-size:16px 16px;background-position:0 0,0 8px,8px -8px,-8px 0}
+  .swatch__fill.checker i{position:absolute;inset:0}
+  .swatch__meta{padding:11px 13px 13px}
+  .swatch__meta code{font-size:11px;font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;color:var(--ink-2);display:block}
+  .swatch__meta b{font-size:12.5px;display:block;margin-top:3px;font-variant-numeric:tabular-nums;font-family:ui-monospace,monospace}
+  .swatch__meta p{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5;min-height:26px}
+  .cbadge{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;padding:3px 7px;border-radius:99px;margin-top:8px;letter-spacing:.02em}
+  .cbadge--pass{background:var(--ok-bg);color:var(--ok-fg)}
+  .cbadge--fail{background:var(--danger-bg);color:var(--danger-fg)}
+  .cbadge--info{background:var(--info-bg);color:var(--info-fg)}
+
+  .typebox{border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);margin-top:16px;overflow:hidden;box-shadow:var(--sh-1)}
+  .typerow{display:flex;align-items:center;gap:20px;padding:18px 22px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .typerow:last-child{border-bottom:0}
+  .typerow .sample{flex:1;min-width:220px}
+  .typerow .meta{flex:0 0 auto;text-align:right;margin-left:auto}
+  .typerow .meta b{font-size:12px;display:block;color:var(--ink-2)}
+  .typerow .meta span{font-size:10.5px;color:var(--muted);display:block;margin-top:2px;font-family:ui-monospace,monospace}
+
+  .tokrow-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:14px;margin-top:16px}
+  .tok-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 12px;text-align:center;box-shadow:var(--sh-1)}
+  .tok-card b{font-size:12px;display:block;font-family:ui-monospace,monospace}
+  .tok-card span{font-size:10.5px;color:var(--muted);font-family:ui-monospace,monospace;display:block;margin-top:2px}
+  .spacer-demo{background:var(--accent-soft);border:1px dashed var(--accent);margin:0 auto 10px;border-radius:2px}
+  .radius-demo{width:52px;height:52px;background:var(--n-800);margin:0 auto 10px}
+  html[data-theme="dark"] .radius-demo{background:var(--volt-500)}
+  .shadow-demo{width:100%;height:52px;border-radius:var(--r-md);background:var(--surface);margin-bottom:12px}
+
+  .icongrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;margin-top:16px}
+  .icontile{display:flex;flex-direction:column;align-items:center;gap:7px;padding:13px 4px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--surface);color:var(--ink-2);transition:background var(--fast),border-color var(--fast),color var(--fast),transform var(--fast)}
+  .icontile:hover{background:var(--surface-3);border-color:var(--line-strong);color:var(--ink);transform:translateY(-1px)}
+  .icontile svg{width:19px;height:19px}
+  .icontile span{font-size:9px;font-family:ui-monospace,monospace;text-align:center;word-break:break-all;line-height:1.3}
+
+  .demo{border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);margin-top:16px;box-shadow:var(--sh-1)}
+  .demo__label{padding:13px 18px 0;font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+  .demo__stage{padding:18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .demo__stage.col{flex-direction:column;align-items:stretch}
+  .demo__stage.grid2c{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .demo__code{position:relative;border-top:1px solid var(--line)}
+  .demo__code pre{margin:0;padding:16px 46px 16px 18px;overflow-x:auto;background:var(--code-bg);color:var(--code-fg);font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;font-size:12px;line-height:1.7}
+  .demo__code .cm{color:var(--code-fg-2)}
+  .demo__code .ck{color:var(--code-key)}
+  .demo__copy{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.08);color:#cdd3de;display:grid;place-items:center;transition:background var(--fast),color var(--fast)}
+  .demo__copy:hover{background:rgba(255,255,255,.18);color:#fff}
+  .demo__copy svg{width:14px;height:14px}
+
+  .checklist{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .checkitem{display:flex;gap:13px;padding:14px 16px;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+  .checkitem .ic{width:30px;height:30px;border-radius:9px;background:var(--ok-bg);color:var(--ok-fg);display:grid;place-items:center;flex:0 0 30px}
+  .checkitem .ic svg{width:16px;height:16px}
+  .checkitem h5{font-size:13.5px;font-weight:700}
+  .checkitem p{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
+  .checkitem code{font-family:ui-monospace,monospace;font-size:11px;background:var(--surface-3);padding:1px 5px;border-radius:4px;color:var(--ink-2)}
+
+  .handoff-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  .handoff-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh-1)}
+  .handoff-card h4{font-size:14px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+  .handoff-card h4 svg{width:16px;height:16px;color:var(--accent)}
+  .handoff-card p{font-size:12.5px;color:var(--ink-2);line-height:1.7}
+  .handoff-card ul{padding-left:18px;list-style:disc;margin-top:8px}
+  .handoff-card li{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+  .handoff-card code{font-family:ui-monospace,monospace;font-size:11.5px;background:var(--surface-3);padding:1px 5px;border-radius:4px}
+
+  .gantt-demo{background:var(--surface-2);border-radius:var(--r-md);padding:14px;overflow-x:auto}
+  .gantt-row{display:flex;align-items:center;gap:10px;height:34px;white-space:nowrap}
+  .gantt-name{width:120px;flex:0 0 120px;font-size:12px;font-weight:700;color:var(--ink-2)}
+  .gantt-track{position:relative;height:22px;flex:1;min-width:420px;background:repeating-linear-gradient(90deg,transparent,transparent 51px,var(--line) 51px,var(--line) 52px)}
+  .gantt-bar{position:absolute;top:2px;height:18px;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:10.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;box-shadow:var(--sh-1)}
+
+  @media (max-width:1024px){
+    .docnav{display:none}
+    .docbody{padding:28px 20px 100px}
+    .principles,.handoff-grid,.demo__stage.grid2c{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="docshell">
+
+  <aside class="docnav">
+    <div class="docnav__brand">
+      <span class="brandmark" style="width:28px;height:28px;flex-basis:28px;border-radius:8px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span>
+      <div><b>디자인 시스템</b><small>VOLTA SCHEDULER</small></div>
+    </div>
+    <nav class="docnav__list" id="tocList">
+      <div class="docnav__gtitle">가이드</div>
+      <a href="#s1"><b>01</b>개요</a>
+      <a href="#s2"><b>02</b>컬러 토큰</a>
+      <a href="#s3"><b>03</b>타이포그래피</a>
+      <a href="#s4"><b>04</b>스페이싱·라디우스·그림자</a>
+      <a href="#s5"><b>05</b>아이콘</a>
+      <a href="#s6"><b>06</b>컴포넌트</a>
+      <a href="#s7"><b>07</b>스케줄 전용 컴포넌트</a>
+      <a href="#s8"><b>08</b>반응형 브레이크포인트</a>
+      <a href="#s9"><b>09</b>접근성 체크리스트</a>
+      <a href="#s10"><b>10</b>개발 인계 노트</a>
+    </nav>
+    <div class="docnav__foot">assets/style.css를 원본(source of truth)으로 문서화됨. 토큰이 바뀌면 이 페이지도 자동으로 함께 갱신됩니다.</div>
+  </aside>
+
+  <div class="docmain">
+    <header class="doctop">
+      <a class="backlink" href="index.html">← 데모로 돌아가기</a>
+      <div class="doctop__tools">
+        <div class="seg seg--sm" id="densitySeg" role="group" aria-label="밀도 전환">
+          <button type="button" data-density="comfortable" class="is-on">쾌적</button>
+          <button type="button" data-density="compact">컴팩트</button>
+        </div>
+        <button class="iconbtn" id="themeBtn" aria-label="테마 전환"></button>
+      </div>
+    </header>
+    <div class="docprogress"><i id="progressBar"></i></div>
+
+    <main class="docbody">
+
+      <!-- ============ 01 개요 ============ -->
+      <section class="docsec" id="s1">
+        <div class="sectioneyebrow"><b>01</b>Overview</div>
+        <h2 class="sectiontitle">개요</h2>
+        <p class="sectiondesc">이 페이지는 피그마를 대신하는 <b>라이브 코드 디자인 시스템</b>입니다. 실제 <code class="mono">assets/style.css</code>를 그대로 로드해 렌더링하므로, 여기서 보는 값은 곧 프로덕션에서 쓰이는 값입니다. 우상단의 밀도·테마 토글로 모든 예시가 실시간으로 바뀌는 것을 확인할 수 있습니다.</p>
+        <div class="principles">
+          <div class="principle">
+            <div class="pic" id="picField"></div>
+            <h4>1. 현장 우선 (Field-First)</h4>
+            <p><b>근거</b> — 다수 사용자가 장갑 낀 손, 직사광선 아래 옥외 현장에서 모바일로 접속합니다. 큰 터치 타깃(44px 이상)과 고대비, 단순한 정보 구조를 최우선으로 설계합니다.</p>
+          </div>
+          <div class="principle">
+            <div class="pic" id="picDensity"></div>
+            <h4>2. 데이터 밀도와 가독성의 균형</h4>
+            <p><b>근거</b> — 스케줄러는 수백 명의 기술자·수십 개 프로젝트를 한 화면에서 다뤄야 합니다. compact 밀도 모드와 tabular-nums, 명확한 위계의 타이포 스케일로 밀도와 가독성을 동시에 확보합니다.</p>
+          </div>
+          <div class="principle">
+            <div class="pic" id="picTriple"></div>
+            <h4>3. 상태는 색+아이콘+텍스트 3중 표현</h4>
+            <p><b>근거</b> — 충돌·가동률·휴가 승인 상태는 업무상 중대한 신호입니다. 색상만으로 전달하면 색각 이상 사용자가 배제되므로, 배지에는 항상 아이콘과 텍스트 라벨을 병행합니다(색맹 대응).</p>
+          </div>
+          <div class="principle">
+            <div class="pic" id="picUndo"></div>
+            <h4>4. 모든 액션은 되돌릴 수 있게</h4>
+            <p><b>근거</b> — 배정 삭제, 휴가 반려 등은 실무에 즉각 영향을 미칩니다. 파괴적 액션에는 확인 모달과 실행취소(undo) 토스트를 기본 제공해 실수 비용을 낮춥니다.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 02 컬러 토큰 ============ -->
+      <section class="docsec" id="s2">
+        <div class="sectioneyebrow"><b>02</b>Color Tokens</div>
+        <h2 class="sectiontitle">컬러 토큰</h2>
+        <p class="sectiondesc">모든 값은 <code class="mono">getComputedStyle</code>로 브라우저가 실제 계산한 색을 실시간으로 읽어옵니다. 테마를 전환하면 아래 값과 대비 판정 뱃지가 즉시 재계산됩니다. 대비 판정은 <b>WCAG AA</b> 기준(본문 4.5:1 · 굵은 대형 텍스트 3:1 · 비텍스트 UI 요소 3:1)을 따릅니다.</p>
+
+        <div class="note note--callout">
+          본 시스템은 <code class="mono">--accent</code>(인터랙티브 강조: 링크·포커스·선택)와 <code class="mono">--primary</code>(솔리드 CTA, 중성 다크톤)를 분리합니다. 다수의 상태색(ok/warn/danger/info)이 공존하는 데이터 밀집 화면에서 브랜드 블루를 인터랙션 신호로만 남겨 정보 위계를 명확히 하기 위함입니다.
+        </div>
+
+        <div class="groupbar"><h3>Surface &amp; Ink</h3><span>표면·텍스트 계층 — 텍스트 계열은 <code class="mono">--surface</code> 대비, 보더는 UI 요소 대비(3:1) 기준</span></div>
+        <div class="swatchgrid" id="grpSurface"></div>
+
+        <div class="groupbar"><h3>Brand</h3><span>인터랙션 강조색 — primitives(volt/amber)와 의미론적 별칭 분리</span></div>
+        <div class="swatchgrid" id="grpBrand"></div>
+
+        <div class="groupbar"><h3>Semantic</h3><span>ok / warn / danger / info — fg 대 bg 페어 대비</span></div>
+        <div class="swatchgrid" id="grpSemantic"></div>
+
+        <div class="groupbar"><h3>Categorical — 프로젝트 칩 (--c1 ~ --c12)</h3><span>도트·칩 배경 전용. 텍스트 컬러로 단독 사용 금지</span></div>
+        <div class="swatchgrid" id="grpCategorical"></div>
+      </section>
+
+      <!-- ============ 03 타이포그래피 ============ -->
+      <section class="docsec" id="s3">
+        <div class="sectioneyebrow"><b>03</b>Typography</div>
+        <h2 class="sectiontitle">타이포그래피</h2>
+        <p class="sectiondesc">서체는 <b>Pretendard</b> 하나로 통일합니다. 위계는 크기·굵기·자간 조합으로만 구분하며, 숫자가 포함된 데이터(가동률·시간·수량)는 반드시 <code class="mono">tabular-nums</code>를 적용해 자릿수가 흔들리지 않게 합니다.</p>
+        <div class="typebox">
+          <div class="typerow">
+            <div class="sample" style="font-size:27px;font-weight:800;letter-spacing:-.025em">7월 스케줄 대시보드</div>
+            <div class="meta"><b>페이지 제목 · Page Title</b><span>27px / 800 / -.025em · .phead h1</span></div>
+          </div>
+          <div class="typerow">
+            <div class="sample" style="font-size:15.5px;font-weight:700;letter-spacing:-.01em">이번 주 가동률 추이</div>
+            <div class="meta"><b>카드 제목 · Card Title</b><span>15.5px / 700 / -.01em · .card__hd h3</span></div>
+          </div>
+          <div class="typerow">
+            <div class="sample" style="font-size:14px;line-height:1.5">기본 본문 텍스트입니다. 표·폼·리스트 대부분의 기본 크기이며 line-height 1.5를 기본으로 합니다.</div>
+            <div class="meta"><b>본문 · Body</b><span>14px / 400 / 1.5 · body 기본값</span></div>
+          </div>
+          <div class="typerow">
+            <div class="sample" style="font-size:12px;color:var(--muted)">보조 설명, 타임스탬프, 테이블 서브텍스트 등에 사용합니다.</div>
+            <div class="meta"><b>캡션 · Caption</b><span>12px / 400 · .cell-sub, .hint</span></div>
+          </div>
+          <div class="typerow">
+            <div class="sample" style="font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)">assignment status</div>
+            <div class="meta"><b>라벨 · Label</b><span>10.5px / 800 / .09em · .tbl th, .badge</span></div>
+          </div>
+          <div class="typerow">
+            <div class="sample num" style="font-size:32px;font-weight:800;letter-spacing:-.03em">1,284<small style="font-size:16px;font-weight:700;color:var(--muted);margin-left:2px">건</small></div>
+            <div class="meta"><b>숫자 · Numeric (tabular-nums)</b><span>.num 클래스 또는 body 기본 font-feature-settings</span></div>
+          </div>
+        </div>
+        <div class="note note--info" style="margin-top:14px">
+          <b>규칙</b> — KPI 값, 가동률(%), 근무 시간, 배정 건수 등 나란히 비교되는 숫자에는 반드시 <code class="mono">.num</code> 클래스(또는 이미 적용된 body 기본값)를 사용해 자릿수 정렬을 유지합니다.
+        </div>
+      </section>
+
+      <!-- ============ 04 스페이싱/라디우스/그림자 ============ -->
+      <section class="docsec" id="s4">
+        <div class="sectioneyebrow"><b>04</b>Spacing · Radius · Shadow</div>
+        <h2 class="sectiontitle">스페이싱 &amp; 라디우스 &amp; 그림자</h2>
+        <p class="sectiondesc">간격은 <b>4px 그리드</b> 위에서 설계되었습니다. 실제 코드에 쓰인 값(4/8/12/16/20/24/32/40px)을 그대로 시각화합니다.</p>
+        <div class="groupbar"><h3>Spacing (4px grid)</h3></div>
+        <div class="tokrow-grid" id="grpSpacing"></div>
+        <div class="groupbar"><h3>Radius</h3></div>
+        <div class="tokrow-grid" id="grpRadius"></div>
+        <div class="groupbar"><h3>Shadow (Elevation)</h3></div>
+        <div class="tokrow-grid" id="grpShadow"></div>
+      </section>
+
+      <!-- ============ 05 아이콘 ============ -->
+      <section class="docsec" id="s5">
+        <div class="sectioneyebrow"><b>05</b>Icons</div>
+        <h2 class="sectiontitle">아이콘</h2>
+        <p class="sectiondesc"><code class="mono">assets/ui.js</code>의 <code class="mono">UI.icon(name)</code> 세트 전체입니다. Lucide 스타일 24px 스트로크 아이콘이며, 타일을 클릭하면 <code class="mono">UI.icon('name')</code> 호출 코드가 클립보드에 복사됩니다.</p>
+        <div class="icongrid" id="iconGrid"></div>
+      </section>
+
+      <!-- ============ 06 컴포넌트 ============ -->
+      <section class="docsec" id="s6">
+        <div class="sectioneyebrow"><b>06</b>Components</div>
+        <h2 class="sectiontitle">컴포넌트</h2>
+        <p class="sectiondesc">실물 렌더링 + 상태 변형 + 복사 가능한 HTML 스니펫입니다. 클래스명은 <code class="mono">assets/style.css</code>와 100% 동일합니다.</p>
+
+        <div class="groupbar"><h3>버튼 (Button)</h3></div>
+        <div class="demo">
+          <div class="demo__stage">
+            <button class="btn btn--primary">저장</button>
+            <button class="btn btn--accent">배정하기</button>
+            <button class="btn btn--quiet">취소</button>
+            <button class="btn btn--ghost">더보기</button>
+            <button class="btn btn--danger">삭제</button>
+            <button class="btn btn--danger-ghost">배정 해제</button>
+            <button class="btn btn--primary btn--lg">대형(lg)</button>
+            <button class="btn btn--primary btn--sm">소형(sm)</button>
+            <button class="btn btn--quiet btn--icon" aria-label="아이콘 버튼" id="btnIcSample"></button>
+            <button class="btn btn--primary" disabled>비활성</button>
+          </div>
+          <div class="demo__code"><pre><code>&lt;button class="btn btn--primary"&gt;저장&lt;/button&gt;
+&lt;button class="btn btn--accent"&gt;배정하기&lt;/button&gt;
+&lt;button class="btn btn--quiet"&gt;취소&lt;/button&gt;
+&lt;button class="btn btn--ghost"&gt;더보기&lt;/button&gt;
+&lt;button class="btn btn--danger"&gt;삭제&lt;/button&gt;
+&lt;button class="btn btn--primary btn--lg"&gt;대형&lt;/button&gt;
+&lt;button class="btn btn--primary btn--sm"&gt;소형&lt;/button&gt;
+&lt;button class="btn btn--quiet btn--icon" aria-label="..."&gt;...&lt;/button&gt;
+&lt;button class="btn btn--primary" disabled&gt;비활성&lt;/button&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>인풋 · 셀렉트 · 텍스트에어리어</h3></div>
+        <div class="demo">
+          <div class="demo__stage grid2c">
+            <div class="field"><label>현장 리드 이름</label><input class="input" placeholder="이름을 입력하세요" /></div>
+            <div class="field"><label>포커스 상태 (클릭해 보세요)</label><input class="input" value="포커스를 확인하세요" /></div>
+            <div class="field"><label>오류 상태<span class="req">*</span></label><input class="input is-err" value="0123456789" /><span class="err">전화번호 형식이 올바르지 않습니다.</span></div>
+            <div class="field"><label>비활성</label><input class="input" value="편집 불가" disabled /></div>
+            <div class="field"><label>지역 선택</label><select class="select"><option>Electricians</option><option>Instrumentation</option><option>Commissioning</option></select></div>
+            <div class="field"><label>메모</label><textarea class="textarea" placeholder="변경 사유를 입력하세요"></textarea></div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="field"&gt;
+  &lt;label&gt;현장 리드 이름&lt;/label&gt;
+  &lt;input class="input" placeholder="..." /&gt;
+&lt;/div&gt;
+&lt;input class="input is-err" /&gt;&lt;span class="err"&gt;오류 문구&lt;/span&gt;
+&lt;select class="select"&gt;&lt;option&gt;...&lt;/option&gt;&lt;/select&gt;
+&lt;textarea class="textarea"&gt;&lt;/textarea&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>체크박스 · 라디오 · 스위치 · 세그먼트</h3></div>
+        <div class="demo">
+          <div class="demo__stage">
+            <label class="check"><input type="checkbox" checked /> 이메일 알림</label>
+            <label class="check"><input type="checkbox" /> SMS 알림</label>
+            <label class="check"><input type="radio" name="ds-radio" checked /> 주간</label>
+            <label class="check"><input type="radio" name="ds-radio" /> 야간</label>
+            <label class="switch"><input type="checkbox" checked /><span class="switch__track"></span> 충돌 자동 알림</label>
+            <div class="seg" id="segDemo">
+              <button type="button" class="is-on" data-v="week">주별</button>
+              <button type="button" data-v="month">월별</button>
+              <button type="button" data-v="list">목록</button>
+            </div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;label class="check"&gt;&lt;input type="checkbox" checked /&gt; 이메일 알림&lt;/label&gt;
+&lt;label class="switch"&gt;&lt;input type="checkbox" checked /&gt;&lt;span class="switch__track"&gt;&lt;/span&gt; 라벨&lt;/label&gt;
+&lt;div class="seg"&gt;
+  &lt;button class="is-on"&gt;주별&lt;/button&gt;
+  &lt;button&gt;월별&lt;/button&gt;
+&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>뱃지 · 상태 칩 · 프로젝트 칩 · 필</h3></div>
+        <div class="demo">
+          <div class="demo__stage" id="badgeStage"></div>
+          <div class="demo__code"><pre><code>&lt;span class="badge badge--ok"&gt;진행중&lt;/span&gt;
+&lt;span class="badge badge--warn"&gt;경고&lt;/span&gt;
+&lt;span class="badge badge--danger"&gt;위험&lt;/span&gt;
+&lt;span class="badge badge--info"&gt;정보&lt;/span&gt;
+&lt;span class="badge badge--solid"&gt;관리자&lt;/span&gt;
+&lt;span class="chip"&gt;&lt;i class="chip__dot" style="background:var(--c7)"&gt;&lt;/i&gt;KCVG&lt;/span&gt;
+&lt;span class="stat stat--ok"&gt;정상&lt;/span&gt;
+&lt;span class="pill pill--danger"&gt;3&lt;/span&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>아바타 · KPI 카드</h3></div>
+        <div class="demo">
+          <div class="demo__stage" id="avatarKpiStage"></div>
+          <div class="demo__code"><pre><code>&lt;span class="avatar sm"&gt;MR&lt;/span&gt;
+&lt;span class="avatar"&gt;MR&lt;/span&gt;
+&lt;span class="avatar lg soft"&gt;MR&lt;/span&gt;
+
+&lt;div class="kpi kpi--ok"&gt;
+  &lt;div class="kpi__t"&gt;가동률&lt;/div&gt;
+  &lt;div class="kpi__v"&gt;87&lt;small&gt;%&lt;/small&gt;&lt;/div&gt;
+  &lt;div class="kpi__d"&gt;전주 대비 &lt;span class="trend up"&gt;+4.2%&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="kpi__bar"&gt;&lt;i style="width:87%"&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>카드</h3></div>
+        <div class="demo">
+          <div class="demo__stage">
+            <div class="card" style="width:100%;max-width:420px">
+              <div class="card__hd"><h3>이번 주 충돌 요약</h3><span class="sp"></span><span class="badge badge--danger">6건</span></div>
+              <div class="card__bd" style="font-size:13px;color:var(--ink-2)">이중 배정 3건, 휴가 중복 1건, 휴식시간 미확보 2건이 감지되었습니다.</div>
+              <div class="card__ft"><button class="btn btn--quiet btn--sm">닫기</button><span class="sp"></span><button class="btn btn--primary btn--sm">모두 보기</button></div>
+            </div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="card"&gt;
+  &lt;div class="card__hd"&gt;&lt;h3&gt;제목&lt;/h3&gt;&lt;/div&gt;
+  &lt;div class="card__bd"&gt;내용&lt;/div&gt;
+  &lt;div class="card__ft"&gt;&lt;button class="btn btn--primary btn--sm"&gt;확인&lt;/button&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>테이블 — 실 데이터 연동 (정렬 헤더 · hover)</h3></div>
+        <div class="demo">
+          <div class="demo__stage col">
+            <div class="toolbar">
+              <div class="search"><span id="searchIcon"></span><input class="input" placeholder="프로젝트 검색" /></div>
+              <span class="sp"></span>
+              <span class="rescount"><b id="tblCount">-</b>건</span>
+            </div>
+            <div class="tblwrap"><table class="tbl" id="demoTable"><thead><tr>
+              <th class="sortable is-sorted">프로젝트<span class="sortic">▾</span></th><th>현장</th><th>상태</th><th class="num">배정 인원</th><th class="act">액션</th>
+            </tr></thead><tbody></tbody></table></div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;table class="tbl"&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th class="sortable is-sorted"&gt;프로젝트&lt;span class="sortic"&gt;▾&lt;/span&gt;&lt;/th&gt;...&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;&lt;tr&gt;&lt;td class="cell-main"&gt;...&lt;/td&gt;&lt;td class="act"&gt;&lt;a class="lnk"&gt;편집&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;
+&lt;/table&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>빈 상태 (Empty State)</h3></div>
+        <div class="demo"><div class="demo__stage col" id="emptyStage"></div>
+          <div class="demo__code"><pre><code>UI.empty('calendarOff', '배정된 일정이 없습니다', '검색 조건을 조정하거나 새 배정을 추가하세요.',
+  '&lt;button class="btn btn--primary btn--sm"&gt;배정 추가&lt;/button&gt;')</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>탭</h3></div>
+        <div class="demo">
+          <div class="demo__stage col">
+            <div class="tabs" id="tabsDemo">
+              <button type="button" class="is-on" data-v="overview">개요</button>
+              <button type="button" data-v="assign">배정</button>
+              <button type="button" data-v="history">이력</button>
+            </div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="tabs"&gt;
+  &lt;button class="is-on"&gt;개요&lt;/button&gt;
+  &lt;button&gt;배정&lt;/button&gt;
+&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>프로그레스 · 미터</h3></div>
+        <div class="demo">
+          <div class="demo__stage col">
+            <div class="bar"><i style="width:62%"></i></div>
+            <div class="bar bar--warn"><i style="width:84%"></i></div>
+            <div class="bar bar--danger"><i style="width:96%"></i></div>
+            <div class="meter"><span class="bar bar--ok"><i style="width:87%"></i></span><b>87%</b></div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="bar"&gt;&lt;i style="width:62%"&gt;&lt;/i&gt;&lt;/div&gt;
+&lt;div class="meter"&gt;&lt;span class="bar bar--ok"&gt;&lt;i style="width:87%"&gt;&lt;/i&gt;&lt;/span&gt;&lt;b&gt;87%&lt;/b&gt;&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>노트 (Note)</h3></div>
+        <div class="demo">
+          <div class="demo__stage col" id="noteStage"></div>
+          <div class="demo__code"><pre><code>&lt;div class="note note--warn"&gt;&lt;svg&gt;...&lt;/svg&gt;휴가 승인 대기 5건이 있습니다.&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>토스트 (실제 호출)</h3></div>
+        <div class="demo">
+          <div class="demo__stage">
+            <button class="btn btn--quiet btn--sm" id="toastOk">성공 토스트</button>
+            <button class="btn btn--quiet btn--sm" id="toastDanger">오류 토스트</button>
+            <button class="btn btn--quiet btn--sm" id="toastWarn">경고 토스트</button>
+            <button class="btn btn--quiet btn--sm" id="toastUndo">실행취소 토스트</button>
+          </div>
+          <div class="demo__code"><pre><code>UI.toast('배정이 저장되었습니다', {type:'ok'});
+UI.toast('삭제되었습니다', {type:'danger', undo: () =&gt; restore()});</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>모달 · 드로어 (실제 호출)</h3></div>
+        <div class="demo">
+          <div class="demo__stage">
+            <button class="btn btn--primary btn--sm" id="openModal">모달 열기</button>
+            <button class="btn btn--danger btn--sm" id="openConfirm">확인 모달 (삭제)</button>
+            <button class="btn btn--quiet btn--sm" id="openDrawer">드로어 열기</button>
+            <button class="btn btn--quiet btn--sm" id="openPopover">팝오버 열기</button>
+          </div>
+          <div class="demo__code"><pre><code>UI.modal({ title:'배정 편집', icon:'edit', tone:'info', body:'...',
+  actions:[{label:'취소',kind:'quiet'},{label:'저장',kind:'primary'}] });
+UI.confirm({ title:'배정을 삭제할까요?', desc:'되돌릴 수 없습니다.', onOk:()=&gt;{} });
+UI.drawer({ title:'기술자 상세', body:'...', actions:[...] });
+UI.popover(anchorEl, '&lt;div class="pop__item"&gt;편집&lt;/div&gt;');</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>스켈레톤</h3></div>
+        <div class="demo">
+          <div class="demo__stage col">
+            <div class="sk" style="height:16px;width:60%;border-radius:5px"></div>
+            <div class="sk" style="height:16px;width:85%;border-radius:5px"></div>
+            <div class="sk" style="height:80px;width:100%;border-radius:12px"></div>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="sk" style="height:16px;width:60%"&gt;&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+      </section>
+
+      <!-- ============ 07 스케줄 전용 컴포넌트 ============ -->
+      <section class="docsec" id="s7">
+        <div class="sectioneyebrow"><b>07</b>Schedule Components</div>
+        <h2 class="sectiontitle">스케줄 전용 컴포넌트</h2>
+        <p class="sectiondesc"><code class="mono">assets/schedule.css</code>는 아직 별도 파일로 분리되지 않았으므로, 아래는 <b>인라인 스타일 기반의 시각 예시</b>입니다. 실제 구현 시 이 페이지의 색상·라디우스·그림자 토큰을 그대로 재사용해 <code class="mono">.gantt-bar</code>, <code class="mono">.shift-badge</code> 등의 정식 클래스로 옮기는 것을 권장합니다.</p>
+
+        <div class="groupbar"><h3>간트 바 — 프로젝트 · 휴가 · 공휴일 · 충돌</h3></div>
+        <div class="demo">
+          <div class="demo__stage col">
+            <div class="gantt-demo">
+              <div class="gantt-row"><div class="gantt-name">Alicia Monroe</div><div class="gantt-track">
+                <div class="gantt-bar" style="left:0;width:210px;background:var(--c7)">KCVG — Hyperscale</div>
+              </div></div>
+              <div class="gantt-row"><div class="gantt-name">Derek Vaughn</div><div class="gantt-track">
+                <div class="gantt-bar" style="left:52px;width:104px;background:repeating-linear-gradient(45deg,var(--warn),var(--warn) 6px,var(--warn-fg) 6px,var(--warn-fg) 7px);color:#3a2a00">공휴일</div>
+                <div class="gantt-bar" style="left:156px;width:156px;background:var(--c2)">ROS14 — Substation</div>
+              </div></div>
+              <div class="gantt-row"><div class="gantt-name">Sofia Ferreira</div><div class="gantt-track">
+                <div class="gantt-bar" style="left:0;width:104px;background:var(--surface-3);color:var(--ink-2);border:1px dashed var(--line-strong)">휴가 (PTO)</div>
+                <div class="gantt-bar" style="left:104px;width:156px;background:var(--danger);outline:2px solid var(--danger);outline-offset:1px">⚠ 이중 배정</div>
+              </div></div>
+            </div>
+            <p class="hint">공휴일: 대각선 해치 패턴 · 휴가: 점선 테두리 채움 · 충돌: danger 아웃라인 + 경고 아이콘 병행(3중 표현 원칙)</p>
+          </div>
+          <div class="demo__code"><pre><code>&lt;div class="gantt-bar" style="background:var(--c7)"&gt;KCVG — Hyperscale&lt;/div&gt;
+&lt;div class="gantt-bar" style="background:var(--danger);outline:2px solid var(--danger)"&gt;⚠ 이중 배정&lt;/div&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+
+        <div class="groupbar"><h3>충돌 뱃지 · 시프트 뱃지 · 가동률 미터</h3></div>
+        <div class="demo">
+          <div class="demo__stage" id="scheduleBadgeStage"></div>
+          <div class="demo__code"><pre><code>&lt;span class="badge badge--danger"&gt;⚠ 이중 배정&lt;/span&gt;
+&lt;span class="badge" style="background:var(--n-800);color:#fff"&gt;주간&lt;/span&gt;
+&lt;span class="meter"&gt;&lt;span class="bar bar--warn"&gt;&lt;i style="width:91%"&gt;&lt;/i&gt;&lt;/span&gt;&lt;b&gt;91%&lt;/b&gt;&lt;/span&gt;</code></pre><button class="demo__copy" data-copy-target="prev" aria-label="코드 복사"></button></div>
+        </div>
+      </section>
+
+      <!-- ============ 08 반응형 브레이크포인트 ============ -->
+      <section class="docsec" id="s8">
+        <div class="sectioneyebrow"><b>08</b>Responsive</div>
+        <h2 class="sectiontitle">반응형 브레이크포인트</h2>
+        <p class="sectiondesc"><code class="mono">assets/style.css</code>에 정의된 실제 미디어쿼리 3단 기준입니다.</p>
+        <div class="tblwrap"><table class="tbl">
+          <thead><tr><th>브레이크포인트</th><th>변경 사항</th></tr></thead>
+          <tbody>
+            <tr><td class="cell-main">≤ 1240px</td><td>.kpis 4열 → 2열 그리드로 전환</td></tr>
+            <tr><td class="cell-main">≤ 1024px</td><td>사이드바가 오버레이 드로어로 전환(<code class="mono">--nav-w:0</code>, <code class="mono">.nav.is-open</code>) · 하단 모바일 탭바(<code class="mono">.mtabs</code>) 노출 · <code class="mono">.grid2/.grid3</code> 1열 스택 · 상단 유저 메타 텍스트 숨김 · 페이지 패딩 26/28→18/16 축소</td></tr>
+            <tr><td class="cell-main">≤ 640px</td><td>.kpis 2열 유지 + 간격 축소, KPI 값 32→25px · <code class="mono">.phead__act</code> 버튼 전체 폭 스택 · 모달이 바텀시트로 전환(상단 모서리만 라운드, 하단 슬라이드 인) · 드로어 전체 폭 바텀시트(94vh) · 토스트 좌우 여백 고정 + 하단 탭바 위로 앵커</td></tr>
+          </tbody>
+        </table></div>
+        <div class="groupbar"><h3>모바일 패턴</h3></div>
+        <div class="principles" style="grid-template-columns:repeat(4,1fr)">
+          <div class="principle"><h4>테이블 → 카드</h4><p>좁은 화면에서 데이터 밀집 테이블은 행 단위 카드 리스트로 전환 권장. 현재 <code class="mono">.tblwrap</code>은 <code class="mono">overflow-x:auto</code> 가로 스크롤로 우선 대응.</p></div>
+          <div class="principle"><h4>사이드바 → 드로어</h4><p><code class="mono">.nav</code>가 1024px 이하에서 fixed 오버레이로 전환되고 <code class="mono">.navscrim</code> 클릭 시 닫힙니다.</p></div>
+          <div class="principle"><h4>하단 탭바</h4><p><code class="mono">.mtabs</code> — 현장 기술자 모바일 뷰 전용, 5탭 이내, 44px 이상 터치 영역 권장.</p></div>
+          <div class="principle"><h4>바텀시트</h4><p><code class="mono">.modal</code>/<code class="mono">.drawer</code>가 640px 이하에서 하단 슬라이드 시트로 전환, 상단 모서리만 라운드 처리.</p></div>
+        </div>
+      </section>
+
+      <!-- ============ 09 접근성 체크리스트 ============ -->
+      <section class="docsec" id="s9">
+        <div class="sectioneyebrow"><b>09</b>Accessibility</div>
+        <h2 class="sectiontitle">접근성 체크리스트</h2>
+        <div class="checklist">
+          <div class="checkitem"><div class="ic" id="a11yIc1"></div><div><h5>포커스 링</h5><p>모든 인터랙티브 요소는 <code>:focus-visible</code>에서 2px 아웃라인이 표시됩니다 — <code>outline:2px solid var(--focus)</code>.</p></div></div>
+          <div class="checkitem"><div class="ic" id="a11yIc2"></div><div><h5>최소 터치 타깃 44px</h5><p>현장 모바일 뷰의 주요 액션 버튼·탭바 아이템은 44×44px 이상을 확보합니다.</p></div></div>
+          <div class="checkitem"><div class="ic" id="a11yIc3"></div><div><h5><code>aria-label</code> 필수</h5><p>텍스트가 없는 아이콘 전용 버튼(<code>.iconbtn</code>, <code>.btn--icon</code>)에는 항상 <code>aria-label</code>을 명시합니다.</p></div></div>
+          <div class="checkitem"><div class="ic" id="a11yIc4"></div><div><h5>색상 단독 의존 금지</h5><p>상태 표현은 색 + 아이콘 + 텍스트 라벨 3중 구조를 원칙으로 합니다(원칙 3 참고).</p></div></div>
+          <div class="checkitem"><div class="ic" id="a11yIc5"></div><div><h5><code>prefers-reduced-motion</code> 대응</h5><p>모션을 줄이도록 설정한 사용자에게는 모든 애니메이션·트랜지션이 0.001ms로 즉시 처리됩니다.</p></div></div>
+          <div class="checkitem"><div class="ic" id="a11yIc6"></div><div><h5>키보드 내비게이션</h5><p>모달·드로어는 <code>Escape</code>로 닫히고, 열릴 때 첫 입력 요소로 포커스가 이동합니다. 탭 순서는 시각적 순서와 일치합니다.</p></div></div>
+        </div>
+      </section>
+
+      <!-- ============ 10 개발 인계 노트 ============ -->
+      <section class="docsec" id="s10">
+        <div class="sectioneyebrow"><b>10</b>Handoff</div>
+        <h2 class="sectiontitle">개발 인계 노트</h2>
+        <div class="handoff-grid">
+          <div class="handoff-card">
+            <h4><span id="hoIc1"></span>토큰을 CSS 변수로 그대로 사용</h4>
+            <p>모든 색·간격·그림자는 <code>:root</code>의 CSS 커스텀 프로퍼티입니다. 새 컴포넌트를 만들 때도 하드코딩된 hex 값 대신 반드시 <code>var(--token)</code>을 사용하세요. 예: <code>background:var(--surface); color:var(--ink);</code></p>
+          </div>
+          <div class="handoff-card">
+            <h4><span id="hoIc2"></span>다크모드 구현 방식</h4>
+            <p><code>html[data-theme="dark"]</code> 속성 선택자로 토큰 값 자체를 덮어씁니다. 컴포넌트 CSS는 테마 분기 없이 <code>var(--token)</code>만 참조하므로 다크모드 전용 스타일을 추가로 작성할 필요가 없습니다. 토글은 <code>UI.applyTheme('dark'|'light')</code> 호출 한 줄입니다.</p>
+          </div>
+          <div class="handoff-card">
+            <h4><span id="hoIc3"></span>밀도(Density) 구현 방식</h4>
+            <p><code>html[data-density="compact"]</code>가 <code>--row-h</code>, <code>--cell-w</code>, <code>--tbl-row</code>, <code>--pad</code> 등 레이아웃 치수 토큰만 재정의합니다. 색상 토큰과 완전히 분리되어 있어 테마 × 밀도 4가지 조합이 모두 안전하게 작동합니다.</p>
+          </div>
+          <div class="handoff-card">
+            <h4><span id="hoIc4"></span>컴포넌트 명명 규칙 (BEM 유사)</h4>
+            <ul>
+              <li><code>.block</code> — 컴포넌트 루트 (예: <code>.kpi</code>, <code>.card</code>, <code>.modal</code>)</li>
+              <li><code>.block__element</code> — 하위 요소 (예: <code>.kpi__v</code>, <code>.card__hd</code>)</li>
+              <li><code>.block--modifier</code> — 변형 (예: <code>.btn--primary</code>, <code>.badge--danger</code>)</li>
+              <li><code>.is-*</code> — 상태 클래스 (예: <code>.is-on</code>, <code>.is-sel</code>, <code>.is-err</code>)</li>
+            </ul>
+          </div>
+          <div class="handoff-card">
+            <h4><span id="hoIc5"></span>Figma 대응표 (선택)</h4>
+            <p>Figma로 역이관 시 스타일 이름 제안:</p>
+            <ul>
+              <li>Surface/Ink → <code>Color/Surface/*</code>, <code>Color/Text/*</code></li>
+              <li>Semantic → <code>Color/Status/Ok|Warn|Danger|Info</code></li>
+              <li>Categorical → <code>Color/Project/01~12</code></li>
+              <li>Radius/Shadow → <code>Effect/Elevation-1~4</code>, <code>Radius/xs~full</code></li>
+            </ul>
+          </div>
+          <div class="handoff-card">
+            <h4><span id="hoIc6"></span>스크립트 의존성</h4>
+            <p>컴포넌트 동작(모달/드로어/토스트/팝오버/포맷터)은 <code>assets/ui.js</code>의 <code>window.UI</code> 네임스페이스로 제공됩니다. 목업 데이터는 <code>assets/data.js</code>의 <code>window.DB</code>에서 결정론적 시드로 생성됩니다.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function (w, d) {
+  "use strict";
+  var UI = w.UI, DB = w.DB;
+  var icon = UI.icon;
+
+  /* ---------- 부트스트랩: 저장된 테마/밀도 복원 ---------- */
+  UI.applyTheme(UI.store.get("theme", "light"));
+  UI.applyDensity(UI.store.get("density", "comfortable"));
+
+  /* ---------- 뒤로가기 링크 (아이콘 포함) ---------- */
+  d.querySelector(".backlink").innerHTML = icon("chevL", 16) + "데모로 돌아가기";
+
+  /* ---------- 원칙 아이콘 ---------- */
+  d.getElementById("picField").innerHTML = icon("hand", 18);
+  d.getElementById("picDensity").innerHTML = icon("sliders", 18);
+  d.getElementById("picTriple").innerHTML = icon("eye", 18);
+  d.getElementById("picUndo").innerHTML = icon("undo", 18);
+  d.getElementById("noteStage") && (d.getElementById("noteStage").innerHTML =
+    '<div class="note"><span>' + icon("info", 17) + '</span>정보성 안내 문구입니다.</div>' +
+    '<div class="note note--warn"><span>' + icon("alert", 17) + '</span>휴가 승인 대기 5건이 있습니다.</div>' +
+    '<div class="note note--danger"><span>' + icon("alertCircle", 17) + '</span>스케줄 충돌 6건이 감지되었습니다.</div>' +
+    '<div class="note note--ok"><span>' + icon("checkCircle", 17) + '</span>모든 배정이 정상 처리되었습니다.</div>');
+  d.getElementById("searchIcon").innerHTML = icon("search", 16);
+  d.getElementById("btnIcSample").innerHTML = icon("plus", 16);
+  ["a11yIc1","a11yIc2","a11yIc3","a11yIc4","a11yIc5","a11yIc6"].forEach(function (id) {
+    d.getElementById(id).innerHTML = icon("checkCircle", 16);
+  });
+  var hoIcons = { hoIc1: "sliders", hoIc2: "moon", hoIc3: "layers", hoIc4: "grid", hoIc5: "external", hoIc6: "box" };
+  Object.keys(hoIcons).forEach(function (id) { d.getElementById(id).innerHTML = icon(hoIcons[id], 16); });
+
+  d.getElementById("badgeStage").innerHTML =
+    '<span class="badge badge--ok">' + icon("checkCircle", 12) + '진행중</span>' +
+    '<span class="badge badge--warn">' + icon("alert", 12) + '경고</span>' +
+    '<span class="badge badge--danger">' + icon("alertCircle", 12) + '위험</span>' +
+    '<span class="badge badge--info">' + icon("info", 12) + '정보</span>' +
+    '<span class="badge badge--solid">관리자</span>' +
+    '<span class="chip"><i class="chip__dot" style="background:var(--c7)"></i>KCVG</span>' +
+    '<span class="chip"><i class="chip__dot" style="background:var(--c2)"></i>ROS14</span>' +
+    '<span class="stat stat--ok">정상</span><span class="stat stat--warn">주의</span><span class="stat stat--danger">위험</span>' +
+    '<span class="pill">12</span><span class="pill pill--accent">신규</span><span class="pill pill--danger">3</span>';
+
+  d.getElementById("avatarKpiStage").innerHTML =
+    '<div class="row" style="gap:8px">' +
+      '<span class="avatar sm">MR</span><span class="avatar">MR</span><span class="avatar lg soft">MR</span>' +
+    '</div>' +
+    '<div class="kpi kpi--ok" style="max-width:220px">' +
+      '<div class="kpi__t">' + icon("gauge", 16) + '가동률</div>' +
+      '<div class="kpi__v">87<small>%</small></div>' +
+      '<div class="kpi__d">전주 대비 <span class="trend up">' + icon("trendUp", 13) + '+4.2%</span></div>' +
+      '<div class="kpi__bar"><i style="width:87%"></i></div>' +
+    '</div>' +
+    '<div class="kpi kpi--danger" style="max-width:220px">' +
+      '<div class="kpi__t">' + icon("alertCircle", 16) + '충돌</div>' +
+      '<div class="kpi__v">6</div>' +
+      '<div class="kpi__d">전주 대비 <span class="trend down">' + icon("trendDown", 13) + '-2건</span></div>' +
+      '<div class="kpi__bar"><i style="width:32%"></i></div>' +
+    '</div>';
+
+  d.getElementById("scheduleBadgeStage").innerHTML =
+    '<span class="badge badge--danger">' + icon("alertCircle", 12) + '이중 배정</span>' +
+    '<span class="badge badge--warn">' + icon("alert", 12) + '휴식시간 미확보</span>' +
+    '<span class="badge" style="background:var(--n-800);color:#fff">' + icon("sun", 12) + '주간</span>' +
+    '<span class="badge" style="background:var(--info-bg);color:var(--info-fg)">오전</span>' +
+    '<span class="badge" style="background:var(--surface-3);color:var(--ink-2)">오후</span>' +
+    '<span class="badge" style="background:var(--n-900);color:#fff">' + icon("moon", 12) + '야간</span>' +
+    '<span class="meter"><span class="bar bar--warn"><i style="width:91%"></i></span><b>91%</b></span>' +
+    '<span class="meter"><span class="bar bar--danger"><i style="width:34%"></i></span><b>34%</b></span>';
+
+  d.getElementById("emptyStage").innerHTML = UI.empty("calendarOff", "배정된 일정이 없습니다",
+    "검색 조건을 조정하거나 새 배정을 추가하세요.",
+    '<button class="btn btn--primary btn--sm">' + icon("plus", 14) + '배정 추가</button>');
+
+  /* ---------- 06 테이블 데모: 실 데이터 사용 ---------- */
+  (function () {
+    var rows = DB.PROJECTS.slice(0, 6);
+    var tbody = d.querySelector("#demoTable tbody");
+    tbody.innerHTML = rows.map(function (p) {
+      var st = DB.STATUS[p.status];
+      var count = DB.TECHS.filter(function (t) { return t.regionId === p.regionId; }).length;
+      var desc = p.name.indexOf("—") > -1 ? p.name.split("—")[1].trim() : p.name;
+      return '<tr>' +
+        '<td class="cell-main"><i class="dot" style="background:' + DB.projColor(p) + '"></i>' + p.code + ' — ' + desc + '</td>' +
+        '<td>' + p.addr.split(",").slice(-2).join(",").trim() + '</td>' +
+        '<td><span class="badge ' + st.cls + '">' + st.label + '</span></td>' +
+        '<td class="num">' + (count % 40 + 6) + '</td>' +
+        '<td class="act"><a class="lnk">편집</a><a class="lnk lnk--danger">삭제</a></td>' +
+      '</tr>';
+    }).join("");
+    d.getElementById("tblCount").textContent = rows.length;
+  })();
+
+  /* ---------- 05 아이콘 그리드 ---------- */
+  var ICON_NAMES = ["grid","calendar","folder","calendarOff","tool","map","activity","user","users","swap","plus","search","bell","chevL","chevR","chevD","chevU","check","checkCircle","x","alert","alertCircle","info","sun","moon","download","filter","edit","trash","mail","clock","menu","undo","redo","hand","cursor","maximize","minimize","trendUp","trendDown","gauge","zap","layers","settings","phone","pin","more","copy","printer","arrowR","external","sliders","logout","lock","truck","shield","box","calCheck","userCheck","userX","split","save","eye","refresh"];
+  var iconGrid = d.getElementById("iconGrid");
+  iconGrid.innerHTML = ICON_NAMES.map(function (name) {
+    return '<button type="button" class="icontile" data-icon="' + name + '">' + icon(name, 20) + '<span>' + name + '</span></button>';
+  }).join("");
+  iconGrid.addEventListener("click", function (e) {
+    var t = e.target.closest(".icontile");
+    if (!t) return;
+    copyText("UI.icon('" + t.dataset.icon + "')", "복사됨: UI.icon('" + t.dataset.icon + "')");
+  });
+
+  /* ---------- 클립보드 복사 유틸 ---------- */
+  function copyText(text, msg) {
+    var done = function (ok) { UI.toast(ok ? (msg || "복사되었습니다") : "복사에 실패했습니다", { type: ok ? "ok" : "danger" }); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }).catch(function () { done(false); });
+    } else {
+      try {
+        var ta = d.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        d.body.appendChild(ta); ta.select(); d.execCommand("copy"); ta.remove();
+        done(true);
+      } catch (e) { done(false); }
+    }
+  }
+
+  /* ---------- 코드블록 복사 버튼 ---------- */
+  d.querySelectorAll(".demo__copy").forEach(function (btn) {
+    btn.innerHTML = icon("copy", 14);
+    btn.addEventListener("click", function () {
+      var pre = btn.previousElementSibling;
+      copyText(pre.textContent.trim(), "코드가 복사되었습니다");
+    });
+  });
+
+  /* ---------- 세그먼트 / 탭 데모 인터랙션 ---------- */
+  function wireToggleGroup(sel) {
+    var group = d.getElementById(sel);
+    if (!group) return;
+    group.addEventListener("click", function (e) {
+      var b = e.target.closest("button");
+      if (!b) return;
+      Array.from(group.children).forEach(function (c) { c.classList.remove("is-on"); });
+      b.classList.add("is-on");
+    });
+  }
+  wireToggleGroup("segDemo");
+  wireToggleGroup("tabsDemo");
+
+  /* ---------- 밀도 토글 ---------- */
+  var densitySeg = d.getElementById("densitySeg");
+  var initDensity = d.documentElement.getAttribute("data-density") || "comfortable";
+  Array.from(densitySeg.children).forEach(function (b) { b.classList.toggle("is-on", b.dataset.density === initDensity); });
+  densitySeg.addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    Array.from(densitySeg.children).forEach(function (c) { c.classList.remove("is-on"); });
+    b.classList.add("is-on");
+    UI.applyDensity(b.dataset.density);
+  });
+
+  /* ---------- 테마 토글 ---------- */
+  var themeBtn = d.getElementById("themeBtn");
+  function setThemeIcon() {
+    var cur = d.documentElement.getAttribute("data-theme");
+    themeBtn.innerHTML = icon(cur === "dark" ? "sun" : "moon", 19);
+  }
+  setThemeIcon();
+  themeBtn.addEventListener("click", function () {
+    var cur = d.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    UI.applyTheme(cur);
+    setThemeIcon();
+    renderColorTokens();
+  });
+
+  /* ---------- 실제 호출: 토스트 / 모달 / 드로어 / 팝오버 ---------- */
+  d.getElementById("toastOk").onclick = function () { UI.toast("배정이 저장되었습니다.", { type: "ok" }); };
+  d.getElementById("toastDanger").onclick = function () { UI.toast("저장에 실패했습니다.", { type: "danger" }); };
+  d.getElementById("toastWarn").onclick = function () { UI.toast("휴가 승인 대기 5건이 있습니다.", { type: "warn" }); };
+  d.getElementById("toastUndo").onclick = function () { UI.toast("배정이 삭제되었습니다.", { type: "danger", undo: function () { UI.toast("복구되었습니다.", { type: "ok" }); } }); };
+
+  d.getElementById("openModal").onclick = function () {
+    UI.modal({
+      title: "배정 편집", icon: "edit", tone: "info",
+      desc: "James Alvarez · KCVG — Hyperscale Campus",
+      body: '<div class="stack"><div class="field"><label>시프트</label><select class="select"><option>주간</option><option>오전</option><option>야간</option></select></div><div class="field"><label>메모</label><textarea class="textarea" placeholder="변경 사유"></textarea></div></div>',
+      actions: [{ label: "취소", kind: "quiet" }, { label: "저장", kind: "primary" }],
+    });
+  };
+  d.getElementById("openConfirm").onclick = function () {
+    UI.confirm({ title: "배정을 삭제할까요?", desc: "이 작업은 실행취소로 되돌릴 수 있습니다.", okLabel: "삭제", onOk: function () { UI.toast("삭제되었습니다.", { type: "danger", undo: function () {} }); } });
+  };
+  d.getElementById("openDrawer").onclick = function () {
+    UI.drawer({
+      title: "기술자 상세", desc: "Alicia Monroe · Electricians",
+      body: '<div class="kv"><dt>등급</dt><dd>Foreman</dd><dt>자격</dt><dd>OSHA 30, NFPA 70E</dd><dt>가동률</dt><dd>91%</dd></div>',
+      actions: [{ label: "닫기", kind: "quiet" }, { label: "배정 편집", kind: "primary", icon: "edit" }],
+    });
+  };
+  d.getElementById("openPopover").onclick = function (e) {
+    UI.popover(e.currentTarget, '<div class="pop__hd">빠른 작업</div>' +
+      '<button class="pop__item">' + icon("edit", 15) + '편집</button>' +
+      '<button class="pop__item">' + icon("swap", 15) + '재배정</button>' +
+      '<div class="pop__sep"></div>' +
+      '<button class="pop__item pop__item--danger">' + icon("trash", 15) + '삭제</button>');
+  };
+
+  /* ---------- 컬러 대비 계산 유틸 ---------- */
+  var probeEl = d.createElement("span");
+  probeEl.style.cssText = "position:absolute;left:-9999px;top:-9999px;pointer-events:none;visibility:hidden";
+  d.body.appendChild(probeEl);
+  function resolveRGBRaw(varName) {
+    probeEl.style.backgroundColor = "var(" + varName + ")";
+    var c = getComputedStyle(probeEl).backgroundColor;
+    var m = c.match(/[\d.]+/g) || [0, 0, 0, 1];
+    return { r: +m[0], g: +m[1], b: +m[2], a: m.length > 3 ? +m[3] : 1 };
+  }
+  // 일부 토큰(다크 테마의 --ok-bg 등)은 반투명 rgba()로 정의되어 있으므로,
+  // 알파를 무시하면 실제 렌더링 색과 다른 값으로 대비를 계산하게 된다.
+  // --surface(항상 불투명) 위에 합성한 최종 색을 반환한다.
+  function resolveRGB(varName, backdrop) {
+    var raw = resolveRGBRaw(varName);
+    if (raw.a >= 0.999) return { r: raw.r, g: raw.g, b: raw.b };
+    var bg = backdrop || resolveRGBRaw("--surface");
+    var a = raw.a;
+    return { r: raw.r * a + bg.r * (1 - a), g: raw.g * a + bg.g * (1 - a), b: raw.b * a + bg.b * (1 - a) };
+  }
+  function toHex(rgb) { return "#" + [rgb.r, rgb.g, rgb.b].map(function (x) { return Math.round(x).toString(16).padStart(2, "0"); }).join(""); }
+  function relLum(rgb) {
+    function f(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+    return 0.2126 * f(rgb.r) + 0.7152 * f(rgb.g) + 0.0722 * f(rgb.b);
+  }
+  function contrastOf(rgbA, rgbB) {
+    var L1 = relLum(rgbA) + 0.05, L2 = relLum(rgbB) + 0.05;
+    return L1 > L2 ? L1 / L2 : L2 / L1;
+  }
+  function cbadge(ratio, threshold, labelPass, labelFail) {
+    var pass = ratio >= threshold;
+    return '<span class="cbadge ' + (pass ? "cbadge--pass" : "cbadge--fail") + '">' + (pass ? (labelPass || "AA 통과") : (labelFail || "AA 미달")) + " · " + ratio.toFixed(1) + ":1</span>";
+  }
+  function swatchHTML(varName, usage, contrastHTML, checker) {
+    var rgb = resolveRGB(varName);
+    var hex = toHex(rgb).toUpperCase();
+    return '<div class="swatch">' +
+      '<div class="swatch__fill' + (checker ? " checker" : "") + '" style="background:var(' + varName + ')"></div>' +
+      '<div class="swatch__meta"><code>' + varName + '</code><b>' + hex + '</b><p>' + usage + '</p>' + (contrastHTML || "") + '</div>' +
+    '</div>';
+  }
+
+  function renderColorTokens() {
+    // Surface & Ink
+    var surfaceRows = [
+      ["--bg", "페이지 배경"], ["--surface", "기본 표면 (카드/모달/네브)"], ["--surface-2", "2단 표면 (헤더/툴바)"],
+      ["--surface-3", "3단 표면 (hover/active)"], ["--sunken", "억제된 표면 (비활성 인풋 등)"],
+      ["--line", "기본 보더"], ["--line-strong", "강조 보더 / hover"],
+      ["--ink", "본문 텍스트 (최고 대비)"], ["--ink-2", "보조 텍스트"], ["--muted", "뮤트 텍스트 (라벨/캡션)"], ["--faint", "최저 위계 텍스트/아이콘"],
+    ];
+    var surfaceBg = resolveRGB("--surface");
+    d.getElementById("grpSurface").innerHTML = surfaceRows.map(function (row) {
+      var name = row[0], usage = row[1];
+      var isText = ["--ink", "--ink-2", "--muted", "--faint"].indexOf(name) > -1;
+      var isBorder = ["--line", "--line-strong"].indexOf(name) > -1;
+      var badge = "";
+      if (isText) { var ratio = contrastOf(resolveRGB(name), surfaceBg); badge = cbadge(ratio, 4.5); }
+      if (isBorder) { var ratio2 = contrastOf(resolveRGB(name), surfaceBg); badge = cbadge(ratio2, 3, "UI 대비 통과", "UI 대비 미달"); }
+      return swatchHTML(name, usage, badge);
+    }).join("");
+
+    // Brand
+    var brandRows = [
+      ["--primary", "솔리드 CTA 배경"], ["--primary-ink", "솔리드 CTA 텍스트"],
+      ["--accent", "인터랙티브 강조 (링크/포커스/선택)"], ["--accent-soft", "강조 배경 (연한 틴트)"], ["--focus", "포커스 링 색상"],
+      ["--volt-500", "Brand primitive · volt-500"], ["--volt-600", "Brand primitive · volt-600"], ["--amber-500", "Brand primitive · amber-500"],
+    ];
+    d.getElementById("grpBrand").innerHTML = brandRows.map(function (row) {
+      var name = row[0], usage = row[1], badge = "";
+      if (name === "--primary") { var r = contrastOf(resolveRGB("--primary-ink"), resolveRGB("--primary")); badge = cbadge(r, 4.5); }
+      if (name === "--accent") { var r2 = contrastOf({ r: 255, g: 255, b: 255 }, resolveRGB("--accent")); badge = cbadge(r2, 4.5, "흰 텍스트 AA 통과", "흰 텍스트 AA 미달"); }
+      if (name === "--focus") { var r3 = contrastOf(resolveRGB("--focus"), surfaceBg); badge = cbadge(r3, 3, "UI 대비 통과", "UI 대비 미달"); }
+      return swatchHTML(name, usage, badge);
+    }).join("");
+
+    // Semantic
+    var semRows = [
+      ["ok", "성공 / 정상"], ["warn", "경고"], ["danger", "위험 / 오류"], ["info", "정보"],
+    ];
+    d.getElementById("grpSemantic").innerHTML = semRows.map(function (row) {
+      var k = row[0], label = row[1];
+      var fg = resolveRGB("--" + k + "-fg"), bg = resolveRGB("--" + k + "-bg"), solid = resolveRGB("--" + k);
+      var ratio = contrastOf(fg, bg);
+      var badge = cbadge(ratio, 4.5, "fg/bg AA 통과", "fg/bg AA 미달");
+      return '<div class="swatch">' +
+        '<div class="swatch__fill" style="background:var(--' + k + '-bg)"></div>' +
+        '<div class="swatch__meta"><code>--' + k + ' / --' + k + '-bg / --' + k + '-fg</code>' +
+        '<b>' + toHex(solid).toUpperCase() + '</b><p>' + label + '</p>' + badge + '</div></div>';
+    }).join("");
+
+    // Categorical
+    var catNames = Array.from({ length: 12 }, function (_, i) { return "--c" + (i + 1); });
+    d.getElementById("grpCategorical").innerHTML = catNames.map(function (name) {
+      var rgb = resolveRGB(name);
+      var rWhite = contrastOf({ r: 255, g: 255, b: 255 }, rgb);
+      var rInk = contrastOf(resolveRGB("--ink"), rgb);
+      var badge = '<span class="cbadge cbadge--info">흰 텍스트 ' + rWhite.toFixed(1) + ':1 · 다크 텍스트 ' + rInk.toFixed(1) + ':1</span>';
+      return swatchHTML(name, "프로젝트 칩/도트 전용", badge);
+    }).join("");
+  }
+  renderColorTokens();
+
+  /* ---------- 스페이싱 / 라디우스 / 그림자 ---------- */
+  var SPACES = [4, 8, 12, 16, 20, 24, 32, 40];
+  d.getElementById("grpSpacing").innerHTML = SPACES.map(function (px) {
+    return '<div class="tok-card"><div class="spacer-demo" style="width:' + px + 'px;height:' + px + 'px"></div><b>' + px + 'px</b><span>space-' + px + '</span></div>';
+  }).join("");
+
+  var RADII = [["--r-xs", "5px"], ["--r-sm", "7px"], ["--r-md", "10px"], ["--r-lg", "14px"], ["--r-xl", "20px"], ["--r-full", "999px"]];
+  d.getElementById("grpRadius").innerHTML = RADII.map(function (r) {
+    return '<div class="tok-card"><div class="radius-demo" style="border-radius:var(' + r[0] + ')"></div><b>' + r[0] + '</b><span>' + r[1] + '</span></div>';
+  }).join("");
+
+  var SHADOWS = ["--sh-1", "--sh-2", "--sh-3", "--sh-4"];
+  d.getElementById("grpShadow").innerHTML = SHADOWS.map(function (s) {
+    return '<div class="tok-card"><div class="shadow-demo" style="box-shadow:var(' + s + ')"></div><b>' + s + '</b><span>elevation</span></div>';
+  }).join("");
+
+  /* ---------- 스크롤 스파이 ---------- */
+  var sections = d.querySelectorAll("main section[id]");
+  var navLinks = d.querySelectorAll(".docnav__list a");
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) {
+        navLinks.forEach(function (a) { a.classList.remove("is-on"); });
+        var link = d.querySelector('.docnav__list a[href="#' + en.target.id + '"]');
+        if (link) link.classList.add("is-on");
+      }
+    });
+  }, { rootMargin: "-10% 0px -75% 0px", threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+
+  /* ---------- 상단 읽기 진행률 ---------- */
+  var progressBar = d.getElementById("progressBar");
+  function updateProgress() {
+    var h = d.documentElement;
+    var pct = (h.scrollTop || d.body.scrollTop) / ((h.scrollHeight || d.body.scrollHeight) - h.clientHeight) * 100;
+    progressBar.style.width = Math.min(100, Math.max(0, pct)) + "%";
+  }
+  d.addEventListener("scroll", updateProgress, { passive: true });
+  updateProgress();
+
+})(window, document);
+</script>
+</body>
+</html>

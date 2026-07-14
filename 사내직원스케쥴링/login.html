@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("volta.theme") || "light";
+      document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>로그인 — VOLTA Scheduler</title>
+<meta name="description" content="VOLTA Scheduler — 사내 직원 스케줄링 및 리소스 관리 로그인" />
+<meta name="theme-color" content="#0b0d11" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='19' font-size='19'>⚡</text></svg>" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+html,body{height:100%}
+body{margin:0;min-height:100vh;background:var(--bg);overflow-x:hidden}
+
+.lg{display:flex;min-height:100vh}
+
+/* ---- 브랜드 패널 ---- */
+.lg__brand{
+  position:relative;flex:0 0 44%;max-width:620px;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:44px 46px;color:#fff;overflow:hidden;isolation:isolate;
+  background-image:linear-gradient(168deg, rgba(11,13,17,.28), rgba(9,11,15,.94) 76%), url('img/hero-site.jpg');
+  background-size:cover;background-position:center;
+}
+.lg__brand.no-image{
+  background-image:
+    radial-gradient(900px 620px at 10% -8%, color-mix(in srgb, var(--volt-500) 38%, transparent), transparent 62%),
+    radial-gradient(700px 500px at 100% 100%, color-mix(in srgb, var(--volt-600) 22%, transparent), transparent 60%),
+    linear-gradient(168deg, #0b0d11 0%, #12151c 46%, #141a2c 100%);
+}
+.lg__probe{position:absolute;width:0;height:0;opacity:0;pointer-events:none}
+.lg__brandtop{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.lg__logo{display:flex;align-items:center;gap:9px}
+.lg__logo .ic{width:32px;height:32px;border-radius:9px;flex:0 0 32px;background:linear-gradient(145deg,var(--volt-500),var(--volt-700));display:grid;place-items:center;box-shadow:0 6px 18px -6px rgba(47,98,245,.6)}
+.lg__logo .ic svg{width:18px;height:18px;color:#fff}
+.lg__logo b{font-size:16px;letter-spacing:.01em;display:block;line-height:1.1}
+.lg__logo small{display:block;font-size:9.5px;letter-spacing:.2em;color:rgba(255,255,255,.55);font-weight:800}
+
+.lg__brandmid{position:relative;z-index:1;margin:auto 0;padding:40px 0}
+.lg__brandmid h1{font-size:42px;font-weight:800;line-height:1.2;letter-spacing:-.025em}
+.lg__brandmid p{font-size:14.5px;line-height:1.75;color:rgba(255,255,255,.66);margin-top:16px;max-width:36ch}
+
+.lg__stats{position:relative;z-index:1;display:flex;border-top:1px solid rgba(255,255,255,.14);padding-top:22px}
+.lg__stat{flex:1;padding-right:14px}
+.lg__stat b{display:block;font-size:27px;font-weight:800;letter-spacing:-.02em}
+.lg__stat span{display:block;font-size:10.5px;color:rgba(255,255,255,.55);font-weight:700;letter-spacing:.06em;margin-top:4px;text-transform:uppercase}
+
+/* ---- 폼 패널 ---- */
+.lg__form{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px;position:relative}
+.lg__theme{position:absolute;top:20px;right:20px}
+.lg__formwrap{width:100%;max-width:378px;animation:lgrise .5s cubic-bezier(.22,.61,.36,1) both}
+@keyframes lgrise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.lg__formwrap h2{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.lg__sub{font-size:13.5px;color:var(--muted);margin-top:6px;margin-bottom:26px}
+
+#loginForm .field{margin-bottom:16px}
+/* 브라우저 자동완성 미리보기가 배경색을 강제로 덮어쓰는 것을 방지 (다크모드 대응) */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-webkit-autofill:active{
+  -webkit-text-fill-color:var(--ink);
+  caret-color:var(--ink);
+  -webkit-box-shadow:0 0 0 1000px var(--surface) inset;
+  box-shadow:0 0 0 1000px var(--surface) inset;
+  transition:background-color 5000s ease-in-out 0s;
+}
+.lg__inputic{position:relative;display:flex;align-items:center}
+.lg__inputic svg{position:absolute;left:12px;width:17px;height:17px;color:var(--faint);pointer-events:none}
+.lg__inputic .input{padding-left:38px}
+.lg__inputic .input.has-eye{padding-right:40px}
+.lg__eyebtn{position:absolute;right:5px;width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--faint)}
+.lg__eyebtn:hover{background:var(--surface-3);color:var(--ink)}
+.lg__eyebtn svg{width:17px;height:17px}
+
+.lg__row{display:flex;align-items:center;justify-content:space-between;margin:2px 0 18px;font-size:13px}
+.lg__forgot{font-weight:700;font-size:13px}
+
+.lg__divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--faint);font-size:11.5px;font-weight:700}
+.lg__divider::before,.lg__divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.lg__sso{display:flex;flex-direction:column;gap:9px}
+.lg__sso .btn{gap:9px}
+.lg__sso .btn svg{width:17px;height:17px}
+
+.lg__demo{margin-top:28px;padding-top:22px;border-top:1px solid var(--line)}
+.lg__demohd span{font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
+.lg__demogrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.lg__demobtn{
+  display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:var(--r-md);
+  border:1px solid var(--line);background:var(--surface);text-align:left;width:100%;
+  transition:border-color var(--fast),background var(--fast),transform var(--fast),opacity var(--fast);
+}
+.lg__demobtn:hover{border-color:var(--line-strong);background:var(--surface-2)}
+.lg__demobtn:active{transform:scale(.97)}
+.lg__demobtn.is-loading{opacity:.55;pointer-events:none}
+.lg__demobtn .ic{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:0 0 32px}
+.lg__demobtn .ic svg{width:16px;height:16px}
+.lg__demobtn b{display:block;font-size:12.5px;font-weight:800}
+.lg__demobtn small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:1px;line-height:1.3}
+
+.spin{width:15px;height:15px;border-radius:99px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:lgspin .7s linear infinite;display:inline-block;vertical-align:-3px;margin-right:7px}
+@keyframes lgspin{to{transform:rotate(360deg)}}
+
+.lg__foot{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--faint)}
+
+@media (max-width:960px){
+  .lg{flex-direction:column}
+  .lg__brand{flex:0 0 auto;min-height:0;padding:22px 22px 22px}
+  .lg__brandmid{margin:14px 0;padding:0}
+  .lg__brandmid h1{font-size:26px}
+  .lg__brandmid p{font-size:13px;margin-top:10px}
+  .lg__stats{padding-top:16px}
+  .lg__stat b{font-size:20px}
+  .lg__form{padding:28px 20px 70px}
+  .lg__foot{position:static;margin-top:26px}
+}
+@media (max-width:480px){
+  .lg__brandmid p{display:none}
+  .lg__stat span{font-size:9px}
+}
+@media (prefers-reduced-motion:reduce){
+  .spin{animation:none;border-top-color:rgba(255,255,255,.35)}
+}
+</style>
+</head>
+<body>
+  <div class="lg">
+    <section class="lg__brand" id="brandPanel">
+      <img class="lg__probe" src="img/hero-site.jpg" alt="" onerror="document.getElementById('brandPanel').classList.add('no-image')" />
+
+      <div class="lg__brandtop">
+        <span class="lg__logo">
+          <span class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></span>
+          <span><b>VOLTA</b><small>SCHEDULER</small></span>
+        </span>
+      </div>
+
+      <div class="lg__brandmid">
+        <h1>현장의 오늘을<br />한 화면에</h1>
+        <p>스케줄·배정·휴가·장비를 하나의 화면에서. 현장 리드부터 기술자까지, 오늘 해야 할 일을 가장 빠르게 확인하세요.</p>
+      </div>
+
+      <div class="lg__stats">
+        <div class="lg__stat"><b class="num">221</b><span>Technicians</span></div>
+        <div class="lg__stat"><b class="num">17</b><span>Projects</span></div>
+        <div class="lg__stat"><b class="num">8</b><span>Regions</span></div>
+      </div>
+    </section>
+
+    <section class="lg__form">
+      <button class="iconbtn lg__theme" id="themeBtn" type="button" aria-label="테마 전환"></button>
+
+      <div class="lg__formwrap">
+        <h2>다시 오신 것을 환영합니다</h2>
+        <p class="lg__sub">계정 정보를 입력해 로그인하세요.</p>
+
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="email">이메일</label>
+            <div class="lg__inputic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="m3 7 9 6 9-6"/></svg>
+              <input class="input" type="email" id="email" placeholder="name@volta.example" autocomplete="username" />
+            </div>
+            <span class="err" id="emailErr" hidden>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2v.1"/></svg>
+              <span>올바른 이메일 주소를 입력하세요.</span>
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="password">비밀번호</label>
+            <div class="lg__inputic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <input class="input has-eye" type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+              <button type="button" class="lg__eyebtn" id="eyeBtn" aria-label="비밀번호 표시"></button>
+            </div>
+            <span class="err" id="passErr" hidden>
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16.2v.1"/></svg>
+              <span>비밀번호를 입력하세요.</span>
+            </span>
+          </div>
+
+          <div class="lg__row">
+            <label class="check"><input type="checkbox" id="remember" checked /><span>로그인 유지</span></label>
+            <a href="#" class="lg__forgot" id="forgotLink">비밀번호 찾기</a>
+          </div>
+
+          <button type="submit" class="btn btn--primary btn--lg btn--block" id="submitBtn">로그인</button>
+        </form>
+
+        <div class="lg__divider"><span>또는</span></div>
+        <div class="lg__sso">
+          <button class="btn btn--block" id="ssoMs" type="button">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><rect x="2" y="2" width="9.2" height="9.2" fill="#f35325"/><rect x="12.8" y="2" width="9.2" height="9.2" fill="#81bc06"/><rect x="2" y="12.8" width="9.2" height="9.2" fill="#05a6f0"/><rect x="12.8" y="12.8" width="9.2" height="9.2" fill="#ffba08"/></svg>
+            Microsoft로 계속하기
+          </button>
+          <button class="btn btn--block" id="ssoGoogle" type="button">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h5.9a5.04 5.04 0 0 1-2.19 3.31v2.75h3.55c2.08-1.92 3.24-4.74 3.24-8.09Z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.55-2.75c-.98.66-2.24 1.05-3.73 1.05-2.87 0-5.3-1.94-6.17-4.53H2.16v2.84A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.83 14.11A6.6 6.6 0 0 1 5.48 12c0-.73.13-1.44.35-2.11V7.05H2.16A11 11 0 0 0 1 12c0 1.77.42 3.45 1.16 4.95l3.67-2.84Z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.96 1 12 1 7.7 1 3.99 3.47 2.16 7.05l3.67 2.84c.87-2.59 3.3-4.51 6.17-4.51Z"/></svg>
+            Google로 계속하기
+          </button>
+        </div>
+
+        <div class="lg__demo">
+          <div class="lg__demohd"><span>데모 빠른 로그인</span></div>
+          <div class="lg__demogrid">
+            <button class="lg__demobtn" type="button" data-role="ADMIN">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 20 6v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6l8-3Z"/></svg></span>
+              <span><b>관리자</b><small>전 지역 · 사용자 관리</small></span>
+            </button>
+            <button class="lg__demobtn" type="button" data-role="SCHEDULER">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M3 9h18M8 2v4M16 2v4"/></svg></span>
+              <span><b>스케줄러</b><small>배정 · 승인</small></span>
+            </button>
+            <button class="lg__demobtn" type="button" data-role="LEAD">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.6"/><path d="M2 21a7 7 0 0 1 14 0"/><path d="M16.5 4.6a3.6 3.6 0 0 1 0 6.8M18 21h4a6.5 6.5 0 0 0-4-6"/></svg></span>
+              <span><b>현장 리드</b><small>담당 프로젝트</small></span>
+            </button>
+            <button class="lg__demobtn" type="button" data-role="TECHNICIAN">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0 5 5l-9 9a2.8 2.8 0 0 1-4-4l9-9Z"/><path d="M17 3.5 20.5 7"/></svg></span>
+              <span><b>기술자</b><small>모바일 현장뷰</small></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg__foot">© 2026 VOLTA Scheduler · 데모 프로토타입</div>
+    </section>
+  </div>
+
+  <div class="toasts" id="toastHost" role="status" aria-live="polite"></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    var ICON = {
+      sun:  '<circle cx="12" cy="12" r="4.2"/><path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"/>',
+      moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>',
+      eye:  '<path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/>',
+      eyeOff: '<path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.8"/><path d="M3 3l18 18"/>',
+    };
+    function svg(name, size) {
+      var s = size || 19;
+      return '<svg viewBox="0 0 24 24" width="' + s + '" height="' + s + '" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[name] + '</svg>';
+    }
+
+    /* ---------- 토스트 (style.css .toasts/.toast 재사용) ---------- */
+    function toast(msg, type) {
+      var host = document.getElementById("toastHost");
+      var t = document.createElement("div");
+      t.className = "toast toast--" + (type || "info");
+      t.innerHTML = "<span>" + msg + "</span>";
+      host.appendChild(t);
+      setTimeout(function () {
+        t.classList.add("out");
+        setTimeout(function () { t.remove(); }, 220);
+      }, 3200);
+    }
+
+    /* ---------- 테마 ---------- */
+    var themeBtn = document.getElementById("themeBtn");
+    function paintTheme() {
+      var dark = document.documentElement.getAttribute("data-theme") === "dark";
+      themeBtn.innerHTML = svg(dark ? "sun" : "moon", 19);
+    }
+    themeBtn.onclick = function () {
+      var cur = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", cur);
+      try { localStorage.setItem("volta.theme", cur); } catch (e) {}
+      paintTheme();
+    };
+    paintTheme();
+
+    /* ---------- 비밀번호 표시/숨김 ---------- */
+    var pwInput = document.getElementById("password");
+    var eyeBtn = document.getElementById("eyeBtn");
+    function paintEye() {
+      var showing = pwInput.type === "text";
+      eyeBtn.innerHTML = svg(showing ? "eyeOff" : "eye", 17);
+      eyeBtn.setAttribute("aria-label", showing ? "비밀번호 숨기기" : "비밀번호 표시");
+    }
+    eyeBtn.onclick = function () {
+      pwInput.type = pwInput.type === "password" ? "text" : "password";
+      paintEye();
+    };
+    paintEye();
+
+    /* ---------- 유효성 검사 + 제출 ---------- */
+    var form = document.getElementById("loginForm");
+    var emailInput = document.getElementById("email");
+    var emailErr = document.getElementById("emailErr");
+    var passErr = document.getElementById("passErr");
+    var submitBtn = document.getElementById("submitBtn");
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ok = true;
+      if (!EMAIL_RE.test(emailInput.value.trim())) {
+        emailErr.hidden = false; emailInput.classList.add("is-err"); ok = false;
+      } else {
+        emailErr.hidden = true; emailInput.classList.remove("is-err");
+      }
+      if (!pwInput.value) {
+        passErr.hidden = false; pwInput.classList.add("is-err"); ok = false;
+      } else {
+        passErr.hidden = true; pwInput.classList.remove("is-err");
+      }
+      if (!ok) return;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spin"></span>로그인 중…';
+      setTimeout(function () {
+        try {
+          if (!localStorage.getItem("volta.role")) localStorage.setItem("volta.role", "SCHEDULER");
+        } catch (e) {}
+        location.href = "index.html";
+      }, 700);
+    });
+
+    ["email", "password"].forEach(function (id) {
+      document.getElementById(id).addEventListener("input", function () {
+        if (id === "email") { emailErr.hidden = true; emailInput.classList.remove("is-err"); }
+        else { passErr.hidden = true; pwInput.classList.remove("is-err"); }
+      });
+    });
+
+    /* ---------- SSO (데모 비활성화) ---------- */
+    document.getElementById("ssoMs").onclick = function () {
+      toast("데모에서는 SSO 로그인이 비활성화되어 있습니다.", "info");
+    };
+    document.getElementById("ssoGoogle").onclick = function () {
+      toast("데모에서는 SSO 로그인이 비활성화되어 있습니다.", "info");
+    };
+    document.getElementById("forgotLink").onclick = function (e) {
+      e.preventDefault();
+      toast("데모에서는 비밀번호 재설정이 비활성화되어 있습니다.", "info");
+    };
+
+    /* ---------- 데모 빠른 로그인 ---------- */
+    Array.prototype.forEach.call(document.querySelectorAll(".lg__demobtn"), function (btn) {
+      btn.onclick = function () {
+        var role = btn.getAttribute("data-role");
+        try { localStorage.setItem("volta.role", role); } catch (e) {}
+        btn.classList.add("is-loading");
+        setTimeout(function () { location.href = "index.html"; }, 260);
+      };
+    });
+  })();
+  </script>
+</body>
+</html>

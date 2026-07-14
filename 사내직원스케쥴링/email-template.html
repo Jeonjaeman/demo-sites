@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>이메일 템플릿 — VOLTA Scheduler</title>
+<meta name="description" content="스케줄 변경 안내 이메일 디자인 템플릿 — 미리보기 및 개발 인계용 HTML 소스" />
+<meta name="theme-color" content="#0b0d11" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='19' font-size='19'>⚡</text></svg>" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  /* ---------- 이 <style> 블록은 미리보기 페이지 전용이며 이메일 소스에는 포함되지 않습니다 ---------- */
+  .pagetop{
+    height:var(--top-h);flex:0 0 var(--top-h);
+    background:color-mix(in srgb,var(--surface) 88%,transparent);
+    backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:14px;padding:0 24px;position:sticky;top:0;z-index:30;flex-wrap:wrap;
+  }
+  .backlink{font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .backlink:hover{color:var(--ink)}
+  .pagetop__title{font-size:14px;font-weight:800;letter-spacing:-.01em;margin-right:auto;white-space:nowrap}
+  .pagetop__tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}
+  .pagebody{max-width:1220px;margin:0 auto;padding:30px 26px 100px}
+  .pagehead{margin-bottom:18px}
+  .pagehead h1{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .pagehead p{font-size:13px;color:var(--muted);margin-top:6px;max-width:74ch;line-height:1.6}
+
+  .preview-stage{
+    background:
+      linear-gradient(45deg,var(--surface-3) 25%,transparent 25%),
+      linear-gradient(-45deg,var(--surface-3) 25%,transparent 25%),
+      linear-gradient(45deg,transparent 75%,var(--surface-3) 75%),
+      linear-gradient(-45deg,transparent 75%,var(--surface-3) 75%);
+    background-size:18px 18px;background-position:0 0,0 9px,9px -9px,-9px 0;
+    background-color:var(--surface-2);
+    border:1px solid var(--line);border-radius:var(--r-xl);
+    padding:36px 18px;display:flex;flex-direction:column;align-items:center;gap:14px;
+    overflow-x:auto;
+  }
+  .preview-meta{font-size:11.5px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .preview-meta b{color:var(--ink)}
+  .preview-frame{
+    width:640px;max-width:100%;transition:width .28s var(--ease);
+    background:#f1f2f5;border-radius:var(--r-lg);box-shadow:var(--sh-3);
+    padding:0;overflow:hidden;border:1px solid var(--line);
+  }
+  .preview-frame.is-mobile{width:375px}
+  /* 다크 미리보기 시뮬레이션 — 실제 이메일 소스(#emailRoot)에는 없는 페이지 전용 오버라이드 */
+  .preview-frame.pv-dark .em-bg{background-color:#0b0d11 !important}
+  .preview-frame.pv-dark .em-surface{background-color:#14171d !important}
+  .preview-frame.pv-dark .em-text{color:#eef1f6 !important}
+  .preview-frame.pv-dark .em-muted{color:#8e97a6 !important}
+  .preview-frame.pv-dark .em-line{border-color:#272c36 !important}
+  .preview-frame.pv-dark{background:#0b0d11}
+
+  .groupbar{display:flex;align-items:baseline;gap:10px;margin:36px 0 4px}
+  .groupbar h3{font-size:15px;font-weight:800}
+  .groupbar span{font-size:11.5px;color:var(--muted)}
+  .implcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;box-shadow:var(--sh-1);margin-top:14px}
+  .implcard h4{font-size:14px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .implcard h4 svg{width:16px;height:16px;color:var(--accent)}
+  .implcard p,.implcard li{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+  .implcard ul{padding-left:18px;list-style:disc;margin-top:4px}
+  .implgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .clientlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .clientlist span{font-size:11.5px;font-weight:700;color:var(--ink-2);background:var(--surface-3);padding:5px 10px;border-radius:99px}
+
+  @media (max-width:1024px){
+    .implgrid{grid-template-columns:1fr}
+    .pagebody{padding:22px 16px 90px}
+    .pagetop{padding:0 14px}
+  }
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;min-height:100vh">
+  <header class="pagetop">
+    <a class="backlink" href="index.html" id="backlink">← 데모로 돌아가기</a>
+    <div class="pagetop__title">이메일 템플릿 — 스케줄 변경 안내</div>
+    <div class="pagetop__tools">
+      <select class="select" id="scenarioSelect" aria-label="발송 시나리오">
+        <option value="assign_change">배정 변경</option>
+        <option value="assign_add">배정 추가</option>
+        <option value="assign_cancel">배정 취소</option>
+        <option value="vacation_approve">휴가 승인</option>
+        <option value="vacation_reject">휴가 반려</option>
+      </select>
+      <div class="seg seg--sm" id="viewportSeg" role="group" aria-label="미리보기 화면 크기">
+        <button type="button" data-v="desktop" class="is-on">데스크톱</button>
+        <button type="button" data-v="mobile">모바일 375px</button>
+      </div>
+      <div class="seg seg--sm" id="darkSeg" role="group" aria-label="라이트/다크 미리보기">
+        <button type="button" data-v="light" class="is-on">라이트</button>
+        <button type="button" data-v="dark">다크</button>
+      </div>
+      <button class="btn btn--primary btn--sm" id="copyBtn"></button>
+    </div>
+  </header>
+
+  <main class="pagebody">
+    <div class="pagehead">
+      <h1>스케줄 변경 안내 이메일</h1>
+      <p>실제 이메일 클라이언트(Outlook·Gmail·모바일)에서 깨지지 않는 <b>테이블 기반 인라인 스타일 HTML</b>입니다. 위 시나리오를 바꿔가며 5가지 발송 상황을 확인하고, "HTML 복사"로 현재 시나리오의 이메일 소스만 클립보드에 복사할 수 있습니다.</p>
+    </div>
+
+    <div class="preview-stage">
+      <div class="preview-meta"><span id="viewportLabel">미리보기 폭 · <b>600px (Desktop)</b></span></div>
+      <div class="preview-frame" id="previewFrame">
+        <!-- ============================================================
+             아래 #emailRoot 는 실제 발송되는 이메일 HTML 소스입니다.
+             "HTML 복사" 버튼은 이 요소의 outerHTML만 추출해 복사합니다.
+             ============================================================ -->
+        <table id="emailRoot" role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="em-container em-bg" bgcolor="#f1f2f5" style="width:100%;background-color:#f1f2f5;border-collapse:collapse;">
+          <tr>
+            <td align="center" style="padding:32px 16px;">
+              <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="em-container em-surface" bgcolor="#ffffff" style="width:100%;max-width:600px;background-color:#ffffff;border-collapse:collapse;border-radius:12px;overflow:hidden;">
+
+                <!-- 헤더 배너 -->
+                <tr>
+                  <td bgcolor="#14171d" style="background-color:#14171d;padding:26px 32px;" class="em-pad">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+                      <td style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:18px;font-weight:800;color:#ffffff;letter-spacing:.02em;" align="left">⚡&nbsp;VOLTA SCHEDULER</td>
+                      <td style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:11px;color:#9aa1af;" align="right">현장 스케줄링 시스템</td>
+                    </tr></table>
+                  </td>
+                </tr>
+
+                <!-- 인사말 -->
+                <tr>
+                  <td class="em-surface em-pad" bgcolor="#ffffff" style="background-color:#ffffff;padding:32px 32px 8px;">
+                    <div id="ev-greeting" class="em-text" style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:20px;font-weight:800;color:#14171d;line-height:1.4;">James Alvarez 님, 스케줄이 변경되었습니다.</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="em-surface em-pad" bgcolor="#ffffff" style="background-color:#ffffff;padding:6px 32px 24px;">
+                    <div id="ev-lede" class="em-muted" style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:14px;color:#6b7280;line-height:1.65;">다음 근무 일정에 변경 사항이 있습니다. 아래 변경 요약을 확인해 주세요.</div>
+                  </td>
+                </tr>
+
+                <!-- 변경 요약 카드 -->
+                <tr>
+                  <td class="em-surface em-pad" bgcolor="#ffffff" style="background-color:#ffffff;padding:0 32px 22px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f7f8fa" style="background-color:#f7f8fa;border:1px solid #e2e4ea;border-radius:10px;border-collapse:separate;">
+                      <tr>
+                        <td class="em-line" style="padding:12px 16px;border-bottom:1px solid #e2e4ea;">
+                          <span id="ev-summary-title" class="em-text" style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:13px;font-weight:800;color:#14171d;">변경 요약</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:2px 0;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" id="ev-summary-body"></table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- 다음 근무 안내 카드 -->
+                <tr>
+                  <td class="em-pad" style="padding:0 32px 26px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f7f8fa" style="background-color:#f7f8fa;border:1px solid #e2e4ea;border-radius:10px;border-collapse:separate;">
+                      <tr>
+                        <td class="em-line" style="padding:12px 16px;border-bottom:1px solid #e2e4ea;">
+                          <span id="ev-nextshift-title" class="em-text" style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:13px;font-weight:800;color:#14171d;">다음 근무 안내</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:2px 0;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" id="ev-nextshift-body"></table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- CTA 버튼 (bulletproof + VML 폴백) -->
+                <tr>
+                  <td align="center" class="em-pad" style="padding:6px 32px 30px;">
+                    <!--[if mso]>
+                    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="https://schedule.volta.example/shifts?ref=email" style="height:48px;v-text-anchor:middle;width:240px;" arcsize="12%" strokecolor="#2f62f5" fillcolor="#2f62f5">
+                    <w:anchorlock/>
+                    <center style="color:#ffffff;font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">내 일정 확인하기</center>
+                    </v:roundrect>
+                    <![endif]-->
+                    <!--[if !mso]><!-->
+                    <a href="https://schedule.volta.example/shifts?ref=email" target="_blank" rel="noopener" style="background-color:#2f62f5;border-radius:8px;color:#ffffff;display:inline-block;font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:15px;font-weight:bold;line-height:48px;text-align:center;text-decoration:none;width:240px;-webkit-text-size-adjust:none;mso-hide:all;">내 일정 확인하기</a>
+                    <!--<![endif]-->
+                  </td>
+                </tr>
+
+                <!-- 보조 링크 -->
+                <tr>
+                  <td align="center" class="em-pad" style="padding:0 32px 24px;font-family:Arial,Helvetica,sans-serif;font-size:12.5px;">
+                    <a href="https://maps.volta.example/site/ros14" target="_blank" rel="noopener" style="color:#2f62f5;text-decoration:underline;">현장 지도에서 보기</a>
+                    <span style="color:#cbcfd8;">&nbsp;·&nbsp;</span>
+                    <a href="tel:+16025550203" style="color:#2f62f5;text-decoration:underline;">현장 리드에게 전화하기</a>
+                  </td>
+                </tr>
+
+                <!-- 안내 문구 -->
+                <tr>
+                  <td class="em-line em-pad" style="padding:20px 32px 26px;border-top:1px solid #e2e4ea;">
+                    <div class="em-muted" style="font-family:Arial,Helvetica,'Apple SD Gothic Neo','맑은 고딕',sans-serif;font-size:12px;color:#9aa1af;line-height:1.75;">
+                      문의:&nbsp;<a href="mailto:support@volta.example" style="color:#6b7280;">support@volta.example</a>&nbsp;·&nbsp;+1 (800) 555-0100&nbsp;&nbsp;|&nbsp;&nbsp;SMS 알림을 더 이상 받지 않으려면 문자에 <b style="color:#6b7280;">STOP</b>이라고 답장해 주세요.&nbsp;&nbsp;|&nbsp;&nbsp;<a href="https://schedule.volta.example/notifications" style="color:#6b7280;text-decoration:underline;">알림 수신 설정 변경</a>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- 푸터 -->
+                <tr>
+                  <td bgcolor="#f7f8fa" class="em-surface em-pad" style="background-color:#f7f8fa;padding:22px 32px;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#9aa1af;line-height:1.85;">
+                    VOLTA Field Services, Inc. · 4400 Commerce Dr, Austin, TX 78701<br />
+                    <a href="https://volta.example/privacy" style="color:#9aa1af;">개인정보처리방침</a>&nbsp;·&nbsp;<a href="https://volta.example/terms" style="color:#9aa1af;">이용약관</a><br />
+                    이 메일은 발신 전용입니다. 회신하셔도 확인되지 않습니다.
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============ 구현 노트 ============ -->
+    <div class="groupbar"><h3>구현 노트</h3><span>개발 인계 시 반드시 확인할 이메일 제작 특유의 제약 사항</span></div>
+    <div class="implgrid">
+      <div class="implcard">
+        <h4><span id="ic1"></span>600px 고정 폭인 이유</h4>
+        <p>대다수 데스크톱 메일 클라이언트(Outlook, Gmail, Apple Mail)의 미리보기 폭 표준이 600~640px입니다. 이보다 넓으면 일부 클라이언트에서 가로 스크롤이 생기거나 우측이 잘립니다. 본 템플릿은 <code class="mono">width:100%;max-width:600px</code>로 유동폭을 확보해 좁은 화면에서도 자연스럽게 줄어듭니다.</p>
+      </div>
+      <div class="implcard">
+        <h4><span id="ic2"></span>인라인 스타일이 필수인 이유</h4>
+        <p>Gmail·Outlook(워드 렌더링 엔진 기반) 등 다수 클라이언트가 <code class="mono">&lt;style&gt;</code> 블록의 상당 부분을 제거하거나 무시합니다. class 기반 스타일은 신뢰할 수 없으므로 색상·여백·폰트는 모두 각 요소의 <code class="mono">style=""</code> 속성에 직접 명시했습니다. <code class="mono">&lt;style&gt;</code>은 인라인이 불가능한 미디어쿼리(다크모드·반응형)에 한해 보조적으로만 사용합니다.</p>
+      </div>
+      <div class="implcard">
+        <h4><span id="ic3"></span>이미지 차단 대비</h4>
+        <p>배너·아이콘 이미지가 기본 차단되는 클라이언트가 많아, 이번 버전은 <b>이미지 없이 텍스트 로고 + 단색 배경(bgcolor)</b>으로 헤더를 구성했습니다. 추후 <code class="mono">img/email-banner.jpg</code>를 추가한다면 아래와 같이 alt·bgcolor를 병행해 이미지가 차단되어도 레이아웃이 무너지지 않게 합니다.</p>
+        <div class="demo" style="margin-top:10px"><div class="demo__code" style="border-top:0"><pre style="margin:0;padding:14px 16px;background:#12151b;color:#e7ebf2;font-family:ui-monospace,monospace;font-size:11.5px;line-height:1.7;border-radius:10px;overflow-x:auto;">&lt;td bgcolor="#14171d" style="background-color:#14171d;"&gt;
+  &lt;img src="img/email-banner.jpg" width="600" height="120"
+       alt="VOLTA SCHEDULER" style="display:block;width:100%;max-width:600px;" /&gt;
+&lt;/td&gt;</pre></div></div>
+      </div>
+      <div class="implcard">
+        <h4><span id="ic4"></span>다크모드 한계</h4>
+        <p>이메일 다크모드는 표준화되어 있지 않고 클라이언트마다 처리 방식이 다릅니다. Apple Mail·Outlook.com 일부 버전만 <code class="mono">@media (prefers-color-scheme:dark)</code>를 지원하고, Gmail 앱 등은 자체 색상 반전 로직을 적용해 의도치 않은 반전이 발생할 수 있습니다. 이 때문에 배경은 항상 <code class="mono">bgcolor</code> 속성 + 인라인 <code class="mono">background-color</code>를 병행해 완전 투명 배경에 의존하지 않도록 했습니다. <b>위 미리보기의 "다크" 토글은 지원 클라이언트의 렌더링을 시뮬레이션한 데모이며</b>, 실제 발송 시 클라이언트별 차이가 있을 수 있습니다.</p>
+      </div>
+      <div class="implcard">
+        <h4><span id="ic5"></span>접근성</h4>
+        <ul>
+          <li>레이아웃용 테이블에는 모두 <code class="mono">role="presentation"</code>을 적용해 스크린리더가 데이터 표로 잘못 읽지 않도록 했습니다.</li>
+          <li>이미지가 없는 버전이지만, 추후 이미지 추가 시 항상 의미 있는 <code class="mono">alt</code> 텍스트를 병행합니다.</li>
+          <li>링크 텍스트는 "여기를 클릭"이 아닌 "현장 지도에서 보기"처럼 목적지를 설명합니다.</li>
+          <li>본문 최소 폰트 크기는 <b>14px</b>(안내 문구·푸터만 예외적으로 11~12px, 보조 정보 한정)입니다.</li>
+        </ul>
+      </div>
+      <div class="implcard">
+        <h4><span id="ic6"></span>테스트 권장 클라이언트</h4>
+        <p>발송 전 아래 조합에서 렌더링을 반드시 재검증하세요. 특히 Outlook 데스크톱은 VML·border-radius·padding 처리 방식이 달라 별도 확인이 필요합니다.</p>
+        <div class="clientlist">
+          <span>Outlook 365 (Windows 데스크톱)</span><span>Outlook.com (웹)</span><span>Gmail 웹 / 라이트·다크</span>
+          <span>Gmail iOS·Android</span><span>Apple Mail macOS·iOS / 라이트·다크</span><span>Samsung Email</span>
+          <span>Litmus / Email on Acid (권장)</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+(function (w, d) {
+  "use strict";
+  var UI = w.UI;
+  var icon = UI.icon;
+
+  UI.applyTheme(UI.store.get("theme", "light"));
+
+  d.getElementById("backlink").innerHTML = icon("chevL", 16) + "데모로 돌아가기";
+  d.getElementById("copyBtn").innerHTML = icon("copy", 15) + "HTML 복사";
+  var implIcons = { ic1: "maximize", ic2: "layers", ic3: "eye", ic4: "moon", ic5: "checkCircle", ic6: "mail" };
+  Object.keys(implIcons).forEach(function (id) { d.getElementById(id).innerHTML = icon(implIcons[id], 16); });
+
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  /* ---------- 이메일 내부 행 생성기 (미리보기 · 복사본 공용) ---------- */
+  function compareRowHTML(row) {
+    var isCancel = !!row.cancel;
+    var afterBg = isCancel ? "#fdeaea" : "#e2f4fc";
+    var afterFg = isCancel ? "#9d2429" : "#075f86";
+    var beforeDeco = row.before === "—" ? "none" : "line-through";
+    var afterStyle = row.changed ? ("background-color:" + afterBg + ";color:" + afterFg + ";border-radius:5px;") : "color:#14171d;";
+    return '<tr>' +
+      '<td width="66" style="padding:11px 14px;border-bottom:1px solid #e2e4ea;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#6b7280;white-space:nowrap;vertical-align:top;">' + esc(row.label) + '</td>' +
+      '<td style="padding:11px 8px 11px 0;border-bottom:1px solid #e2e4ea;font-family:Arial,Helvetica,\'Apple SD Gothic Neo\',\'맑은 고딕\',sans-serif;font-size:13px;color:#9aa1af;text-decoration:' + beforeDeco + ';vertical-align:top;">' + esc(row.before) + '</td>' +
+      '<td width="18" align="center" style="padding:11px 0;border-bottom:1px solid #e2e4ea;font-family:Arial,sans-serif;font-size:13px;color:#9aa1af;vertical-align:top;">→</td>' +
+      '<td style="padding:11px 14px 11px 6px;border-bottom:1px solid #e2e4ea;font-family:Arial,Helvetica,\'Apple SD Gothic Neo\',\'맑은 고딕\',sans-serif;font-size:13px;font-weight:700;vertical-align:top;' + afterStyle + '">' + esc(row.after) + '</td>' +
+    '</tr>';
+  }
+  function kvRowHTML(label, value, badge) {
+    var valueHtml = badge
+      ? '<span style="display:inline-block;padding:3px 10px;border-radius:99px;background-color:' + badge.bg + ';color:' + badge.fg + ';font-size:11.5px;font-weight:800;">' + esc(value) + '</span>'
+      : esc(value);
+    return '<tr>' +
+      '<td width="100" style="padding:10px 14px;border-bottom:1px solid #e2e4ea;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#6b7280;white-space:nowrap;vertical-align:top;">' + esc(label) + '</td>' +
+      '<td style="padding:10px 14px 10px 0;border-bottom:1px solid #e2e4ea;font-family:Arial,Helvetica,\'Apple SD Gothic Neo\',\'맑은 고딕\',sans-serif;font-size:13.5px;color:#14171d;vertical-align:top;">' + valueHtml + '</td>' +
+    '</tr>';
+  }
+  function noteRowHTML(text) {
+    return '<tr><td style="padding:14px 16px;font-family:Arial,Helvetica,\'Apple SD Gothic Neo\',\'맑은 고딕\',sans-serif;font-size:13px;color:#6b7280;line-height:1.65;">' + esc(text) + '</td></tr>';
+  }
+
+  /* ---------- 5개 발송 시나리오 ---------- */
+  var SCENARIOS = {
+    assign_change: {
+      greeting: "James Alvarez 님, 스케줄이 변경되었습니다.",
+      lede: "다음 근무 일정에 변경 사항이 있습니다. 아래 변경 요약을 확인해 주세요.",
+      summaryTitle: "변경 요약", summaryType: "compare",
+      rows: [
+        { label: "날짜", before: "7/16 (목)", after: "7/18 (토)", changed: true },
+        { label: "현장", before: "KCVG — Hyperscale Campus", after: "ROS14 — Substation", changed: true },
+        { label: "시프트", before: "주간 (Day)", after: "오전 (Morning)", changed: true },
+        { label: "시간", before: "06:00–16:00", after: "06:00–14:00", changed: true },
+        { label: "주소", before: "1200 Aero Pkwy, Hebron, KY", after: "8842 Rosewood Dr, Plano, TX", changed: true },
+      ],
+      nextShift: { date: "2026년 7월 18일 (토)", site: "ROS14 — Substation", meet: "오전 5:40 집합 · 근무 시작 06:00", addr: "8842 Rosewood Dr, Plano, TX", lead: "Sofia Ferreira · +1 (602) 555-0203" },
+    },
+    assign_add: {
+      greeting: "James Alvarez 님, 새 근무가 배정되었습니다.",
+      lede: "새로운 근무가 배정되었습니다. 아래 내용을 확인해 주세요.",
+      summaryTitle: "배정 내용", summaryType: "compare",
+      rows: [
+        { label: "날짜", before: "—", after: "7/20 (월)", changed: true },
+        { label: "현장", before: "—", after: "QTS — DFW2 — DC1", changed: true },
+        { label: "시프트", before: "—", after: "주간 (Day)", changed: true },
+        { label: "시간", before: "—", after: "06:00–16:00", changed: true },
+        { label: "주소", before: "—", after: "1101 Digital Way, Irving, TX", changed: true },
+      ],
+      nextShift: { date: "2026년 7월 20일 (월)", site: "QTS — DFW2 — DC1", meet: "오전 5:40 집합 · 근무 시작 06:00", addr: "1101 Digital Way, Irving, TX", lead: "Isaac Whitmore · +1 (405) 555-0206" },
+    },
+    assign_cancel: {
+      greeting: "James Alvarez 님, 예정된 근무가 취소되었습니다.",
+      lede: "아래 근무 배정이 취소되었습니다. 해당 일정에는 현장에 방문하지 않으셔도 됩니다.",
+      summaryTitle: "취소된 배정", summaryType: "compare",
+      rows: [
+        { label: "날짜", before: "7/22 (수)", after: "취소됨", changed: true, cancel: true },
+        { label: "현장", before: "CJE1 — C&J Skid Testing", after: "취소됨", changed: true, cancel: true },
+        { label: "시프트", before: "야간 (Night)", after: "취소됨", changed: true, cancel: true },
+        { label: "시간", before: "20:00–06:00", after: "취소됨", changed: true, cancel: true },
+        { label: "주소", before: "3300 Industrial Blvd, Odessa, TX", after: "취소됨", changed: true, cancel: true },
+      ],
+      nextShift: null,
+      nextShiftNote: "현재 예정된 다음 근무가 없습니다. 새 배정이 등록되면 다시 안내드립니다.",
+    },
+    vacation_approve: {
+      greeting: "James Alvarez 님, 휴가 신청이 승인되었습니다.",
+      lede: "신청하신 휴가가 승인되었습니다. 아래 내용을 확인해 주세요.",
+      summaryTitle: "휴가 신청 내역", summaryType: "kv",
+      kv: [
+        { label: "신청 기간", value: "7/27 (월) ~ 7/31 (금)" },
+        { label: "휴가 유형", value: "유급휴가 (PTO)" },
+        { label: "사유", value: "여름 휴가" },
+        { label: "처리 결과", value: "승인", badge: { bg: "#e6f6ee", fg: "#0d6b3c" } },
+        { label: "처리자", value: "Marcus Reed" },
+      ],
+      nextShiftTitle: "복귀 후 첫 근무",
+      nextShift: { date: "2026년 8월 3일 (월)", site: "THMP — Grid Tie-In", meet: "오전 5:40 집합 · 근무 시작 06:00", addr: "9 Thompson Ln, Abilene, TX", lead: "Nadia Kovács · +1 (325) 555-0205" },
+    },
+    vacation_reject: {
+      greeting: "James Alvarez 님, 휴가 신청이 반려되었습니다.",
+      lede: "신청하신 휴가가 반려되었습니다. 사유를 확인하시고 필요 시 스케줄러에게 문의해 주세요.",
+      summaryTitle: "휴가 신청 내역", summaryType: "kv",
+      kv: [
+        { label: "신청 기간", value: "7/16 (목) ~ 7/17 (금)" },
+        { label: "휴가 유형", value: "병가 (Sick)" },
+        { label: "반려 사유", value: "해당 기간 대체 인력 확보 불가 — 스케줄러와 별도 협의 요청" },
+        { label: "처리 결과", value: "반려", badge: { bg: "#fdeaea", fg: "#9d2429" } },
+        { label: "처리자", value: "Marcus Reed" },
+      ],
+      nextShiftTitle: "기존 예정 근무 (변경 없음)",
+      nextShift: { date: "2026년 7월 16일 (목)", site: "KCVG — Hyperscale Campus", meet: "오전 5:40 집합 · 근무 시작 06:00", addr: "1200 Aero Pkwy, Hebron, KY", lead: "Alicia Monroe · +1 (512) 555-0201" },
+    },
+  };
+
+  function renderScenario(key) {
+    var s = SCENARIOS[key];
+    if (!s) return;
+    d.getElementById("ev-greeting").textContent = s.greeting;
+    d.getElementById("ev-lede").textContent = s.lede;
+    d.getElementById("ev-summary-title").textContent = s.summaryTitle;
+    var body = d.getElementById("ev-summary-body");
+    body.innerHTML = s.summaryType === "compare"
+      ? s.rows.map(compareRowHTML).join("")
+      : s.kv.map(function (r) { return kvRowHTML(r.label, r.value, r.badge); }).join("");
+
+    d.getElementById("ev-nextshift-title").textContent = s.nextShiftTitle || "다음 근무 안내";
+    var ns = d.getElementById("ev-nextshift-body");
+    if (s.nextShift) {
+      ns.innerHTML = [
+        kvRowHTML("날짜", s.nextShift.date),
+        kvRowHTML("현장", s.nextShift.site),
+        kvRowHTML("집합 시간", s.nextShift.meet),
+        kvRowHTML("주소", s.nextShift.addr),
+        kvRowHTML("현장 리드", s.nextShift.lead),
+      ].join("");
+    } else {
+      ns.innerHTML = noteRowHTML(s.nextShiftNote || "");
+    }
+  }
+  renderScenario("assign_change");
+
+  d.getElementById("scenarioSelect").addEventListener("change", function (e) { renderScenario(e.target.value); });
+
+  /* ---------- 데스크톱/모바일 뷰포트 토글 ---------- */
+  var frame = d.getElementById("previewFrame");
+  var viewportLabel = d.getElementById("viewportLabel");
+  d.getElementById("viewportSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    Array.from(e.currentTarget.children).forEach(function (c) { c.classList.remove("is-on"); });
+    b.classList.add("is-on");
+    var mobile = b.dataset.v === "mobile";
+    frame.classList.toggle("is-mobile", mobile);
+    viewportLabel.innerHTML = "미리보기 폭 · <b>" + (mobile ? "375px (Mobile)" : "600px (Desktop)") + "</b>";
+  });
+
+  /* ---------- 라이트/다크 미리보기 토글 (시뮬레이션, 복사 소스에는 영향 없음) ---------- */
+  d.getElementById("darkSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (!b) return;
+    Array.from(e.currentTarget.children).forEach(function (c) { c.classList.remove("is-on"); });
+    b.classList.add("is-on");
+    frame.classList.toggle("pv-dark", b.dataset.v === "dark");
+  });
+
+  /* ---------- 클립보드 복사 ---------- */
+  function copyText(text, msg) {
+    var done = function (ok) { UI.toast(ok ? (msg || "복사되었습니다") : "복사에 실패했습니다", { type: ok ? "ok" : "danger" }); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }).catch(function () { done(false); });
+    } else {
+      try {
+        var ta = d.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        d.body.appendChild(ta); ta.select(); d.execCommand("copy"); ta.remove();
+        done(true);
+      } catch (e) { done(false); }
+    }
+  }
+
+  d.getElementById("copyBtn").addEventListener("click", function () {
+    var root = d.getElementById("emailRoot");
+    var doc = '<!doctype html>\n' +
+      '<html lang="ko">\n' +
+      '<head>\n' +
+      '<meta charset="UTF-8">\n' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">\n' +
+      '<meta name="color-scheme" content="light dark">\n' +
+      '<title>VOLTA Scheduler — 스케줄 변경 안내</title>\n' +
+      '<style>\n' +
+      '  body,table,td,a{ -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }\n' +
+      '  table,td{ mso-table-lspace:0pt; mso-table-rspace:0pt; }\n' +
+      '  img{ -ms-interpolation-mode:bicubic; border:0; line-height:100%; outline:none; text-decoration:none; }\n' +
+      '  @media (prefers-color-scheme: dark) {\n' +
+      '    .em-bg{ background-color:#0b0d11 !important; }\n' +
+      '    .em-surface{ background-color:#14171d !important; }\n' +
+      '    .em-text{ color:#eef1f6 !important; }\n' +
+      '    .em-muted{ color:#8e97a6 !important; }\n' +
+      '    .em-line{ border-color:#272c36 !important; }\n' +
+      '  }\n' +
+      '  @media (max-width:620px) {\n' +
+      '    .em-container{ width:100% !important; }\n' +
+      '    .em-pad{ padding-left:20px !important; padding-right:20px !important; }\n' +
+      '  }\n' +
+      '</style>\n' +
+      '</head>\n' +
+      '<body style="margin:0;padding:0;background-color:#f1f2f5;">\n' +
+      root.outerHTML + '\n' +
+      '</body>\n</html>';
+    copyText(doc, "이메일 HTML이 복사되었습니다 (현재 시나리오: " + d.getElementById("scenarioSelect").selectedOptions[0].textContent + ")");
+  });
+
+})(window, document);
+</script>
+</body>
+</html>
