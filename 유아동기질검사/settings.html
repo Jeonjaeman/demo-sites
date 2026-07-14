@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>설정 · 보안 | KidTempo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .sw{position:relative;width:40px;height:23px;flex:0 0 40px}
+  .sw input{opacity:0;width:0;height:0;position:absolute}
+  .sw i{position:absolute;inset:0;background:#DCE3E1;border-radius:99px;transition:.22s;cursor:pointer}
+  .sw i::after{content:'';position:absolute;left:3px;top:3px;width:17px;height:17px;border-radius:99px;background:#fff;transition:.22s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .sw input:checked + i{background:var(--brand)}
+  .sw input:checked + i::after{transform:translateX(17px)}
+  .srow{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line-2)}
+  .srow:last-child{border-bottom:0}
+  .srow .tx{flex:1}
+  .srow b{font-size:13px;display:block;margin-bottom:2px}
+  .srow small{font-size:11.8px;color:var(--muted);line-height:1.55;display:block}
+  .conn{display:flex;align-items:center;gap:11px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:#fff}
+  .conn .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:0 0 34px}
+  .conn b{font-size:13px;display:block}
+  .conn small{font-size:11.5px;color:var(--muted)}
+  .role{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+  .role .h{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+  .role .h b{font-size:13.5px}
+  .role ul{margin:0;padding-left:16px}
+  .role li{font-size:12px;line-height:1.75;color:var(--ink-2)}
+  .role li.no{color:var(--muted-2);text-decoration:line-through}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const c = mountShell('settings','설정 · 보안','개인정보 보호, 결과지 템플릿, 외부 연동, 접근 권한 및 감사 로그',
+  `<button class="btn pri" id="save">${ico('check')} 설정 저장</button>`);
+
+c.innerHTML = `
+<div class="grid2">
+  <div class="card">
+    <div class="hd">${ico('shield',16)}<h3>개인정보 보호 · 데이터 보안</h3></div>
+    <div class="bd">
+      <div class="srow">
+        <div class="tx"><b>저장 데이터 암호화 (AES-256)</b>
+          <small>응답 원자료·채점 결과·결과지 PDF를 암호화하여 저장합니다. 키는 KMS로 분리 관리.</small></div>
+        <label class="sw"><input type="checkbox" checked><i></i></label>
+      </div>
+      <div class="srow">
+        <div class="tx"><b>아동 실명 가명처리</b>
+          <small>DB에는 검사자 코드만 저장하고, 실명은 결과지 렌더 시점에만 복호화하여 사용합니다.</small></div>
+        <label class="sw"><input type="checkbox" checked><i></i></label>
+      </div>
+      <div class="srow">
+        <div class="tx"><b>보관기간 자동 파기</b>
+          <small>보유기간 경과 시 원자료·결과지·백업을 자동 파기하고 파기 로그를 남깁니다.</small></div>
+        <select class="in" style="width:auto"><option>3년 (권장)</option><option>1년</option><option>5년</option></select>
+      </div>
+      <div class="srow">
+        <div class="tx"><b>결과지 다운로드 링크 만료</b>
+          <small>보호자에게 발송되는 사전서명 URL의 유효기간입니다.</small></div>
+        <select class="in" style="width:auto"><option>7일</option><option>30일</option><option>무제한</option></select>
+      </div>
+      <div class="srow">
+        <div class="tx"><b>전송 구간 암호화 (TLS 1.3)</b>
+          <small>구글 폼 웹훅 수신 및 메일 발송 전 구간에 적용됩니다.</small></div>
+        <label class="sw"><input type="checkbox" checked><i></i></label>
+      </div>
+      <div class="srow">
+        <div class="tx"><b>개인정보 처리 동의 필수화</b>
+          <small>구글 폼 첫 문항에 수집·이용 동의를 배치하고, 미동의 응답은 자동 폐기합니다.</small></div>
+        <label class="sw"><input type="checkbox" checked><i></i></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd">${ico('file',16)}<h3>결과지 템플릿</h3></div>
+    <div class="bd">
+      <div class="fld"><label>발급 기관명 <em>*</em></label><input class="in" value="○○아동발달연구소"></div>
+      <div class="fld"><label>표지 문구</label><input class="in" value="우리 아이의 기질 프로파일 리포트"></div>
+      <div class="fld">
+        <label>포함 페이지 구성 <span class="muted" style="font-weight:600">(현재 12페이지)</span></label>
+        ${[['표지 · 검사 안내',2,true],['종합 요약 · 유형',1,true],['방사형 프로파일',1,true],['T점수 · 백분위 표',1,true],
+           ['요인별 상세 해석',3,true],['유형 심층 해설',1,true],['4주 코칭 플랜',1,true],['부록 · 문항 원자료',2,true]]
+          .map(([n,p,on])=>`
+          <div class="srow" style="padding:9px 0">
+            <div class="tx"><b>${n}</b><small>${p}페이지</small></div>
+            <label class="sw"><input type="checkbox" ${on?'checked':''}><i></i></label>
+          </div>`).join('')}
+      </div>
+      <div class="mono" style="background:var(--brand-50);border:1px solid var(--brand-100);border-radius:10px;padding:11px 12px;font-size:11.5px;color:var(--brand-800)">
+        총 12페이지 · 예상 용량 1.4MB · 렌더 1.28초
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid2 mt">
+  <div class="card">
+    <div class="hd">${ico('cloud',16)}<h3>외부 연동</h3></div>
+    <div class="bd">
+      <div class="conn">
+        <div class="ic" style="background:#E9F0FB;color:#2560B8">${ico('inbox',16)}</div>
+        <div style="flex:1"><b>Google Forms · Sheets</b><small class="mono">1FAIpQLSe_kidtempo_v2 · 응답 시트1</small></div>
+        <span class="tag ok"><span class="dot"></span>연결됨</span>
+      </div>
+      <div class="conn">
+        <div class="ic" style="background:var(--ok-50);color:var(--ok)">${ico('cloud',16)}</div>
+        <div style="flex:1"><b>Google Drive</b><small class="mono">/기질검사/2026/07 · 서비스 계정</small></div>
+        <span class="tag ok"><span class="dot"></span>연결됨</span>
+      </div>
+      <div class="conn">
+        <div class="ic" style="background:var(--coral-50);color:var(--coral-700)">${ico('mail',16)}</div>
+        <div style="flex:1"><b>메일 발송 (SMTP)</b><small class="mono">smtp.gmail.com:587 · noreply@kidtempo.kr</small></div>
+        <span class="tag ok"><span class="dot"></span>연결됨</span>
+      </div>
+      <div class="conn">
+        <div class="ic" style="background:#F1F4F3;color:var(--muted)">${ico('bolt',16)}</div>
+        <div style="flex:1"><b>Slack 알림 (선택)</b><small class="mono">검증 오류 발생 시 담당자 채널 알림</small></div>
+        <button class="btn sm">연결</button>
+      </div>
+      <div class="hr"></div>
+      <div class="fld" style="margin-bottom:0">
+        <label>웹훅 수신 엔드포인트</label>
+        <input class="in mono" value="https://api.kidtempo.kr/v1/forms/webhook" readonly>
+        <div class="hint">Apps Script <b>onFormSubmit</b> 트리거가 이 주소로 응답을 POST합니다. (HMAC 서명 검증)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="hd">${ico('users',16)}<h3>접근 권한 (역할 기반)</h3></div>
+    <div class="bd">
+      <div class="grid3" style="gap:10px">
+        <div class="role">
+          <div class="h"><span class="tag brand">관리자</span></div>
+          <ul>
+            <li>규준표 · 문항 편집</li><li>해석 텍스트 편집</li><li>전체 응답 열람</li>
+            <li>결과지 발급 · 재발급</li><li>데이터 파기</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="h"><span class="tag info">검사 담당자</span></div>
+          <ul>
+            <li>응답 검증 · 보정</li><li>채점 실행</li><li>결과지 발급</li>
+            <li class="no">규준표 편집</li><li class="no">데이터 파기</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="h"><span class="tag gray">열람자</span></div>
+          <ul>
+            <li>대시보드 열람</li><li>결과지 열람</li>
+            <li class="no">응답 원자료 열람</li><li class="no">채점 실행</li><li class="no">발급</li>
+          </ul>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <b style="font-size:13px;display:block;margin-bottom:9px">감사 로그 (최근)</b>
+      <table class="tb">
+        <tbody>
+          ${[['이수진 연구원','결과지 발급','KT-2601-0003','2026-07-12 11:38'],
+             ['이수진 연구원','응답 보정 입력','KT-2601-0013','2026-07-13 16:05'],
+             ['박관리 관리자','규준표 수정 (A56/M/PER)','norms_v2.1','2026-06-30 09:12'],
+             ['시스템','보관기간 경과 데이터 파기 (2023년 1차)','48건','2026-07-01 03:00']]
+            .map(([who,act,tgt,at])=>`<tr>
+              <td style="width:110px"><b style="font-size:12.5px">${who}</b></td>
+              <td style="font-size:12.5px">${act}</td>
+              <td class="mono muted" style="font-size:11.5px">${tgt}</td>
+              <td class="muted" style="font-size:11.5px;text-align:right">${at}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <p class="muted" style="font-size:11.8px;line-height:1.7;margin-top:10px">
+        모든 열람·발급·수정·파기 행위는 사용자·시각·대상과 함께 기록되며, 로그는 수정 불가(append-only)로 보관됩니다.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+document.getElementById('save').addEventListener('click', ()=> toast('설정을 저장했습니다 · 다음 발급분부터 적용됩니다','ok'));
+</script>
+</body>
+</html>

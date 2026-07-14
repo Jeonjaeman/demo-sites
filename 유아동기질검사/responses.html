@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>응답 수집·검증 | KidTempo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .link{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--r-lg);background:#fff;overflow:hidden}
+  .link .cell{padding:15px 18px;border-right:1px solid var(--line-2)}
+  .link .cell:last-child{border-right:0}
+  .link .cell small{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:5px}
+  .link .cell b{font-size:13px;display:block;letter-spacing:-.02em}
+  .link .cell .mono{color:var(--brand-700);font-size:11.5px;word-break:break-all}
+
+  .code{background:#0C1A18;border-radius:12px;padding:14px 16px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-size:11.5px;line-height:1.75;color:#B7C4C1;overflow:auto;max-height:260px}
+  .code .k{color:#7DD3FC} .code .s{color:#86EFAC} .code .n{color:#FCD34D} .code .c{color:#5D716E}
+
+  .iss{display:flex;gap:11px;padding:13px 14px;border-radius:12px;border:1px solid var(--line);margin-bottom:9px}
+  .iss.error{background:var(--danger-50);border-color:#F7CFCB}
+  .iss.warn{background:var(--warn-50);border-color:#F5E1B8}
+  .iss .ic{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:0 0 26px;color:#fff}
+  .iss.error .ic{background:var(--danger)} .iss.warn .ic{background:var(--warn)}
+  .iss b{font-size:13px;display:block;margin-bottom:3px}
+  .iss p{font-size:12.2px;line-height:1.6;color:var(--ink-2)}
+  .iss .fx{margin-top:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+  .iss .fx b{display:inline;font-weight:800;color:var(--ink-2)}
+
+  .ansgrid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+  .a{border:1px solid var(--line);border-radius:8px;padding:6px 4px;text-align:center;background:#fff}
+  .a small{display:block;font-size:9px;color:var(--muted-2);font-weight:800}
+  .a b{font-size:13px}
+  .a.miss{background:var(--danger-50);border-color:#F3C6C2}
+  .a.miss b{color:var(--danger)}
+  .a.bad{background:var(--warn-50);border-color:#F0DCAF}
+  .a.bad b{color:#B27607}
+  .a.rev{border-color:var(--brand-200)}
+  .a.rev small{color:var(--brand-700)}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const c = mountShell('responses','응답 수집 · 검증','구글 폼 실시간 연동 · 무결성 검증 · 검사자 고유코드 매핑',
+  `<div class="search">${ico('search')}<input id="q" placeholder="이름·코드 검색"></div>
+   <button class="btn" id="sync">${ico('sync')} 동기화</button>
+   <button class="btn pri" id="rescore">${ico('play')} 검증 재실행</button>`);
+
+const S = Engine.scoreAll();
+let filter = 'all';
+
+const counts = {
+  all: RESPONSES.length,
+  ok: RESPONSES.filter(r=>r.status==='done'||r.status==='synced').length,
+  warn: RESPONSES.filter(r=>r.status==='warn').length,
+  error: RESPONSES.filter(r=>r.status==='error').length,
+};
+
+c.innerHTML = `
+<div class="link">
+  <div class="cell">
+    <small>연결된 구글 폼</small>
+    <b>유아동 기질검사 설문지 (v2)</b>
+    <span class="mono">docs.google.com/forms/d/1FAIpQLSe_kidtempo_v2</span>
+  </div>
+  <div class="cell">
+    <small>응답 스프레드시트</small><b>기질검사_응답_2026</b>
+    <span class="mono">시트: 응답 시트1 · 52열</span>
+  </div>
+  <div class="cell">
+    <small>동기화 방식</small><b>Apps Script 트리거</b>
+    <span class="mono">onFormSubmit → Webhook (실시간)</span>
+  </div>
+  <div class="cell">
+    <small>마지막 동기화</small><b id="last">2026-07-14 11:02 (2분 전)</b>
+    <span class="mono" style="color:var(--ok)">● 정상 · 누락 0건</span>
+  </div>
+</div>
+
+<div class="between mt">
+  <div class="flex wrap">
+    <button class="chip on" data-f="all">전체 <b>${counts.all}</b></button>
+    <button class="chip" data-f="ok">정상 <b>${counts.ok}</b></button>
+    <button class="chip" data-f="warn">경고 <b>${counts.warn}</b></button>
+    <button class="chip" data-f="error">오류 <b>${counts.error}</b></button>
+  </div>
+  <div class="flex">
+    <span class="muted" style="font-size:12.5px">검증 규칙 5종 자동 적용</span>
+    <button class="btn sm" id="rules">${ico('shield',13)} 검증 규칙</button>
+    <button class="btn sm" id="payload">${ico('code',13)} 폼 원본 페이로드</button>
+  </div>
+</div>
+
+<div class="card mt-s">
+  <div class="bd tight">
+    <div class="tw">
+      <table class="tb">
+        <thead><tr>
+          <th style="width:34px"></th><th>검사자 코드</th><th>아동</th><th>연령 · 성별</th><th>소속</th>
+          <th>제출 시각</th><th class="ctr">응답</th><th>검증</th><th>상태</th><th></th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="grid2 mt">
+  <div class="card">
+    <div class="hd"><h3>검사자 고유코드 매핑 규칙</h3></div>
+    <div class="bd">
+      <div class="mono" style="background:var(--brand-50);border:1px solid var(--brand-100);border-radius:10px;padding:12px 14px;color:var(--brand-800);font-size:13px;font-weight:700">
+        KT · YYMM · NNNN &nbsp;→&nbsp; KT-2601-0009
+      </div>
+      <div class="mt-s">
+        <table class="tb">
+          <tbody>
+            <tr><td style="width:80px"><b class="mono">KT</b></td><td class="muted">검사 구분자 (KidTempo)</td></tr>
+            <tr><td><b class="mono">2601</b></td><td class="muted">검사 회차 (2026년 1차)</td></tr>
+            <tr><td><b class="mono">0009</b></td><td class="muted">회차 내 일련번호 · 폼 제출 순서로 자동 발번</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-size:12.5px;line-height:1.7;margin-top:12px">
+        보호자는 폼 첫 문항에 기관에서 배부한 코드를 입력합니다. 코드 미입력·형식 오류 시 <b>E04</b>로 반려되며,
+        결과지·저장 파일·메일 발송이 모두 이 코드를 키로 연결됩니다. 아동 실명은 결과지 외 저장소에 평문으로 남기지 않습니다.
+      </p>
+    </div>
+  </div>
+  <div class="card">
+    <div class="hd"><h3>검증 결과 요약</h3><div class="sp"></div><small>총 ${RESPONSES.length}건</small></div>
+    <div class="bd">
+      ${[
+        ['E01','문항 미응답','error', S.filter(s=>s.validation.issues.some(i=>i.code==='E01')).length],
+        ['E02','응답값 범위 오류','error', S.filter(s=>s.validation.issues.some(i=>i.code==='E02')).length],
+        ['E03','규준 적용 불가 연령','error', S.filter(s=>s.validation.issues.some(i=>i.code==='E03')).length],
+        ['E04','코드 형식 오류','error', S.filter(s=>s.validation.issues.some(i=>i.code==='E04')).length],
+        ['W01','무성의 응답 의심','warn', S.filter(s=>s.validation.issues.some(i=>i.code==='W01')).length],
+      ].map(([code,name,lv,n])=>`
+        <div class="between" style="padding:9px 0;border-bottom:1px solid var(--line-2)">
+          <span class="flex">
+            <span class="tag ${lv==='error'?'danger':'warn'}">${code}</span>
+            <b style="font-size:13px">${name}</b>
+          </span>
+          <span class="flex">
+            <div class="bar thin" style="width:110px"><i style="width:${n/RESPONSES.length*100}%;background:${lv==='error'?'var(--danger)':'var(--warn)'}"></i></div>
+            <b style="font-size:13px;width:34px;text-align:right;color:${n?(lv==='error'?'var(--danger)':'var(--warn)'):'var(--muted-2)'}">${n}건</b>
+          </span>
+        </div>`).join('')}
+      <p class="muted" style="font-size:12px;line-height:1.7;margin-top:12px">
+        오류(E) 건은 채점이 중단되고 담당자 알림 큐에 등록됩니다. 경고(W) 건은 채점은 진행되되 결과지에 <b>신뢰도 경고</b>가 표기됩니다.
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+/* ---------------- 행 렌더 ---------------- */
+function rows(){
+  const q = (document.getElementById('q').value||'').trim();
+  const list = RESPONSES.filter(r=>{
+    const okf = filter==='all' ? true
+      : filter==='ok' ? (r.status==='done'||r.status==='synced')
+      : r.status===filter;
+    const okq = !q || r.child.includes(q) || r.code.toLowerCase().includes(q.toLowerCase());
+    return okf && okq;
+  });
+  document.getElementById('rows').innerHTML = list.map(r=>{
+    const s = S.find(x=>x.code===r.code);
+    const answered = ITEMS.filter(i=>typeof r.answers[i.id]==='number').length;
+    const iss = s.validation.issues;
+    return `<tr data-code="${r.code}">
+      <td><input type="checkbox" style="accent-color:var(--brand)"></td>
+      <td class="mono"><b>${r.code}</b></td>
+      <td><div class="pr"><div class="av" style="background:${s.complete?s.type.color:'#B7C4C1'}">${initial(r.child)}</div>
+        <div><b>${r.child}</b><small>${r.guardian} (${r.rel})</small></div></div></td>
+      <td>${ageLabel(r.birth).replace('만 ','')} · ${fmt.sex(r.sex)}</td>
+      <td style="font-size:12.5px">${r.kinder}<br><small class="muted">${r.cls}</small></td>
+      <td class="muted" style="font-size:12.5px">${r.at}</td>
+      <td class="ctr"><b style="color:${answered<48?'var(--danger)':'var(--ink)'}">${answered}</b><span class="muted">/48</span></td>
+      <td>${iss.length
+        ? iss.map(i=>`<span class="tag ${i.lv==='error'?'danger':'warn'}" style="margin-right:3px">${i.code}</span>`).join('')
+        : '<span class="tag ok">통과</span>'}</td>
+      <td>${statusTag(r.status)}</td>
+      <td class="ctr"><button class="btn sm" data-detail="${r.code}">${ico('eye',13)} 상세</button></td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="10"><div class="empty">${ico('search',36)}<b>해당하는 응답이 없습니다</b><p>필터 또는 검색어를 확인해 주세요.</p></div></td></tr>`;
+}
+rows();
+
+/* ---------------- 상세 모달 ---------------- */
+function detail(code){
+  const r = RESPONSES.find(x=>x.code===code);
+  const s = S.find(x=>x.code===code);
+  const body = `
+    <div class="between" style="margin-bottom:14px">
+      <div class="pr">
+        <div class="av" style="width:42px;height:42px;border-radius:12px;font-size:14px;background:${s.complete?s.type.color:'#B7C4C1'}">${initial(r.child)}</div>
+        <div><b style="font-size:15px">${r.child} · ${ageLabel(r.birth)} ${fmt.sex(r.sex)}</b>
+        <small>${r.code} · ${r.kinder} ${r.cls} · 응답자 ${r.guardian}(${r.rel})</small></div>
+      </div>
+      ${statusTag(r.status)}
+    </div>
+
+    <div class="hr"></div>
+    <b style="font-size:13px;display:block;margin-bottom:9px">검증 결과</b>
+    ${s.validation.issues.length ? s.validation.issues.map(i=>`
+      <div class="iss ${i.lv}">
+        <div class="ic">${ico(i.lv==='error'?'x':'alert',14)}</div>
+        <div>
+          <b>${i.code} · ${i.title}</b>
+          <p>${i.msg}</p>
+          <div class="fx"><b>조치</b> ${i.fix}</div>
+        </div>
+      </div>`).join('')
+      : `<div class="iss" style="background:var(--ok-50);border-color:#C7EBD5">
+          <div class="ic" style="background:var(--ok)">${ico('check',14)}</div>
+          <div><b>검증 통과</b><p>5개 규칙(누락·범위·연령규준·코드형식·신뢰도)을 모두 통과했습니다. 채점 및 결과지 발급이 가능합니다.</p></div>
+        </div>`}
+
+    ${s.complete ? `
+    <div class="hr"></div>
+    <b style="font-size:13px;display:block;margin-bottom:9px">채점 결과 (요약)</b>
+    <div class="flex wrap" style="gap:6px">
+      ${FKEYS.map(k=>`<span class="chip" style="background:#fff">
+        <span style="width:7px;height:7px;border-radius:2px;background:${F[k].color}"></span>
+        ${F[k].name} <b style="color:${F[k].color}">T${Math.round(s.factors[k].t)}</b></span>`).join('')}
+      <span class="chip on">유형 <b>${s.type.name}</b></span>
+    </div>` : ''}
+
+    <div class="hr"></div>
+    <div class="between" style="margin-bottom:9px">
+      <b style="font-size:13px">문항별 응답 원자료 (48문항)</b>
+      <span class="flex" style="font-size:11px;color:var(--muted)">
+        <span class="tag brand">역</span> 역채점 &nbsp;
+        <span class="tag danger">누락</span> &nbsp;
+        <span class="tag warn">범위이탈</span>
+      </span>
+    </div>
+    <div class="ansgrid">
+      ${ITEMS.map(i=>{
+        const v = r.answers[i.id];
+        const miss = typeof v !== 'number';
+        const bad = !miss && (v<1||v>5);
+        return `<div class="a ${miss?'miss':bad?'bad':''} ${i.r?'rev':''}" title="${i.t}">
+          <small>${i.id}${i.r?' 역':''}</small><b>${miss?'—':v}</b>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  const foot = s.validation.ok
+    ? `<button class="btn" data-close>닫기</button>
+       ${s.complete?`<button class="btn pri" onclick="openReport('${code}')">${ico('file',15)} 결과지 열기</button>`:''}`
+    : `<button class="btn" data-close>닫기</button>
+       <button class="btn coral" id="remind">${ico('mail',15)} 재응답 링크 발송</button>`;
+  const m = modal(`응답 상세 · ${code}`, body, foot, true);
+  const rm = m.querySelector('#remind');
+  if(rm) rm.addEventListener('click', ()=>{ m.remove(); toast(`${r.guardian}님께 재응답 안내 메일을 발송했습니다 (${r.email})`,'ok'); });
+}
+
+/* ---------------- 이벤트 ---------------- */
+c.addEventListener('click', e=>{
+  const d = e.target.closest('[data-detail]');
+  if(d) return detail(d.dataset.detail);
+  const f = e.target.closest('[data-f]');
+  if(f){
+    filter = f.dataset.f;
+    c.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('on', x===f));
+    rows();
+  }
+});
+document.getElementById('q').addEventListener('input', rows);
+document.getElementById('sync').addEventListener('click', e=>{
+  const b=e.currentTarget; b.disabled=true; b.innerHTML=ico('refresh')+' 동기화 중…';
+  setTimeout(()=>{ b.disabled=false; b.innerHTML=ico('sync')+' 동기화';
+    document.getElementById('last').textContent='2026-07-14 11:04 (방금)';
+    toast('구글 폼 응답 시트 동기화 완료 · 신규 0건 · 갱신 0건','ok'); },1100);
+});
+document.getElementById('rescore').addEventListener('click', ()=>{
+  toast(`검증 규칙 5종을 ${RESPONSES.length}건에 재실행했습니다 · 오류 ${counts.error}건 / 경고 ${counts.warn}건`, counts.error?'warn':'ok');
+});
+document.getElementById('payload').addEventListener('click', ()=>{
+  const json = JSON.stringify(GFORM_SAMPLE, null, 2)
+    .replace(/"([^"]+)":/g,'<span class="k">"$1"</span>:')
+    .replace(/: "([^"]*)"/g,': <span class="s">"$1"</span>');
+  modal('구글 폼 원본 응답 페이로드 (Forms API v1)',
+    `<p class="muted" style="font-size:12.5px;line-height:1.7;margin-bottom:12px">
+      Apps Script <b class="mono">onFormSubmit</b> 트리거가 제출 즉시 아래 JSON을 시스템 엔드포인트로 전송합니다.
+      시스템은 <b class="mono">q_code</b>로 검사자를 식별하고 <b class="mono">q_item_01~48</b>을 정수로 파싱합니다.</p>
+     <div class="code">${json}</div>`,
+    `<button class="btn" data-close>닫기</button>`, true);
+});
+document.getElementById('rules').addEventListener('click', ()=>{
+  modal('응답 무결성 검증 규칙',
+    `<table class="tb">
+      <thead><tr><th>코드</th><th>규칙</th><th>판정</th><th>처리</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag danger">E01</span></td><td>48문항 전부 응답 여부</td><td>미응답 1개 이상</td><td>요인당 결측 ≤2개는 가중평균 보정, 초과 시 채점 중단</td></tr>
+        <tr><td><span class="tag danger">E02</span></td><td>응답값이 리커트 1~5 정수</td><td>범위 이탈 · 비정수</td><td>채점 중단 · 재수집 요청</td></tr>
+        <tr><td><span class="tag danger">E03</span></td><td>규준표 적용 가능 연령</td><td>만 3세 미만 / 만 10세 이상</td><td>T점수 환산 불가 · 원점수만 제공</td></tr>
+        <tr><td><span class="tag danger">E04</span></td><td>검사자 코드 형식 (KT-YYMM-NNNN)</td><td>형식 불일치 · 중복</td><td>코드 재매핑 후 재처리</td></tr>
+        <tr><td><span class="tag warn">W01</span></td><td>응답 신뢰도 (분산 · 연속 동일응답)</td><td>SD &lt; 0.35 또는 12연속 동일</td><td>채점 진행 + 결과지에 신뢰도 경고 표기</td></tr>
+      </tbody>
+    </table>`, `<button class="btn" data-close>닫기</button>`, true);
+});
+</script>
+</body>
+</html>

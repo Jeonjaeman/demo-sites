@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KidTempo | 유아동 기질검사 결과지 PDF 자동 생성 시스템</title>
+<meta name="description" content="구글 폼 응답 → 자동 채점(역채점·가중치·규준표·T점수·백분위) → 8유형 판별 → 12페이지 결과지 PDF 자동 생성. 수작업 채점을 완전 자동화합니다." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  body{background:#fff}
+  .nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.86);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav .in{max-width:1160px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;gap:14px}
+  .bd{display:flex;align-items:center;gap:10px}
+  .bd .mk{width:34px;height:34px;border-radius:10px;background:var(--grad);display:grid;place-items:center;box-shadow:var(--sh-brand)}
+  .bd .mk svg{width:18px;height:18px;stroke:#fff;stroke-width:2;fill:none}
+  .bd b{font-size:16px;display:block;line-height:1.15;letter-spacing:-.03em}
+  .bd span{font-size:9px;color:var(--muted-2);letter-spacing:.18em;font-weight:800}
+  .nav .lk{display:flex;gap:2px;margin-left:20px}
+  .nav .lk a{padding:8px 12px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
+  .nav .lk a:hover{background:var(--hover)}
+  .nav .sp{flex:1}
+
+  .hero{max-width:1160px;margin:0 auto;padding:64px 24px 44px;display:grid;grid-template-columns:1.03fr .97fr;gap:44px;align-items:center}
+  .ey{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--brand-700);
+    background:var(--brand-50);border:1px solid var(--brand-100);padding:6px 12px;border-radius:99px}
+  .hero h1{font-size:clamp(31px,4.3vw,49px);line-height:1.2;letter-spacing:-.04em;margin:17px 0 15px}
+  .hero h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lead{color:var(--muted);font-size:16px;line-height:1.78;max-width:520px}
+  .hero .cta{display:flex;gap:9px;margin-top:26px;flex-wrap:wrap}
+  .facts{display:flex;gap:26px;margin-top:32px;padding-top:22px;border-top:1px solid var(--line)}
+  .facts b{display:block;font-size:22px;letter-spacing:-.04em}
+  .facts small{color:var(--muted);font-size:12px}
+
+  .shot{position:relative}
+  .shot .paper{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 40px 80px -36px rgba(12,32,29,.4);overflow:hidden}
+  .shot .paper .top{height:34px;background:#FAFCFB;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:5px;padding:0 12px}
+  .shot .paper .top i{width:9px;height:9px;border-radius:99px;background:#DCE3E1}
+  .shot .paper .pg{padding:22px 24px;background:linear-gradient(165deg,#EAF8F6,#fff 45%,#FFF4EC)}
+  .shot .paper .pg .ttl{font-size:20px;letter-spacing:-.04em;font-weight:800;line-height:1.25}
+  .shot .paper .pg .ttl em{font-style:normal;color:var(--brand)}
+  .shot .paper .pg small{font-size:12px;color:var(--muted);font-weight:600}
+  .shot .paper .pg .il{display:grid;place-items:center;margin:10px 0 6px}
+  .shot .paper .pg .il img{width:132px;height:132px;object-fit:contain}
+  .shot .paper .pg .nm{text-align:center}
+  .shot .paper .pg .nm b{font-size:17px;letter-spacing:-.03em;display:block}
+  .shot .paper .pg .nm span{font-size:11.5px;color:var(--muted);font-weight:600}
+  .shot .paper .pg .mt4{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:12px}
+  .shot .paper .pg .mt4 div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px;text-align:center}
+  .shot .paper .pg .mt4 small{display:block;font-size:9px;color:var(--muted-2);font-weight:800}
+  .shot .paper .pg .mt4 b{font-size:12px}
+  .shot .fl{position:absolute;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh-3);padding:11px 13px;display:flex;align-items:center;gap:9px}
+  .shot .fl.a{left:-30px;top:44%;animation:fl1 4.5s ease-in-out infinite}
+  .shot .fl.b{right:-22px;bottom:56px;animation:fl2 5.2s ease-in-out infinite}
+  .shot .fl b{font-size:12.5px;display:block}
+  .shot .fl small{font-size:10.5px;color:var(--muted)}
+  .shot .fl .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center}
+  @keyframes fl1{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  @keyframes fl2{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+  .sec{max-width:1160px;margin:0 auto;padding:62px 24px}
+  .sec.tint{max-width:none;background:linear-gradient(180deg,#F7FBFA,#FDF7F2)}
+  .sec.tint > .in{max-width:1160px;margin:0 auto;padding:0 24px}
+  .sh{text-align:center;margin-bottom:38px}
+  .sh .e{font-size:12px;font-weight:800;color:var(--brand);letter-spacing:.14em}
+  .sh h2{font-size:clamp(23px,3vw,32px);letter-spacing:-.035em;margin:9px 0 10px}
+  .sh p{color:var(--muted);font-size:15px;line-height:1.75;max-width:660px;margin:0 auto}
+
+  .vs{display:grid;grid-template-columns:1fr 54px 1fr;gap:0;align-items:center}
+  .vsb{border:1px solid var(--line);border-radius:18px;padding:24px}
+  .vsb.bad{background:#FDF7F6;border-color:#F3DDD9}
+  .vsb.good{background:var(--brand-50);border-color:var(--brand-100)}
+  .vsb h4{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+  .vsb ul{margin:0;padding:0;list-style:none}
+  .vsb li{display:flex;gap:9px;padding:9px 0;border-bottom:1px dashed rgba(0,0,0,.06);font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+  .vsb li:last-child{border-bottom:0}
+  .vsb li i{font-style:normal;flex:0 0 18px;font-weight:900}
+  .vsb.bad li i{color:#D9635A} .vsb.good li i{color:var(--brand)}
+  .vsar{display:grid;place-items:center;color:var(--brand)}
+
+  .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:11px}
+  .fs{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 16px;text-align:center;transition:.25s;position:relative}
+  .fs:hover{transform:translateY(-4px);box-shadow:var(--sh-2);border-color:var(--brand-100)}
+  .fs .n{width:34px;height:34px;border-radius:11px;background:var(--brand-50);color:var(--brand-700);display:grid;place-items:center;margin:0 auto 11px;font-weight:900;font-size:13px}
+  .fs:hover .n{background:var(--grad);color:#fff}
+  .fs b{display:block;font-size:14.5px;margin-bottom:5px;letter-spacing:-.02em}
+  .fs small{color:var(--muted);font-size:12px;line-height:1.55;display:block}
+  .fs .tm{margin-top:9px;font-size:10.5px;font-weight:800;color:var(--brand);background:var(--brand-50);border-radius:99px;padding:3px 8px;display:inline-block}
+
+  .fg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .fcard{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;transition:.25s}
+  .fcard:hover{box-shadow:var(--sh-2);transform:translateY(-3px)}
+  .fcard .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;margin-bottom:13px}
+  .fcard b{font-size:15.5px;display:block;margin-bottom:6px;letter-spacing:-.02em}
+  .fcard p{color:var(--muted);font-size:13px;line-height:1.7}
+  .fcard .rq{display:inline-block;margin-top:10px;font-size:10.5px;font-weight:800;color:var(--muted);background:#F1F4F3;border-radius:6px;padding:3px 8px}
+
+  .rfp th{background:#fff}
+  .rfp td{font-size:13px;line-height:1.65}
+  .rfp .ck{color:var(--ok);font-weight:900}
+
+  .strip{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}
+  .st{border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;background:#fff;transition:.25s}
+  .st:hover{transform:translateY(-5px);box-shadow:var(--sh-2)}
+  .st img{width:100%;max-width:74px;margin:0 auto 6px;object-fit:contain}
+  .st b{display:block;font-size:12.5px;letter-spacing:-.02em}
+  .st small{font-size:10px;color:var(--muted);font-weight:700}
+
+  .pg12{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  .pv{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden;text-align:center;transition:.2s}
+  .pv:hover{border-color:var(--brand-200);box-shadow:var(--sh-2)}
+  .pv .th{aspect-ratio:210/297;background:linear-gradient(170deg,#F7FBFA,#fff);display:grid;place-items:center;position:relative;border-bottom:1px solid var(--line-2)}
+  .pv .th span{font-size:22px;font-weight:900;color:#DCE6E4;letter-spacing:-.05em}
+  .pv small{display:block;padding:7px 4px;font-size:10.5px;font-weight:700;color:var(--ink-2);line-height:1.35}
+
+  .stack{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .sc{border:1px solid var(--line);border-radius:14px;padding:17px;background:#fff}
+  .sc .t{font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:.1em;margin-bottom:8px}
+  .sc b{font-size:14.5px;display:block;margin-bottom:4px}
+  .sc small{font-size:12px;color:var(--muted);line-height:1.6}
+
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--brand),var(--brand-100))}
+  .ti{position:relative;padding:0 0 22px}
+  .ti::before{content:'';position:absolute;left:-24px;top:5px;width:12px;height:12px;border-radius:99px;background:#fff;border:3px solid var(--brand)}
+  .ti .w{font-size:11px;font-weight:800;color:var(--brand);letter-spacing:.02em}
+  .ti b{display:block;font-size:15px;margin:3px 0 5px;letter-spacing:-.02em}
+  .ti p{font-size:13px;color:var(--muted);line-height:1.7}
+  .ti .dl{display:inline-flex;gap:5px;margin-top:7px;flex-wrap:wrap}
+  .ti .dl span{font-size:11px;font-weight:700;background:#F1F4F3;color:var(--ink-2);border-radius:99px;padding:3px 9px}
+
+  .cta2{background:linear-gradient(135deg,#0C1A18,#123331);border-radius:24px;padding:46px;text-align:center;color:#fff;position:relative;overflow:hidden}
+  .cta2::after{content:'';position:absolute;inset:auto -10% -60% -10%;height:80%;background:radial-gradient(50% 60% at 50% 0,rgba(18,165,148,.35),transparent 70%)}
+  .cta2 h2{font-size:clamp(24px,3vw,33px);letter-spacing:-.035em;margin-bottom:12px;position:relative;z-index:1}
+  .cta2 p{color:#A9BEBA;font-size:15px;line-height:1.75;max-width:620px;margin:0 auto 24px;position:relative;z-index:1}
+  .cta2 .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1}
+
+  footer{border-top:1px solid var(--line);padding:28px 24px;text-align:center;color:var(--muted);font-size:12.5px}
+
+  @media(max-width:980px){
+    .hero{grid-template-columns:1fr}
+    .vs{grid-template-columns:1fr}.vsar{transform:rotate(90deg);padding:12px 0}
+    .flow,.fg,.strip,.pg12,.stack{grid-template-columns:repeat(2,1fr)}
+    .nav .lk{display:none}
+  }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/app.js"></script>
+
+<nav class="nav">
+  <div class="in">
+    <div class="bd">
+      <div class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.3 4.9 5.4.7-4 3.7 1 5.3L12 15l-4.7 2.6 1-5.3-4-3.7 5.4-.7z"/></svg></div>
+      <div><b>KidTempo</b><span>TEMPERAMENT ENGINE</span></div>
+    </div>
+    <div class="lk">
+      <a href="#flow">동작 방식</a><a href="#feat">핵심 기능</a><a href="#rfp">요구사항 대응</a>
+      <a href="#report">결과지</a><a href="#plan">일정 · 산출물</a>
+    </div>
+    <div class="sp"></div>
+    <a class="btn" href="report.html">결과지 샘플 보기</a>
+    <a class="btn pri" href="dashboard.html">데모 체험하기 →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <span class="ey">● 프로토타입 데모 · 실제 채점 엔진 동작</span>
+    <h1>구글 폼 응답이 들어오면,<br><em>12페이지 결과지 PDF</em>가<br>1.3초 만에 나옵니다.</h1>
+    <p class="lead">
+      역채점·문항 가중치·연령별 성별별 규준표 매핑·T점수와 백분위 환산·6요인 프로파일링·8가지 동물 유형 판별까지.
+      수작업 채점과 결과지 작성 전 과정을 자동화하는 <b>채점 엔진 + PDF 렌더링 시스템</b>입니다.
+    </p>
+    <div class="cta">
+      <a class="btn pri lg" href="dashboard.html">운영 데모 열기</a>
+      <a class="btn lg" href="scoring.html">채점 엔진 뜯어보기</a>
+      <a class="btn lg" href="report.html">결과지 12p 보기</a>
+    </div>
+    <div class="facts">
+      <div><b>48문항</b><small>6요인 × 8문항</small></div>
+      <div><b>6 × 2 × 3</b><small>요인 × 성별 × 연령 규준</small></div>
+      <div><b>8유형</b><small>동물 유형 판별</small></div>
+      <div><b>12p / 1.3초</b><small>PDF 자동 생성</small></div>
+    </div>
+  </div>
+  <div class="shot">
+    <div class="paper">
+      <div class="top"><i></i><i></i><i></i></div>
+      <div class="pg">
+        <div class="ttl">우리 아이의<br><em>기질 프로파일</em> 리포트</div>
+        <small>강태오 어린이 · 만 6세 4개월 · 남아</small>
+        <div class="il"><img src="assets/types/lion.png" alt="당당한 사자"></div>
+        <div class="nm">
+          <b style="color:#F0A32B">당당한 사자</b>
+          <span>앞장서서 이끄는 주도적인 리더</span>
+        </div>
+        <div class="mt4">
+          <div><small>검사자 코드</small><b>KT-2601-0009</b></div>
+          <div><small>적용 규준</small><b>만 5–6세 남아</b></div>
+          <div><small>페이지</small><b>12p</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="fl a" id="flA"></div>
+    <div class="fl b" id="flB"></div>
+  </div>
+</section>
+
+<!-- 문제 → 해결 -->
+<section class="sec tint"><div class="in">
+  <div class="sh">
+    <div class="e">WHY</div>
+    <h2>수작업 채점의 3가지 문제를 없앱니다</h2>
+    <p>엑셀로 옮겨 적고, 규준표를 찾아 손으로 환산하고, 워드로 결과지를 다시 만드는 과정에서 시간과 정확도를 모두 잃습니다.</p>
+  </div>
+  <div class="vs">
+    <div class="vsb bad">
+      <h4>😩 지금 (수작업)</h4>
+      <ul>
+        <li><i>✕</i> 응답 시트에서 48문항을 눈으로 옮겨 적고, 역채점 문항을 하나씩 뒤집어 계산</li>
+        <li><i>✕</i> 연령·성별 규준표를 찾아 평균·표준편차를 대입해 T점수 수기 환산</li>
+        <li><i>✕</i> 결과지 워드 파일을 복사해 이름·점수·차트·해석문구를 매번 교체</li>
+        <li><i>✕</i> 1부당 40~60분 · 오탈자와 계산 실수 위험 상시 존재</li>
+      </ul>
+    </div>
+    <div class="vsar">
+      <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </div>
+    <div class="vsb good">
+      <h4>✨ KidTempo (자동화)</h4>
+      <ul>
+        <li><i>✓</i> 보호자가 폼 제출 → 시스템이 즉시 수신·검증(누락/오류/무성의 응답 자동 검출)</li>
+        <li><i>✓</i> 역채점·가중치·규준 매핑·T점수·백분위를 엔진이 계산 (계산 과정 전부 추적 가능)</li>
+        <li><i>✓</i> 점수 구간에 맞는 해석문구·차트·동물 일러스트가 자동 바인딩된 12p PDF 생성</li>
+        <li><i>✓</i> 1부당 1.3초 · 100부 2분 · 계산 오류 0건</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- 파이프라인 -->
+<section class="sec" id="flow">
+  <div class="sh">
+    <div class="e">HOW IT WORKS</div>
+    <h2>제출부터 발송까지 5단계, 사람 손이 닿는 곳은 검수뿐</h2>
+    <p>모든 단계가 자동으로 흐르고, 문제가 있는 응답만 담당자 확인 큐에 쌓입니다.</p>
+  </div>
+  <div class="flow">
+    <div class="fs"><div class="n">01</div><b>응답 수집</b><small>구글 폼 제출 즉시 Apps Script 트리거가 시스템으로 전송</small><span class="tm">실시간</span></div>
+    <div class="fs"><div class="n">02</div><b>무결성 검증</b><small>누락·범위이탈·연령규준·코드형식·신뢰도 5개 규칙 자동 검사</small><span class="tm">0.01초</span></div>
+    <div class="fs"><div class="n">03</div><b>채점 엔진</b><small>역채점 → 가중치 → 규준 매핑 → T점수·백분위 → 8유형 판별</small><span class="tm">0.04초</span></div>
+    <div class="fs"><div class="n">04</div><b>PDF 렌더링</b><small>차트 SVG 생성 → 해석문구·일러스트 바인딩 → A4 12p 렌더</small><span class="tm">1.2초</span></div>
+    <div class="fs"><div class="n">05</div><b>저장 · 발송</b><small>암호화 저장(Drive/S3) → 보호자 메일 자동 발송</small><span class="tm">자동</span></div>
+  </div>
+</section>
+
+<!-- 핵심 기능 -->
+<section class="sec tint" id="feat"><div class="in">
+  <div class="sh">
+    <div class="e">CORE FEATURES</div>
+    <h2>요구사항 그대로, 6개의 핵심 모듈</h2>
+    <p>과업 범위의 2-1 데이터 연동 / 2-2 채점 엔진 / 2-3 PDF 생성을 모듈 단위로 구현했습니다.</p>
+  </div>
+  <div class="fg" id="feats"></div>
+</div></section>
+
+<!-- 요구사항 대응표 -->
+<section class="sec" id="rfp">
+  <div class="sh">
+    <div class="e">REQUIREMENT MAPPING</div>
+    <h2>요청하신 항목, 하나도 빠짐없이</h2>
+    <p>공고에 명시된 상세 기능 요구사항과 비기능 요구사항을 이 데모에서 직접 확인하실 수 있습니다.</p>
+  </div>
+  <div class="card">
+    <div class="bd tight">
+      <table class="tb rfp">
+        <thead><tr><th style="width:80px">구분</th><th style="width:280px">요구사항</th><th>구현 방식</th><th style="width:140px">데모 확인</th></tr></thead>
+        <tbody id="rfpb"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 결과지 -->
+<section class="sec tint" id="report"><div class="in">
+  <div class="sh">
+    <div class="e">DELIVERABLE</div>
+    <h2>결과지 PDF — A4 12페이지 구성</h2>
+    <p>“10페이지 이상, 레이아웃 깨짐 없이” 요구사항에 맞춰 설계했습니다. 모든 페이지가 실제 채점 결과로 채워집니다.</p>
+  </div>
+  <div class="pg12" id="pg12"></div>
+  <div style="text-align:center;margin-top:26px">
+    <a class="btn pri lg" href="report.html">실제 결과지 12페이지 열어보기 →</a>
+  </div>
+
+  <div class="sh" style="margin-top:56px">
+    <div class="e">8 TYPES</div>
+    <h2>판별된 유형에 맞는 일러스트가 자동 삽입됩니다</h2>
+    <p>8가지 동물 유형 일러스트를 일관된 아트 스타일로 제작했습니다. (본 데모 이미지 포함 제공 가능)</p>
+  </div>
+  <div class="strip" id="strip"></div>
+</div></section>
+
+<!-- 기술 스택 -->
+<section class="sec">
+  <div class="sh">
+    <div class="e">TECH STACK</div>
+    <h2>제안 기술 스택</h2>
+    <p>“Python·Node 등 자유 제안” 요건에 따라, PDF 품질과 유지보수성을 기준으로 아래 조합을 제안합니다.</p>
+  </div>
+  <div class="stack">
+    <div class="sc"><div class="t">RUNTIME</div><b>Node.js 20 (LTS)</b><small>채점 엔진 · API 서버. 프로토타입의 JS 로직을 그대로 이식해 검증 비용 최소화.</small></div>
+    <div class="sc"><div class="t">PDF RENDER</div><b>Puppeteer (Chromium)</b><small>HTML/CSS를 그대로 렌더 → 디자인 반영도 100%. ReportLab 대비 레이아웃 자유도 압도적.</small></div>
+    <div class="sc"><div class="t">DATA</div><b>SQLite / PostgreSQL</b><small>규준표·문항·해석문구·응답 이력 관리. 단일 PC 운영 시 SQLite로도 충분.</small></div>
+    <div class="sc"><div class="t">INTEGRATION</div><b>Google Apps Script + REST</b><small>onFormSubmit 실시간 웹훅 + Drive API 업로드 + SMTP 발송.</small></div>
+  </div>
+  <div class="card mt">
+    <div class="bd">
+      <div class="grid2">
+        <div>
+          <b style="font-size:14px;display:block;margin-bottom:8px">왜 Puppeteer 인가요?</b>
+          <p class="muted" style="font-size:13px;line-height:1.75">
+            요구사항의 핵심은 <b>“제공된 디자인 샘플과 동일한 형태의 고해상도 PDF”</b>입니다.
+            ReportLab(Python)은 좌표 기반이라 복잡한 레이아웃을 코드로 다시 그려야 하지만,
+            Puppeteer는 <b>퍼블리싱한 HTML/CSS를 픽셀 그대로 인쇄</b>합니다.
+            지금 보고 계신 결과지도 동일한 방식(브라우저 인쇄 → PDF)으로 만들어졌습니다.
+          </p>
+        </div>
+        <div>
+          <b style="font-size:14px;display:block;margin-bottom:8px">운영 형태 선택 가능</b>
+          <p class="muted" style="font-size:13px;line-height:1.75">
+            ① <b>PC 실행형(RPA)</b> — 담당자 PC에서 실행 파일 더블클릭 → 자동 채점·PDF 생성. 서버 비용 0원.<br>
+            ② <b>서버 상시 구동형</b> — 폼 제출 즉시 자동 발송까지 무인 처리. (본 데모는 ②를 기준으로 구성)<br>
+            두 형태 모두 동일 엔진을 사용하므로, 계약 후 협의로 결정하면 됩니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 일정 -->
+<section class="sec tint" id="plan"><div class="in">
+  <div class="sh">
+    <div class="e">SCHEDULE</div>
+    <h2>45일 내 납품 — 요청하신 마일스톤 그대로</h2>
+    <p>착수 후 2주 채점 로직, 4주 PDF 연동, 6주 안정화. 공고에 명시된 일정에 맞춰 계획했습니다.</p>
+  </div>
+  <div class="grid2" style="gap:34px">
+    <div class="tl">
+      <div class="ti"><div class="w">WEEK 1</div><b>요구사항 확정 · 규준표 이관</b>
+        <p>제공해 주실 채점 로직·규준표 엑셀을 시스템 스키마로 이관하고, 결과지 샘플을 기준으로 페이지 구성을 확정합니다.</p>
+        <div class="dl"><span>규준표 DB 이관</span><span>문항·역채점 정의서</span></div></div>
+      <div class="ti"><div class="w">WEEK 2 · 마일스톤 ①</div><b>채점 엔진 구현 완료</b>
+        <p>역채점·가중치·규준 매핑·T점수/백분위·8유형 판별까지 구현. 기존 수작업 결과와 <b>교차검증(전수 대조)</b>합니다.</p>
+        <div class="dl"><span>채점 엔진</span><span>검증 리포트</span></div></div>
+      <div class="ti"><div class="w">WEEK 3</div><b>구글 폼 연동 · 검증 규칙</b>
+        <p>실시간 수신, 오류 검출, 코드 매핑, 재응답 요청 플로우를 완성합니다.</p>
+        <div class="dl"><span>웹훅 연동</span><span>검증 5규칙</span></div></div>
+      <div class="ti"><div class="w">WEEK 4 · 마일스톤 ②</div><b>PDF 렌더링 연동 완료</b>
+        <p>결과지 HTML/CSS 퍼블리싱, 동적 차트, 해석문구·일러스트 바인딩, 12페이지 렌더 완성.</p>
+        <div class="dl"><span>결과지 템플릿</span><span>PDF 엔진</span></div></div>
+      <div class="ti"><div class="w">WEEK 5–6 · 마일스톤 ③</div><b>테스트 · 안정화 · 인수인계</b>
+        <p>대량 처리 테스트(100부+), 레이아웃 깨짐 전수 검사, 보안 점검, 실행 가이드 문서 작성 및 교육.</p>
+        <div class="dl"><span>테스트 리포트</span><span>실행 가이드</span><span>교육 1회</span></div></div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="hd"><h3>산출물</h3></div>
+        <div class="bd" id="deliv"></div>
+      </div>
+      <div class="card mt">
+        <div class="hd"><h3>보안 (비기능 요구사항 3-2)</h3></div>
+        <div class="bd">
+          <p class="muted" style="font-size:13px;line-height:1.8">
+            · 저장 데이터 <b>AES-256 암호화</b>, 키는 분리 보관<br>
+            · DB에는 <b>검사자 코드</b>만, 아동 실명은 렌더 시점에만 사용<br>
+            · 결과지 다운로드 링크 <b>7일 만료</b> 사전서명 URL<br>
+            · <b>보관기간(3년) 경과 시 자동 파기</b> + 파기 로그<br>
+            · 열람·발급·수정·파기 <b>감사 로그</b> append-only 보관<br>
+            · 역할 기반 접근 권한 3단계(관리자/담당자/열람자)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec">
+  <div class="cta2">
+    <h2>이 데모는 “화면만 만든 목업”이 아닙니다</h2>
+    <p>지금 보시는 모든 T점수·백분위·유형 판별은 실제 채점 엔진이 48문항 응답을 계산한 결과입니다.
+       채점 과정을 한 줄씩 추적해 보시고, 결과지 12페이지를 직접 PDF로 저장해 보세요.</p>
+    <div class="btns">
+      <a class="btn pri lg" href="scoring.html">채점 과정 검증하기</a>
+      <a class="btn lg" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" href="report.html">결과지 PDF 저장해 보기</a>
+      <a class="btn lg" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)" href="dashboard.html">운영 대시보드</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  KidTempo · 유아동 기질검사 결과지 PDF 자동 생성 시스템 프로토타입 · 본 데모의 아동 정보는 모두 가상 데이터입니다.
+</footer>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* 히어로 플로팅 배지 */
+document.getElementById('flA').innerHTML =
+  `<div class="ic" style="background:var(--brand-50);color:var(--brand-700)">${ico('calc',15)}</div>
+   <div><b>T점수 환산 완료</b><small>Z → T → 백분위</small></div>`;
+document.getElementById('flB').innerHTML =
+  `<div class="ic" style="background:var(--ok-50);color:var(--ok)">${ico('check',15)}</div>
+   <div><b>PDF 생성 1.28초</b><small>A4 12p · 1.4MB</small></div>`;
+
+/* 핵심 기능 6 */
+const FEATS = [
+  ['sync','#E9F0FB','#2560B8','구글 폼 실시간 연동','onFormSubmit 트리거 기반 실시간 수신. 응답 시트 재동기화(백필)도 지원하며, 검사자 고유코드(KT-YYMM-NNNN)로 아동을 식별합니다.','요구사항 2-1'],
+  ['shield','var(--warn-50)','#B27607','응답 검증 · 오류 처리','문항 미응답, 리커트 범위 이탈, 규준 적용 불가 연령, 코드 형식 오류, 무성의 응답(직선 반응)을 자동 검출해 채점 전에 걸러냅니다.','요구사항 2-1'],
+  ['calc','var(--brand-50)','var(--brand-700)','채점 엔진 (역채점·가중치)','역채점 16문항 자동 반전, 문항별 가중치(1.25/1.0/0.75) 적용, 요인별 가중치 합을 8.00으로 고정해 요인 간 스케일을 동일하게 유지합니다.','요구사항 2-2'],
+  ['table','var(--violet-50)','#5B4CD1','규준표 매핑 · T점수 환산','연령 3구간 × 성별 2구간 × 6요인 규준표에서 M·SD를 조회해 Z → T(50+10Z) → 백분위(정규누적분포)까지 자동 산출합니다.','요구사항 2-2'],
+  ['animal','var(--coral-50)','var(--coral-700)','6요인 프로파일 · 8유형 판별','에너지·정서·조절 3개 축으로 통합해 2³=8가지 동물 유형을 판별하고, 경계선 사례를 위해 확신도(%)를 함께 산출합니다.','요구사항 2-2'],
+  ['file','var(--ok-50)','var(--ok)','동적 PDF 결과지 생성','방사형·막대·정규분포 차트를 점수에 맞춰 동적 생성하고, 구간별 해석문구와 유형 일러스트를 자동 삽입해 A4 12페이지로 렌더합니다.','요구사항 2-3'],
+];
+document.getElementById('feats').innerHTML = FEATS.map(([i,bg,cl,t,d,rq])=>`
+  <div class="fcard">
+    <div class="ic" style="background:${bg};color:${cl}">${ico(i,20)}</div>
+    <b>${t}</b><p>${d}</p><span class="rq">${rq}</span>
+  </div>`).join('');
+
+/* 결과지 12페이지 */
+document.getElementById('pg12').innerHTML = [
+  '표지 · 유형','검사 안내','종합 요약','방사형 프로파일','T점수 · 백분위','요인 상세 ①',
+  '요인 상세 ②','요인 상세 ③','유형 심층 해설','4주 코칭 플랜','부록 · 원자료','규준 · 고지'
+].map((t,i)=>`<a class="pv" href="report.html"><div class="th"><span>${i+1}</span></div><small>${t}</small></a>`).join('');
+
+/* 산출물 */
+document.getElementById('deliv').innerHTML = [
+  ['프로그램 소스 코드 원본','채점 엔진 · 연동 · PDF 렌더러 전체 · 주석 포함'],
+  ['채점 로직 문서','역채점·가중치·규준 매핑·T점수 산출식·유형 판별 규칙'],
+  ['프로그램 실행 가이드','설치·설정·운영·오류 대응 매뉴얼 (스크린샷 포함)'],
+  ['결과지 HTML/CSS 템플릿','문구·디자인을 개발자 없이 수정할 수 있는 구조'],
+  ['8유형 일러스트 원본','PNG(고해상도) · 결과지 삽입용'],
+  ['교차검증 리포트','기존 수작업 채점 결과와의 일치율 검증'],
+].map(([t,d])=>`<div style="display:flex;gap:9px;padding:10px 0;border-bottom:1px solid var(--line-2)">
+    <span style="color:var(--ok);font-weight:900">✓</span>
+    <div><b style="font-size:13px;display:block">${t}</b><small class="muted" style="font-size:11.8px;line-height:1.55">${d}</small></div>
+  </div>`).join('');
+
+/* 8유형 스트립 */
+document.getElementById('strip').innerHTML = TYPE_LIST.map(t=>`
+  <a class="st" href="types.html" style="background:${t.color2}">
+    <img src="${t.img}" alt="${t.name}">
+    <b style="color:${t.color}">${t.name.split(' ')[1]||t.name}</b>
+    <small>${t.axes.e}·${t.axes.m}·${t.axes.c}</small>
+  </a>`).join('');
+
+/* 요구사항 대응표 */
+const RFP = [
+  ['2-1','구글 폼 응답 데이터 실시간 연동 및 파싱','Apps Script onFormSubmit 트리거 → HMAC 서명 웹훅 수신 → 48문항 정수 파싱','responses.html'],
+  ['2-1','응답 데이터 누락 및 오류 검증','5개 규칙(E01 미응답 / E02 범위이탈 / E03 규준밖 연령 / E04 코드형식 / W01 무성의응답) 자동 검출·반려','responses.html'],
+  ['2-1','검사자 식별용 고유 코드 매핑','KT-YYMM-NNNN 코드 체계 · 결과지·저장·발송 전 구간의 식별 키로 사용','responses.html'],
+  ['2-2','문항별 가중치 및 역채점 로직','역채점 16문항 자동 반전(6−x) · 가중치 1.25/1.0/0.75 · 요인별 Σw=8.00 고정','scoring.html'],
+  ['2-2','연령 및 성별 규준표 DB 매핑','연령 3구간 × 성별 2구간 × 6요인 = 36셀 규준표 · 엑셀 업로드/버전 관리','norms.html'],
+  ['2-2','T점수 및 백분위 자동 환산','Z=(원점수−M)/SD → T=50+10Z(20~80 절단) → 백분위=Φ(Z)×100','scoring.html'],
+  ['2-2','6개 하위 요인 프로파일링 · 8유형 판별','에너지/정서/조절 3축 이분 → 2³=8유형 · 경계 사례용 확신도(%) 동시 산출','types.html'],
+  ['2-3','디자인 샘플과 동일한 고해상도 PDF','HTML/CSS 퍼블리싱 → Puppeteer 렌더(300dpi, A4 12p) · 폰트 임베딩','report.html'],
+  ['2-3','점수에 따른 방사형·막대 차트 동적 생성','순수 SVG 렌더러 자체 구현(방사형·막대·정규분포 곡선) · 외부 차트 라이브러리 의존 없음','report.html'],
+  ['2-3','점수 구간별 맞춤 해석 텍스트 자동 바인딩','요인 6 × 구간 5 = 30블록 · 코드가 아닌 데이터로 관리(비개발자 수정 가능)','norms.html'],
+  ['2-3','유형별 일러스트 이미지 자동 삽입','8유형 일러스트 제작 완료 · 판별 결과에 따라 표지·요약·심층해설 3곳에 자동 삽입','types.html'],
+  ['2-3','생성 PDF의 로컬 또는 클라우드 저장','로컬 폴더/ZIP · Google Drive · S3(SSE-KMS) 선택 · 보호자 메일 자동 발송','batch.html'],
+  ['3-1','10p 이상 PDF 레이아웃 깨짐 없이 출력','A4 고정 그리드 · mm 단위 레이아웃 · 전 케이스 페이지 넘침 검사(16/16 통과)','report.html'],
+  ['3-2','개인정보·결과 데이터 안전 보관','AES-256 저장 암호화 · 실명 가명처리 · 보관기간 자동 파기 · 감사 로그 · 권한 3단계','settings.html'],
+];
+document.getElementById('rfpb').innerHTML = RFP.map(([g,r,h,u])=>`
+  <tr>
+    <td><span class="tag ${g.startsWith('3')?'violet':'brand'}">${g}</span></td>
+    <td><b>${r}</b></td>
+    <td class="muted">${h}</td>
+    <td><a class="btn sm" href="${u}"><span class="ck">✓</span> 확인하기</a></td>
+  </tr>`).join('');
+</script>
+</body>
+</html>

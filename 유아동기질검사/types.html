@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>8가지 기질 유형 | KidTempo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .tc{border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden;background:#fff;cursor:pointer;transition:.28s cubic-bezier(.22,.61,.36,1);box-shadow:var(--sh-1)}
+  .tc:hover{transform:translateY(-6px);box-shadow:var(--sh-3)}
+  .tc .im{height:150px;display:grid;place-items:center;position:relative}
+  .tc .im img{width:118px;height:118px;object-fit:contain;transition:.3s}
+  .tc:hover .im img{transform:scale(1.06)}
+  .tc .im .n{position:absolute;top:11px;left:12px;font-size:10px;font-weight:900;letter-spacing:.12em;opacity:.55}
+  .tc .im .cnt{position:absolute;top:10px;right:11px;font-size:10.5px;font-weight:800;background:rgba(255,255,255,.8);border-radius:99px;padding:3px 9px}
+  .tc .bd2{padding:15px 16px 17px}
+  .tc h3{font-size:15.5px;letter-spacing:-.03em;margin-bottom:3px}
+  .tc .tl{font-size:11.8px;color:var(--muted);font-weight:600;min-height:32px;line-height:1.4}
+  .tc .ax{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+  .tc .ax span{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:99px;background:#F1F4F3;color:var(--ink-2)}
+
+  .mtx{display:grid;grid-template-columns:repeat(9,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:#fff;font-size:12px}
+  .mtx div{padding:11px 8px;border-right:1px solid var(--line-2);border-bottom:1px solid var(--line-2);text-align:center}
+  .mtx div:nth-child(9n){border-right:0}
+  .mtx .h{background:#FAFCFB;font-weight:800;color:var(--muted);font-size:10.5px}
+  .mtx .lbl{text-align:left;font-weight:800;background:#FAFCFB}
+  .mtx .t{font-weight:800}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const c = mountShell('types','8가지 기질 유형','3개 축(에너지 · 정서 · 조절)의 조합으로 판별되는 동물 유형 도감',
+  `<button class="btn" id="dl">${ico('down')} 유형 정의 내보내기</button>`);
+
+const S = Engine.scoreAll();
+const dist = Engine.typeDistribution(S);
+const total = S.filter(s=>s.complete).length;
+
+c.innerHTML = `
+<div class="card">
+  <div class="hd"><h3>유형 판별 매트릭스</h3><div class="sp"></div>
+    <small>각 축을 T50 기준으로 이분 → 2 × 2 × 2 = 8유형</small></div>
+  <div class="bd">
+    <div class="mtx" style="grid-template-columns:120px repeat(8,1fr)">
+      <div class="h lbl">축 / 유형</div>
+      ${TYPE_LIST.map(t=>`<div class="h" style="color:${t.color}">${t.animal}</div>`).join('')}
+      <div class="lbl">에너지 <small class="muted">(ACT+APP)/2</small></div>
+      ${TYPE_LIST.map(t=>`<div class="t" style="color:${t.axes.e==='활발'?'#D9622F':'#2560B8'}">${t.axes.e}</div>`).join('')}
+      <div class="lbl">정서 <small class="muted">EMO</small></div>
+      ${TYPE_LIST.map(t=>`<div class="t" style="color:${t.axes.m==='민감'?'#C0332A':'#15803D'}">${t.axes.m}</div>`).join('')}
+      <div class="lbl">조절 <small class="muted">(PER+REG+ADP)/3</small></div>
+      ${TYPE_LIST.map(t=>`<div class="t" style="color:${t.axes.c==='체계'?'#5B4CD1':'#B27607'}">${t.axes.c}</div>`).join('')}
+      <div class="lbl">현재 분포</div>
+      ${TYPE_LIST.map(t=>`<div><b>${dist[t.key]}</b><span class="muted">명</span></div>`).join('')}
+    </div>
+    <p class="muted" style="font-size:12.5px;line-height:1.7;margin-top:12px">
+      유형은 <b>낙인이 아니라 소통 도구</b>입니다. 6요인 T점수 프로파일이 원본 데이터이며, 동물 유형은 보호자가 결과를 직관적으로 이해하도록 돕는 요약입니다.
+      경계선(T48~52)에 걸친 축이 있는 경우 결과지에 <b>확신도</b>를 함께 표기해 과잉 해석을 방지합니다.
+    </p>
+  </div>
+</div>
+
+<div class="tgrid mt">
+  ${TYPE_LIST.map(t=>`
+    <div class="tc" data-t="${t.key}">
+      <div class="im" style="background:${t.color2}">
+        <span class="n" style="color:${t.color}">${t.en}</span>
+        <span class="cnt" style="color:${t.color}">${dist[t.key]}명</span>
+        <img src="${t.img}" alt="${t.name}">
+      </div>
+      <div class="bd2">
+        <h3 style="color:${t.color}">${t.name}</h3>
+        <div class="tl">${t.tagline}</div>
+        <div class="ax">
+          <span>${t.axes.e}</span><span>${t.axes.m}</span><span>${t.axes.c}</span>
+        </div>
+      </div>
+    </div>`).join('')}
+</div>
+
+<div class="card mt">
+  <div class="hd"><h3>유형별 해석 텍스트 관리</h3><div class="sp"></div>
+    <small>결과지 9페이지(유형 심층 해설)에 자동 바인딩되는 원문</small></div>
+  <div class="bd tight">
+    <table class="tb">
+      <thead><tr><th style="width:130px">유형</th><th>강점</th><th>살펴볼 점</th><th>양육 접근</th><th class="ctr" style="width:70px">편집</th></tr></thead>
+      <tbody>
+        ${TYPE_LIST.map(t=>`<tr>
+          <td><div class="pr"><img src="${t.img}" style="width:32px;height:32px;object-fit:contain" alt="">
+            <div><b style="color:${t.color}">${t.name}</b><small>${t.en}</small></div></div></td>
+          <td class="muted" style="font-size:12px">${t.strengths.length}개 항목<br><span style="color:var(--ink-2)">${t.strengths[0]}</span></td>
+          <td class="muted" style="font-size:12px">${t.cautions.length}개 항목<br><span style="color:var(--ink-2)">${t.cautions[0]}</span></td>
+          <td class="muted" style="font-size:12px">${t.parenting.length}개 항목<br><span style="color:var(--ink-2)">${t.parenting[0]}</span></td>
+          <td class="ctr"><button class="btn sm" data-t="${t.key}">${ico('eye',13)}</button></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+</div>
+`;
+
+function detail(key){
+  const t = TYPES[key];
+  const members = S.filter(s=>s.complete && s.type.key===key);
+  modal(`${t.name} · ${t.en}`, `
+    <div style="display:grid;grid-template-columns:130px 1fr;gap:18px;align-items:center;background:${t.color2};border-radius:16px;padding:18px;margin-bottom:16px">
+      <img src="${t.img}" style="width:100%;object-fit:contain" alt="">
+      <div>
+        <h3 style="font-size:19px;color:${t.color};margin-bottom:4px">${t.tagline}</h3>
+        <div class="flex" style="gap:5px;margin-bottom:9px">
+          <span class="tag" style="background:#fff;color:${t.color}">${t.axes.e}</span>
+          <span class="tag" style="background:#fff;color:${t.color}">${t.axes.m}</span>
+          <span class="tag" style="background:#fff;color:${t.color}">${t.axes.c}</span>
+        </div>
+        <p style="font-size:13px;line-height:1.7;color:var(--ink-2)">${t.summary}</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div>
+        <b style="font-size:13px;display:block;margin-bottom:7px;color:var(--ok)">✓ 강점으로 자라는 부분</b>
+        <ul style="margin:0;padding-left:17px">${t.strengths.map(s=>`<li style="font-size:12.5px;line-height:1.8;color:var(--ink-2)">${s}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <b style="font-size:13px;display:block;margin-bottom:7px;color:var(--warn)">! 살펴봐 주어야 할 부분</b>
+        <ul style="margin:0;padding-left:17px">${t.cautions.map(s=>`<li style="font-size:12.5px;line-height:1.8;color:var(--ink-2)">${s}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <b style="font-size:13px;display:block;margin-bottom:7px;color:var(--coral-700)">♥ 이 아이에게 맞는 양육 접근</b>
+    <ul style="margin:0;padding-left:17px">${t.parenting.map(s=>`<li style="font-size:12.5px;line-height:1.8;color:var(--ink-2)">${s}</li>`).join('')}</ul>
+    ${members.length ? `<div class="hr"></div>
+      <b style="font-size:13px;display:block;margin-bottom:8px">이 유형으로 판별된 아동 (${members.length}명)</b>
+      <div class="flex wrap">${members.map(m=>`<button class="chip" onclick="openReport('${m.code}')">
+        <span class="av" style="width:20px;height:20px;border-radius:6px;background:${t.color};color:#fff;display:grid;place-items:center;font-size:9px;font-weight:800">${initial(m.child)}</span>
+        ${m.child} <b class="muted">${m.code}</b></button>`).join('')}</div>` : ''}
+  `, `<button class="btn" data-close>닫기</button>`, true);
+}
+c.addEventListener('click', e=>{ const b = e.target.closest('[data-t]'); if(b) detail(b.dataset.t); });
+document.getElementById('dl').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(TYPES,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='kidtempo_types.json'; a.click();
+  toast('8유형 정의(JSON)를 내려받았습니다','ok');
+});
+</script>
+</body>
+</html>

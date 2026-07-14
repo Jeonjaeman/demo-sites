@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>규준표 · 문항 관리 | KidTempo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .up{border:2px dashed var(--brand-200);background:var(--brand-50);border-radius:var(--r-lg);padding:22px;text-align:center;cursor:pointer;transition:.2s}
+  .up:hover{border-color:var(--brand);background:#E3F5F2}
+  .up svg{width:26px;height:26px;stroke:var(--brand);stroke-width:1.8;fill:none;margin:0 auto 8px}
+  .up b{display:block;font-size:13.5px;margin-bottom:4px}
+  .up small{color:var(--muted);font-size:12px}
+  .ver{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line-2)}
+  .ver:last-child{border-bottom:0}
+  .ver .d{width:8px;height:8px;border-radius:99px;background:var(--muted-2);flex:0 0 8px}
+  .ver.on .d{background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+  .ver b{font-size:12.8px;display:block}
+  .ver small{font-size:11px;color:var(--muted)}
+  .edit{width:56px;padding:5px 7px;border:1px solid var(--line);border-radius:7px;font-size:12.5px;text-align:right;font-family:inherit;
+    font-variant-numeric:tabular-nums;outline:none}
+  .edit:focus{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-50)}
+  .edit.ch{border-color:var(--coral);background:var(--coral-50)}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const c = mountShell('norms','규준표 · 문항 관리','연령×성별 규준표, 48문항 정의(역채점·가중치), 해석 텍스트 30블록',
+  `<button class="btn" id="excel">${ico('down')} 엑셀 내보내기</button>
+   <button class="btn pri" id="save">${ico('check')} 변경사항 저장</button>`);
+
+let tab = 'norms', ab = 'A56', sx = 'M', changed = 0;
+
+function render(){
+  c.innerHTML = `
+  <div class="between">
+    <div class="seg">
+      <button data-tab="norms" class="${tab==='norms'?'on':''}">규준표</button>
+      <button data-tab="items" class="${tab==='items'?'on':''}">검사 문항 (48)</button>
+      <button data-tab="interp" class="${tab==='interp'?'on':''}">해석 텍스트 (30블록)</button>
+    </div>
+    <span class="tag brand">현재 적용 버전 · norms_v2.1 (2026-06-30)</span>
+  </div>
+  <div class="mt-s" id="pane"></div>`;
+
+  c.querySelectorAll('[data-tab]').forEach(b=> b.addEventListener('click', ()=>{ tab=b.dataset.tab; render(); }));
+  ({ norms:paneNorms, items:paneItems, interp:paneInterp })[tab]();
+}
+
+/* ------------------------------- 규준표 ------------------------------- */
+function paneNorms(){
+  const n = NORMS[ab][sx];
+  document.getElementById('pane').innerHTML = `
+  <div class="g-2-1">
+    <div class="card">
+      <div class="hd">
+        <h3>규준표 (Norm Table)</h3><div class="sp"></div>
+        <div class="seg">${AGE_BANDS.map(a=>`<button data-ab="${a.key}" class="${a.key===ab?'on':''}">${a.label}</button>`).join('')}</div>
+        <div class="seg" style="margin-left:6px">${SEXES.map(s=>`<button data-sx="${s.key}" class="${s.key===sx?'on':''}">${s.label}</button>`).join('')}</div>
+      </div>
+      <div class="bd tight">
+        <table class="tb">
+          <thead><tr>
+            <th>요인</th><th class="num">평균 M</th><th class="num">표준편차 SD</th><th class="num">표본 n</th>
+            <th class="num">T40 원점수</th><th class="num">T50</th><th class="num">T60</th><th>분포</th>
+          </tr></thead>
+          <tbody>
+            ${FKEYS.map(k=>{
+              const v = n[k];
+              return `<tr>
+                <td><b style="color:${F[k].color}">${F[k].name}</b><br><small class="muted">${F[k].en}</small></td>
+                <td class="num"><input class="edit" data-n="${k}.m" value="${v.m}"></td>
+                <td class="num"><input class="edit" data-n="${k}.sd" value="${v.sd}"></td>
+                <td class="num">${v.n}</td>
+                <td class="num muted">${Math.round((v.m - v.sd)*10)/10}</td>
+                <td class="num"><b>${v.m}</b></td>
+                <td class="num muted">${Math.round((v.m + v.sd)*10)/10}</td>
+                <td style="width:150px"><div id="cv-${k}" style="height:42px"></div></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="hd"><h3>규준표 업로드</h3></div>
+        <div class="bd">
+          <div class="up" id="up">
+            ${ico('down',26)}
+            <b>규준표 엑셀 업로드</b>
+            <small>norms_v*.xlsx · 연령대 × 성별 × 6요인 (M, SD, n)<br>업로드 시 검증 후 새 버전으로 등록됩니다</small>
+          </div>
+          <div class="mt-s mono" style="background:#F6F9F8;border-radius:10px;padding:11px 12px;font-size:11.5px;color:var(--ink-2);line-height:1.8">
+            필수 컬럼: age_band, sex, factor, mean, sd, n<br>
+            검증: SD &gt; 0 · 30 ≤ n · factor ∈ {ACT,REG,APP,ADP,EMO,PER}
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="hd"><h3>버전 이력</h3></div>
+        <div class="bd">
+          <div class="ver on"><span class="d"></span><div><b>norms_v2.1 (적용 중)</b><small>2026-06-30 · 표본 1,894명 · 연령 3구간 확장</small></div></div>
+          <div class="ver"><span class="d"></span><div><b>norms_v2.0</b><small>2026-03-12 · 표본 1,204명 · 성별 분리 최초 적용</small></div></div>
+          <div class="ver"><span class="d"></span><div><b>norms_v1.0</b><small>2025-11-02 · 표본 612명 · 통합 규준</small></div></div>
+          <p class="muted" style="font-size:11.8px;line-height:1.65;margin-top:10px">
+            규준 변경 시 기발급 결과지는 재계산되지 않습니다. 재발급이 필요한 경우 <b>일괄 생성</b>에서 버전을 지정해 다시 렌더합니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  FKEYS.forEach(k=> Chart.curve(document.getElementById('cv-'+k), 50, F[k].color, { width:150, height:42 }));
+  document.querySelectorAll('[data-ab]').forEach(b=> b.addEventListener('click',()=>{ ab=b.dataset.ab; paneNorms(); }));
+  document.querySelectorAll('[data-sx]').forEach(b=> b.addEventListener('click',()=>{ sx=b.dataset.sx; paneNorms(); }));
+  document.querySelectorAll('.edit').forEach(i=> i.addEventListener('input',()=>{ i.classList.add('ch'); changed++; }));
+  document.getElementById('up').addEventListener('click', ()=>
+    toast('규준표 엑셀 업로드 · 36행(3연령×2성별×6요인) 검증 통과 → norms_v2.2 초안 생성','ok'));
+}
+
+/* ------------------------------- 문항 ------------------------------- */
+function paneItems(){
+  const revCnt = ITEMS.filter(i=>i.r).length;
+  document.getElementById('pane').innerHTML = `
+  <div class="g-2-1">
+    <div class="card">
+      <div class="hd"><h3>검사 문항 정의</h3><div class="sp"></div>
+        <small>48문항 · 6요인 × 8문항 · 5점 리커트</small></div>
+      <div class="bd tight">
+        <div class="tw" style="max-height:620px">
+          <table class="tb">
+            <thead><tr><th style="width:40px">#</th><th style="width:90px">요인</th><th>문항</th>
+              <th class="ctr" style="width:76px">역채점</th><th class="ctr" style="width:90px">가중치</th></tr></thead>
+            <tbody>
+              ${ITEMS.map(i=>`<tr>
+                <td class="muted">${i.id}</td>
+                <td><span class="tag" style="background:${F[i.f].color}1A;color:${F[i.f].color}">${F[i.f].name}</span></td>
+                <td style="font-size:12.5px">${i.t}</td>
+                <td class="ctr">${i.r?'<span class="tag danger">역</span>':'<span class="muted">–</span>'}</td>
+                <td class="ctr"><b style="color:${i.w>1?'var(--brand-700)':i.w<1?'var(--muted-2)':'var(--ink)'}">×${i.w.toFixed(2)}</b></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="hd"><h3>문항 구성 요약</h3></div>
+        <div class="bd">
+          ${FKEYS.map(k=>{
+            const its = ITEMS.filter(i=>i.f===k);
+            const rv = its.filter(i=>i.r).length;
+            return `<div class="between" style="padding:8px 0;border-bottom:1px solid var(--line-2)">
+              <span class="flex"><span style="width:8px;height:8px;border-radius:3px;background:${F[k].color}"></span>
+              <b style="font-size:12.8px">${F[k].name}</b></span>
+              <span class="flex" style="font-size:12px" class="muted">
+                <span class="muted">${its.length}문항</span>
+                <span class="tag danger">역 ${rv}</span>
+                <span class="tag gray">Σw ${its.reduce((a,b)=>a+b.w,0).toFixed(2)}</span>
+              </span>
+            </div>`;
+          }).join('')}
+          <div class="hr"></div>
+          <div class="mono" style="background:#F6F9F8;border-radius:10px;padding:11px 12px;font-size:11.5px;line-height:1.85;color:var(--ink-2)">
+            총 문항 &nbsp;: 48<br>
+            역채점 &nbsp;&nbsp;: ${revCnt} (환산 = 6 − 응답)<br>
+            가중치 &nbsp;&nbsp;: 1.25 / 1.00 / 0.75<br>
+            요인별 Σw : 8.00 (고정)<br>
+            원점수 범위: 8.00 ~ 40.00
+          </div>
+          <p class="muted" style="font-size:11.8px;line-height:1.7;margin-top:10px">
+            가중치는 요인 대표성이 높은 핵심 문항에 1.25, 보조 문항에 0.75를 부여합니다.
+            요인별 가중치 합을 8.00으로 고정해 <b>요인 간 원점수 스케일을 동일</b>하게 유지합니다.
+          </p>
+        </div>
+      </div>
+      <div class="card mt">
+        <div class="hd"><h3>척도</h3></div>
+        <div class="bd">
+          ${LIKERT.map((l,i)=>`<div class="between" style="padding:6px 0">
+            <span class="flex"><span style="width:22px;height:22px;border-radius:6px;background:var(--brand-50);color:var(--brand-700);
+              display:grid;place-items:center;font-size:11px;font-weight:800">${i+1}</span>
+            <b style="font-size:12.8px">${l}</b></span>
+            <span class="muted" style="font-size:11.5px">역채점 시 ${5-i}</span>
+          </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ------------------------------ 해석 텍스트 ------------------------------ */
+function paneInterp(){
+  document.getElementById('pane').innerHTML = `
+  <div class="card">
+    <div class="hd"><h3>점수 구간별 해석 텍스트</h3><div class="sp"></div>
+      <small>6요인 × 5구간 = 30블록 · 채점 결과에 따라 자동 바인딩</small></div>
+    <div class="bd tight">
+      <div class="tw" style="max-height:680px">
+        <table class="tb">
+          <thead><tr><th style="width:96px">요인</th><th style="width:88px">구간</th><th style="width:150px">제목</th><th>해석 본문 (보호자용)</th><th style="width:260px">양육 코칭 팁</th></tr></thead>
+          <tbody>
+            ${FKEYS.flatMap(k=> BANDS.map(b=>{
+              const x = INTERP[k][b.key];
+              return `<tr>
+                <td><b style="color:${F[k].color}">${F[k].name}</b></td>
+                <td><span class="band ${b.cls}">${b.label}</span><br><small class="muted" style="font-size:10.5px">T ${b.key==='vlow'?'≤35':b.key==='vhigh'?'≥65':`${b.min}–${Math.floor(b.max)}`}</small></td>
+                <td style="font-size:12.5px"><b>${x.t}</b></td>
+                <td style="font-size:12px;line-height:1.6;color:var(--ink-2)">${x.b}</td>
+                <td style="font-size:12px;line-height:1.6;color:var(--brand-800);background:var(--brand-50)">${x.p}</td>
+              </tr>`;
+            })).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <p class="muted mt-s" style="font-size:12.5px;line-height:1.7">
+    해석 텍스트는 코드가 아닌 <b>데이터</b>로 관리됩니다. 담당 연구원이 문구를 수정하면 다음 발급분부터 즉시 반영되며, 개발자 배포가 필요 없습니다.
+    (최종 납품 시 관리자 화면에서 직접 편집 · 버전 관리)
+  </p>`;
+}
+
+render();
+document.getElementById('save').addEventListener('click', ()=>
+  toast(changed ? `규준값 ${changed}건 변경사항을 norms_v2.2로 저장했습니다` : '변경된 항목이 없습니다', changed?'ok':'warn'));
+document.getElementById('excel').addEventListener('click', ()=>{
+  const rows = [['age_band','sex','factor','mean','sd','n']];
+  AGE_BANDS.forEach(a=> SEXES.forEach(s=> FKEYS.forEach(k=>{
+    const v = NORMS[a.key][s.key][k]; rows.push([a.key,s.key,k,v.m,v.sd,v.n]);
+  })));
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='kidtempo_norms_v2.1.csv'; a.click();
+  toast('규준표 CSV(36행)를 내려받았습니다','ok');
+});
+</script>
+</body>
+</html>

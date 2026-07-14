@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>채점 엔진 | KidTempo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .steps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .step{border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:#fff;position:relative;transition:.3s}
+  .step .n{font-size:10px;font-weight:900;color:var(--muted-2);letter-spacing:.1em}
+  .step b{display:block;font-size:12.5px;margin:4px 0 3px;letter-spacing:-.02em}
+  .step small{font-size:10.5px;color:var(--muted);line-height:1.45;display:block}
+  .step.on{border-color:var(--brand);background:var(--brand-50);box-shadow:0 0 0 3px rgba(18,165,148,.09)}
+  .step.on .n{color:var(--brand)}
+  .step.done .n::after{content:' ✓';color:var(--ok)}
+
+  .form{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;
+    background:linear-gradient(135deg,var(--brand-50),#FDF3EC);border:1px solid var(--brand-100);border-radius:var(--r-lg);padding:16px 18px}
+  .form .fx{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:14px;font-weight:700;color:var(--brand-800);
+    background:#fff;border:1px solid var(--brand-100);border-radius:10px;padding:11px 14px;white-space:nowrap}
+
+  .ftabs{display:flex;gap:6px;flex-wrap:wrap}
+  .ft{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;transition:.15s;text-align:left}
+  .ft b{display:block;font-size:12.5px}
+  .ft small{font-size:10.5px;color:var(--muted);font-weight:700}
+  .ft.on{border-color:transparent;color:#fff}
+  .ft.on small{color:rgba(255,255,255,.8)}
+
+  .calc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .cbox{border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff}
+  .cbox small{display:block;font-size:10.5px;color:var(--muted);font-weight:800;margin-bottom:5px}
+  .cbox b{font-size:19px;letter-spacing:-.04em;display:block}
+  .cbox .sub{font-size:10.5px;color:var(--muted-2);font-weight:700;margin-top:3px}
+
+  .matrix{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .mc{border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center;background:#fff;transition:.25s;opacity:.45}
+  .mc img{width:46px;height:46px;object-fit:contain;margin:0 auto 5px}
+  .mc b{font-size:11.5px;display:block;letter-spacing:-.02em}
+  .mc small{font-size:9.5px;color:var(--muted);font-weight:700;display:block;margin-top:2px}
+  .mc.hit{opacity:1;border-width:2px;transform:translateY(-3px);box-shadow:var(--sh-2)}
+
+  .axline{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:10px;margin-bottom:11px}
+  .axline .lb{font-size:12px;font-weight:800;color:var(--muted-2);text-align:right}
+  .axline .lb.on{color:var(--ink)}
+  .axline .lb.r{text-align:left}
+  .axline .tr{height:9px;border-radius:99px;background:#EDF1F0;position:relative}
+  .axline .tr::before{content:'';position:absolute;left:50%;top:-4px;bottom:-4px;width:1px;background:#CBD8D5}
+  .axline .tr i{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#fff;border:3.5px solid var(--brand);
+    transform:translate(-50%,-50%);box-shadow:var(--sh-1);transition:left .8s cubic-bezier(.22,.61,.36,1)}
+  .axline .tr em{position:absolute;top:-19px;font-style:normal;font-size:10.5px;font-weight:800;color:var(--brand-700);transform:translateX(-50%);transition:left .8s cubic-bezier(.22,.61,.36,1)}
+
+  .log{background:#0C1A18;border-radius:12px;padding:15px 17px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-size:11.3px;line-height:1.9;color:#8FA5A1;max-height:300px;overflow:auto;white-space:pre-wrap}
+  .log .hl{color:#4ADE80} .log .er{color:#F87171} .log .wr{color:#FBBF24}
+
+  .revtag{font-size:9.5px;font-weight:900;color:#C4491F;background:#FDE9E3;border-radius:4px;padding:1px 4px;margin-left:4px}
+  .wtag{font-size:10px;font-weight:800;color:var(--muted);background:#F1F4F3;border-radius:4px;padding:1px 5px}
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/charts.js"></script>
+<script src="assets/app.js"></script>
+<script>
+const c = mountShell('scoring','채점 엔진','역채점 → 가중치 → 규준 매핑 → T점수·백분위 → 8유형 판별 (전 과정 추적)',
+  `<select class="in" id="pick" style="width:auto;font-weight:700"></select>
+   <button class="btn pri" id="run">${ico('play')} 채점 실행</button>`);
+
+const OK = RESPONSES.filter(r=>r.status!=='error');
+document.getElementById('pick').innerHTML = OK.map(r=>`<option value="${r.code}">${r.child} · ${r.code}</option>`).join('');
+
+let curFactor = 'ACT';
+
+function render(code){
+  const resp = RESPONSES.find(r=>r.code===code);
+  const s = Engine.score(resp);
+  const f = s.factors[curFactor];
+  const items = ITEMS.filter(i=>i.f===curFactor);
+  const ax = s.axes;
+  const axPos = v => Math.max(5, Math.min(95, (v-25)/50*100));
+
+  c.innerHTML = `
+  <div class="steps">
+    ${[['01','응답 파싱','48문항 정수 변환'],['02','역채점','16문항 6−x 반전'],['03','가중치','1.25 / 1.0 / 0.75'],
+       ['04','규준 매핑','연령×성별 M·SD'],['05','T·백분위','T=50+10Z · Φ(Z)'],['06','유형 판별','3축 → 8유형']]
+      .map(([n,t,d],i)=>`<div class="step ${i===5?'on':'done'}"><span class="n">STEP ${n}</span><b>${t}</b><small>${d}</small></div>`).join('')}
+  </div>
+
+  <div class="g-2-1 mt">
+    <div class="card">
+      <div class="hd">
+        <h3>문항별 채점 상세</h3>
+        <div class="sp"></div>
+        <small>${s.child} · ${s.age} ${fmt.sex(s.sex)} · ${s.code}</small>
+      </div>
+      <div class="bd">
+        <div class="ftabs">
+          ${FKEYS.map(k=>`<button class="ft ${k===curFactor?'on':''}" data-fk="${k}"
+            style="${k===curFactor?`background:${F[k].color}`:''}">
+            <b>${F[k].name}</b><small>T ${Math.round(s.factors[k].t)} · ${s.factors[k].band.label}</small></button>`).join('')}
+        </div>
+
+        <div class="tw mt-s" style="max-height:340px">
+          <table class="tb">
+            <thead><tr>
+              <th style="width:38px">#</th><th>문항</th><th class="ctr" style="width:150px">보호자 응답</th>
+              <th class="num" style="width:70px">환산</th><th class="ctr" style="width:66px">가중치</th><th class="num" style="width:78px">가중점수</th>
+            </tr></thead>
+            <tbody>
+              ${items.map(i=>{
+                const a = resp.answers[i.id];
+                const rev = i.r ? 6-a : a;
+                return `<tr>
+                  <td class="muted">${i.id}</td>
+                  <td style="font-size:12.5px">${i.t}${i.r?'<span class="revtag">역채점</span>':''}</td>
+                  <td class="ctr">
+                    <div class="flex" style="justify-content:center;gap:3px">
+                      ${[1,2,3,4,5].map(v=>`<span style="width:20px;height:20px;border-radius:5px;display:grid;place-items:center;
+                        font-size:10.5px;font-weight:800;
+                        background:${v===a?F[curFactor].color:'#F1F4F3'};color:${v===a?'#fff':'#B7C4C1'}">${v}</span>`).join('')}
+                    </div>
+                  </td>
+                  <td class="num"><b style="color:${i.r?'#C4491F':'var(--ink)'}">${rev}</b>${i.r?`<small class="muted"> ←${a}</small>`:''}</td>
+                  <td class="ctr"><span class="wtag">×${i.w}</span></td>
+                  <td class="num"><b>${Math.round(rev*i.w*100)/100}</b></td>
+                </tr>`;
+              }).join('')}
+              <tr style="background:var(--brand-50)">
+                <td colspan="5"><b>${F[curFactor].name} 원점수 (가중합)</b> <span class="muted" style="font-size:11.5px">· 가중치 합 8.00 · 범위 8~40</span></td>
+                <td class="num"><b style="font-size:16px;color:${F[curFactor].color}">${f.raw}</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form mt">
+          <div class="fx">Z = (${f.raw} − ${f.norm.m}) ÷ ${f.norm.sd} = ${f.z}</div>
+          <div class="fx">T = 50 + 10 × ${f.z} = <b style="color:${F[curFactor].color}">${Math.round(f.t)}</b></div>
+        </div>
+        <div class="calc mt-s">
+          <div class="cbox"><small>규준 (${s.ageBand.label} ${fmt.sex(s.sex)})</small><b>M ${f.norm.m} / SD ${f.norm.sd}</b><div class="sub">표준화 표본 n=${f.norm.n}</div></div>
+          <div class="cbox"><small>Z 점수</small><b style="color:${F[curFactor].color}">${f.z>0?'+':''}${f.z}</b><div class="sub">평균에서 ${Math.abs(f.z)}SD ${f.z>0?'위':'아래'}</div></div>
+          <div class="cbox"><small>T 점수</small><b style="color:${F[curFactor].color}">${Math.round(f.t)}</b><div class="sub">${bandTag(f.band).replace(/class="band [a-z]+"/,'class="band '+f.band.cls+'"')}</div></div>
+          <div class="cbox"><small>백분위</small><b>${f.pct}%</b><div class="sub">또래 100명 중 ${Math.max(1,Math.round(100-f.pct))}번째</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="hd"><h3>또래 분포 속 위치</h3></div>
+        <div class="bd">
+          <div id="cv" style="height:110px"></div>
+          <p class="muted" style="font-size:12px;line-height:1.65;margin-top:8px">
+            ${F[curFactor].name} T${Math.round(f.t)} — 같은 ${s.ageBand.label} ${fmt.sex(s.sex)} 집단에서 상위 ${Math.max(0.1,Math.round((100-f.pct)*10)/10)}% 위치입니다.
+          </p>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="hd"><h3>3축 → 8유형 판별</h3></div>
+        <div class="bd">
+          <div class="axline">
+            <span class="lb ${ax.energy.side==='차분'?'on':''}">차분</span>
+            <div class="tr"><em style="left:${axPos(ax.energy.v)}%">${ax.energy.v}</em><i style="left:${axPos(ax.energy.v)}%;border-color:${s.type.color}"></i></div>
+            <span class="lb r ${ax.energy.side==='활발'?'on':''}">활발</span>
+          </div>
+          <div class="axline">
+            <span class="lb ${ax.emotion.side==='안정'?'on':''}">안정</span>
+            <div class="tr"><em style="left:${axPos(ax.emotion.v)}%">${ax.emotion.v}</em><i style="left:${axPos(ax.emotion.v)}%;border-color:${s.type.color}"></i></div>
+            <span class="lb r ${ax.emotion.side==='민감'?'on':''}">민감</span>
+          </div>
+          <div class="axline">
+            <span class="lb ${ax.control.side==='자유'?'on':''}">자유</span>
+            <div class="tr"><em style="left:${axPos(ax.control.v)}%">${ax.control.v}</em><i style="left:${axPos(ax.control.v)}%;border-color:${s.type.color}"></i></div>
+            <span class="lb r ${ax.control.side==='체계'?'on':''}">체계</span>
+          </div>
+          <div class="mono" style="background:#F6F9F8;border-radius:9px;padding:9px 11px;font-size:11.5px;color:var(--ink-2);margin-top:12px">
+            에너지=(ACT+APP)/2=${ax.energy.v} · 정서=EMO=${ax.emotion.v} · 조절=(PER+REG+ADP)/3=${ax.control.v}<br>
+            → <b style="color:${s.type.color}">${ax.energy.side}|${ax.emotion.side}|${ax.control.side} = ${s.type.en}</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt">
+    <div class="hd"><h3>8유형 판별 매트릭스</h3><div class="sp"></div>
+      <small>확신도 ${s.type.confidence}% · 각 축이 경계(T50)에서 떨어진 거리 기반</small></div>
+    <div class="bd">
+      <div class="matrix">
+        ${TYPE_LIST.map(t=>`<div class="mc ${t.key===s.type.key?'hit':''}" style="${t.key===s.type.key?`border-color:${t.color};background:${t.color2}`:''}">
+          <img src="${t.img}" alt="">
+          <b style="${t.key===s.type.key?`color:${t.color}`:''}">${t.name}</b>
+          <small>${t.axes.e} · ${t.axes.m} · ${t.axes.c}</small>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2 mt">
+    <div class="card">
+      <div class="hd"><h3>엔진 처리 로그</h3><div class="sp"></div><small class="mono">trace ${s.code}</small></div>
+      <div class="bd"><div class="log">${Engine.trace(s).map(l=>
+        l.includes('✓') ? `<span class="hl">${l}</span>` : l.includes('✗') ? `<span class="er">${l}</span>` : l.includes('⚠') ? `<span class="wr">${l}</span>` : l
+      ).join('\n')}</div></div>
+    </div>
+    <div class="card">
+      <div class="hd"><h3>자동 바인딩된 해석 텍스트</h3><div class="sp"></div><small>요인 × 구간 = 30블록 중 6개 선택</small></div>
+      <div class="bd" style="max-height:300px;overflow:auto">
+        ${Engine.interpret(s).map(x=>`
+          <div style="padding:10px 0;border-bottom:1px solid var(--line-2)">
+            <div class="between" style="margin-bottom:5px">
+              <b style="font-size:12.5px;color:${x.factor.color}">${x.factor.name} · ${x.t}</b>
+              ${bandTag(x.band)}
+            </div>
+            <p class="muted" style="font-size:12px;line-height:1.65">${x.b}</p>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="between mt">
+    <p class="muted" style="font-size:12.5px">채점 결과는 결과지 PDF 12페이지에 그대로 바인딩됩니다.</p>
+    <button class="btn pri" onclick="openReport('${s.code}')">${ico('file')} ${s.child} 결과지 열기</button>
+  </div>
+  `;
+
+  Chart.curve(document.getElementById('cv'), f.t, F[curFactor].color, { width:300, height:110 });
+
+  c.querySelectorAll('[data-fk]').forEach(b=> b.addEventListener('click', ()=>{ curFactor = b.dataset.fk; render(code); }));
+}
+
+const pick = document.getElementById('pick');
+render(pick.value);
+pick.addEventListener('change', ()=>{ curFactor='ACT'; render(pick.value); });
+document.getElementById('run').addEventListener('click', e=>{
+  const b=e.currentTarget; b.disabled=true;
+  const steps = ['응답 파싱','역채점 적용','가중치 반영','규준표 매핑','T·백분위 환산','유형 판별'];
+  let i=0;
+  const t = setInterval(()=>{
+    b.innerHTML = ico('refresh') + ` ${steps[i]}…`;
+    if(++i >= steps.length){
+      clearInterval(t);
+      b.disabled=false; b.innerHTML = ico('play') + ' 채점 실행';
+      render(pick.value);
+      toast('채점 완료 · 1.28초 · 6요인 T점수 및 유형 판별 완료','ok');
+    }
+  }, 220);
+});
+</script>
+</body>
+</html>
