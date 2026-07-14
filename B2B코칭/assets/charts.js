@@ -5,10 +5,48 @@
 
 const C_BRAND = '#5B4BE8', C_GRID = '#EDEFF6', C_TXT = '#727A94';
 
+/* ------------------------------------------------------------------
+   폰트 스케일 문제 해결의 핵심.
+
+   SVG 는 viewBox 비율대로 "통째로" 확대·축소되므로, 고정 viewBox 를 쓰면
+   넓은 카드에서는 글자까지 같이 커지고(11px → 19px) 좁은 카드에서는
+   읽을 수 없게 작아집니다(9.5px → 5.7px).
+
+   그래서 viewBox 너비를 컨테이너의 실제 픽셀 폭으로 잡습니다.
+   → 렌더 배율이 항상 1.0 이 되어, font-size 11 은 어느 카드에서도 11px 로 보입니다.
+   ------------------------------------------------------------------ */
+function boxW(sel, min, max){
+  const el = $(sel);
+  const w = el ? Math.round(el.getBoundingClientRect().width) : 0;
+  return Math.max(min, Math.min(max || 1200, w || min));
+}
+const svgBox = (w, h, inner) =>
+  `<svg viewBox="0 0 ${w} ${h}" style="width:100%;max-width:${w}px;height:auto;display:block;margin:0 auto;overflow:visible">${inner}</svg>`;
+
+/* 카드 폭이 바뀌면(창 크기 변경, 숨겨진 탭이 열려 폭이 0 → 실제 값이 되는 경우 등)
+   좌표계를 다시 잡아야 하므로, 마지막 호출을 기억해 두고 컨테이너 폭 변화를 감지해 재렌더한다. */
+const _charts = new Map();
+const _lastW  = new Map();
+function _keep(fn, args){
+  const sel = args[0];
+  _charts.set(sel, { fn, args:[...args] });
+  const el = $(sel);
+  if(!el || el.__ro || typeof ResizeObserver === 'undefined') return;
+  el.__ro = new ResizeObserver(() => {
+    const w = Math.round(el.getBoundingClientRect().width);
+    if(Math.abs(w - (_lastW.get(sel) || 0)) < 3) return;   // 미세 변화는 무시(재귀 방지)
+    _lastW.set(sel, w);
+    clearTimeout(el.__rt);
+    el.__rt = setTimeout(() => { const c = _charts.get(sel); if(c) try{ c.fn.apply(null, c.args); }catch(e){} }, 160);
+  });
+  el.__ro.observe(el);
+}
+
 /* 가로 막대 : [[label, value, percent], ...] */
 function hbar(sel, rows, o){
+  _keep(hbar, arguments);
   o = Object.assign({ color:C_BRAND, unit:'개', labelW:118, showPct:true }, o||{});
-  const w = 520, rowH = 26, h = rows.length * rowH + 26;
+  const w = boxW(sel, 300, 880), rowH = 26, h = rows.length * rowH + 26;
   const max = Math.max(...rows.map(r => r[1])) * 1.18;
   const bw = w - o.labelW - 58;
   const ticks = 5, step = Math.ceil(max / ticks / 10) * 10;
@@ -27,7 +65,7 @@ function hbar(sel, rows, o){
       </rect>
       <text x="${o.labelW+bl+7}" y="${y+11}" font-size="10.5" font-weight="700" fill="#39405A">${r[1]}${o.showPct&&r[2]!=null?` (${r[2]}%)`:''}</text>`;
   }).join('');
-  $(sel).innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;overflow:visible">${g}${bars}</svg>`;
+  $(sel).innerHTML = svgBox(w, h, g + bars);
 }
 
 /* 도넛 : [{n,v,p,c}] */
@@ -44,7 +82,7 @@ function donut(sel, data, centerTop, centerSub){
       <animate attributeName="stroke-dasharray" from="0 999" to="999 0" dur="${0.5+i*0.12}s" fill="freeze"/></path>`;
     acc += ang;
   });
-  $(sel).innerHTML = `<svg viewBox="0 0 ${size} ${size}" style="width:100%;max-width:200px;height:auto">
+  $(sel).innerHTML = `<svg viewBox="0 0 ${size} ${size}" style="width:100%;max-width:${size}px;height:auto">
     <circle cx="${cx}" cy="${cy}" r="${r}" stroke="#F2F3F8" stroke-width="${sw}" fill="none"/>
     ${arcs}
     <text x="${cx}" y="${cy-2}" font-size="11" fill="${C_TXT}" text-anchor="middle">${centerTop||''}</text>
@@ -54,7 +92,8 @@ function donut(sel, data, centerTop, centerSub){
 
 /* 라인(멀티) : {labels, series:[{n,data,c}]} */
 function line(sel, cfg){
-  const w = 560, h = 190, pl = 34, pr = 12, pt = 14, pb = 30;
+  _keep(line, arguments);
+  const w = boxW(sel, 300, 900), h = 190, pl = 34, pr = 12, pt = 14, pb = 30;
   const iw = w-pl-pr, ih = h-pt-pb;
   const all = cfg.series.flatMap(s => s.data);
   const min = Math.max(0, Math.floor(Math.min(...all)/10)*10 - 10), max = Math.ceil(Math.max(...all)/10)*10;
@@ -74,8 +113,8 @@ function line(sel, cfg){
        stroke-dasharray="1200" stroke-dashoffset="1200"><animate attributeName="stroke-dashoffset" to="0" dur="1s" fill="freeze"/></path>${dots}`;
   }).join('');
   const lg = cfg.series.map(s => `<span class="row" style="gap:5px"><i style="width:14px;height:2.5px;border-radius:9px;background:${s.c};display:block"></i><span style="font-size:11px;color:var(--muted)">${s.n}</span></span>`).join('');
-  $(sel).innerHTML = `<div class="row" style="justify-content:flex-end;gap:12px;margin-bottom:2px">${lg}</div>
-    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;overflow:visible">${g}${xs}${ls}</svg>`;
+  $(sel).innerHTML = `<div class="row" style="justify-content:flex-end;gap:12px;margin-bottom:2px">${lg}</div>`
+    + svgBox(w, h, g + xs + ls);
 }
 
 /* 레이더 : axes[], series[{n,data,c,dash}] */
@@ -104,21 +143,24 @@ function radar(sel, axes, series, max){
       (s.dash ? '' : s.data.map((v,i) => { const [x,y]=P(i,v); return `<circle cx="${x}" cy="${y}" r="3" fill="${s.c}"/>`; }).join(''));
   }).join('');
   const lg = series.map(s => `<span class="row" style="gap:5px"><i style="width:14px;height:2.5px;background:${s.c};display:block;border-radius:9px;${s.dash?'opacity:.5':''}"></i><span style="font-size:11px;color:var(--muted)">${s.n}</span></span>`).join('');
-  $(sel).innerHTML = `<svg viewBox="0 0 ${size} ${size+16}" style="width:100%;max-width:290px;height:auto;overflow:visible;margin:0 auto"><g transform="translate(0,0)">${g}${polys}${lbl}</g></svg>
+  $(sel).innerHTML = `<svg viewBox="0 0 ${size} ${size+16}" style="width:100%;max-width:${size}px;height:auto;overflow:visible;display:block;margin:0 auto"><g transform="translate(0,0)">${g}${polys}${lbl}</g></svg>
     <div class="row" style="justify-content:center;gap:14px;margin-top:4px">${lg}</div>`;
 }
 
 /* 히트맵 : rows[], cols[], matrix[][] (0~10) */
 function heatmap(sel, rows, cols, m){
-  const cw = 44, ch = 26, lw = 92, th = 42;
+  _keep(heatmap, arguments);
+  const ch = 26, lw = 92, th = 42;
+  const avail = boxW(sel, 300, 900);
+  const cw = Math.max(30, Math.min(60, (avail - lw) / cols.length));   // 셀 폭을 컨테이너에 맞춤
   const w = lw + cols.length*cw, h = th + rows.length*ch + 18;
   const cells = m.map((r,ri) => r.map((v,ci) =>
     `<rect x="${lw+ci*cw+1}" y="${th+ri*ch+1}" width="${cw-2}" height="${ch-2}" rx="3" fill="${C_BRAND}" fill-opacity="${0.07 + (v/10)*0.85}"><title>${rows[ri]} × ${cols[ci]} : ${v}</title></rect>`
   ).join('')).join('');
   const cl = cols.map((c,i) => `<text x="${lw+i*cw+cw/2}" y="${th-8}" font-size="8.2" fill="${C_TXT}" text-anchor="middle" transform="rotate(-32 ${lw+i*cw+cw/2} ${th-8})">${c}</text>`).join('');
   const rl = rows.map((r,i) => `<text x="${lw-8}" y="${th+i*ch+ch/2+3.5}" font-size="10.5" fill="#39405A" text-anchor="end">${r}</text>`).join('');
-  $(sel).innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;overflow:visible">${cl}${rl}${cells}</svg>
-    <div class="row" style="justify-content:flex-end;gap:6px;margin-top:6px">
+  $(sel).innerHTML = svgBox(w, h, cl + rl + cells)
+    + `<div class="row" style="justify-content:flex-end;gap:6px;margin-top:6px">
       <span class="small muted">연결 적음</span>
       <span style="width:88px;height:8px;border-radius:9px;background:linear-gradient(90deg,rgba(91,75,232,.08),${C_BRAND});display:block"></span>
       <span class="small muted">많음</span>
@@ -150,8 +192,9 @@ function ring(sel, p, opts){
 
 /* 세로 막대(간단) : [[label,value]] */
 function vbar(sel, rows, o){
+  _keep(vbar, arguments);
   o = Object.assign({ color:C_BRAND, h:150 }, o||{});
-  const w = 460, pb = 24, pt = 16, iw = w-20, bw = iw/rows.length;
+  const w = boxW(sel, 280, 860), pb = 24, pt = 16, iw = w-20, bw = iw/rows.length;
   const max = Math.max(...rows.map(r=>r[1])) * 1.2 || 1;
   const bars = rows.map((r,i) => {
     const bh = (r[1]/max)*(o.h-pt-pb), x = 10 + i*bw + bw*0.22, y = o.h - pb - bh;
@@ -160,12 +203,13 @@ function vbar(sel, rows, o){
       <text x="${x+bw*0.28}" y="${y-5}" font-size="10" font-weight="700" fill="#39405A" text-anchor="middle">${r[1]}</text>
       <text x="${x+bw*0.28}" y="${o.h-8}" font-size="10" fill="${C_TXT}" text-anchor="middle">${r[0]}</text>`;
   }).join('');
-  $(sel).innerHTML = `<svg viewBox="0 0 ${w} ${o.h}" style="width:100%;height:auto">${bars}</svg>`;
+  $(sel).innerHTML = svgBox(w, o.h, bars);
 }
 
 /* 점수 비교 바(자가진단 vs 다면진단) : [[label, a, b]] */
 function cmpbar(sel, rows, na, nb){
-  const w = 500, rowH = 30, h = rows.length*rowH + 24, lw = 78, bw = w - lw - 40, max = 5;
+  _keep(cmpbar, arguments);
+  const w = boxW(sel, 300, 860), rowH = 30, h = rows.length*rowH + 24, lw = 78, bw = w - lw - 40, max = 5;
   const bars = rows.map((r,i) => {
     const y = i*rowH + 6;
     const w1 = (r[1]/max)*bw, w2 = (r[2]/max)*bw;
@@ -179,5 +223,5 @@ function cmpbar(sel, rows, na, nb){
   $(sel).innerHTML = `<div class="row" style="justify-content:flex-end;gap:12px;margin-bottom:4px">
       <span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#3B4CE8;display:block"></i><span class="small muted">${na}</span></span>
       <span class="row" style="gap:5px"><i style="width:10px;height:10px;border-radius:3px;background:#A78BFA;display:block"></i><span class="small muted">${nb}</span></span>
-    </div><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:auto;overflow:visible">${bars}${ax}</svg>`;
+    </div>` + svgBox(w, h, bars + ax);
 }
