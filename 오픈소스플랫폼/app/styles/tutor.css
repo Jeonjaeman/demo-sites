@@ -1,0 +1,44 @@
+.tutor-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); min-height: 540px; border: 1px solid var(--line-strong); border-radius: var(--radius-lg); overflow: hidden; background: var(--ink-900); }
+.chat-surface { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line-strong); padding: 22px; }
+.chat-context { display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line-strong); padding-bottom: 15px; color: var(--paper-300); font: 9px var(--font-mono); }
+.assistant-intro,
+.assistant-answer { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: start; }
+.assistant-intro { margin-top: 26px; }
+.assistant-mark { display: grid; width: 36px; height: 36px; place-items: center; background: var(--mint-400); color: var(--ink-950); font: 800 11px var(--font-mono); }
+.assistant-intro p { margin-bottom: 6px; font-weight: 700; }
+.assistant-intro small { color: var(--paper-300); }
+.answer-thread { display: grid; gap: 24px; margin: 34px 0; }
+.user-message { justify-self: end; max-width: 76%; border: 1px solid var(--line-strong); border-radius: 12px 12px 2px 12px; background: var(--ink-800); padding: 13px 15px; }
+.user-message span { display: block; margin-bottom: 5px; color: var(--mint-300); font-size: 9px; }
+.user-message p { margin: 0; }
+.assistant-answer p { margin: 0; color: var(--paper-100); line-height: 1.8; }
+.assistant-answer mark { background: rgb(66 230 164 / 16%); color: var(--mint-300); }
+.answer-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 15px; }
+.answer-tags span { border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 8px; color: var(--paper-300); font-size: 9px; }
+.tutor-form { margin-top: auto; border-top: 1px solid var(--line-strong); padding-top: 19px; }
+.tutor-form label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 700; }
+.tutor-input { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--ink-950); padding: 5px; }
+.tutor-input.invalid { border-color: var(--coral-300); }
+.tutor-input textarea { resize: none; min-width: 0; border: 0; background: transparent; padding: 10px; color: var(--paper-50); line-height: 1.5; outline: 0; }
+.tutor-input textarea:focus-visible { border-radius: 3px; outline: 3px solid var(--mint-300); outline-offset: -2px; }
+.tutor-input button { min-height: 45px; border: 0; border-radius: 5px; background: var(--mint-400); padding: 0 15px; color: var(--ink-950); font-weight: 800; cursor: pointer; }
+.tutor-form > p { margin: 8px 0 0; color: var(--paper-300); font-size: 10px; }
+.tutor-form > p.field-error { color: var(--coral-300); }
+.example-query { display: inline-flex; min-height: 44px; align-items: center; margin-top: 4px; border: 0; background: transparent; padding: 0 2px; color: var(--mint-300); font-size: 10px; cursor: pointer; }
+.source-rail { background: var(--ink-950); padding: 20px; }
+.source-rail-head { display: flex; justify-content: space-between; margin-bottom: 26px; color: var(--paper-300); font: 9px var(--font-mono); }
+.source-rail-head b { color: var(--mint-400); }
+.source-card { border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--ink-850); padding: 16px; }
+.source-card + .source-card { margin-top: 10px; }
+.source-card.selected { border-color: var(--mint-500); }
+.source-card > div { display: flex; justify-content: space-between; color: var(--mint-300); font: 8px var(--font-mono); }
+.source-card h2 { margin: 24px 0 7px; font-size: 16px; }
+.source-card p { color: var(--paper-300); font-size: 10px; }
+.source-card blockquote { margin: 18px 0 0; border-left: 2px solid var(--mint-400); padding-left: 11px; color: var(--paper-100); font-size: 11px; line-height: 1.7; }
+.trace-card { margin-top: 12px; border-top: 1px solid var(--line-strong); padding-top: 15px; }
+.trace-card span { display: block; color: var(--paper-300); font: 8px var(--font-mono); }
+.trace-card code { display: block; margin: 7px 0; color: var(--mint-300); font-size: 10px; overflow-wrap: anywhere; }
+.trace-card p { color: var(--paper-300); font-size: 10px; }
+.source-empty { display: grid; min-height: 330px; place-content: center; text-align: center; }
+.source-empty span { color: var(--mint-400); font: 44px var(--font-mono); }
+.source-empty p { max-width: 190px; color: var(--paper-300); font-size: 11px; line-height: 1.7; }
