@@ -1,0 +1,1098 @@
+/*!
+ * pages.css — index.html 전용 8섹션 스타일 (리뉴얼 v2)
+ * hero-intro(인트로 게이트) · today(마퀴 2레인) · info-client(배너 Swiper) ·
+ * why(핀+아코디언) · fields(카드 캐러셀) · insight(핀+2열 패럴랙스) ·
+ * people(조직 카드) · cta-band
+ *
+ * v2 토큰만 사용(레거시 별칭 의존 금지). CSS-first: 초기 hidden 상태는
+ * motion.js가 gsap.set()으로만 부여하며, 여기서는 무스코프 기본값 = 최종 가시.
+ * 근거: .omc/plans/renewal-unist-spec.md §3 / .omc/handoffs/r1-system.md
+ */
+
+/* ==========================================================================
+   1. #hero-intro — 고정 인트로 히어로
+   ========================================================================== */
+.hero-intro {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--navy-deep);
+  color: #fff;
+  text-align: center;
+}
+
+/* 데스크톱 + motion.js가 gsap.matchMedia로 intro-enabled를 부여했을 때만
+   fixed 오버레이로 전환 — no-js/모바일/GSAP 미로드/reduced-motion은 항상
+   위 static 블록(min-height:100svh)으로 유지된다(CSS-first 폴백). */
+@media (min-width: 1025px) {
+  body.intro-enabled .hero-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    height: 100vh;
+    min-height: 0;
+    transition: height 0.6s var(--ease-glass);
+  }
+  body.intro-enabled:not(.intro) .hero-intro {
+    height: 0;
+  }
+}
+
+.hero-intro__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-intro__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-intro__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 12, 36, 0.55) 0%,
+    rgba(0, 12, 36, 0.35) 40%,
+    rgba(0, 12, 36, 0.75) 100%
+  );
+}
+
+.hero-intro__content {
+  position: relative;
+  z-index: 1;
+  width: min(680px, 92vw);
+  padding-top: calc(var(--notice-bar-h) + var(--header-h));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.hero-intro__eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--accent-light);
+}
+
+.hero-intro__title {
+  font-size: clamp(56px, 12vw, 140px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: #fff;
+  margin-block: var(--sp-2);
+}
+
+.hero-intro__title .ghost-type__char {
+  display: inline-block;
+}
+
+.hero-intro__slogan {
+  font-size: clamp(16px, 2vw, 20px);
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: var(--sp-7);
+}
+
+/* ---- 상담 검색바 ---- */
+.hero-search {
+  width: 100%;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.hero-search__field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: rgba(255, 255, 255, 0.12);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-pill);
+  padding: 8px 8px 8px 26px;
+  box-shadow: 0 18px 25px rgba(0, 0, 0, 0.15), var(--glass-inset);
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
+  backdrop-filter: blur(var(--glass-blur-md));
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+
+.hero-search__field:focus-within {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.hero-search__field:focus-within .hero-search__input {
+  color: var(--navy-deep);
+}
+
+.hero-search__field:focus-within .hero-search__input::placeholder {
+  color: rgba(10, 31, 68, 0.5);
+}
+
+.hero-search__field:focus-within .hero-search__icon {
+  color: var(--navy-deep);
+}
+
+.hero-search__icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hero-search__input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: #fff;
+  font-size: var(--fs-body);
+  padding-block: 11px;
+}
+
+.hero-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.hero-search__submit {
+  flex: 0 0 auto;
+  padding: 13px 26px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--navy-deep);
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+
+.hero-search__submit:hover,
+.hero-search__submit:focus-visible {
+  background: var(--accent-light);
+}
+
+.hero-search__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  opacity: 0.82;
+  transform: translateY(2px);
+  transition: opacity var(--dur-base) var(--ease-standard),
+    transform var(--dur-base) var(--ease-standard);
+}
+
+.hero-search:focus-within .hero-search__chips {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-search__chips-label {
+  font-size: var(--fs-xs);
+  color: rgba(255, 255, 255, 0.55);
+  margin-right: 2px;
+}
+
+.hero-search__chip {
+  padding: 7px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  transition: background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+
+.hero-search__chip:hover,
+.hero-search__chip:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--navy-deep);
+}
+
+.hero-intro__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: var(--sp-6);
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+}
+
+.hero-intro__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-intro__scroll-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  animation: heroScrollLine 2s linear infinite;
+}
+
+@keyframes heroScrollLine {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(100%); }
+  100% { transform: translateY(200%); }
+}
+
+@media (max-width: 640px) {
+  .hero-intro { padding-block: var(--sp-8) var(--sp-9); }
+  .hero-search__field { flex-wrap: wrap; border-radius: var(--radius-lg); padding: var(--sp-4); }
+  .hero-search__submit { width: 100%; }
+}
+
+/* body.intro 상태에서는 #hero-intro(fixed, z-90)가 화면 전체를 덮지만,
+   흐름 밖(position:fixed)으로 빠지므로 바로 다음 섹션(#today, light 테마)이
+   같은 y=0 대역을 차지해 ui.js의 data-header-theme IntersectionObserver가
+   레이스로 light를 덮어쓸 수 있다(회귀 실측 확인). 인트로 동안은 헤더를
+   강제로 dark 테마로 고정 — components.css의 [data-theme="light"] 규칙과
+   동일 특이도(0,2,0)이지만 pages.css가 링크 순서상 나중에 로드되어 우선한다. */
+body.intro .site-header:not(.on) {
+  --hdr-fg: #ffffff;
+  --hdr-fg-mute: rgba(255, 255, 255, 0.86);
+  --hdr-border: rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================================
+   2. #today — JEONGDO Today: 탭 + 마퀴 2레인
+   ========================================================================== */
+.today {
+  position: relative;
+  overflow: hidden;
+  /* 첫 in-flow 섹션 — 히어로가 fixed(흐름 밖)라 인트로 접힘 직후 이 섹션이
+     문서 최상단에 오므로, 고정 스택(알림바+헤더)만큼 상단 여백을 확보해야
+     타이틀이 헤더에 가려지지 않는다 (r1-system.md 125px 규약 + 여유) */
+  padding-top: calc(var(--notice-bar-h) + var(--header-h) + 48px);
+}
+
+.today__ghost {
+  top: var(--sp-6);
+}
+
+.today__container {
+  position: relative;
+  z-index: 1;
+}
+
+.today__tabs {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-7);
+}
+
+.today__tab {
+  padding: 9px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line-soft);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--ink-mute);
+  transition: background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
+}
+
+.today__tab.is-active,
+.today__tab:hover,
+.today__tab:focus-visible {
+  background: var(--navy-deep);
+  border-color: var(--navy-deep);
+  color: #fff;
+}
+
+.today__lane {
+  margin-bottom: var(--sp-6);
+}
+
+.today__lane:last-child {
+  margin-bottom: 0;
+}
+
+.today__lane-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--accent-deep);
+  margin-bottom: var(--sp-3);
+}
+
+.today__marquee-vp {
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 4%,
+    #000 96%,
+    transparent 100%
+  );
+}
+
+.today__track {
+  gap: var(--sp-4);
+  padding-block: var(--sp-1);
+}
+
+.today__card {
+  flex: 0 0 auto;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-5);
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.today__card h4 {
+  font-size: var(--fs-body);
+  line-height: 1.4;
+}
+
+.today__card-date {
+  font-family: var(--font-num);
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+}
+
+.today__status-card {
+  flex: 0 0 auto;
+  width: 340px;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  background: var(--ghost-soft);
+  border-radius: var(--radius-card);
+}
+
+.today__status-name {
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.today__status-name small {
+  font-weight: 400;
+  color: var(--ink-mute);
+  font-size: 11px;
+}
+
+.today__status-region {
+  font-size: var(--fs-xs);
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+.today__status-badge--evidence,
+.today__status-badge--corp,
+.today__status-badge--overseas { background: rgba(18, 60, 120, 0.14); color: var(--primary); }
+.today__status-badge--missing,
+.today__status-badge--wiretap { background: rgba(179, 67, 43, 0.14); color: var(--danger); }
+.today__status-badge--digital,
+.today__status-badge--personal { background: rgba(201, 165, 92, 0.18); color: var(--accent-deep); }
+.today__status-badge--family { background: rgba(47, 111, 82, 0.14); color: var(--success); }
+
+.today__status-tag--received { background: rgba(18, 60, 120, 0.12); color: var(--primary); }
+.today__status-tag--progress { background: rgba(201, 165, 92, 0.18); color: var(--accent-deep); }
+.today__status-tag--done { background: rgba(47, 111, 82, 0.14); color: var(--success); }
+
+@media (max-width: 640px) {
+  .today__status-card { grid-template-columns: auto 1fr; grid-template-rows: auto auto; width: 280px; }
+}
+
+/* ==========================================================================
+   3. #info-client — 배너 Swiper + 퀵링크 카드 4
+   ========================================================================== */
+.info-client__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: var(--sp-7);
+  align-items: stretch;
+}
+
+/* Grid 아이템의 기본 min-width:auto는 내부 콘텐츠(aspect-ratio 박스)의
+   intrinsic 크기를 하한으로 잡아 트랙이 컨테이너보다 커지는 현상(grid
+   blowout)을 일으킨다 — 실측 확인(1.5fr 트랙이 938px 컨테이너에서
+   1602px로 계산됨). min-width:0으로 트랙 크기를 정상화한다. */
+.info-client__banner,
+.info-client__quick {
+  min-width: 0;
+}
+
+/* aspect-ratio는 Swiper가 JS로 width를 관리하는 .swiper-slide가 아니라
+   바깥 .swiper 컨테이너 자체에 부여한다 — 슬라이드에 직접 걸면 Swiper의
+   자체 리사이즈 계산과 순환 참조를 일으켜 높이가 수백만px로 폭주하는
+   버그가 실측 확인되었다(브라우저 검증 로그 참고). */
+.info-client__banner .swiper {
+  aspect-ratio: 3 / 2;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.info-client__slide {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.info-client__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info-client__slide-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: var(--sp-6);
+  background: linear-gradient(0deg, rgba(0, 12, 36, 0.85), transparent);
+  color: #fff;
+}
+
+.info-client__slide-copy p {
+  font-size: clamp(18px, 2.2vw, 24px);
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+
+.info-client__slide-copy a {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+.info-client .swiper-button-prev,
+.info-client .swiper-button-next {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  color: var(--navy-deep);
+}
+
+.info-client .swiper-button-prev::after,
+.info-client .swiper-button-next::after {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.info-client .swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.6;
+}
+
+.info-client .swiper-pagination-bullet-active {
+  opacity: 1;
+  background: var(--accent);
+}
+
+.info-client__quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.info-client__quick-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-5);
+  background: var(--paper);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-soft);
+  transition: transform var(--dur-base) var(--ease-standard),
+    border-color var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-standard);
+}
+
+.info-client__quick-card:hover,
+.info-client__quick-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md);
+}
+
+.info-client__quick-card .ico {
+  font-size: 26px;
+}
+
+.info-client__quick-card h3 {
+  font-size: var(--fs-h4);
+}
+
+.info-client__quick-card p {
+  font-size: var(--fs-sm);
+  color: var(--ink-mute);
+}
+
+@media (max-width: 1024px) {
+  .info-client__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-client__quick {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   4. #why — WHY JEONGDO 핀+글자 리빌+호버 아코디언
+   ========================================================================== */
+.why {
+  /* overflow:hidden을 두지 않는다 — GSAP ScrollTrigger pin은 fixed로 전환된
+     자손을 뷰포트 기준으로 배치하는데, 조상에 overflow:hidden이 있으면
+     그 자손이 클리핑되어 핀 구간에서 화면이 비어 보이는 버그가 실측
+     확인되었다(브라우저 검증 로그 참고 — GSAP 공식 권고사항이기도 하다). */
+  position: relative;
+}
+
+.why__pin {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: var(--sp-9);
+}
+
+.why__ghost {
+  top: 8%;
+  z-index: 0;
+  /* 섹션(.why) 자체에는 overflow:hidden을 둘 수 없다(GSAP pin 자손이 조상의
+     overflow:hidden에 클리핑되어 화면이 비는 문제 — 위 .why 규칙 주석 참고).
+     대신 워터마크 자신에게만 가로 클리핑을 걸어 뷰포트 밖으로 새는 가로
+     스크롤을 방지한다(핀 대상의 조상이 아니므로 안전). */
+  /* 100vw는 스크롤바 폭을 포함해 실제 가시영역보다 커질 수 있어(브라우저별
+     편차) 대신 위치 기준 조상(.why__pin/.insight__pin, position:relative)의
+     실측 폭을 따르는 100%를 사용한다 — 실측으로 100vw의 가로 오버플로를
+     확인·수정. */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.why__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.why__accordion {
+  margin-top: var(--sp-8);
+}
+
+.why__accordion-track {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: stretch;
+}
+
+.why__card {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 420px;
+  padding: var(--sp-6) var(--sp-5);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex-grow 0.4s linear, border-color var(--dur-base) var(--ease-standard),
+    background var(--dur-base) var(--ease-standard);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* 카드 배경 사진 — 네이비 그라디언트로 하단 텍스트 가독 확보, hover 시 선명 */
+.why__card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.45;
+  transition: opacity 0.4s var(--ease-standard), transform 0.6s var(--ease-standard);
+}
+
+.why__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 12, 36, 0.2) 0%,
+    rgba(0, 12, 36, 0.55) 55%,
+    rgba(0, 12, 36, 0.92) 100%
+  );
+}
+
+.why__card:hover::before,
+.why__card:focus-within::before {
+  opacity: 0.62;
+  transform: scale(1.04);
+}
+
+.why__card--law::before { background-image: url("../../img/mission-03.png"); }
+.why__card--equip::before { background-image: url("../../img/equipment.png"); }
+.why__card--security::before { background-image: url("../../img/field-05.png"); }
+.why__card--record::before { background-image: url("../../img/office-interior.png"); }
+
+.why__card-face {
+  position: relative;
+  z-index: 1;
+}
+
+.why__card-icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(201, 165, 92, 0.16);
+  color: var(--accent);
+  margin-bottom: var(--sp-5);
+}
+
+.why__card-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.why__card h3 {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: #fff;
+  margin-bottom: var(--sp-1);
+}
+
+.why__card-tagline {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.why__card-detail {
+  position: relative;
+  z-index: 1;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s linear, opacity 0.3s ease;
+}
+
+.why__card-detail p {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: var(--sp-5);
+  line-height: 1.6;
+}
+
+.why__card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+}
+
+.why__card-tags span {
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.why__card-count {
+  display: block;
+  margin-top: var(--sp-5);
+  font-size: var(--fs-h4);
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+.why__card:hover,
+.why__card:focus-within,
+.why__card:focus-visible {
+  flex-grow: 2.4;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.why__card:hover .why__card-detail,
+.why__card:focus-within .why__card-detail {
+  max-height: 260px;
+  opacity: 1;
+}
+
+/* ≤1024: 핀 해제, Swiper spv1 강등(motion.js가 matchMedia로 초기화) */
+@media (max-width: 1024px) {
+  .why__pin {
+    min-height: 0;
+  }
+  .why__accordion-track {
+    display: flex;
+  }
+  .why__card {
+    flex: 0 0 88%;
+    height: auto;
+    min-height: 320px;
+    cursor: default;
+  }
+  .why__card:hover,
+  .why__card:focus-within {
+    flex-grow: 0;
+  }
+  .why__card .why__card-detail {
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+  }
+}
+
+/* ==========================================================================
+   5. #fields — Case Fields 카드 캐러셀
+   ========================================================================== */
+.fields {
+  overflow: hidden;
+}
+
+.fields__swiper {
+  padding: var(--sp-4) var(--container-pad) var(--sp-8);
+}
+
+.fields__swiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.fields__card {
+  /* width/height는 고정값으로 지정한다 — aspect-ratio를 Swiper가 JS로
+     너비를 관리하는 .swiper-slide에 직접 걸면 리사이즈 계산과 순환
+     참조를 일으켜 높이가 폭주하는 버그가 실측 확인되었다(info-client
+     배너에서 동일 이슈 재현·수정, pages.css 상단 주석 참고). */
+  position: relative;
+  width: min(300px, 78vw);
+  height: min(375px, 97.5vw);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: block;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-base) var(--ease-standard);
+}
+
+.fields__card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-standard);
+}
+
+.fields__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 12, 36, 0.88) 0%, rgba(0, 12, 36, 0.15) 55%, transparent 75%);
+}
+
+.fields__card:hover img {
+  transform: scale(1.06);
+}
+
+.fields__card:hover {
+  transform: translateY(-6px);
+}
+
+.fields__card-body {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--sp-5);
+  color: #fff;
+}
+
+.fields__label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--accent-light);
+  margin-bottom: var(--sp-2);
+}
+
+.fields__card-body h3 {
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.fields__pagination {
+  position: relative;
+  margin-top: var(--sp-3);
+}
+
+.fields__pagination .swiper-pagination-bullet {
+  background: var(--line-soft);
+  opacity: 1;
+}
+
+.fields__pagination .swiper-pagination-bullet-active {
+  background: var(--accent);
+}
+
+/* ==========================================================================
+   6. #insight — JEONGDO Insight 핀+2열 패럴랙스
+   ========================================================================== */
+.insight {
+  /* .why와 동일한 이유로 overflow:hidden을 두지 않는다(GSAP pin 자손 클리핑 방지). */
+  position: relative;
+}
+
+.insight__pin {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-block: var(--sp-9);
+}
+
+.insight__bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.insight__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 12, 36, 0.7), rgba(0, 12, 36, 0.92));
+  z-index: 0;
+}
+
+.insight__ghost {
+  z-index: 1;
+  /* 100vw는 스크롤바 폭을 포함해 실제 가시영역보다 커질 수 있어(브라우저별
+     편차) 대신 위치 기준 조상(.why__pin/.insight__pin, position:relative)의
+     실측 폭을 따르는 100%를 사용한다 — 실측으로 100vw의 가로 오버플로를
+     확인·수정. */
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.insight__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.insight__feed {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-7);
+  max-height: 60vh;
+  overflow: hidden;
+}
+
+.insight__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  min-width: 0;
+}
+
+.insight__col--proof {
+  margin-top: var(--sp-9);
+}
+
+.insight__col-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--accent-light);
+  margin-bottom: var(--sp-1);
+}
+
+.insight__card {
+  padding: var(--sp-5);
+}
+
+.insight__card h4 {
+  font-size: var(--fs-h4);
+  margin-block: var(--sp-2);
+  color: #fff;
+}
+
+.insight__card p {
+  font-size: var(--fs-sm);
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+}
+
+.insight__card-more {
+  display: inline-block;
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+@media (max-width: 1024px) {
+  .insight__pin {
+    min-height: 0;
+    padding-block: var(--sp-8);
+  }
+  .insight__feed {
+    grid-template-columns: 1fr;
+    max-height: none;
+    overflow: visible;
+  }
+  .insight__col--proof {
+    margin-top: 0;
+  }
+}
+
+/* ==========================================================================
+   7. #people — People of JEONGDO 조직 카드 + 현장 컷
+   ========================================================================== */
+.people__notice {
+  font-size: var(--fs-xs);
+  margin-top: calc(var(--sp-6) * -1);
+  margin-bottom: var(--sp-7);
+}
+
+.people__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-8);
+}
+
+.people__card {
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: var(--ghost-soft);
+  box-shadow: var(--shadow-sm);
+}
+
+.people__card img {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+.people__card-body {
+  padding: var(--sp-3) var(--sp-3) var(--sp-4);
+}
+
+.people__card-body h3 {
+  font-size: var(--fs-sm);
+  margin-top: var(--sp-1);
+}
+
+.people__mission {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-4);
+}
+
+.people__mission-figure img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 1024px) {
+  .people__grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .people__grid { grid-template-columns: repeat(2, 1fr); }
+  .people__mission { grid-template-columns: 1fr; }
+}
+
+/* ==========================================================================
+   8. #cta-band — 푸터 위 상담 CTA 밴드
+   ========================================================================== */
+.cta-band__inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.cta-band__slogan {
+  font-size: clamp(24px, 3.6vw, 40px);
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.cta-band__desc {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.cta-band__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-top: var(--sp-3);
+}
+
+@media (max-width: 640px) {
+  .cta-band__actions { flex-direction: column; width: 100%; }
+  .cta-band__actions .btn { width: 100%; }
+}

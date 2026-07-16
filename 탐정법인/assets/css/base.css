@@ -1,0 +1,700 @@
+/*!
+ * base.css — 정도민간조사(JEONGDO Private Investigation) 데모사이트 · 리뉴얼 v2
+ * 토큰(v2: 딥네이비/네이비/프라이머리/골드 액센트/글래스) · 리셋 · 타이포그래피
+ * · 컨테이너/그리드 유틸 · 고스트 워터마크 유틸 · 섹션 라이트/다크 테마 ·
+ * · 섹션 타이틀 장식 · reduced-motion
+ * 외부 런타임 의존 0 — 폰트는 assets/fonts/ 로컬 참조만 사용.
+ * 근거: .omc/plans/renewal-unist-spec.md §1 / .omc/research/unist-source.md a절
+ */
+
+/* ==========================================================================
+   1. 디자인 토큰 v2
+   ========================================================================== */
+:root {
+  /* ---- v2 핵심 팔레트 (스펙 §1) ---- */
+  --navy-deep: #000c24;    /* 다크 섹션·푸터·헤더 dark 테마 배경 */
+  --navy: #0a1f44;         /* 보조 다크 톤(카드·보더) */
+  --primary: #123c78;      /* 신뢰 네이비(링크·강조 텍스트) */
+  --accent: #c9a55c;       /* 골드 액센트 — 전체의 ~5%만 사용 */
+  --accent-light: #e4d2a6; /* 골드 hover/밝은 변형 */
+  --accent-deep: #9c7a3d;  /* 골드 눌림/보더 변형 */
+  --paper: #ffffff;        /* 화이트 배경(~70%) */
+  --ghost: #cfd8e5;        /* 고스트 그레이 — 대형 배경 타이포 */
+  --ghost-soft: #eef1f6;   /* 고스트 그레이 옅은 변형(카드 배경 등) */
+
+  /* ---- 글래스모피즘 공식 (근거: unist-source.md a-5 / 재구현 가이드 §7) ----
+     바깥 그림자(부유감) + inset 흰 광택(유리 두께감) + backdrop-filter blur.
+     라이트 배경 위/다크 배경 위 두 변형을 분리 제공. */
+  --glass-bg-light: rgba(255, 255, 255, 0.55);
+  --glass-bg-soft: rgba(255, 255, 255, 0.14);
+  --glass-bg-faint: rgba(255, 255, 255, 0.03);
+  --glass-bg-dark: rgba(0, 12, 36, 0.42);
+  --glass-border: rgba(255, 255, 255, 0.28);
+  --glass-border-soft: rgba(255, 255, 255, 0.16);
+  --glass-blur-sm: 3.5px;
+  --glass-blur-md: 7px;
+  --glass-blur-lg: 50px;
+  --glass-blur-mega: 80px;
+  --glass-shadow: 0 20px 48px rgba(0, 12, 36, 0.22);
+  --glass-shadow-lg: 0 30px 80px rgba(0, 12, 36, 0.28);
+  --glass-inset: inset 0 0 20px rgba(255, 255, 255, 0.14);
+  --glass-inset-lg: inset 0 0 60px rgba(255, 255, 255, 0.18);
+
+  /* ---- 레거시 별칭 (pages.css·subpages.css·admin.css가 v2로 전환되기 전까지
+     기존 토큰명을 참조해도 새 팔레트로 렌더되도록 하는 호환 브리지.
+     신규 코드는 위 v2 원본 토큰을 직접 사용할 것 — 이 별칭은 과도기용.) ---- */
+  --ink: var(--navy-deep);
+  --bronze: var(--accent);
+  --gold: var(--accent-light);
+  --trust: var(--primary);
+  --line: rgba(207, 216, 229, 0.4);
+  --white: var(--paper);
+  --ink-soft: var(--navy);
+  --ink-mute: #5b6472;
+  --line-soft: #dfe4ec;
+  --surface: var(--paper);
+  --surface-alt: var(--ghost-soft);
+  --danger: #b3432b;
+  --success: #2f6f52;
+
+  /* 그림자 */
+  --shadow-sm: 0 2px 8px rgba(0, 12, 36, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 12, 36, 0.12);
+  --shadow-lg: 0 20px 48px rgba(0, 12, 36, 0.22);
+
+  /* 라운드 — 스펙 §1: pill 54px / card 15px / nav(원형·유리바) 50px */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 20px;
+  --radius-pill: 54px;
+  --radius-card: 15px;
+  --radius-nav: 50px;
+
+  /* 간격 스케일 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+
+  /* 컨테이너 */
+  --container-w: 1200px;
+  --container-w-wide: 1440px;
+  --container-pad: clamp(20px, 4vw, 40px);
+
+  /* ---- 타이포 v2 ----
+     본문: Pretendard 16px/160%. 디스플레이(영문 워터마크·섹션 타이틀): Prompt.
+     보조 숫자: Montserrat. */
+  --font-body: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic",
+    "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
+  --font-num: "Montserrat", "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Malgun Gothic", sans-serif;
+  --font-display: "Prompt", "Montserrat", -apple-system, BlinkMacSystemFont,
+    "Malgun Gothic", sans-serif;
+
+  --fs-h1: clamp(32px, 5vw, 64px);
+  --fs-h2: clamp(26px, 3.6vw, 44px);
+  --fs-h3: clamp(20px, 2.6vw, 30px);
+  --fs-h4: clamp(18px, 2vw, 22px);
+  --fs-body: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 12px;
+  --fs-section-title: 28px;   /* Prompt 700 uppercase, 모바일 24px */
+  --fs-section-title-mobile: 24px;
+
+  --lh-tight: 1.25;
+  --lh-normal: 1.6;
+  --lh-loose: 1.85;
+
+  /* 전환 */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-glass: cubic-bezier(0.6, 0, 0.2, 1);
+  --dur-fast: 0.18s;
+  --dur-base: 0.32s;
+  --dur-slow: 0.6s;
+
+  /* z-index 스케일
+     주의: .mobile-nav(오버레이)는 .site-header보다 낮아야 한다 — 오버레이가
+     열려도 헤더(및 그 안의 햄버거 토글 버튼)가 항상 위에 남아 클릭 가능해야
+     함(자식 z-index는 부모 스태킹 컨텍스트를 벗어나지 못함).
+     v2 추가: 메가메뉴/컨설트·사이트맵 오버레이는 헤더 자식으로 얹히므로
+     헤더보다 낮은 값이면 되지만, 배경 딤(.scrim)은 헤더 바로 아래여야 한다. */
+  --z-quickmenu: 400;
+  --z-overlay: 450;
+  --z-header: 500;
+  --z-megamenu: 490;
+  --z-scrim: 480;
+  --z-popup: 800;
+  --z-toast: 900;
+
+  /* 헤더/알림바 높이(플레이스홀더 예약용) — 스펙 §4: 투명 fixed 85px */
+  --notice-bar-h: 0px; /* 데모 고지 바 제거 — 고정 스택 오프셋 전부 자동 보정 */
+  --header-h: 85px;
+  --footer-min-h: 460px;
+  --quickmenu-w: 64px;
+
+  /* 브레이크포인트 참고값(미디어쿼리는 리터럴 사용, 문서화 목적) — 1025px 메인 분기 / 768px */
+  --bp-desktop: 1025px;
+  --bp-mobile: 768px;
+}
+
+/* ==========================================================================
+   2. 리셋
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Lenis가 로드되면 html에 lenis 클래스가 붙고 자체 관성 스크롤을 담당 —
+   네이티브 smooth-scroll과 중복 적용되지 않도록 여기서 끈다. */
+html.lenis {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  color: var(--navy-deep);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* 메가메뉴/오버레이/인트로 등 스크롤 잠금 시 공통 사용 */
+body.scroll-locked {
+  overflow: hidden;
+}
+
+/* v2 아키텍처 노트 — #main에는 의도적으로 전역 padding-top을 주지 않는다.
+   헤더/알림바는 fixed 오버레이(문서 흐름 밖, 흐름 높이 0)이며, 모든 페이지의
+   "첫 섹션"(index.html 인트로 히어로 또는 서브페이지 공통 서브 히어로,
+   스펙 §3·§5)이 뷰포트 최상단(y=0)까지 풀블리드로 확장되어 헤더가 그 위에
+   투명하게 뜨는 디자인이 전제이기 때문 — 여기서 여백을 주면 모든 페이지
+   상단에 흰 배경이 비어 보이는 틈이 생겨 "투명 오버레이" 효과가 깨진다.
+   따라서 각 페이지(서브페이지 포함)의 첫 섹션 소유자는 실제 타이틀 등
+   내부 콘텐츠에 `padding-top: calc(var(--notice-bar-h) + var(--header-h))`
+   (= 40+85 = 125px)를 직접 부여해 헤더에 가려지지 않게 해야 한다 —
+   자세한 내용은 .omc/handoffs/r1-system.md 참고. */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 700;
+  line-height: var(--lh-tight);
+  letter-spacing: -0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+img, svg, video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+/* 접근성: 키보드 포커스 표시는 유지, 마우스 클릭 시에만 숨김 */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   3. 로컬 웹폰트 (@font-face) — font-display:swap, 상대경로 참조
+   ========================================================================== */
+@font-face {
+  font-family: "Pretendard";
+  src: url("../fonts/pretendard-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("../fonts/pretendard-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat";
+  src: url("../fonts/montserrat-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Prompt — 영문 디스플레이·고스트 워터마크 전용(라틴 서브셋, OFL).
+   본문에는 절대 사용하지 않음 — uppercase 영문 타이포 전용. */
+@font-face {
+  font-family: "Prompt";
+  src: url("../fonts/prompt-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122;
+}
+
+@font-face {
+  font-family: "Prompt";
+  src: url("../fonts/prompt-900.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+2000-206F, U+2122;
+}
+
+/* 숫자·영문 강조 요소는 Montserrat 우선 */
+.font-num,
+.stat-num,
+.js-counter {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 영문 디스플레이(Prompt) 지정 유틸 */
+.font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   4. 컨테이너 · 그리드 유틸
+   ========================================================================== */
+.container {
+  width: 100%;
+  max-width: var(--container-w);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+.container--wide {
+  max-width: var(--container-w-wide);
+}
+
+.container--narrow {
+  max-width: 860px;
+}
+
+.section {
+  position: relative;
+  padding-block: var(--sp-9);
+}
+
+.section--tight {
+  padding-block: var(--sp-7);
+}
+
+.section--alt {
+  background: var(--surface-alt);
+}
+
+.grid {
+  display: grid;
+  gap: var(--sp-5);
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-6 { grid-template-columns: repeat(6, 1fr); }
+
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-6 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4, .grid-6 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: 8px;
+  top: -48px;
+  background: var(--navy-deep);
+  color: var(--paper);
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-sm);
+  z-index: var(--z-popup);
+  transition: top var(--dur-fast) var(--ease-standard);
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+/* ==========================================================================
+   5. 섹션 라이트/다크 테마 (스펙 §1: 화이트 → 라이트 → 다크(핀) → 화이트 →
+      다크 → 네이비 푸터 리듬). data-header-theme 속성과 짝을 이룬다 —
+      섹션에 data-header-theme="light|dark"를 지정하면 ui.js가 IntersectionObserver로
+      감지해 헤더 텍스트 테마를 스왑한다(§4 전역 컴포넌트, r1-system.md 핸드오프 참고).
+   ========================================================================== */
+.section--light {
+  background: var(--paper);
+  color: var(--navy-deep);
+}
+
+.section--dark {
+  background: var(--navy-deep);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.section--dark h1,
+.section--dark h2,
+.section--dark h3,
+.section--dark h4 {
+  color: var(--paper);
+}
+
+.section--navy {
+  background: var(--navy);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+/* ==========================================================================
+   6. 고스트 워터마크 유틸리티 — 시그니처 타이포 장치
+      Prompt 900 uppercase, 반응형 clamp(80px~200px), opacity .05.
+      섹션 배경·메가메뉴·상담/사이트맵 오버레이·푸터 전역 반복 사용.
+      스크린리더 노이즈 방지를 위해 aria-hidden="true" 부여를 마크업에서 강제.
+   ========================================================================== */
+.ghost-type {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none; /* 순수 장식 — 버튼·링크 클릭을 가로채지 않도록 */
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.82;
+  letter-spacing: -0.01em;
+  color: var(--ghost);
+  opacity: 0.05;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  font-size: clamp(80px, 12vw, 200px);
+}
+
+/* 다크 섹션 위에서는 워터마크를 화이트 계열로 */
+.section--dark .ghost-type,
+.section--navy .ghost-type {
+  color: #ffffff;
+  opacity: 0.06;
+}
+
+.ghost-type--lg { font-size: clamp(100px, 14vw, 200px); }
+.ghost-type--md { font-size: clamp(80px, 10vw, 150px); }
+.ghost-type--sm { font-size: clamp(60px, 8vw, 140px); }
+
+.ghost-type--center {
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.ghost-type--br {
+  right: var(--sp-6);
+  bottom: var(--sp-4);
+}
+
+.ghost-type--bl {
+  left: var(--sp-6);
+  bottom: var(--sp-4);
+}
+
+/* 글자 단위 스크럽 리빌(motion.js 소관) 대상 — 초기 상태는 무스코프 가시,
+   .js 스코프 안에서만 GSAP가 인라인 style로 opacity/blur를 제어한다.
+   CSS에 opacity:0 류를 여기 두지 않는 것이 CSS-first 원칙(§14)이다. */
+.ghost-type__char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+/* ==========================================================================
+   7. 섹션 타이틀 장식 심볼 패턴 v2 — Prompt 700 uppercase 28px + 하단 바
+   ========================================================================== */
+.section-title {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+
+.section-title .eyebrow {
+  font-family: var(--font-num);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.section-title h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-section-title);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: inherit;
+}
+
+@media (max-width: 768px) {
+  .section-title h2 {
+    font-size: var(--fs-section-title-mobile);
+  }
+}
+
+.section-title::after {
+  content: "";
+  display: block;
+  width: 56px;
+  height: 3px;
+  margin-top: var(--sp-2);
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: var(--radius-pill);
+}
+
+.section-title--center {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+
+.section-title--center::after {
+  margin-inline: auto;
+}
+
+/* 워터마크형 대형 텍스트 심볼(장식용, 스크린리더 제외) — 레거시(작은 규모),
+   대형 시그니처 워터마크는 위 .ghost-type을 사용할 것. */
+.section-title .deco-mark {
+  position: absolute;
+  right: -8px;
+  top: -28px;
+  font-family: var(--font-num);
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--accent);
+  opacity: 0.12;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ==========================================================================
+   8. 공통 유틸
+   ========================================================================== */
+.text-bronze,
+.text-accent { color: var(--accent); }
+.text-gold { color: var(--accent-light); }
+.text-trust,
+.text-primary { color: var(--primary); }
+.text-mute { color: var(--ink-mute); }
+.text-center { text-align: center; }
+
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+
+.aspect-16x9 { aspect-ratio: 16 / 9; }
+.aspect-4x5 { aspect-ratio: 4 / 5; }
+.aspect-1x1 { aspect-ratio: 1 / 1; }
+.aspect-16x10 { aspect-ratio: 16 / 10; }
+
+img[width][height] {
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* ==========================================================================
+   9. reveal.js 초기 hidden 상태 (CSS-first, `.js` 스코프 전용)
+   --------------------------------------------------------------------------
+   기본(무클래스) 상태 = 최종 가시 상태. JS가 정상 로드되어 <html> 에 `js`
+   클래스가 붙은 경우에만 초기 hidden을 적용한다. 이렇게 하면 JS/GSAP 로드
+   실패·차단 시에도 콘텐츠가 항상 보인다(opacity:0 무스코프 트랩 금지).
+   ========================================================================== */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--dur-slow) var(--ease-standard),
+    transform var(--dur-slow) var(--ease-standard);
+  transition-delay: var(--reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.js .reveal--fade {
+  transform: none;
+}
+
+.js .reveal--scale {
+  transform: scale(0.94);
+}
+
+.js .reveal--scale.is-visible {
+  transform: scale(1);
+}
+
+/* 세로 무한 롤링 트랙 */
+.roll-track {
+  display: flex;
+  flex-direction: column;
+}
+
+.roll-viewport {
+  overflow: hidden;
+}
+
+/* 가로 무한 마퀴 트랙(v2 신규 — JEONGDO Today 레인 등에서 사용) */
+.marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* 드래그/스와이프 카드 캐러셀 */
+.carousel {
+  display: flex;
+  gap: var(--sp-5);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  cursor: grab;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.carousel > * {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
+}
+
+/* 앵커 스무스 스크롤 액티브 섹션 하이라이트는 .gnb__link[aria-current] 재사용 */
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ==========================================================================
+   10. prefers-reduced-motion 전역 처리
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,70 @@
+GSAP (GreenSock Animation Platform) — Standard License
+========================================================
+
+Files in this directory (gsap.min.js, ScrollTrigger.min.js, ScrollToPlugin.min.js)
+are bundled locally for this offline demo site under the GSAP "No Charge"
+Standard License provided by Webflow/GreenSock.
+
+Copyright 2008-2024, GreenSock. All rights reserved.
+
+This work is licensed under the terms of the GreenSock standard "No Charge"
+license, which permits use of the included GSAP core, ScrollTrigger and
+ScrollToPlugin in this project (a free, non-commercial portfolio/demo build
+with no more than four users) without a paid Club GSAP membership.
+
+Full license terms: https://gsap.com/standard-license
+GSAP homepage: https://gsap.com
+
+Source (fetched, unmodified minified builds, version 3.12.5 — matched across
+all three files):
+- https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js
+- https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js
+- https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js
+
+No other GSAP plugins are bundled or used in this project.
+
+Attribution: "Animations powered by GSAP (https://gsap.com)."
+
+
+Lenis — MIT License
+========================================================
+
+File: lenis.min.js (smooth-scroll library, UMD build exposing `globalThis.Lenis`)
+
+Copyright (c) Darkroom Engineering
+https://github.com/darkroomengineering/lenis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, subject to the standard MIT license terms
+(https://opensource.org/licenses/MIT).
+
+Source (fetched, unmodified minified build, version 1.3.13):
+- https://cdn.jsdelivr.net/npm/lenis@1.3.13/dist/lenis.min.js
+
+
+Swiper — MIT License
+========================================================
+
+Files: swiper-bundle.min.js, swiper-bundle.min.css (carousel/slider library)
+
+Copyright (c) 2014-2025 Vladimir Kharlampidi
+https://swiperjs.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, subject to the standard MIT
+license terms (https://opensource.org/licenses/MIT).
+
+Source (fetched, unmodified minified build, version 11.2.10):
+- https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js
+- https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css
+
+
+Notes
+========================================================
+All vendor files above are used unmodified, hosted locally under
+assets/vendor/, and loaded with no external network requests at runtime
+(offline-first demo site principle, see .omc/plans/renewal-unist-spec.md §2).

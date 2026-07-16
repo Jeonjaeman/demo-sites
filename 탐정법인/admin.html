@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>관리자 대시보드 — 정도민간조사</title>
+<meta name="description" content="정도민간조사 관리자 대시보드 목업. 상담 접수 현황과 콘텐츠를 관리합니다." />
+<meta name="robots" content="noindex, nofollow" />
+
+<link rel="stylesheet" href="assets/css/base.css" />
+<link rel="stylesheet" href="assets/css/components.css" />
+<link rel="stylesheet" href="assets/css/admin.css" />
+</head>
+<body data-page="admin">
+
+<div class="admin-shell">
+  <aside class="admin-sidebar" id="admin-sidebar">
+    <div class="admin-sidebar__brand">
+      정도민간조사
+      <small>ADMIN CONSOLE</small>
+    </div>
+    <nav class="admin-nav" aria-label="관리자 메뉴">
+      <button type="button" class="admin-nav__link is-active" data-admin-section="dashboard">대시보드</button>
+      <button type="button" class="admin-nav__link" data-admin-section="inquiries">상담관리</button>
+      <button type="button" class="admin-nav__link" data-admin-section="content">콘텐츠 관리</button>
+      <button type="button" class="admin-nav__link" data-admin-section="settings" disabled aria-disabled="true">
+        설정
+      </button>
+    </nav>
+    <a class="admin-sidebar__back" href="index.html">&larr; 사이트로 돌아가기</a>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button type="button" class="admin-topbar__toggle" id="admin-sidebar-toggle" aria-label="사이드바 열기/닫기" aria-expanded="false">&#9776;</button>
+      <h1>관리자 대시보드</h1>
+    </header>
+
+    <div class="admin-content">
+
+      <!-- ============================== 대시보드 ============================== -->
+      <section class="admin-panel" data-admin-panel="dashboard">
+        <h2>상담 현황 요약</h2>
+        <div class="admin-stats">
+          <div class="admin-stat-card">
+            <p class="admin-stat-card__label">전체 상담</p>
+            <p class="admin-stat-card__value" id="stat-total">0<small>건</small></p>
+          </div>
+          <div class="admin-stat-card">
+            <p class="admin-stat-card__label">접수 대기</p>
+            <p class="admin-stat-card__value" id="stat-pending">0<small>건</small></p>
+          </div>
+          <div class="admin-stat-card">
+            <p class="admin-stat-card__label">상담중</p>
+            <p class="admin-stat-card__value" id="stat-progress">0<small>건</small></p>
+          </div>
+          <div class="admin-stat-card">
+            <p class="admin-stat-card__label">완료</p>
+            <p class="admin-stat-card__value" id="stat-done">0<small>건</small></p>
+          </div>
+        </div>
+        <p class="text-mute" style="font-size: var(--fs-sm);">
+          시드 데이터 8건과 방문자가 <a href="contact.html">상담신청</a> 페이지에서 제출한 내역(이 브라우저의 localStorage)이
+          자동으로 병합되어 표시됩니다. 아래 &lsquo;상담관리&rsquo; 메뉴에서 전체 목록을 확인할 수 있습니다.
+        </p>
+      </section>
+
+      <!-- ============================== 상담관리 ============================== -->
+      <section class="admin-panel" data-admin-panel="inquiries" hidden>
+        <h2>상담관리</h2>
+        <div class="admin-toolbar">
+          <input type="search" class="admin-search" id="admin-search" placeholder="이름·연락처·제목 검색" aria-label="상담 검색" />
+          <span class="admin-count" id="admin-count"></span>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th scope="col">접수 ID</th>
+                <th scope="col">이름</th>
+                <th scope="col">연락처</th>
+                <th scope="col">제목</th>
+                <th scope="col">접수일</th>
+                <th scope="col">상태</th>
+              </tr>
+            </thead>
+            <tbody id="admin-table-body"></tbody>
+          </table>
+        </div>
+        <p class="text-mute" style="font-size: var(--fs-xs); margin-top: var(--sp-3);">
+          행을 클릭하면 상세 내용을 확인할 수 있습니다. 이름·연락처는 마스킹되어 표시됩니다(보안 정책).
+        </p>
+      </section>
+
+      <!-- ============================== 콘텐츠 관리 ============================== -->
+      <section class="admin-panel" data-admin-panel="content" hidden>
+        <h2>이미지 교체 목업</h2>
+        <div class="admin-image-grid">
+          <div class="admin-image-card">
+            <div class="admin-image-card__thumb"><img src="img/hero-mood.png" width="2752" height="1536" alt="메인 히어로 배경 썸네일" /></div>
+            <div class="admin-image-card__body">
+              <p>메인 히어로 배경</p>
+              <label class="btn btn--ghost admin-image-card__replace">교체<input type="file" accept="image/*" hidden data-image-replace /></label>
+            </div>
+          </div>
+          <div class="admin-image-card">
+            <div class="admin-image-card__thumb"><img src="img/ceo-portrait.png" width="1536" height="2048" alt="대표 인사말 이미지 썸네일" /></div>
+            <div class="admin-image-card__body">
+              <p>대표 인사말 사진</p>
+              <label class="btn btn--ghost admin-image-card__replace">교체<input type="file" accept="image/*" hidden data-image-replace /></label>
+            </div>
+          </div>
+          <div class="admin-image-card">
+            <div class="admin-image-card__thumb"><img src="img/office-interior.png" width="2752" height="1536" alt="오피스 소개 이미지 썸네일" /></div>
+            <div class="admin-image-card__body">
+              <p>오피스 소개 이미지</p>
+              <label class="btn btn--ghost admin-image-card__replace">교체<input type="file" accept="image/*" hidden data-image-replace /></label>
+            </div>
+          </div>
+          <div class="admin-image-card">
+            <div class="admin-image-card__thumb"><img src="img/equipment.png" width="2528" height="1696" alt="보유 장비 이미지 썸네일" /></div>
+            <div class="admin-image-card__body">
+              <p>보유 장비 이미지</p>
+              <label class="btn btn--ghost admin-image-card__replace">교체<input type="file" accept="image/*" hidden data-image-replace /></label>
+            </div>
+          </div>
+        </div>
+
+        <h2>텍스트 수정 목업</h2>
+        <div class="admin-text-edit">
+          <label>메인 히어로 헤드라인
+            <input type="text" value="진실은 반드시 흔적을 남깁니다" />
+          </label>
+          <label>CTA 슬로건
+            <input type="text" value="찾아드립니다 · 밝혀드립니다 · 지켜드립니다" />
+          </label>
+          <label>서브 카피
+            <input type="text" value="정도민간조사가 함께합니다" />
+          </label>
+          <button type="button" class="btn btn--solid" id="admin-save-text" style="align-self:flex-start;">저장</button>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<div class="admin-detail-backdrop" id="admin-detail-backdrop" hidden></div>
+<aside class="admin-detail" id="admin-detail" hidden aria-label="상담 상세 정보"></aside>
+
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
