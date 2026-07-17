@@ -28,9 +28,9 @@
 
   .hero{padding:70px 0 40px;text-align:center}
   .hero .ey{font-family:"Montserrat";font-weight:800;letter-spacing:.3em;color:var(--cyan);font-size:13px}
-  .hero h1{font-size:clamp(34px,6vw,64px);margin:16px 0 14px;letter-spacing:-.02em;line-height:1.05}
+  .hero h1{font-size:clamp(34px,6vw,64px);margin:16px 0 14px;letter-spacing:-.02em;line-height:1.05;word-break:keep-all;overflow-wrap:break-word}
   .hero h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto;line-height:1.7}
+  .hero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto;line-height:1.7;word-break:keep-all;overflow-wrap:break-word}
   .count{display:inline-flex;gap:8px;margin-top:22px;color:var(--muted);font-size:14px;align-items:center}
   .count b{color:#fff}
 
@@ -41,10 +41,10 @@
   .card:hover{transform:translateY(-7px);border-color:rgba(54,197,240,.4);box-shadow:0 30px 60px -30px rgba(31,114,230,.6)}
   .card .thumb{height:148px;display:grid;place-items:center;font-family:"Montserrat";font-weight:900;font-size:30px;color:#fff;position:relative;overflow:hidden}
   .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(10,17,32,.55))}
-  .card .body{padding:22px 22px 24px}
-  .card h3{margin:0 0 7px;font-size:19px}
-  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6;min-height:42px}
-  .card .meta{display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+  .card .body{display:flex;flex:1;flex-direction:column;padding:22px 22px 24px}
+  .card h3{margin:0 0 7px;font-size:19px;word-break:keep-all;overflow-wrap:break-word}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6;min-height:42px;word-break:keep-all;overflow-wrap:break-word}
+  .card .meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:16px}
   .badge{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px}
   .badge.live{background:rgba(28,155,84,.16);color:#34d27e}
   .badge.soon{background:rgba(255,255,255,.08);color:var(--muted)}
@@ -93,6 +93,7 @@
 <script>
   // 데모 목록 — cat: home(홈페이지·브랜드) / admin(관리자·대시보드) / platform(플랫폼·서비스)
   const DEMOS = [
+    { name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결", url:"./forme-fit/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true },
     { name:"글로벌 투자사(VC) 포트폴리오", en:"HORIZON", cat:"home", desc:"VC 공식 홈페이지 + 포트폴리오 80개사 · 영/국문 로케일별 실제 URL 165페이지 정적생성(hreflang·사이트맵) · 문장형 필터+다축 레일 · 기업이 직접 프로필을 올리는 2단계 권한 CMS(60자 규격·검수승인·실시간 카드 미리보기) · YC 소스분석 기반", url:"./글로벌투자사/index.html", status:"live", g:"linear-gradient(135deg,#16140F,#6E6A5C 55%,#FF5100)", here:true },
     { name:"청년-지역 매칭 플랫폼", en:"OUTBOUNDER", cat:"platform", desc:"로컬 일경험 매칭 데모 · 청년 셸(공고탐색·매칭적합도·지원·마이페이지)+관리자 셸(성과대시보드·지원자심사·콘텐츠·파트너리포트) 실연동 폐쇄순환 · 도트맵·카운트업·카드스택 스크롤 연출 · 힉스필드 비주얼", url:"./청년지역매칭/index.html", status:"live", g:"linear-gradient(135deg,#0e8c5a,#00b670 55%,#f05519)", here:true },
     { name:"탐정 법인·사무소 반응형 홈페이지", en:"JEONGDO", cat:"home", desc:"영상 인트로·핀 스크럽·마퀴 등 스크롤 인터랙션 중심 브랜드 홈페이지 · 업무 8분야·7단계 절차·FAQ·상담폼→관리자 접수 연동 · GSAP/Lenis 로컬 번들로 오프라인 완전 동작", url:"./탐정법인/index.html", status:"live", g:"linear-gradient(135deg,#000C24,#123C78 58%,#C9A55C)", here:true },

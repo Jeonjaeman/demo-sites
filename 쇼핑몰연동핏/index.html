@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FORME AI 핏 추천이 연결된 패션 커머스 프로토타입">
+  <meta name="theme-color" content="#f3efe7">
+  <title>FORME — Find your form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/commerce.css">
+  <script src="assets/js/commerce.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#product-info">상품 정보로 건너뛰기</a>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="FORME 홈">FORME</a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a href="#">New</a><a href="#">Women</a><a href="#">Men</a><a href="#">Journal</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button" type="button" aria-label="검색">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      </button>
+      <button class="icon-button bag-button" type="button" aria-label="장바구니, 상품 0개">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8.5h14l-1 12H6l-1-12Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg><span class="bag-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="product-page">
+    <section class="product-gallery" aria-label="상품 이미지">
+      <div class="image-frame bezel">
+        <span class="edition-tag">Limited linen edit</span>
+        <img src="assets/images/linen-blouson.svg" alt="딥 세이지 색상의 컨투어 리넨 블루종 정면">
+        <button class="zoom-button" type="button" aria-label="상품 이미지 확대">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="5.5"/><path d="m15 15 5 5M10.5 8v5M8 10.5h5"/></svg>
+        </button>
+      </div>
+      <div class="gallery-caption"><span>01 / 01</span><span>Natural linen, garment washed</span></div>
+    </section>
+
+    <section class="product-info" id="product-info" aria-labelledby="product-title">
+      <nav class="breadcrumbs" aria-label="현재 위치"><a href="#">Outer</a><span>/</span><span>Blouson</span></nav>
+      <p class="eyebrow">FORME Atelier / 26 Summer</p>
+      <h1 id="product-title">Contour Linen<br>Blouson</h1>
+      <p class="product-note">리넨의 자연스러운 결에 구조적인 실루엣을 더한 가벼운&nbsp;블루종.</p>
+      <div class="price-row"><strong>₩248,000</strong><span>무료 배송 · 무료 반품</span></div>
+
+      <div class="option-group">
+        <div class="option-heading"><span>Color</span><strong data-color-name>Deep sage</strong></div>
+        <div class="swatches" aria-label="색상 선택">
+          <button class="swatch is-selected" type="button" data-color="Deep sage" aria-label="Deep sage 선택됨" aria-pressed="true" style="--swatch:#486354"></button>
+          <button class="swatch" type="button" data-color="Sand" aria-label="Sand" aria-pressed="false" style="--swatch:#c8b7a0"></button>
+          <button class="swatch" type="button" data-color="Ink" aria-label="Ink" aria-pressed="false" style="--swatch:#222824"></button>
+        </div>
+      </div>
+
+      <div class="size-area">
+        <div class="option-heading"><span>Size</span><button class="text-button" type="button" data-open-size-guide>실측표</button></div>
+        <div class="size-options" role="group" aria-label="사이즈 선택">
+          <button type="button" data-size="S" aria-pressed="false">S</button>
+          <button type="button" data-size="M" aria-pressed="false">M</button>
+          <button type="button" data-size="L" aria-pressed="false">L</button>
+          <button type="button" data-size="XL" aria-pressed="false">XL</button>
+        </div>
+        <p class="size-status" aria-live="polite">사이즈를 선택해주세요.</p>
+      </div>
+
+      <button class="fit-cta inset-cta" type="button" data-open-fit>
+        <span class="cta-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16M17 4v16M4 8h6M14 8h6M4 16h6M14 16h6"/></svg></span>
+        <span><strong>내 사이즈 찾기</strong><small>신체 정보로 30초 만에 추천</small></span>
+        <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+      </button>
+
+      <button class="add-button" type="button" disabled>사이즈를 선택해주세요</button>
+
+      <dl class="product-facts">
+        <div><dt>Fit</dt><dd>Relaxed, cropped</dd></div>
+        <div><dt>Fabric</dt><dd>Linen 64 · Cotton 36</dd></div>
+        <div><dt>Model</dt><dd>178cm · M 착용</dd></div>
+      </dl>
+
+      <details class="product-detail"><summary>소재와 관리법 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>통기성이 좋은 리넨 혼방 소재입니다. 단독 찬물 세탁 후 형태를 잡아 자연 건조하세요.</p></details>
+      <details class="product-detail"><summary>배송과 반품 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><p>평일 오후 2시 이전 주문 시 당일 출고됩니다. 수령 후 7일 이내 무료 반품할 수 있습니다.</p></details>
+    </section>
+  </main>
+
+  <section class="editorial-strip" aria-labelledby="editorial-title">
+    <p class="eyebrow">Designed around movement</p>
+    <h2 id="editorial-title">입는 사람의 움직임까지<br>고려한 여유로운 구조.</h2>
+    <div class="feature-grid">
+      <article><span>01</span><h3>Soft shoulder</h3><p>어깨선이 자연스럽게 내려와 체형에 부드럽게 적응합니다.</p></article>
+      <article><span>02</span><h3>Airy linen</h3><p>가볍고 통기성 좋은 혼방 직조로 여름까지 편안합니다.</p></article>
+      <article><span>03</span><h3>Measured fit</h3><p>상품 실측과 입력 정보를 함께 비교해 사이즈를 제안합니다.</p></article>
+    </div>
+  </section>
+
+  <button class="floating-fit" type="button" data-open-fit>
+    <span class="pulse-dot"></span><span>AI 핏 추천</span><small>30초</small>
+  </button>
+
+  <div class="mobile-purchase-bar" hidden>
+    <div><span>선택 사이즈</span><strong data-mobile-size>M</strong></div>
+    <button type="button" data-mobile-add>장바구니에 담기</button>
+  </div>
+
+  <div class="dialog-backdrop" data-backdrop hidden></div>
+  <aside class="fit-dialog" role="dialog" aria-modal="true" aria-labelledby="fit-title" aria-describedby="fit-subtitle" hidden>
+    <div class="dialog-topbar">
+      <a class="dialog-brand" href="#">FORME / FIT</a>
+      <button class="icon-button dialog-close" type="button" aria-label="핏 추천 닫기" data-close-fit>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg>
+      </button>
+    </div>
+    <div class="dialog-progress" aria-hidden="true"><span data-progress-bar></span></div>
+
+    <div class="fit-step is-active" data-step="input">
+      <div class="step-copy">
+        <p class="eyebrow">Personal fit / 01</p>
+        <h2 id="fit-title">당신에게 맞는<br><span class="nowrap">실루엣을 찾아볼게요.</span></h2>
+        <p id="fit-subtitle">두 가지 신체 정보와 원하는 핏만 알려주세요. 입력 정보는 이 추천에만 사용됩니다.</p>
+      </div>
+      <form class="fit-form" novalidate>
+        <div class="measure-grid">
+          <label class="field-shell"><span>키</span><span class="input-line"><input id="height" name="height" type="number" inputmode="numeric" min="140" max="210" placeholder="170" aria-describedby="height-help fit-error"><em>cm</em></span><small id="height-help">140–210cm</small></label>
+          <label class="field-shell"><span>몸무게</span><span class="input-line"><input id="weight" name="weight" type="number" inputmode="numeric" min="35" max="150" placeholder="60" aria-describedby="weight-help fit-error"><em>kg</em></span><small id="weight-help">35–150kg</small></label>
+        </div>
+        <fieldset class="fit-preference">
+          <legend>평소 선호하는 핏</legend>
+          <div class="preference-options">
+            <button type="button" data-fit="slim" aria-pressed="false"><strong>슬림</strong><small>몸에 가깝게</small></button>
+            <button type="button" data-fit="regular" aria-pressed="true" class="is-selected"><strong>정사이즈</strong><small>적당한 여유</small></button>
+            <button type="button" data-fit="relaxed" aria-pressed="false"><strong>여유롭게</strong><small>편안한 실루엣</small></button>
+          </div>
+        </fieldset>
+        <p class="form-error" id="fit-error" role="alert" hidden>키와 몸무게를 범위에 맞게 입력해주세요.</p>
+        <button class="primary-button inset-cta" type="submit"><span>추천 사이즈 확인하기</span><span class="cta-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14 0M14 7l5 5-5 5"/></svg></span></button>
+      </form>
+    </div>
+
+    <div class="fit-step analyzing-step" data-step="analyzing" aria-live="polite">
+      <div class="analysis-visual" aria-hidden="true">
+        <div class="scan-orbit"><span></span><i></i><b></b></div>
+        <span class="analysis-size">M</span>
+      </div>
+      <p class="eyebrow">Matching profile</p>
+      <h2 id="analyzing-title">상품 실측과 체형 정보를<br>비교하고 있어요.</h2>
+      <ul class="analysis-list"><li class="is-done">신체 비율 확인</li><li class="is-done">상품 실측 비교</li><li>선호 핏 반영</li></ul>
+    </div>
+
+    <div class="fit-step result-step" data-step="result" aria-live="polite">
+      <div class="result-header">
+        <div><p class="eyebrow">Your best fit / 02</p><h2 id="result-title"><span data-result-size>M</span> 사이즈를<br>추천해요.</h2></div>
+        <div class="confidence"><strong data-confidence>92</strong><span>% match</span></div>
+      </div>
+      <p class="result-summary" id="result-summary" data-result-summary>어깨는 자연스럽고 가슴에는 약간의 여유가 생겨, 이 블루종의 구조적인 실루엣이 가장 잘 살아납니다.</p>
+      <div class="fit-evidence bezel">
+        <div class="evidence-title"><span>예상 핏</span><strong>Balanced</strong></div>
+        <div class="fit-map">
+          <div data-evidence-row="shoulder"><span>어깨</span><div class="fit-scale"><i style="--position:48%"></i></div><strong>정사이즈</strong></div>
+          <div data-evidence-row="chest"><span>가슴</span><div class="fit-scale"><i style="--position:61%"></i></div><strong>여유 있음</strong></div>
+          <div data-evidence-row="length"><span>총장</span><div class="fit-scale"><i style="--position:45%"></i></div><strong>정사이즈</strong></div>
+        </div>
+      </div>
+      <div class="alternative-row"><div><span data-alternative-title>L 사이즈라면</span><strong data-alternative-copy>전체적으로 더 여유로운 아웃핏</strong></div><button type="button" data-apply-size="L" data-alternative-action>L로 보기</button></div>
+      <button class="primary-button inset-cta" type="button" data-apply-size="M"><span><strong>M 사이즈 적용하기</strong><small>상품 옵션에 바로 반영돼요</small></span><span class="cta-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span></button>
+      <button class="save-button" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4V4Z"/></svg>내 옷장에 결과 저장하기</button>
+      <p class="disclaimer">추천은 입력 정보와 상품 실측을 기반으로 한 예상 결과입니다.</p>
+    </div>
+  </aside>
+
+  <dialog class="size-guide-dialog" aria-labelledby="size-guide-title">
+    <div class="size-guide-head"><div><p class="eyebrow">Product measurements</p><h2 id="size-guide-title">실측 사이즈</h2></div><button class="icon-button" type="button" data-close-size-guide aria-label="실측표 닫기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"/></svg></button></div>
+    <div class="size-table-wrap"><table><thead><tr><th>Size</th><th>어깨</th><th>가슴</th><th>총장</th></tr></thead><tbody><tr><th>S</th><td>48</td><td>56</td><td>61</td></tr><tr><th>M</th><td>50</td><td>58</td><td>63</td></tr><tr><th>L</th><td>52</td><td>60</td><td>65</td></tr><tr><th>XL</th><td>54</td><td>62</td><td>67</td></tr></tbody></table></div><p>단위 cm · 측정 위치에 따라 1–2cm 오차가 있을 수 있습니다.</p>
+  </dialog>
+
+  <div class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

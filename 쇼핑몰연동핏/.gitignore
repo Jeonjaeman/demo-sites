@@ -1,0 +1,13 @@
+node_modules/
+test-results/
+playwright-report/
+.DS_Store
+.omo/
+.omx/
+.codegraph/
+.server.log
+.server.pid
+output/
+지원서.md
+쇼핑몰 연동형 AI 사이즈 및 핏 추천 위젯 MVP 구축.txt
+assets/images/higgsfield/*.png
