@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" class="no-js">
+<head>
+<meta charset="utf-8">
+<script>document.documentElement.className = 'js';</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>로그인 — Horizon Ventures CMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/cms.css">
+</head>
+<body class="cms">
+
+<main class="lg">
+  <div class="lg__card">
+
+    <div class="lg__brand">
+      <a class="logo" href="../index.html">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span class="logo__txt">HORIZON<span class="logo__sub">VENTURES</span></span>
+      </a>
+    </div>
+
+    <h1 class="lg__t">계정 로그인</h1>
+    <p class="lg__s">포트폴리오 기업 담당자 및 Horizon 관리자용</p>
+
+    <div class="lg__box">
+      <!-- Demo shell: no credentials are collected, checked, or transmitted.
+           The buttons below jump straight to the two roles. -->
+      <form class="lg__f" onsubmit="return false">
+        <div class="f__row">
+          <label class="f__l" for="lgId">이메일</label>
+          <input class="f__in" id="lgId" type="email" autocomplete="off" disabled
+                 placeholder="데모에서는 입력이 필요 없습니다">
+        </div>
+        <div class="f__row">
+          <label class="f__l" for="lgPw">비밀번호</label>
+          <input class="f__in" id="lgPw" type="password" autocomplete="off" disabled
+                 placeholder="비활성화됨">
+        </div>
+        <button class="btn btn--primary lg__btn" type="button" disabled>로그인</button>
+      </form>
+
+      <div class="lg__demo">
+        <p><b>데모 안내</b> — 이 화면은 목업입니다. 인증 백엔드가 연결되어 있지 않으며
+           비밀번호를 수집하지 않습니다. 아래에서 역할을 골라 바로 확인하세요.</p>
+        <div class="lg__pick">
+          <a class="mini" href="admin.html">최고 관리자로 보기 — 계정 발급 · 검수</a>
+          <a class="mini" href="company.html">투자사 관리자로 보기 — 내 프로필 편집</a>
+        </div>
+      </div>
+    </div>
+
+    <a class="lg__back" href="../index.html">← 공개 사이트로 돌아가기</a>
+  </div>
+</main>
+
+</body>
+</html>

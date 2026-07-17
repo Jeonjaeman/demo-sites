@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko" class="no-js">
+<head>
+<meta charset="utf-8">
+<script>document.documentElement.className = 'js';</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>기업 포털 — Horizon Ventures CMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/cms.css">
+</head>
+<body class="cms">
+
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<div class="sh">
+
+  <header class="sh__bar">
+    <div class="sh__brand">
+      <a class="sh__logo logo" href="../index.html">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span class="logo__txt">HORIZON<span class="logo__sub">VENTURES</span></span>
+      </a>
+      <span class="sh__tag">기업 포털 · <span id="whoCo">—</span></span>
+    </div>
+    <div class="sh__end">
+      <span class="sh__who" id="whoMail">—</span>
+      <a class="sh__out" href="index.html">로그아웃</a>
+    </div>
+  </header>
+
+  <div class="sh__body">
+
+    <nav class="sh__side" aria-label="포털 메뉴">
+      <div class="sh__nav">
+        <h2 class="sh__h">내 회사</h2>
+        <a class="sh__a is-cur" href="#main">프로필</a>
+        <a class="sh__a" href="#logo">로고</a>
+        <a class="sh__a" href="#pv">미리보기</a>
+        <a class="sh__a" href="../index.html#portfolio">공개 사이트 보기</a>
+      </div>
+    </nav>
+
+    <main class="sh__main" id="main">
+      <div class="sh__wrap">
+
+        <header class="sh__head">
+          <h1 class="sh__title">기업 프로필</h1>
+          <p class="sh__sub">
+            여기서 저장한 내용이 Horizon 포트폴리오에 그대로 노출됩니다. 영문이 기본이며,
+            국문을 비워두면 해당 항목은 영문으로 표시됩니다.
+          </p>
+        </header>
+
+        <!-- review state -->
+        <div class="bn bn--live" id="bn">
+          <span class="bn__i" aria-hidden="true"></span>
+          <div>
+            <p class="bn__t" id="bnT">게시 중</p>
+            <p class="bn__b" id="bnB">현재 내용이 공개 포트폴리오에 노출되고 있습니다.</p>
+          </div>
+        </div>
+
+        <div class="edit">
+
+          <!-- ============ form ============ -->
+          <form class="f" id="f" novalidate>
+
+            <div class="f__row">
+              <div class="f__lab">
+                <label class="f__l" for="fName">기업명</label>
+              </div>
+              <input class="f__in" id="fName" type="text" readonly>
+              <p class="f__hint">기업명 변경은 Horizon 담당자에게 요청해 주세요.</p>
+            </div>
+
+            <!-- one-line intro: the field that decides whether the grid looks clean -->
+            <div class="f__row">
+              <div class="f__lab">
+                <label class="f__l" for="fTagEn">한 줄 소개 <span class="f__req" aria-hidden="true">*</span></label>
+                <span class="f__count"><span id="cTag">0</span>/<span id="mTag">60</span></span>
+              </div>
+              <div class="loc" role="tablist" aria-label="한 줄 소개 언어">
+                <button class="loc__b is-on" type="button" role="tab" aria-selected="true"
+                        data-loc="en" data-for="tag">EN<span class="dot" id="dTagEn"></span></button>
+                <button class="loc__b" type="button" role="tab" aria-selected="false"
+                        data-loc="ko" data-for="tag">한국어<span class="dot" id="dTagKo"></span></button>
+              </div>
+              <div class="f__pane" data-pane="tag-en">
+                <input class="f__in" id="fTagEn" type="text" maxlength="80"
+                       placeholder="Payments infrastructure for cross-border commerce.">
+              </div>
+              <div class="f__pane" data-pane="tag-ko" hidden>
+                <!-- The visible label is bound to the EN field, so each KO field
+                     carries its own. Without it a screen reader announces an
+                     unnamed textbox — the Korean half of the form is unusable. -->
+                <label class="sr" for="fTagKo">한 줄 소개 (국문)</label>
+                <input class="f__in" id="fTagKo" type="text" maxlength="80"
+                       placeholder="국경 간 커머스를 위한 결제 인프라.">
+              </div>
+              <p class="f__hint">
+                카드에 표시되는 문장입니다. 60자를 넘으면 그리드에서 잘립니다 —
+                한 문장으로 끝내 주세요.
+              </p>
+            </div>
+
+            <!-- long description -->
+            <div class="f__row">
+              <div class="f__lab">
+                <label class="f__l" for="fBodyEn">상세 소개</label>
+                <span class="f__count"><span id="cBody">0</span>/<span id="mBody">500</span></span>
+              </div>
+              <div class="loc" role="tablist" aria-label="상세 소개 언어">
+                <button class="loc__b is-on" type="button" role="tab" aria-selected="true"
+                        data-loc="en" data-for="body">EN<span class="dot" id="dBodyEn"></span></button>
+                <button class="loc__b" type="button" role="tab" aria-selected="false"
+                        data-loc="ko" data-for="body">한국어<span class="dot" id="dBodyKo"></span></button>
+              </div>
+              <div class="f__pane" data-pane="body-en">
+                <textarea class="f__ta" id="fBodyEn" maxlength="600"></textarea>
+              </div>
+              <div class="f__pane" data-pane="body-ko" hidden>
+                <label class="sr" for="fBodyKo">상세 소개 (국문)</label>
+                <textarea class="f__ta" id="fBodyKo" maxlength="600"></textarea>
+              </div>
+              <p class="f__hint">상세 페이지 본문에 표시됩니다.</p>
+            </div>
+
+            <!-- HQ -->
+            <div class="f__row">
+              <div class="f__lab"><label class="f__l" for="fHqEn">본사 소재지</label></div>
+              <div class="loc" role="tablist" aria-label="본사 언어">
+                <button class="loc__b is-on" type="button" role="tab" aria-selected="true"
+                        data-loc="en" data-for="hq">EN<span class="dot" id="dHqEn"></span></button>
+                <button class="loc__b" type="button" role="tab" aria-selected="false"
+                        data-loc="ko" data-for="hq">한국어<span class="dot" id="dHqKo"></span></button>
+              </div>
+              <div class="f__pane" data-pane="hq-en">
+                <input class="f__in" id="fHqEn" type="text" placeholder="Seoul, Korea">
+              </div>
+              <div class="f__pane" data-pane="hq-ko" hidden>
+                <label class="sr" for="fHqKo">본사 소재지 (국문)</label>
+                <input class="f__in" id="fHqKo" type="text" placeholder="서울, 대한민국">
+              </div>
+            </div>
+
+            <div class="f__row">
+              <div class="f__lab"><label class="f__l" for="fSize">팀 규모</label></div>
+              <input class="f__in" id="fSize" type="number" min="1" max="100000" inputmode="numeric">
+            </div>
+
+            <div class="f__row">
+              <div class="f__lab"><label class="f__l" for="fUrl">웹사이트</label></div>
+              <input class="f__in" id="fUrl" type="url" placeholder="https://example.com">
+            </div>
+
+            <!-- logo: ratio enforced by the control, not by a request over email -->
+            <div class="f__row" id="logo">
+              <div class="f__lab"><span class="f__l">로고</span></div>
+              <div class="drop">
+                <span class="drop__pv" id="logoPv" aria-hidden="true">N</span>
+                <div>
+                  <p class="drop__t">정사각(1:1) SVG 또는 PNG</p>
+                  <p class="drop__b">
+                    최소 400×400. 업로드 시 자동으로 정사각 크롭·리사이즈됩니다.
+                    배경이 투명한 단색 로고를 권장합니다 — 밝은 배경과 어두운 배경 모두에서 자동 반전 처리됩니다.
+                  </p>
+                </div>
+              </div>
+              <p class="f__hint">데모 — 업로드는 비활성화되어 있습니다.</p>
+            </div>
+
+            <div class="f__row">
+              <label class="tg">
+                <input type="checkbox" id="fHiring">
+                <span class="tg__box" aria-hidden="true"></span>
+                <span class="tg__t">현재 채용 중</span>
+              </label>
+              <p class="f__hint">켜면 포트폴리오에서 &ldquo;채용 중&rdquo; 필터로 노출됩니다.</p>
+            </div>
+
+            <div class="f__row">
+              <div class="bulk__foot">
+                <p class="bulk__msg" id="saveMsg"></p>
+                <div style="display:flex; gap:.5rem;">
+                  <button class="btn btn--ghost btn--sm" id="btnReset" type="button">되돌리기</button>
+                  <button class="btn btn--primary btn--sm" id="btnSave" type="submit">저장하고 검수 요청</button>
+                </div>
+              </div>
+            </div>
+
+          </form>
+
+          <!-- ============ live preview ============ -->
+          <aside class="pv" id="pv" aria-label="미리보기">
+            <div class="pv__h">
+              <h2 class="pv__t">공개 카드 미리보기</h2>
+              <div class="loc">
+                <button class="loc__b is-on" type="button" data-pvloc="en">EN</button>
+                <button class="loc__b" type="button" data-pvloc="ko">한국어</button>
+              </div>
+            </div>
+            <div class="pv__frame">
+              <ul class="grid" id="pvGrid"></ul>
+            </div>
+            <p class="pv__note" id="pvNote"></p>
+          </aside>
+
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/cms.js"></script>
+<script>CMS.initCompany();</script>
+</body>
+</html>

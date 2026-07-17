@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /cms/
+Sitemap: https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/sitemap.xml

@@ -1,0 +1,359 @@
+/* ============================================================
+   CMS — admin + company portal mockup
+   Inherits every token from style.css; this file only adds the
+   app chrome (shell, table, form, preview).
+   ============================================================ */
+
+:root {
+  --cms-rail: 232px;
+
+  /* Same fill/text split as --accent. A colour cannot carry white text at
+     4.5:1 AND read as text on cream at 4.5:1 — those pull opposite ways.
+     --ok / --warn are FILLS (toggle, chips, hover grounds): white on them is
+     4.59 / 4.53. --ok-txt / --warn-txt are the darkened variants for small
+     text on light: 4.89 / 4.85 on --bg, 4.55 / 4.51 on --bg-sink.
+     --stop already reads 6.58 as text and 7.21 as fill, so it needs no twin. */
+  --ok:       #2A863C;
+  --ok-txt:   #267A37;
+  --warn:     #B06300;
+  --warn-txt: #A05A00;
+  --stop:     #A61E4D;
+}
+
+body.cms { background: var(--bg-sink); }
+
+/* ============================================================
+   SHELL
+   ============================================================ */
+.sh { min-height: 100vh; display: flex; flex-direction: column; }
+
+.sh__bar {
+  position: sticky; top: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s4);
+  padding: 0 var(--gutter);
+  min-height: 60px;
+  background: var(--ink); color: var(--bg);
+  border-bottom: 1px solid var(--ink);
+}
+.sh__brand { display: flex; align-items: center; gap: var(--s2); min-width: 0; }
+.sh__logo { display: inline-flex; align-items: center; gap: 0.5rem; }
+.sh__logo .logo__mark { border-color: var(--bg); background: linear-gradient(to bottom, transparent 49%, var(--bg) 49%); }
+.sh__logo .logo__txt { font-size: 0.8125rem; }
+.sh__logo .logo__sub { color: rgba(245,245,238,.55); }
+
+.sh__tag {
+  padding-left: var(--s2);
+  border-left: 1px solid rgba(245,245,238,.28);
+  font-size: 0.8125rem; color: rgba(245,245,238,.72);
+  white-space: nowrap;
+}
+.sh__end { display: flex; align-items: center; gap: var(--s3); }
+.sh__who { font-size: 0.8125rem; color: rgba(245,245,238,.72); }
+.sh__out {
+  position: relative; display: inline-block; padding: 0.5rem 0;
+  font-size: 0.8125rem; color: var(--bg);
+}
+.sh__out::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 4px;
+  height: 1px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .25s var(--ease);
+}
+.sh__out:hover::after { transform: scaleX(1); }
+
+.sh__body { flex: 1; display: grid; grid-template-columns: var(--cms-rail) minmax(0, 1fr); }
+
+/* ---- side nav ---- */
+.sh__side {
+  padding: var(--s5) var(--s3);
+  background: var(--bg);
+  border-right: 1px solid var(--line);
+}
+.sh__nav { display: grid; gap: 1px; position: sticky; top: 84px; }
+.sh__h {
+  font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); padding: 0 var(--s2) var(--s2);
+}
+.sh__a {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s2);
+  padding: 0.625rem var(--s2);
+  font-size: 0.875rem; color: var(--muted);
+  transition: background-color .18s var(--ease), color .18s var(--ease);
+}
+.sh__a:hover { background: var(--bg-sink); color: var(--ink); }
+.sh__a.is-cur { background: var(--ink); color: var(--bg); }
+.sh__n {
+  font-size: 0.6875rem; font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.sh__a.is-cur .sh__n { color: rgba(245,245,238,.7); }
+
+.sh__main { padding: var(--s6) var(--gutter) var(--s10); min-width: 0; }
+.sh__wrap { max-width: 1040px; }
+
+.sh__head { margin-bottom: var(--s6); }
+.sh__title { font-size: 1.75rem; line-height: 1.2; margin-bottom: var(--s1); }
+.sh__sub { font-size: 0.9375rem; color: var(--muted); max-width: 68ch; line-height: 1.65; }
+
+@media (max-width: 900px) {
+  .sh__body { grid-template-columns: 1fr; }
+  .sh__side { border-right: 0; border-bottom: 1px solid var(--line); padding: var(--s3) var(--gutter); }
+  .sh__nav { grid-auto-flow: column; grid-auto-columns: max-content; gap: var(--s1);
+             overflow-x: auto; position: static; }
+  .sh__h { display: none; }
+  .sh__a { white-space: nowrap; }
+  .sh__tag { display: none; }
+}
+
+/* ============================================================
+   STAT TILES
+   ============================================================ */
+.tiles {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  margin-bottom: var(--s6);
+}
+.tile { background: var(--bg); padding: var(--s3); }
+.tile__n {
+  font-size: 1.75rem; font-weight: 300; line-height: 1.1;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.03em;
+  margin-bottom: 0.25rem;
+}
+.tile__k { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+.tile--warn .tile__n { color: var(--warn-txt); }
+.tile--ok   .tile__n { color: var(--ok-txt); }
+
+@media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+
+/* ============================================================
+   PANEL
+   ============================================================ */
+.panel {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  margin-bottom: var(--s5);
+}
+.panel__h {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3);
+  padding: var(--s3);
+  border-bottom: 1px solid var(--line);
+}
+.panel__t { font-size: 0.9375rem; }
+.panel__note { font-size: 0.75rem; color: var(--muted); }
+.panel__b { padding: var(--s3); }
+.panel__b--flush { padding: 0; }
+
+/* ============================================================
+   TABLE  (real <table>: sortable, Ctrl+F-able, screen-reader sane —
+   Sequoia does this and a16z's div grid does not)
+   ============================================================ */
+.tbl { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.tbl th, .tbl td { padding: 0.75rem var(--s2); text-align: left; vertical-align: middle; }
+.tbl thead th {
+  position: sticky; top: 60px; z-index: 5;
+  background: var(--bg-sink);
+  font-size: 0.6875rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tbl tbody tr { border-bottom: 1px solid var(--line); transition: background-color .18s var(--ease); }
+.tbl tbody tr:hover { background: var(--bg-sink); }
+.tbl td.num { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+
+.tbl__co { display: flex; align-items: center; gap: var(--s2); min-width: 0; }
+.tbl__logo {
+  display: grid; place-items: center; flex: none;
+  width: 28px; height: 28px;
+  background: var(--tint); color: #fff; font-size: 0.75rem; line-height: 1;
+}
+.tbl__name { font-size: 0.875rem; }
+.tbl__mail { font-size: 0.75rem; color: var(--muted); }
+
+.tbl__acts { display: flex; gap: var(--s1); justify-content: flex-end; }
+
+.tbl__wrap { overflow-x: auto; }
+@media (max-width: 760px) { .tbl { min-width: 640px; } }
+
+/* ---- status chip ---- */
+.st {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem; line-height: 1.4; white-space: nowrap;
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--muted);
+}
+.st::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.st--live    { color: var(--ok-txt); }
+.st--pending { color: var(--warn-txt); }
+.st--empty   { color: var(--muted); }
+.st--held    { color: var(--stop); }
+
+/* ---- mini button ---- */
+.mini {
+  padding: 0.375rem 0.625rem;
+  font-size: 0.75rem; line-height: 1.4;
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--ink);
+  transition: background-color .18s var(--ease), color .18s var(--ease), box-shadow .18s var(--ease);
+}
+.mini:hover { background: var(--ink); color: var(--bg); box-shadow: none; }
+.mini--ok:hover   { background: var(--ok); box-shadow: none; color: #fff; }
+.mini--stop:hover { background: var(--stop); box-shadow: none; color: #fff; }
+.mini[disabled] { opacity: .4; pointer-events: none; }
+
+/* ============================================================
+   FORM
+   ============================================================ */
+.f { display: grid; gap: var(--s4); }
+.f__row { display: grid; gap: var(--s1); }
+.f__lab { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2); }
+.f__l { font-size: 0.8125rem; }
+.f__req { color: var(--stop); }
+.f__hint { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+.f__in, .f__ta {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--line); border-radius: 0;
+  background: var(--bg);
+  font-size: 0.9375rem; font-weight: 300; line-height: 1.5;
+  transition: border-color .18s var(--ease);
+}
+.f__ta { resize: vertical; min-height: 92px; }
+.f__in:focus, .f__ta:focus { outline: 0; border-color: var(--ink); }
+.f__in[readonly] { background: var(--bg-sink); color: var(--muted); }
+.f__in--over, .f__ta--over { border-color: var(--stop); }
+
+/* counter — the guard rail that keeps 80 self-served profiles from
+   breaking the public grid */
+.f__count {
+  font-size: 0.6875rem; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.f__count.is-over { color: var(--stop); }
+
+/* ---- locale tabs: BOTH languages are first-class inputs.
+   Kakao's /en is 205/206 Hangul because its CMS had one text field. ---- */
+.loc { display: flex; gap: 0; margin-bottom: var(--s1); }
+.loc__b {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem; color: var(--muted);
+  border: 1px solid var(--line); margin-right: -1px;
+  transition: background-color .18s var(--ease), color .18s var(--ease);
+}
+.loc__b:hover { color: var(--ink); }
+.loc__b.is-on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.loc__b .dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; margin-left: 0.375rem; }
+.loc__b .dot--miss { background: var(--warn); }
+.loc__b .dot--has  { background: var(--ok); }
+
+.f__pane[hidden] { display: none; }
+
+/* ---- toggle ---- */
+.tg { display: inline-flex; align-items: center; gap: var(--s2); cursor: pointer; padding: 0.25rem 0; }
+.tg__box {
+  position: relative; width: 36px; height: 20px; flex: none;
+  background: var(--line);
+  transition: background-color .2s var(--ease);
+}
+.tg__box::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 14px; height: 14px; background: var(--bg);
+  transition: transform .2s var(--ease);
+}
+.tg input { position: absolute; opacity: 0; width: 0; height: 0; }
+.tg input:checked + .tg__box { background: var(--ok); }
+.tg input:checked + .tg__box::after { transform: translateX(16px); }
+.tg input:focus-visible + .tg__box { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tg__t { font-size: 0.875rem; }
+
+/* ---- logo dropzone: ratio is fixed by the UI, not by hope ---- */
+.drop {
+  display: grid; grid-template-columns: 72px 1fr; gap: var(--s3);
+  align-items: center;
+  padding: var(--s3);
+  border: 1px dashed var(--line);
+}
+.drop__pv {
+  display: grid; place-items: center;
+  width: 72px; height: 72px;           /* 1:1, enforced */
+  background: var(--tint, var(--ink)); color: #fff;
+  font-size: 2rem; line-height: 1;
+}
+.drop__t { font-size: 0.875rem; margin-bottom: 0.25rem; }
+.drop__b { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+
+/* ============================================================
+   LIVE PREVIEW — what the public grid will actually render
+   ============================================================ */
+.pv { position: sticky; top: 84px; }
+.pv__h {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+.pv__t { font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.pv__frame { border: 1px solid var(--line); background: var(--bg); }
+.pv__frame .card { border-bottom: 1px solid var(--line); }
+.pv__frame .card:hover { background: var(--bg); }
+.pv__note { font-size: 0.75rem; color: var(--muted); line-height: 1.55; margin-top: var(--s2); }
+
+.edit { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--s6); align-items: start; }
+@media (max-width: 1080px) {
+  .edit { grid-template-columns: 1fr; }
+  .pv { position: static; }
+}
+
+/* ============================================================
+   BANNER
+   ============================================================ */
+.bn {
+  display: flex; align-items: flex-start; gap: var(--s2);
+  padding: var(--s3);
+  border: 1px solid var(--line);
+  background: var(--bg);
+  margin-bottom: var(--s5);
+}
+.bn__i { flex: none; width: 6px; align-self: stretch; background: var(--muted); }
+.bn--pending .bn__i { background: var(--warn); }
+.bn--live .bn__i    { background: var(--ok); }
+.bn__t { font-size: 0.875rem; margin-bottom: 0.25rem; }
+.bn__b { font-size: 0.8125rem; color: var(--muted); line-height: 1.6; }
+
+/* ============================================================
+   BULK CREATE
+   ============================================================ */
+.bulk { display: grid; gap: var(--s3); }
+.bulk__ta {
+  width: 100%; min-height: 132px; resize: vertical;
+  padding: var(--s2);
+  border: 1px solid var(--line); border-radius: 0; background: var(--bg);
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.8125rem; line-height: 1.7;
+}
+.bulk__ta:focus { outline: 0; border-color: var(--ink); }
+.bulk__foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; }
+.bulk__msg { font-size: 0.8125rem; color: var(--muted); }
+.bulk__msg.is-ok   { color: var(--ok-txt); }
+.bulk__msg.is-bad  { color: var(--stop); }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+.lg { min-height: 100vh; display: grid; place-items: center; padding: var(--s5) var(--gutter); }
+.lg__card { width: 100%; max-width: 380px; }
+.lg__brand { display: flex; justify-content: center; margin-bottom: var(--s6); }
+.lg__t { font-size: 1.5rem; margin-bottom: var(--s1); text-align: center; }
+.lg__s { font-size: 0.875rem; color: var(--muted); text-align: center; margin-bottom: var(--s5); line-height: 1.6; }
+.lg__box { padding: var(--s5); background: var(--bg); border: 1px solid var(--line); }
+.lg__f { display: grid; gap: var(--s3); }
+.lg__btn { width: 100%; margin-top: var(--s1); }
+.lg__demo {
+  margin-top: var(--s4); padding-top: var(--s3);
+  border-top: 1px solid var(--line);
+  font-size: 0.75rem; color: var(--muted); line-height: 1.7;
+}
+.lg__demo b { font-weight: 400; color: var(--ink); }
+.lg__pick { display: grid; gap: var(--s1); margin-top: var(--s2); }
+.lg__back { display: block; text-align: center; margin-top: var(--s4); font-size: 0.8125rem; color: var(--muted); }

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<!-- Flips before first paint. Everything that starts invisible for a scroll
+     reveal is scoped to .js, so a JS failure degrades to plain visible content
+     instead of a blank page. -->
+<script>document.documentElement.className = 'js';</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- This file is BOTH the English page and the source build.js reads to bake
+     ko/index.html. Keep the data-i18n attributes: they are what the build
+     substitutes against, and app.js re-applies them harmlessly at runtime. -->
+<title>Horizon Ventures — We back founders building past the horizon.</title>
+<meta name="description" content="Horizon Ventures partners with exceptional teams from seed to scale. 80 companies across 6 regions.">
+<link rel="canonical" href="https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/index.html">
+<link rel="alternate" hreflang="en" href="https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/index.html">
+<link rel="alternate" hreflang="ko" href="https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/ko/index.html">
+<link rel="alternate" hreflang="x-default" href="https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/index.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Horizon Ventures">
+<meta property="og:description" content="We back founders building past the horizon.">
+<meta property="og:url" content="https://jeonjaeman.github.io/demo-sites/%EA%B8%80%EB%A1%9C%EB%B2%8C%ED%88%AC%EC%9E%90%EC%82%AC/index.html">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ko_KR">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="hd" id="hd">
+  <div class="hd__in wrap">
+    <a class="logo" href="#top" aria-label="Horizon Ventures">
+      <span class="logo__mark" aria-hidden="true"></span>
+      <span class="logo__txt">HORIZON<span class="logo__sub">VENTURES</span></span>
+    </a>
+
+    <nav class="nav" id="nav" aria-label="Main">
+      <!-- about.html / team.html resolve correctly from BOTH locales: the KO
+           build lands in ko/ alongside ko/about.html, so the same href works. -->
+      <ul class="nav__list">
+        <li><a class="nav__a" href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a class="nav__a" href="#thesis"    data-i18n="nav.thesis">Thesis</a></li>
+        <li><a class="nav__a" href="#portfolio" data-i18n="nav.portfolio">Portfolio</a></li>
+        <li><a class="nav__a" href="team.html"  data-i18n="nav.team">Team</a></li>
+        <li><a class="nav__a" href="#news"      data-i18n="nav.news">News</a></li>
+      </ul>
+
+      <div class="nav__end">
+        <!-- Links, not buttons. Each locale is its own URL; build.js rewrites
+             these hrefs and moves is-on when it bakes the KO page. -->
+        <div class="lang" role="group" data-i18n-aria="foot.lang" aria-label="Language">
+          <a class="lang__btn is-on" data-lang="en" href="index.html" hreflang="en">EN</a>
+          <span class="lang__div" aria-hidden="true"></span>
+          <a class="lang__btn" data-lang="ko" href="ko/index.html" hreflang="ko">한국어</a>
+        </div>
+        <a class="btn btn--primary btn--sm" href="#contact" data-i18n="nav.contact">Get in touch</a>
+      </div>
+    </nav>
+
+    <button class="burger" id="navBtn" type="button"
+            aria-expanded="false" aria-controls="nav" data-i18n-aria="nav.menu" aria-label="Menu">
+      <span aria-hidden="true"></span><span aria-hidden="true"></span>
+    </button>
+  </div>
+</header>
+
+<main id="main">
+<span id="top"></span>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow reveal" data-i18n="hero.eyebrow">Global Venture Capital · Est. 2011</p>
+    <h1 class="h1 hero__t reveal" style="--d:60ms" data-i18n="hero.title">
+      We back founders building past the horizon.
+    </h1>
+    <p class="lead hero__l reveal" style="--d:120ms" data-i18n="hero.lead">
+      Horizon Ventures partners with exceptional teams from seed to scale.
+    </p>
+    <div class="hero__acts reveal" style="--d:180ms">
+      <a class="btn btn--primary" href="#portfolio" data-i18n="hero.cta">Explore the portfolio</a>
+      <a class="btn btn--ghost"   href="#thesis"    data-i18n="hero.cta2">Read our thesis</a>
+    </div>
+  </div>
+
+  <!-- Sequoia's self-drawing hairline, adapted -->
+  <div class="hero__rule reveal" aria-hidden="true"></div>
+</section>
+
+<!-- ============================================================
+     STATS
+     ============================================================ -->
+<section class="stats" aria-label="Firm at a glance">
+  <div class="wrap stats__grid">
+    <!-- The real figure is the markup; the counter animates up to it. Authoring
+         these as "0" would make the firm look empty whenever JS doesn't run. -->
+    <div class="stat reveal">
+      <p class="stat__v"><span class="stat__n" data-to="80" data-dec="0">80</span></p>
+      <p class="stat__k" data-i18n="stats.companies">Portfolio companies</p>
+    </div>
+    <div class="stat reveal" style="--d:80ms">
+      <p class="stat__v">$<span class="stat__n" data-to="2.4" data-dec="1">2.4</span>B</p>
+      <p class="stat__k" data-i18n="stats.aum">Assets under management</p>
+    </div>
+    <div class="stat reveal" style="--d:160ms">
+      <p class="stat__v"><span class="stat__n" data-to="8" data-dec="0">8</span></p>
+      <p class="stat__k" data-i18n="stats.exits">Exits &amp; IPOs</p>
+    </div>
+    <div class="stat reveal" style="--d:240ms">
+      <p class="stat__v"><span class="stat__n" data-to="6" data-dec="0">6</span></p>
+      <p class="stat__k" data-i18n="stats.regions">Regions worldwide</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="split">
+      <div class="split__aside reveal">
+        <p class="eyebrow" data-i18n="about.eyebrow">Who we are</p>
+        <h2 class="h2" data-i18n="about.title">Capital is the easy part.</h2>
+      </div>
+      <div class="split__main reveal" style="--d:80ms">
+        <p class="prose" data-i18n="about.body1">Since 2011 we have written first cheques…</p>
+        <p class="prose" data-i18n="about.body2">Our partners have founded, scaled and sold…</p>
+        <p class="about__more">
+          <a class="link" href="about.html" data-i18n="about.more">Our history and principles →</a>
+        </p>
+      </div>
+    </div>
+
+    <ul class="points">
+      <li class="point reveal">
+        <h3 class="point__t" data-i18n="about.p1t">First cheque, high conviction</h3>
+        <p class="point__b" data-i18n="about.p1b">We lead seed and Series A rounds…</p>
+      </li>
+      <li class="point reveal" style="--d:80ms">
+        <h3 class="point__t" data-i18n="about.p2t">Operators, not observers</h3>
+        <p class="point__b" data-i18n="about.p2b">Every partner has built a company…</p>
+      </li>
+      <li class="point reveal" style="--d:160ms">
+        <h3 class="point__t" data-i18n="about.p3t">Built for the crossing</h3>
+        <p class="point__b" data-i18n="about.p3b">Seoul to San Francisco…</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     THESIS
+     ============================================================ -->
+<section class="section section--sink" id="thesis">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="thesis.eyebrow">What we look for</p>
+      <h2 class="h2" data-i18n="thesis.title">Four bets we keep making.</h2>
+    </div>
+
+    <ul class="bets">
+      <li class="bet reveal">
+        <span class="bet__n" aria-hidden="true">01</span>
+        <h3 class="bet__t" data-i18n="thesis.t1">Applied AI</h3>
+        <p class="bet__b" data-i18n="thesis.b1">Not models — margins.</p>
+      </li>
+      <li class="bet reveal" style="--d:70ms">
+        <span class="bet__n" aria-hidden="true">02</span>
+        <h3 class="bet__t" data-i18n="thesis.t2">Financial rails</h3>
+        <p class="bet__b" data-i18n="thesis.b2">Money still moves badly across borders.</p>
+      </li>
+      <li class="bet reveal" style="--d:140ms">
+        <span class="bet__n" aria-hidden="true">03</span>
+        <h3 class="bet__t" data-i18n="thesis.t3">Hard things</h3>
+        <p class="bet__b" data-i18n="thesis.b3">Robotics, silicon, bio.</p>
+      </li>
+      <li class="bet reveal" style="--d:210ms">
+        <span class="bet__n" aria-hidden="true">04</span>
+        <h3 class="bet__t" data-i18n="thesis.t4">Climate that pencils</h3>
+        <p class="bet__b" data-i18n="thesis.b4">Decarbonisation that wins on unit economics.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     PORTFOLIO
+     ============================================================ -->
+<section class="section" id="portfolio">
+  <div class="wrap">
+    <div class="section__head reveal">
+      <p class="eyebrow" data-i18n="pf.eyebrow">Portfolio</p>
+      <h2 class="h2" data-i18n="pf.title">Portfolio Directory</h2>
+      <p class="lead pf__lead" data-i18n="pf.lead">Every company below maintains this page itself.</p>
+    </div>
+
+    <!-- Sentence filter — Index Ventures' idea, with a live count added -->
+    <div class="sent reveal">
+      <p class="sent__p">
+        <span class="sent__w" data-i18n="sent.a">Show me</span>
+        <label class="sent__pick">
+          <span class="sr" data-i18n="pf.filters">Industry</span>
+          <select class="sent__sel" data-key="industry"></select>
+        </label>
+        <span class="sent__w" data-i18n="sent.b">companies based in</span>
+        <label class="sent__pick">
+          <span class="sr">Region</span>
+          <select class="sent__sel" data-key="region"></select>
+        </label>
+        <span class="sent__w" data-i18n="sent.c">at</span>
+        <label class="sent__pick">
+          <span class="sr">Stage</span>
+          <select class="sent__sel" data-key="stage"></select>
+        </label>
+        <span class="sent__w" data-i18n="sent.d"></span>
+      </p>
+    </div>
+
+    <div class="pf">
+      <!-- rail -->
+      <aside class="pf__rail" aria-label="Filters">
+        <div class="rail__top">
+          <h2 class="rail__h" data-i18n="pf.filters">Filters</h2>
+          <button class="rail__clear" id="pfClear" type="button" hidden data-i18n="pf.clear">Clear all</button>
+        </div>
+
+        <div class="flags">
+          <button class="flag" data-flag="top"    type="button" aria-pressed="false">
+            <span data-i18n="pf.top">Top company</span>
+          </button>
+          <button class="flag" data-flag="hiring" type="button" aria-pressed="false">
+            <span data-i18n="pf.hiring">Hiring</span>
+          </button>
+        </div>
+
+        <div id="pfRail"></div>
+      </aside>
+
+      <!-- results -->
+      <div class="pf__main">
+        <div class="pf__bar">
+          <div class="search">
+            <svg class="search__i" viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="9" cy="9" r="6.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M13.5 13.5 17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <input class="search__in" id="pfSearch" type="search"
+                   data-i18n-ph="pf.search" placeholder="Search by name, industry or keyword">
+          </div>
+
+          <label class="sort">
+            <span class="sr" data-i18n="pf.sort">Sort</span>
+            <select class="sort__sel" id="pfSort">
+              <option value="az"   data-i18n="pf.sort_az">A–Z</option>
+              <option value="new"  data-i18n="pf.sort_new">Newest first</option>
+              <option value="size" data-i18n="pf.sort_size">Team size</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="pf__count" id="pfCount" role="status" aria-live="polite">80 companies</p>
+
+        <ul class="grid" id="pfGrid"></ul>
+
+        <div class="empty" id="pfEmpty" hidden>
+          <p class="empty__t" data-i18n="pf.none_t">No companies match those filters.</p>
+          <p class="empty__b" data-i18n="pf.none_b">Try removing a filter or searching a different term.</p>
+          <button class="btn btn--ghost" id="pfReset" type="button" data-i18n="pf.reset">Reset filters</button>
+        </div>
+
+        <div class="pf__more" id="pfMoreWrap">
+          <button class="btn btn--ghost" id="pfMore" type="button" data-i18n="pf.more">Load more</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COMPANY PORTAL — the RFP's core differentiator
+     ============================================================ -->
+<section class="section section--dark" id="portal">
+  <div class="wrap">
+    <div class="split">
+      <div class="split__aside reveal">
+        <p class="eyebrow" data-i18n="cms.eyebrow">For portfolio companies</p>
+        <h2 class="h2" data-i18n="cms.title">You own your page.</h2>
+      </div>
+      <div class="split__main reveal" style="--d:80ms">
+        <p class="prose" data-i18n="cms.lead">Horizon issues every portfolio company its own account.</p>
+        <div class="portal__acts">
+          <a class="btn btn--invert" href="cms/index.html" data-i18n="cms.cta">Company login</a>
+          <p class="portal__note" data-i18n="cms.note">Demo only.</p>
+        </div>
+      </div>
+    </div>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step__n" aria-hidden="true">01</span>
+        <h3 class="step__t" data-i18n="cms.s1t">Get your account</h3>
+        <p class="step__b" data-i18n="cms.s1b">We issue an ID and password…</p>
+      </li>
+      <li class="step reveal" style="--d:80ms">
+        <span class="step__n" aria-hidden="true">02</span>
+        <h3 class="step__t" data-i18n="cms.s2t">Publish your profile</h3>
+        <p class="step__b" data-i18n="cms.s2b">Logo, description, photos and links…</p>
+      </li>
+      <li class="step reveal" style="--d:160ms">
+        <span class="step__n" aria-hidden="true">03</span>
+        <h3 class="step__t" data-i18n="cms.s3t">Go live</h3>
+        <p class="step__b" data-i18n="cms.s3b">Once approved, your profile appears instantly.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================
+     NEWS
+     ============================================================ -->
+<section class="section" id="news">
+  <div class="wrap">
+    <div class="section__head news__head reveal">
+      <div>
+        <p class="eyebrow" data-i18n="news.eyebrow">Latest</p>
+        <h2 class="h2" data-i18n="news.title">News &amp; Notes</h2>
+      </div>
+      <a class="link" href="#" onclick="return false" data-i18n="news.all">All posts</a>
+    </div>
+
+    <ul class="posts">
+      <li class="post reveal">
+        <a class="post__a" href="#" onclick="return false">
+          <span class="post__meta"><span class="pill">Fintech</span><time datetime="2026-07-09">09 Jul 2026</time></span>
+          <h3 class="post__t">Nexlify crosses $1B in annualised cross-border volume</h3>
+          <p class="post__b">Six years after our seed cheque, Seoul's quiet payments company is now moving more money than most banks in the region.</p>
+        </a>
+      </li>
+      <li class="post reveal" style="--d:80ms">
+        <a class="post__a" href="#" onclick="return false">
+          <span class="post__meta"><span class="pill">Thesis</span><time datetime="2026-06-24">24 Jun 2026</time></span>
+          <h3 class="post__t">Why we stopped funding models and started funding margins</h3>
+          <p class="post__b">The applied-AI companies that survive the next cycle will be the ones whose customers can name the line item they replaced.</p>
+        </a>
+      </li>
+      <li class="post reveal" style="--d:160ms">
+        <a class="post__a" href="#" onclick="return false">
+          <span class="post__meta"><span class="pill">Firm</span><time datetime="2026-05-30">30 May 2026</time></span>
+          <h3 class="post__t">Horizon IV: $600M to keep writing the first cheque</h3>
+          <p class="post__b">Our fourth fund closes oversubscribed. Same strategy, same cheque size, more reserves for the companies that work.</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     CTA
+     ============================================================ -->
+<section class="cta" id="contact">
+  <div class="wrap cta__in reveal">
+    <h2 class="h2 cta__t" data-i18n="cta.title">If you're building it, we want to hear about it.</h2>
+    <p class="lead cta__l" data-i18n="cta.lead">No warm intro required.</p>
+    <a class="btn btn--primary" href="#" onclick="return false" data-i18n="cta.btn">Send us your deck</a>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="ft">
+  <div class="wrap">
+    <p class="ft__tag" data-i18n="foot.tag">Back the horizon.</p>
+
+    <div class="ft__cols">
+      <nav class="ft__col" aria-labelledby="ftFirm">
+        <h2 class="ft__h" id="ftFirm" data-i18n="foot.firm">Firm</h2>
+        <ul>
+          <li><a href="about.html" data-i18n="nav.about">About</a></li>
+          <li><a href="#thesis"    data-i18n="nav.thesis">Thesis</a></li>
+          <li><a href="team.html"  data-i18n="nav.team">Team</a></li>
+          <li><a href="#news"      data-i18n="nav.news">News</a></li>
+        </ul>
+      </nav>
+
+      <nav class="ft__col" aria-labelledby="ftPf">
+        <h2 class="ft__h" id="ftPf" data-i18n="foot.pf">Portfolio</h2>
+        <ul>
+          <li><a href="#portfolio"     data-i18n="pf.title">Directory</a></li>
+          <li><a href="cms/index.html" data-i18n="nav.login">Company Login</a></li>
+          <li><a href="#"          onclick="return false" data-i18n="pf.hiring">Hiring</a></li>
+        </ul>
+      </nav>
+
+      <nav class="ft__col" aria-labelledby="ftRes">
+        <h2 class="ft__h" id="ftRes" data-i18n="foot.res">Resources</h2>
+        <ul>
+          <li><a href="#contact" data-i18n="nav.contact">Get in touch</a></li>
+          <li><a href="#" onclick="return false">LP Login</a></li>
+          <li><a href="#" onclick="return false">Press</a></li>
+        </ul>
+      </nav>
+
+      <div class="ft__col">
+        <h2 class="ft__h" data-i18n="foot.lang">Language</h2>
+        <div class="lang lang--ft" role="group" data-i18n-aria="foot.lang" aria-label="Language">
+          <a class="lang__btn is-on" data-lang="en" href="index.html" hreflang="en">EN</a>
+          <span class="lang__div" aria-hidden="true"></span>
+          <a class="lang__btn" data-lang="ko" href="ko/index.html" hreflang="ko">한국어</a>
+        </div>
+        <address class="ft__addr">
+          Seoul · San Francisco · Singapore
+        </address>
+      </div>
+    </div>
+
+    <p class="ft__rights" data-i18n="foot.rights">© 2026 Horizon Ventures. Demo site.</p>
+  </div>
+</footer>
+
+<!-- ============================================================
+     DETAIL DRAWER
+     ============================================================ -->
+<div class="dt" id="detail" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Company detail">
+  <div class="dt__scrim" id="dtScrim"></div>
+  <div class="dt__panel">
+    <button class="dt__close" id="dtClose" type="button" data-i18n-aria="co.close" aria-label="Close">
+      <svg viewBox="0 0 20 20" aria-hidden="true" width="18" height="18">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="dt__body" id="dtBody"></div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

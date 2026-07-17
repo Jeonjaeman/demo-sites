@@ -1,0 +1,13 @@
+{
+  "name": "horizon-ventures-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Horizon Ventures — VC portfolio site demo (fictional firm). Static-generated, EN/KO.",
+  "scripts": {
+    "build": "node build.js",
+    "serve": "python -m http.server 8899"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

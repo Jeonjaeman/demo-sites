@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko" class="no-js">
+<head>
+<meta charset="utf-8">
+<script>document.documentElement.className = 'js';</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>최고 관리자 — Horizon Ventures CMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/cms.css">
+</head>
+<body class="cms">
+
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+
+<div class="sh">
+
+  <!-- ============ top bar ============ -->
+  <header class="sh__bar">
+    <div class="sh__brand">
+      <a class="sh__logo logo" href="../index.html">
+        <span class="logo__mark" aria-hidden="true"></span>
+        <span class="logo__txt">HORIZON<span class="logo__sub">VENTURES</span></span>
+      </a>
+      <span class="sh__tag">최고 관리자 · Super Admin</span>
+    </div>
+    <div class="sh__end">
+      <span class="sh__who">admin@horizon.vc</span>
+      <a class="sh__out" href="index.html">로그아웃</a>
+    </div>
+  </header>
+
+  <div class="sh__body">
+
+    <!-- ============ side nav ============ -->
+    <nav class="sh__side" aria-label="관리 메뉴">
+      <div class="sh__nav">
+        <h2 class="sh__h">관리</h2>
+        <a class="sh__a is-cur" href="#queue">검수 대기<span class="sh__n" id="nQueue">0</span></a>
+        <a class="sh__a" href="#accounts">계정 관리<span class="sh__n" id="nAcct">0</span></a>
+        <a class="sh__a" href="#bulk">계정 일괄 생성</a>
+        <a class="sh__a" href="../index.html#portfolio">공개 사이트 보기</a>
+      </div>
+    </nav>
+
+    <!-- ============ main ============ -->
+    <main class="sh__main" id="main">
+      <div class="sh__wrap">
+
+        <header class="sh__head">
+          <h1 class="sh__title">포트폴리오 관리</h1>
+          <p class="sh__sub">
+            각 기업이 자신의 계정으로 프로필을 직접 등록합니다. 관리자는 내용을 검수해 공개 여부만 결정합니다 —
+            80개 기업의 정보를 직접 입력하지 않습니다.
+          </p>
+        </header>
+
+        <!-- ---- tiles ---- -->
+        <div class="tiles">
+          <div class="tile">
+            <p class="tile__n" id="tAcct">0</p>
+            <p class="tile__k">발급 계정</p>
+          </div>
+          <div class="tile tile--ok">
+            <p class="tile__n" id="tLive">0</p>
+            <p class="tile__k">게시 중</p>
+          </div>
+          <div class="tile tile--warn">
+            <p class="tile__n" id="tPending">0</p>
+            <p class="tile__k">검수 대기</p>
+          </div>
+          <div class="tile">
+            <p class="tile__n" id="tEmpty">0</p>
+            <p class="tile__k">미작성</p>
+          </div>
+        </div>
+
+        <!-- ---- approval queue ---- -->
+        <section class="panel" id="queue">
+          <div class="panel__h">
+            <h2 class="panel__t">검수 대기</h2>
+            <p class="panel__note">승인 즉시 공개 포트폴리오에 노출됩니다</p>
+          </div>
+          <div class="panel__b--flush tbl__wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th scope="col">기업</th>
+                  <th scope="col">변경 내용</th>
+                  <th scope="col">제출</th>
+                  <th scope="col">국문</th>
+                  <th scope="col"><span class="sr">작업</span></th>
+                </tr>
+              </thead>
+              <tbody id="queueBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ---- accounts ---- -->
+        <section class="panel" id="accounts">
+          <div class="panel__h">
+            <h2 class="panel__t">계정 관리</h2>
+            <p class="panel__note"><span id="acctShown">0</span>개 표시</p>
+          </div>
+          <div class="panel__b">
+            <label class="sr" for="acctQ">기업 검색</label>
+            <input class="f__in" id="acctQ" type="search" placeholder="기업명 또는 이메일로 검색">
+          </div>
+          <div class="panel__b--flush tbl__wrap">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th scope="col">기업</th>
+                  <th scope="col">담당자 계정</th>
+                  <th scope="col">상태</th>
+                  <th scope="col">최종 수정</th>
+                  <th scope="col"><span class="sr">작업</span></th>
+                </tr>
+              </thead>
+              <tbody id="acctBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ---- bulk create ---- -->
+        <section class="panel" id="bulk">
+          <div class="panel__h">
+            <h2 class="panel__t">계정 일괄 생성</h2>
+            <p class="panel__note">기업명, 이메일 — 한 줄에 하나</p>
+          </div>
+          <div class="panel__b">
+            <div class="bulk">
+              <p class="f__hint">
+                80개 계정을 한 번에 발급합니다. 생성 시 각 담당자에게 초기 비밀번호 설정 링크가 발송되며,
+                관리자는 비밀번호를 보관하지 않습니다.
+              </p>
+              <label class="sr" for="bulkTa">계정 목록</label>
+              <textarea class="bulk__ta" id="bulkTa" spellcheck="false">Nexlify, founders@nexlify.io
+Loomis, hello@loomis.ai
+Verdant, team@verdant.eco</textarea>
+              <div class="bulk__foot">
+                <p class="bulk__msg" id="bulkMsg">3줄 입력됨</p>
+                <button class="btn btn--primary btn--sm" id="bulkGo" type="button">계정 생성</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <p class="f__hint">
+          데모 — 검수 승인·계정 생성은 화면 안에서만 반영되며 서버로 전송되지 않습니다.
+        </p>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/cms.js"></script>
+<script>CMS.initAdmin();</script>
+</body>
+</html>
