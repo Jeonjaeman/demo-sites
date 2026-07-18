@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SALESUP 관리자 백오피스 (데모)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="admin">
+
+<div class="adm-layout">
+  <aside class="adm-side">
+    <a class="logo" href="index.html"><span class="mark">S</span><span>세일즈업<small>ADMIN</small></span></a>
+    <div class="role">최고관리자 · admin@salesup.kr</div>
+    <nav id="admNav">
+      <button data-p="dash" class="on">📊 대시보드</button>
+      <button data-p="members">👥 회원 관리 <span class="cnt" id="cntBadge">3</span></button>
+      <button data-p="companies">🏢 회사 관리</button>
+      <button data-p="posts">📝 게시글 모니터링</button>
+      <button data-p="reports">🚨 신고 처리 <span class="cnt">2</span></button>
+      <button data-p="curation">🎯 메인 큐레이션</button>
+    </nav>
+    <a class="back" href="index.html">← 사용자 사이트로</a>
+  </aside>
+  <main class="adm-main" id="admMain"></main>
+</div>
+
+<!-- 엑셀 업로드 모달 -->
+<div class="modal-bg" id="mExcel">
+  <div class="modal">
+    <button class="mx" data-close>&times;</button>
+    <h3>회사 정보 엑셀 일괄 업로드</h3>
+    <p class="msub">양식: 회사명 · 업종 · 규모 · 지역 (xlsx) — 추후 크롤러 자동 수집으로 대체 예정</p>
+    <div class="excel-zone" id="excelZone"><b>📁 엑셀 파일을 드래그하거나 클릭</b>company_list_양식.xlsx 다운로드</div>
+    <div class="prog" id="excelProg"><i></i></div>
+    <p class="f-hint" id="excelMsg" style="margin-top:10px"></p>
+  </div>
+</div>
+
+<!-- 회사 수기 등록 모달 -->
+<div class="modal-bg" id="mCompany">
+  <div class="modal">
+    <button class="mx" data-close>&times;</button>
+    <h3>회사 수기 등록</h3>
+    <p class="msub">리뷰 대상 회사 기초 정보를 등록합니다.</p>
+    <div class="f-row"><label>회사명</label><input type="text" id="ncName" placeholder="예: 한빛생명" /></div>
+    <div class="f-row"><label>업종</label><input type="text" id="ncInd" placeholder="예: 생명보험" /></div>
+    <div class="f-row"><label>규모</label><input type="text" id="ncSize" placeholder="예: 중견(500명)" /></div>
+    <div class="f-row"><label>지역</label><input type="text" id="ncLoc" placeholder="예: 서울 강남구" /></div>
+    <button class="btn-red submit" id="ncSubmit">등록</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

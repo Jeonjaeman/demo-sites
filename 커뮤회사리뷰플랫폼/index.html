@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>세일즈업 SALESUP — 영업인 커뮤니티 & 회사 리뷰</title>
+<meta name="description" content="영업인들이 실적과 노하우를 공유하고, 회사를 별점으로 리뷰하는 영업 직군 특화 커뮤니티. 질문하면 AI가 1분 내 답변합니다." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+<div class="demo-bar">
+  <b>DEMO</b> 본 사이트는 제안용 데모입니다 — 모든 회사·리뷰·회원 데이터는 가상이며, AI 답변·백엔드는 시뮬레이션으로 동작합니다.
+  <a href="admin.html">관리자 백오피스 →</a>
+</div>
+
+<header class="gnb">
+  <div class="wrap gnb-in">
+    <a class="logo" href="#" data-go="home">
+      <span class="mark">S</span>
+      <span>세일즈업<small>SALESUP</small></span>
+    </a>
+    <nav class="menu" id="gnbMenu">
+      <button data-go="home" class="on">홈</button>
+      <button data-go="board" data-board="all">커뮤니티</button>
+      <button data-go="board" data-board="qna">AI 질문답변</button>
+      <button data-go="review">회사리뷰</button>
+      <button data-go="my">마이페이지</button>
+    </nav>
+    <div class="gnb-right">
+      <div class="gsearch"><span>🔍</span><input id="gSearch" placeholder="회사·게시글 검색" /></div>
+      <span id="authArea"></span>
+    </div>
+  </div>
+</header>
+
+<main id="app"></main>
+
+<footer class="ft">
+  <div class="wrap ft-in">
+    <div>
+      <b>세일즈업 SALESUP</b>
+      <p style="margin-top:8px">영업인을 위한 커뮤니티 & 회사 리뷰 플랫폼 (데모)<br/>모든 데이터는 시연용 가상 데이터입니다.</p>
+    </div>
+    <div class="links">
+      <a href="#">이용약관</a><a href="#">개인정보처리방침</a><a href="#">리뷰 운영정책</a><a href="admin.html">관리자</a>
+    </div>
+  </div>
+</footer>
+
+<nav class="mobile-nav">
+  <div class="mn-in">
+    <button data-go="home" class="on"><span class="ic">🏠</span>홈</button>
+    <button data-go="board" data-board="all"><span class="ic">💬</span>커뮤니티</button>
+    <button data-go="board" data-board="qna"><span class="ic">🤖</span>AI질문</button>
+    <button data-go="review"><span class="ic">⭐</span>회사리뷰</button>
+    <button data-go="my"><span class="ic">👤</span>마이</button>
+  </div>
+</nav>
+
+<!-- 로그인 모달 -->
+<div class="modal-bg" id="mLogin">
+  <div class="modal">
+    <button class="mx" data-close>&times;</button>
+    <h3>로그인</h3>
+    <p class="msub">이메일 인증 기반 회원제 (데모에서는 버튼 클릭으로 체험)</p>
+    <div class="f-row"><label>이메일</label><input type="email" value="demo@salesup.kr" /></div>
+    <div class="f-row"><label>비밀번호</label><input type="password" value="········" /><p class="f-hint">비밀번호는 bcrypt 단방향 암호화로 저장됩니다 (실서비스 기준)</p></div>
+    <button class="btn-red submit" id="doLogin">데모 계정으로 로그인</button>
+    <p class="f-hint" style="text-align:center;margin-top:10px">가입 시 이메일 인증 메일이 발송됩니다 · <a href="#" style="text-decoration:underline">회원가입</a></p>
+  </div>
+</div>
+
+<!-- 글쓰기 모달 -->
+<div class="modal-bg" id="mWrite">
+  <div class="modal wide">
+    <button class="mx" data-close>&times;</button>
+    <h3>게시글 작성</h3>
+    <p class="msub">질문답변 게시판에 등록하면 AI가 약 1분 내 자동으로 답변을 답니다 (데모: 3초)</p>
+    <div class="f-row"><label>게시판</label>
+      <select id="wBoard">
+        <option value="qna">질문답변 (AI 자동답변)</option>
+        <option value="free">자유게시판</option>
+        <option value="record">실적인증</option>
+        <option value="knowhow">노하우공유</option>
+      </select>
+    </div>
+    <div class="f-row"><label>제목</label><input type="text" id="wTitle" placeholder="제목을 입력하세요" /></div>
+    <div class="f-row"><label>내용</label><textarea id="wBody" placeholder="내용을 입력하세요. 웹 에디터(서식·이미지 첨부)는 실서비스에서 제공됩니다."></textarea></div>
+    <div class="f-row"><label>이미지 첨부</label>
+      <div class="upload-box" id="wUpload">📎 클릭하여 이미지 첨부 (최대 5장 · 실적인증 증빙은 자동 블러 처리)</div>
+    </div>
+    <button class="btn-red submit" id="doWrite">등록하기</button>
+  </div>
+</div>
+
+<!-- 리뷰 작성 모달 -->
+<div class="modal-bg" id="mReview">
+  <div class="modal wide">
+    <button class="mx" data-close>&times;</button>
+    <h3>회사 리뷰 작성</h3>
+    <p class="msub">항목별 별점과 한줄평, 장점·단점을 남겨주세요.</p>
+    <div class="anon-note">🔒 <b>익명 보장</b> — 리뷰는 닉네임 없이 익명으로 게시되며, 작성자 식별 정보는 노출되지 않습니다. 특정 개인 실명 언급 시 운영정책에 따라 임시조치될 수 있습니다.</div>
+    <div class="f-row"><label>회사 선택 <span style="color:var(--gray3);font-weight:400">(관리자가 사전 등록한 회사만 선택 가능)</span></label>
+      <select id="rvCompany"></select>
+    </div>
+    <div class="f-row"><label>재직 상태</label>
+      <div class="seg" id="rvStatus"><button class="on">현직</button><button>전직</button></div>
+    </div>
+    <div class="f-row"><label>항목별 별점</label>
+      <div class="star-input" id="rvStars"></div>
+    </div>
+    <div class="f-row"><label>한줄평</label><input type="text" id="rvOne" placeholder="이 회사를 한 문장으로 표현한다면?" /></div>
+    <div class="f-row"><label>장점</label><textarea id="rvPros" style="height:70px" placeholder="영업하기 좋은 점 (인센티브 구조, 리드 지원, 교육 등)"></textarea></div>
+    <div class="f-row"><label>단점</label><textarea id="rvCons" style="height:70px" placeholder="아쉬운 점"></textarea></div>
+    <button class="btn-red submit" id="doReview">익명으로 리뷰 등록</button>
+    <p class="f-hint" style="margin-top:8px">등록된 리뷰는 운영정책(욕설·실명·허위사실) 검수 후 게시됩니다. 리뷰 1건 작성 시 모든 회사 리뷰 열람권이 열립니다.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
