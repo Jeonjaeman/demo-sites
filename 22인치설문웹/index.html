@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA 22인치 설문 키오스크 — 데모 런처</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page">
+  <div class="wrap">
+    <div class="page-head">
+      <div>
+        <h1>🖥️ 22인치 터치 설문 키오스크 데모</h1>
+        <p>오프라인 행사장용 설문 키오스크 2종 + 실시간 통계 대시보드 + 관리자(엑셀 다운로드) 데모입니다.<br>
+        가상의 제품 <b>「NEXA One 스마트 공기청정기」</b> 전시 부스를 가정했습니다.</p>
+      </div>
+      <img src="assets/img/nexa-one.png" alt="NEXA One"
+           style="width:120px;height:120px;object-fit:cover;border-radius:24px;border:1px solid var(--line);box-shadow:var(--shadow)">
+    </div>
+
+    <div class="card-grid">
+      <a class="link-card" href="kiosk1.html">
+        <div class="ic">📝</div>
+        <h3>키오스크 1 — 일반 설문형</h3>
+        <p>객관식 4문항을 한 화면씩 순차 진행. 터치 선택 → 다음 이동 → 완료 후 자동 초기화.</p>
+        <span class="tag">1920×1080 고정 · 터치 UI</span>
+      </a>
+      <a class="link-card" href="kiosk2.html">
+        <div class="ic">✨</div>
+        <h3>키오스크 2 — 특장점 소개 + 투표</h3>
+        <p>제품 특장점 6종 탭 UI + 단일 질문 투표. 응답 직후 실시간 결과(비율·투표수)를 즉시 노출.</p>
+        <span class="tag">탭/슬라이드 · 실시간 결과</span>
+      </a>
+      <a class="link-card" href="dashboard.html">
+        <div class="ic">📊</div>
+        <h3>실시간 통계 대시보드</h3>
+        <p>키오스크 1·2의 응답을 실시간 수합해 참여자 수·문항별 비율을 시각화. 운영석/발표용 화면.</p>
+        <span class="tag">실시간 갱신 · 발표용</span>
+      </a>
+      <a class="link-card" href="admin.html">
+        <div class="ic">🗂️</div>
+        <h3>관리자 — 응답 데이터</h3>
+        <p>누적 응답 전체 조회, 키오스크별 필터, 엑셀(CSV) 다운로드, 데이터 초기화.</p>
+        <span class="tag">엑셀 다운로드</span>
+      </a>
+    </div>
+
+    <div class="note">
+      <b>데모 시연 팁</b><br>
+      · 모든 데이터는 브라우저 <b>localStorage</b>에 저장됩니다 (서버 없이 구동). 첫 접속 시 시연용 응답 109건이 자동 생성됩니다.<br>
+      · <b>대시보드와 키오스크를 각각 다른 탭/창</b>으로 열어두고 키오스크에서 응답하면 대시보드가 실시간으로 갱신되는 것을 확인할 수 있습니다.<br>
+      · 키오스크 화면은 1920×1080 기준으로 제작되어 창 크기에 맞게 자동 축소/확대됩니다. 우측 하단 도구로 전체화면 전환이 가능합니다.<br>
+      · 실제 납품 시에는 DB(웹 호스팅) 연동, 관리자 로그인, 문항 관리 기능이 추가됩니다.
+    </div>
+  </div>
+  <script src="assets/js/store.js"></script>
+  <script>NX.ensureSeed();</script>
+</body>
+</html>

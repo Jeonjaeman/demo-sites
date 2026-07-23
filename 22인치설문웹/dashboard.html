@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>실시간 통계 대시보드 | NEXA</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="kiosk-body">
+  <div class="stage">
+    <header class="k-top">
+      <div class="brand"><span class="logo">N</span>NEXA One <small>실시간 설문 현황</small></div>
+      <div class="badge"><span class="live-chip">LIVE</span> &nbsp; 마지막 응답 <span id="last-ts">—</span></div>
+    </header>
+
+    <div class="dash">
+      <div class="dash-kpis">
+        <div class="kpi hero">
+          <div class="k-label">총 참여자</div>
+          <div class="k-value" id="kpi-all">0<small> 명</small></div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">키오스크 1 · 설문 완료</div>
+          <div class="k-value" id="kpi-k1">0<small> 건</small></div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">키오스크 2 · 투표 참여</div>
+          <div class="k-value" id="kpi-k2">0<small> 건</small></div>
+        </div>
+        <div class="kpi">
+          <div class="k-label">최다 득표 특장점</div>
+          <div class="k-value" id="kpi-top" style="font-size:34px;line-height:1.4">—</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-col">
+          <div class="chart-card">
+            <h4>✨ 키오스크 2 — 기대되는 특장점 투표</h4>
+            <div class="sub">응답 직후 관람객 화면에도 동일 결과가 노출됩니다</div>
+            <div class="mini-bars" id="chart-k2"></div>
+          </div>
+          <div class="chart-card">
+            <h4>💜 키오스크 1 — Q4. 추천 의향</h4>
+            <div class="sub">NPS성 문항 · 긍정 응답 비율 확인용</div>
+            <div class="mini-bars" id="chart-q4"></div>
+          </div>
+        </div>
+        <div class="dash-col">
+          <div class="chart-card">
+            <h4>🤖 Q1. 가장 마음에 드는 기능</h4>
+            <div class="mini-bars" id="chart-q1"></div>
+          </div>
+          <div class="chart-card">
+            <h4>💰 Q2. 구매 시 최우선 고려 요소</h4>
+            <div class="mini-bars" id="chart-q2"></div>
+          </div>
+          <div class="chart-card">
+            <h4>🏷️ Q3. 적정 가격대</h4>
+            <div class="mini-bars" id="chart-q3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="corner-tools">
+    <a href="index.html">🏠 런처</a>
+    <button id="btn-demo">⚡ 응답 5건 시뮬레이션</button>
+    <button id="btn-fs">⛶ 전체화면</button>
+  </div>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

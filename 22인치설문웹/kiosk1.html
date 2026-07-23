@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>키오스크 1 — 일반 설문형 | NEXA</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="kiosk-body">
+  <div class="stage">
+    <header class="k-top">
+      <div class="brand"><span class="logo">N</span>NEXA One <small>스마트 공기청정기</small></div>
+      <div class="badge">📝 방문객 설문 · 약 30초 소요</div>
+    </header>
+
+    <!-- 대기 화면 -->
+    <section id="scr-attract" class="attract">
+      <img class="hero-img" src="assets/img/nexa-one.png" alt="NEXA One 스마트 공기청정기">
+      <h1>NEXA One, <span class="hl">어떠셨나요?</span></h1>
+      <p>4개의 간단한 질문에 답해주시면 추첨을 통해 사은품을 드립니다.</p>
+      <div class="tap-hint">화면을 터치하여 시작하기</div>
+    </section>
+
+    <!-- 설문 화면 -->
+    <section id="scr-survey" class="survey hidden">
+      <div class="progress-row">
+        <div class="progress-label" id="progress-label">1 / 4</div>
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <h2 class="q-title" id="q-title"></h2>
+      <div class="opt-grid" id="opt-grid"></div>
+      <div class="nav-row">
+        <button class="nav-btn" id="btn-prev">← 이전</button>
+        <button class="nav-btn primary" id="btn-next" disabled>다음 →</button>
+      </div>
+    </section>
+
+    <!-- 완료 화면 -->
+    <section id="scr-done" class="done hidden">
+      <div class="check">✓</div>
+      <h2>소중한 의견 감사합니다!</h2>
+      <p>응답이 정상적으로 저장되었습니다.<br>부스 스태프에게 사은품 응모권을 받아가세요 🎁</p>
+      <div class="countdown"><span id="cd">7</span>초 후 처음 화면으로 돌아갑니다</div>
+    </section>
+
+    <footer class="k-bottom">응답은 통계 목적으로만 사용됩니다 · NEXA Electronics</footer>
+
+    <!-- 설문 참여 동의 모달 -->
+    <div id="consent-modal" class="modal-overlay hidden">
+      <div class="modal">
+        <h3>📋 설문 참여 안내</h3>
+        <p>본 설문은 <b>객관식 4문항, 약 30초</b>가 소요됩니다.<br>
+        응답은 익명으로 수집되며 제품 개선을 위한 <b>통계 목적으로만</b> 사용됩니다.</p>
+        <div class="fine">
+          · 이름, 연락처 등 개인정보는 수집하지 않습니다.<br>
+          · 응답 데이터는 행사 종료 후 통계 처리되며 개별 응답은 식별되지 않습니다.
+        </div>
+        <div class="modal-btns">
+          <button class="nav-btn" id="btn-consent-cancel">취소</button>
+          <button class="nav-btn primary" id="btn-consent-ok">동의하고 시작하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="corner-tools">
+    <a href="index.html">🏠 런처</a>
+    <button id="btn-fs">⛶ 전체화면</button>
+  </div>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/kiosk1.js"></script>
+</body>
+</html>

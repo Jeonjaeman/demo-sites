@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>키오스크 2 — 특장점 소개 + 투표 | NEXA</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="kiosk-body">
+  <div class="stage">
+    <header class="k-top">
+      <div class="brand"><span class="logo">N</span>NEXA One <small>6가지 특장점</small></div>
+      <div class="badge">✨ 특장점을 살펴보고 한 표를 남겨주세요</div>
+    </header>
+
+    <div class="k2-layout">
+      <!-- 좌측 : 특장점 탭 -->
+      <section class="k2-left">
+        <div class="tab-bar" id="tab-bar"></div>
+        <div class="tab-body fade-in" id="tab-body"></div>
+      </section>
+
+      <!-- 우측 : 투표 / 결과 -->
+      <section class="k2-right">
+        <div class="vote-card" id="vote-card">
+          <h3 id="vote-title"></h3>
+          <div class="vote-list" id="vote-list"></div>
+        </div>
+        <div class="vote-card hidden" id="result-card">
+          <h3>실시간 투표 현황 <span class="live-chip" style="margin-left:14px">LIVE</span></h3>
+          <div class="result-list" id="result-list"></div>
+          <div class="countdown" style="text-align:center;margin-top:20px">
+            <span id="cd">10</span>초 후 투표 화면으로 돌아갑니다
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="k-bottom">응답은 통계 목적으로만 사용됩니다 · NEXA Electronics</footer>
+  </div>
+
+  <div class="corner-tools">
+    <a href="index.html">🏠 런처</a>
+    <button id="btn-fs">⛶ 전체화면</button>
+  </div>
+
+  <script src="assets/js/store.js"></script>
+  <script src="assets/js/kiosk2.js"></script>
+</body>
+</html>
