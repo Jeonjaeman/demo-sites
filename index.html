@@ -93,9 +93,9 @@
 <script>
   // 데모 목록 — cat: home(홈페이지·브랜드) / admin(관리자·대시보드) / platform(플랫폼·서비스)
   const DEMOS = [
+    { name:"가족 소통·웰니스 앱 (RN 24화면)", en:"HANSANG", cat:"platform", desc:"성인 자녀와 부모를 하루 1회 공동 미션으로 잇는 가족 웰니스 앱 · RFP 24개 화면 전부 폰프레임 인터랙티브 구현(온보딩·미션 인증·재료 수집→레시피 해제·에이슬립 수면 리포트·걸음 랭킹·설정) · 힉스필드 비주얼", url:"./가족소통앱/index.html", status:"live", g:"linear-gradient(135deg,#2B2118,#E85F1E 58%,#FFB673)", here:true },
     { name:"22인치 터치 설문 키오스크 2종", en:"NEXA SURVEY", cat:"admin", desc:"행사장 설문 키오스크 2종(4문항 순차 설문·특장점 6탭+실시간 투표 결과) · 실시간 통계 대시보드 · 관리자 로그인+엑셀 다운로드 · 1920×1080 고정형 터치 UI·제스처 차단·동의 모달 · 힉스필드 비주얼", url:"./22인치설문웹/index.html", status:"live", g:"linear-gradient(135deg,#0b1220,#22d3ee 58%,#818cf8)", here:true },
     { name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결", url:"./forme-fit/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true },
-    { name:"글로벌 투자사(VC) 포트폴리오", en:"HORIZON", cat:"home", desc:"VC 공식 홈페이지 + 포트폴리오 80개사 · 영/국문 로케일별 실제 URL 165페이지 정적생성(hreflang·사이트맵) · 문장형 필터+다축 레일 · 기업이 직접 프로필을 올리는 2단계 권한 CMS(60자 규격·검수승인·실시간 카드 미리보기) · YC 소스분석 기반", url:"./글로벌투자사/index.html", status:"live", g:"linear-gradient(135deg,#16140F,#6E6A5C 55%,#FF5100)", here:true },
     { name:"청년-지역 매칭 플랫폼", en:"OUTBOUNDER", cat:"platform", desc:"로컬 일경험 매칭 데모 · 청년 셸(공고탐색·매칭적합도·지원·마이페이지)+관리자 셸(성과대시보드·지원자심사·콘텐츠·파트너리포트) 실연동 폐쇄순환 · 도트맵·카운트업·카드스택 스크롤 연출 · 힉스필드 비주얼", url:"./청년지역매칭/index.html", status:"live", g:"linear-gradient(135deg,#0e8c5a,#00b670 55%,#f05519)", here:true },
     { name:"탐정 법인·사무소 반응형 홈페이지", en:"JEONGDO", cat:"home", desc:"영상 인트로·핀 스크럽·마퀴 등 스크롤 인터랙션 중심 브랜드 홈페이지 · 업무 8분야·7단계 절차·FAQ·상담폼→관리자 접수 연동 · GSAP/Lenis 로컬 번들로 오프라인 완전 동작", url:"./탐정법인/index.html", status:"live", g:"linear-gradient(135deg,#000C24,#123C78 58%,#C9A55C)", here:true },
     { name:"AI 교수·학습 플랫폼 운영 전환", en:"CAMPUS AI", cat:"platform", desc:"AnythingLLM 기반 교육 플랫폼의 RAG 인용·3역할 권한·보안·재현 배포·복구·인수인계 증거를 한 번에 검수하는 위시캣 제안 데모", url:"https://campus-ai-proofbook-20260716.jeonjaeman9668.chatgpt.site", status:"live", g:"linear-gradient(135deg,#04130f,#37e3a1 58%,#0d7c63)" },
@@ -116,6 +116,7 @@
     { name:"중고 건설장비", en:"JANGIN", cat:"platform", desc:"굴삭기 등 중고 건설장비 거래 플랫폼", url:"https://jeonjaeman.github.io/jangin-demo/", status:"live", g:"linear-gradient(135deg,#6b5a1b,#352b0f)" },
     { name:"매출·인보이스 관리", en:"GOLD", cat:"admin", desc:"GoldInvoice 매출/정산 관리 서비스", url:"https://jeonjaeman.github.io/goldinvoice/", status:"live", g:"linear-gradient(135deg,#1b5a4a,#0f2c25)" },
     { name:"보안업체", en:"SECURION", cat:"home", desc:"기업 보안·관제 서비스 브랜드", url:"https://jeonjaeman.github.io/securion-demo/", status:"live", g:"linear-gradient(135deg,#23314f,#141d30)" },
+    { name:"글로벌 투자사(VC) 포트폴리오", en:"HORIZON", cat:"home", desc:"VC 공식 홈페이지 + 포트폴리오 80개사 · 영/국문 로케일별 실제 URL 165페이지 정적생성(hreflang·사이트맵) · 문장형 필터+다축 레일 · 기업이 직접 프로필을 올리는 2단계 권한 CMS(60자 규격·검수승인·실시간 카드 미리보기) · YC 소스분석 기반", url:"./글로벌투자사/index.html", status:"live", g:"linear-gradient(135deg,#16140F,#6E6A5C 55%,#FF5100)", here:true },
     { name:"업무요청 접수", en:"AS", cat:"admin", desc:"AS·업무요청 접수 관리 시스템", url:"https://jeonjaeman.github.io/as-demo/", status:"live", g:"linear-gradient(135deg,#2f4a6b,#172638)" },
     { name:"회사제품 소개", en:"SOON", cat:"home", desc:"준비 중인 데모입니다", url:"#", status:"soon", g:"linear-gradient(135deg,#2a3344,#1a2130)" }
   ];
