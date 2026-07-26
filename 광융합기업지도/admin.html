@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMINA 관리자 — 광융합기업 산업지도</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23061B31'/><circle cx='50' cy='42' r='15' fill='%23533AFD'/><path d='M50 57l-14 26h28z' fill='%23533AFD'/></svg>">
+</head>
+<body class="admin-body">
+<div class="adm">
+  <aside class="adm-side">
+    <a class="logo" href="index.html">
+      <span class="logo-mk">◎</span>
+      <span><b>LUMINA</b><small>ADMIN</small></span>
+    </a>
+    <div class="adm-cap">운영</div>
+    <nav class="adm-nav">
+      <button class="on" data-p="dash"><span>📊</span>대시보드</button>
+      <button data-p="data"><span>🏢</span>기업 데이터</button>
+      <button data-p="geo"><span>📍</span>지오코딩<span class="n">3</span></button>
+    </nav>
+    <div class="adm-cap">착수 전 정리</div>
+    <nav class="adm-nav">
+      <button data-p="scope"><span>⏱</span>범위 구분</button>
+      <button data-p="risks"><span>⚠️</span>검토 항목<span class="n">6</span></button>
+    </nav>
+    <div class="adm-foot">
+      과업지시서 전문<br>
+      <a href="공고 및 과업지시서.txt">공고·과업지시서.txt</a><br><br>
+      <a href="index.html">← 지도 화면으로</a>
+    </div>
+  </aside>
+
+  <main class="adm-main">
+    <div class="adm-top">
+      <h1 id="aTitle">대시보드</h1>
+      <span class="crumb" id="aCrumb"></span>
+      <div class="r">
+        <span class="pill p-brand">1차 프로토타입 범위</span>
+      </div>
+    </div>
+    <div class="adm-body" id="admBody"></div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

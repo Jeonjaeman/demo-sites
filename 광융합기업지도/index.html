@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUMINA — 광융합기업 산업지도</title>
+<meta name="description" content="위치 기반 광융합기업 탐색 — 지도 클러스터링·다중 필터·기업 상세 (프로토타입 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23533AFD'/><circle cx='50' cy='42' r='15' fill='white'/><path d='M50 57l-14 26h28z' fill='white'/></svg>">
+</head>
+<body>
+
+<header class="hd">
+  <a class="logo" href="index.html">
+    <span class="logo-mk">◎</span>
+    <span><b>LUMINA</b><small>광융합기업 산업지도</small></span>
+  </a>
+  <nav class="hd-nav">
+    <a class="on" href="index.html">지도 탐색</a>
+    <a href="admin.html">관리자</a>
+  </nav>
+  <div class="hd-r">
+    <span class="badge-proto">1차 프로토타입 범위</span>
+    <span class="faint" style="font-size:12px">표본 <b id="total" class="mono">0</b>개사</span>
+  </div>
+</header>
+
+<div class="app">
+  <!-- 좌측 패널 (과업지시서 3.1 ② 좌우 2분할) -->
+  <aside class="panel">
+    <div class="sheet-grip"></div>
+    <div class="panel-top">
+      <div class="search">
+        🔎<input id="q" placeholder="기업명 · 업종 · 주소 · 제품 검색">
+      </div>
+      <div class="filters" id="filters"></div>
+    </div>
+
+    <div class="panel-meta">
+      <b id="cnt" class="mono">0</b>개사
+      <span class="faint" style="font-size:11.5px">· DOM <span id="domCnt" class="mono">0</span>개 렌더</span>
+      <span class="sort" onclick="toast('정렬 옵션 — 이름순 · 매출순 · 거리순 (데모)')">정렬 ▾</span>
+    </div>
+
+    <div class="list" id="list"><div class="list-inner" id="listInner"></div></div>
+  </aside>
+
+  <!-- 지도 -->
+  <main class="map-wrap" id="mapWrap">
+    <div class="map" id="map"></div>
+
+    <button class="research" id="research">📍 현재 지도 영역 내 재검색</button>
+
+    <div class="map-ctl">
+      <button class="mbtn" id="zoomIn" title="확대">＋</button>
+      <div class="zoom-lv" id="zoomLv">Z1</div>
+      <button class="mbtn" id="zoomOut" title="축소">−</button>
+      <button class="mbtn" onclick="S.pan={x:0,y:0};S.zoom=1;S.bbox=null;render();toast('전체 보기로 돌아왔습니다')" title="전체 보기">⌂</button>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <!-- 상세 패널 / 모바일 바텀시트 -->
+    <section class="detail" id="detail">
+      <div class="dt-hd">
+        <button class="dt-close" id="dtClose">✕</button>
+        <h2 id="dtName"></h2>
+        <p class="sub" id="dtSub"></p>
+      </div>
+      <div class="dt-body" id="dtBody"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
