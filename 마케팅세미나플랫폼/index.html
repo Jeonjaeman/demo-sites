@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세미나56 — 전국 순회 마케팅 세미나</title>
+<meta name="description" content="전국 56개 지역을 찾아가는 소상공인 마케팅 세미나 — 지역·회차 선택, 온라인 예약·결제 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FC1C49'/><path d='M50 22c-12 0-22 10-22 22 0 16 22 34 22 34s22-18 22-34c0-12-10-22-22-22z' fill='white'/><circle cx='50' cy='44' r='8' fill='%23FC1C49'/></svg>">
+</head>
+<body>
+
+<div class="topbar">🎯 8월 회차 접수 중 · 전국 <b>56개 지역</b> 순회 · 지역별 <b>선착순 60명</b></div>
+
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="#top">
+      <span class="logo-mark">56</span>
+      <span><b>세미나56</b><small>SEMINAR56</small></span>
+    </a>
+    <nav class="gnb">
+      <a href="#curri">커리큘럼</a>
+      <a href="#tutor">강사</a>
+      <a href="#calc">수익 계산</a>
+      <a href="#sessions">지역·일정</a>
+      <a href="#faq">자주 묻는 질문</a>
+    </nav>
+    <a class="header-cta" href="#sessions">내 지역 신청하기</a>
+  </div>
+</header>
+
+<!-- 히어로 -->
+<section class="hero" id="top">
+  <div class="hero-bg" style="background-image:url('assets/img/hero.jpg')"></div>
+  <div class="hero-in">
+    <div class="hero-badge"><span class="pulse"></span>8월 회차 접수 중 · 12개 지역 마감 임박</div>
+    <h1>광고비는 줄이고<br>단골은 늘리는 법,<br><em>대표님 동네로 찾아갑니다</em></h1>
+    <p>서울까지 올라오지 않으셔도 됩니다.<br>전국 56개 지역에서 열리는 하루 3시간 실전 마케팅 세미나입니다.</p>
+    <div class="hero-cta">
+      <a class="btn-hero" href="#sessions">📍 내 지역 일정 보기</a>
+      <a class="btn-hero-line" href="#calc">💰 내 매출 얼마나 오를까?</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat"><b id="stRegion">0</b><span>전국 순회 지역</span></div>
+      <div class="hstat"><b id="stGrad">0</b><span>누적 수료 대표님</span></div>
+      <div class="hstat"><b id="stSat">0</b><span>만족도 (5점 만점)</span></div>
+      <div class="hstat"><b id="stRe">0</b><span>재수강·지인 추천율</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 문제 제기 -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">이런 대표님을 위한 세미나</span>
+      <h2>매달 광고비는 나가는데<br>왜 손님은 그대로일까요?</h2>
+    </div>
+    <div class="pain-grid">
+      <div class="pain rv"><span class="pi">💸</span><h3>광고비만 새고 있습니다</h3>
+        <p>대행사에 맡겼는데 뭘 하는지 모르겠고, 끊자니 매출이 떨어질까 불안합니다.</p></div>
+      <div class="pain rv rv-1"><span class="pi">🔍</span><h3>검색하면 우리 가게가 없습니다</h3>
+        <p>바로 옆 가게는 위에 뜨는데, 우리는 한참 내려야 보입니다. 이유를 모르겠습니다.</p></div>
+      <div class="pain rv rv-2"><span class="pi">🌀</span><h3>배울 곳이 서울에만 있습니다</h3>
+        <p>지방에서 하루 문 닫고 올라가기엔 부담이 큽니다. 온라인 강의는 끝까지 못 봤습니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 커리큘럼 -->
+<section class="sec gray" id="curri">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">커리큘럼</span>
+      <h2>하루 3시간, 바로 쓰는 것만</h2>
+      <p>이론은 걷어냈습니다. 세미나가 끝나면 그날 바로 적용할 수 있는 것만 다룹니다.</p>
+    </div>
+    <div class="curri" id="curriList"></div>
+  </div>
+</section>
+
+<!-- 강사 -->
+<section class="sec" id="tutor">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">강사 소개</span>
+      <h2>현장에서 직접 해본 사람이 말합니다</h2>
+    </div>
+    <div class="tutor rv">
+      <div class="tutor-photo">👨‍🏫</div>
+      <div class="tutor-b">
+        <h3>강○○ 대표</h3>
+        <div class="role">세미나56 대표 강사 · 前 종합광고대행사 AE</div>
+        <p>10년간 대행사에서 대기업 캠페인을 맡다가, 정작 도움이 필요한 곳은 동네 가게라는 걸 알고 나왔습니다.
+        지금까지 전국을 돌며 2,800여 명의 대표님을 만났고, 대부분 광고비를 줄이면서 매출을 지켰습니다.</p>
+        <div class="tutor-tags">
+          <span class="ttag">누적 강연 340회</span>
+          <span class="ttag">소상공인 컨설팅 1,200건</span>
+          <span class="ttag">지자체 교육 위촉강사</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 수익 계산기 (요구사항 2-1) -->
+<section class="sec gray" id="calc">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">수익 계산</span>
+      <h2>대표님 가게는 얼마나 오를까요?</h2>
+      <p>슬라이더를 움직여 지금 상황을 넣어 보세요. 수강생 평균 개선치로 계산해 드립니다.</p>
+    </div>
+
+    <div class="calc rv">
+      <div class="calc-head">
+        <h3>💰 예상 매출 개선 계산기</h3>
+        <p>월 방문객 · 객단가 · 재방문율 3가지만 입력하면 됩니다</p>
+      </div>
+      <div class="calc-body">
+        <div class="calc-in">
+          <div class="cfield">
+            <label>월 방문객 수 <span class="v" id="cVisitors">300명</span></label>
+            <input type="range" id="rVisitors" min="50" max="2000" step="50" value="300">
+            <div class="range-lbl"><span>50명</span><span>2,000명</span></div>
+          </div>
+          <div class="cfield">
+            <label>평균 객단가 <span class="v" id="cPrice">15,000원</span></label>
+            <input type="range" id="rPrice" min="5000" max="100000" step="1000" value="15000">
+            <div class="range-lbl"><span>5천원</span><span>10만원</span></div>
+          </div>
+          <div class="cfield" style="margin-bottom:0">
+            <label>현재 재방문율 <span class="v" id="cRepeat">20%</span></label>
+            <input type="range" id="rRepeat" min="0" max="60" step="5" value="20">
+            <div class="range-lbl"><span>0%</span><span>60%</span></div>
+          </div>
+        </div>
+        <div class="calc-out">
+          <div class="calc-row"><span class="k">현재 월 매출</span><span class="v" id="outNow">-</span></div>
+          <div class="calc-row"><span class="k">개선 후 예상 매출</span><span class="v" id="outAfter">-</span></div>
+          <div class="calc-row"><span class="k">절감되는 광고비</span><span class="v" id="outAd" style="color:var(--good)">-</span></div>
+          <div class="calc-total">
+            <div class="lbl">월 예상 개선 효과</div>
+            <div class="amt" id="outGain" data-v="0">+0원</div>
+          </div>
+          <p class="calc-note">
+            수강생 평균 개선치(신규 유입 +35%, 재방문율 +12%p, 광고비 -40%)를 적용한 <b>참고용 추정치</b>입니다.<br>
+            업종·상권에 따라 결과는 달라질 수 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 지역·회차 (요구사항 2-2) -->
+<section class="sec" id="sessions">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">지역 · 일정</span>
+      <h2>내 지역 일정을 확인하세요</h2>
+      <p>지역별 <b>선착순 60명</b>으로 마감됩니다. 마감된 회차는 다음 순회 때 알림을 보내 드립니다.</p>
+    </div>
+
+    <div class="region-filter" id="regionFilter"></div>
+    <div class="sess-grid" id="sessGrid"></div>
+
+    <p style="text-align:center;font-size:13px;color:var(--ink-40);margin-top:26px;line-height:1.8">
+      💡 잔여 좌석은 <b>결제 완료 + 가상계좌 입금 대기</b>를 모두 반영해 계산됩니다.<br>
+      입금 기한이 지나면 자동으로 좌석이 풀리고 대기하신 분께 알림톡이 발송됩니다.
+    </p>
+  </div>
+</section>
+
+<!-- 후기 -->
+<section class="sec gray">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">수강 후기</span>
+      <h2>먼저 들으신 대표님들의 이야기</h2>
+    </div>
+    <div class="rev-grid" id="revList"></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <span class="sec-tag">자주 묻는 질문</span>
+      <h2>궁금한 점이 있으신가요?</h2>
+    </div>
+    <div class="faq" id="faqList"></div>
+  </div>
+</section>
+
+<!-- 최종 CTA -->
+<section class="final">
+  <div class="wrap">
+    <h2 class="rv">올해는 광고비 때문에<br>고민하지 않으셨으면 합니다</h2>
+    <p class="rv rv-1">전국 56개 지역 · 지역별 선착순 60명 · 참가비 99,000원 (교재 포함)</p>
+    <div class="hero-cta rv rv-2" style="margin-top:30px">
+      <a class="btn-hero" href="#sessions">📍 내 지역 신청하기</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-in">
+    <div>
+      <b>세미나56</b><br>
+      전국 순회 소상공인 마케팅 세미나 (제안용 데모)<br>
+      본 사이트의 모든 일정·후기·수치는 가상 데이터입니다.
+    </div>
+    <div>
+      <b>바로가기</b><br>
+      <a href="#curri">커리큘럼</a> · <a href="#sessions">지역 일정</a><br>
+      <a href="admin.html">워드프레스 관리자 (데모)</a><br>
+      <a href="분석/기획_설계.md">기획·설계 문서</a>
+    </div>
+  </div>
+</footer>
+
+<!-- 채널톡 위젯 (요구사항 2-1) -->
+<button class="channel" onclick="toast('💬 채널톡 상담 위젯 — 실제 구축 시 스크립트 삽입으로 연동됩니다')">
+  💬<span class="dot"></span>
+</button>
+
+<!-- 예약 모달 -->
+<div class="modal-back" id="bookModal">
+  <div class="modal">
+    <div class="modal-hd">
+      <button class="modal-x" onclick="closeBook()">✕</button>
+      <h3 id="mTitle">신청 정보 입력</h3>
+      <p class="sub" id="mSub"></p>
+      <div class="steps">
+        <span class="step on"></span><span class="step"></span><span class="step"></span>
+      </div>
+    </div>
+    <div class="modal-bd" id="mBody"></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

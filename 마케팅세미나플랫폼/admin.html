@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>세미나56 · 알림판 — 워드프레스 관리자 (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%231D2327'/><circle cx='50' cy='50' r='28' fill='none' stroke='white' stroke-width='6'/><path d='M50 30v22l14 8' stroke='white' stroke-width='6' fill='none' stroke-linecap='round'/></svg>">
+</head>
+<body>
+<div class="wp">
+  <aside class="wp-side">
+    <div class="wp-logo">
+      <span style="width:26px;height:26px;border-radius:5px;background:#2271B1;display:grid;place-items:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">56</span>
+      <div><b>세미나56</b><small>WORDPRESS</small></div>
+    </div>
+    <nav class="wp-nav">
+      <div class="grp">운영</div>
+      <button class="on" data-p="dash"><span>📊</span>알림판</button>
+      <button data-p="sessions"><span>📅</span>세미나 회차</button>
+      <button data-p="bookings"><span>👥</span>예약자 관리<span class="n">2</span></button>
+      <button data-p="alim"><span>💬</span>알림톡 템플릿<span class="n">1</span></button>
+
+      <div class="grp">구축 제안</div>
+      <button data-p="regions"><span>🗂</span>지역 페이지</button>
+      <button data-p="risks"><span>⚠️</span>검토 항목</button>
+    </nav>
+  </aside>
+
+  <main class="wp-main">
+    <div class="wp-bar">
+      <a href="index.html">🏠 사이트 보기</a>
+      <span style="opacity:.6">WordPress 6.x · WooCommerce</span>
+      <div class="right">
+        <span style="opacity:.75">안녕하세요, <b>운영담당자</b>님</span>
+      </div>
+    </div>
+    <div class="wp-body" id="wpBody"></div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
