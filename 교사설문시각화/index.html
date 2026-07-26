@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLASSPULSE — 2026 교직문화 인식 조사</title>
+<meta name="description" content="전국 초·중·고 교원 대상 교직문화 설문 — 응답 화면 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23007DA0'/><path d='M22 62l16-18 14 12 24-28' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+</head>
+<body>
+
+<div class="progress-top"><i id="progressBar"></i></div>
+
+<div class="survey">
+  <div class="sv-bg" style="background-image:url('assets/img/bg.jpg')"></div>
+
+  <div class="sv-head">
+    <div class="logo">
+      <span class="logo-mark">C</span>
+      <div><b id="svTitle">교직문화 인식 조사</b><small id="svRound">제7차</small></div>
+    </div>
+    <div class="right">
+      <span class="saved-tag" id="savedTag" style="opacity:.55"><span class="dot-live"></span>자동 저장</span>
+      <span class="step-pill" id="stepPill">참여 확인</span>
+    </div>
+  </div>
+
+  <div class="sv-body">
+
+    <!-- 1. 참여 확인 -->
+    <div class="sv-card narrow" data-step="auth">
+      <h1 class="t">참여 확인</h1>
+      <p class="lead">학교로 안내된 <b>학교 코드</b>와 <b>1회용 참여 토큰</b>을 입력해 주세요.</p>
+
+      <div class="field">
+        <label>학교 코드</label>
+        <input type="text" id="schoolCode" value="S1204" maxlength="5" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>참여 토큰 (6자리)</label>
+        <input type="text" id="tokenInput" placeholder="예: K7M2QP" maxlength="6" autocomplete="off">
+        <p class="hint">토큰은 1회만 사용됩니다 · 데모에서는 아무 6자리나 입력하시면 됩니다</p>
+      </div>
+
+      <div class="notice">
+        🔒 <b>익명 조사입니다.</b> 이름·이메일 등 개인을 식별할 수 있는 정보는 수집하지 않습니다.
+        참여 여부만 별도로 기록되며 응답 내용과는 연결되지 않습니다.
+        결과는 <b>최소 5명 이상</b>이 모인 집단 단위로만 공개됩니다.
+      </div>
+
+      <button class="btn-main" id="btnAuth">시작하기</button>
+    </div>
+
+    <!-- 2. 응답자 정보 -->
+    <div class="sv-card hide" data-step="profile">
+      <h1 class="t">응답자 정보</h1>
+      <p class="lead">통계 분석에만 사용되며, 개인을 특정하는 데 쓰이지 않습니다.</p>
+
+      <div class="field"><label>지역</label><select id="pRegion"></select></div>
+      <div class="field-row">
+        <div class="field"><label>학교급</label><select id="pLevel"></select></div>
+        <div class="field"><label>직위</label><select id="pRole"></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>교직 경력</label><select id="pCareer"></select></div>
+        <div class="field"><label>성별</label><select id="pGender"></select></div>
+      </div>
+
+      <button class="btn-main" id="btnProfile">다음</button>
+    </div>
+
+    <!-- 3. 리커트 문항 -->
+    <div class="sv-card hide" data-step="q">
+      <div class="q-num" id="qNum"></div>
+      <div class="q-text" id="qText"></div>
+      <p class="q-sub">키보드 <b>1~5</b> 키로도 선택할 수 있습니다</p>
+
+      <div class="likert" id="likert"></div>
+
+      <div class="nav-row">
+        <button class="btn-line" id="btnPrev">← 이전</button>
+        <button class="btn-main" id="btnNext">다음</button>
+      </div>
+    </div>
+
+    <!-- 4. 주관식 -->
+    <div class="sv-card hide" data-step="free">
+      <div class="q-num">마지막 문항 · 주관식</div>
+      <div class="q-text">교직 문화가 나아지기 위해 가장 먼저 바뀌어야 할 것은 무엇이라고 생각하십니까?</div>
+      <p class="q-sub">자유롭게 작성해 주세요. 작성하지 않고 제출하셔도 됩니다.</p>
+
+      <div class="field">
+        <textarea id="freeText" maxlength="500" placeholder="의견을 자유롭게 적어 주세요"></textarea>
+        <div class="char-count" id="charCount">0 / 500자</div>
+      </div>
+
+      <div class="notice">
+        ℹ️ 주관식 답변에 <b>학교명·개인 이름이 포함되면 공개 시 자동으로 가려집니다.</b>
+      </div>
+
+      <button class="btn-main" id="btnFree">응답 제출하기</button>
+    </div>
+
+    <!-- 5. 완료 -->
+    <div class="sv-card narrow hide" data-step="done">
+      <div class="done-ico">✓</div>
+      <h1 class="t" style="text-align:center">응답이 제출되었습니다</h1>
+      <p class="lead" style="text-align:center">참여해 주셔서 감사합니다.<br>결과는 조사 종료 후 집계되어 공개됩니다.</p>
+
+      <div style="margin-top:22px" id="doneSummary"></div>
+
+      <div class="notice" style="margin-top:20px">
+        📊 결과는 <b>최소 5명 이상 모인 집단</b> 단위로만 공개됩니다.
+        응답자가 적은 집단은 개인이 특정될 수 있어 수치를 표시하지 않습니다.
+      </div>
+
+      <button class="btn-line" id="btnRestart" style="width:100%;margin-top:20px">🔄 데모 다시 체험하기</button>
+      <a class="btn-line" href="dashboard.html" style="width:100%;margin-top:10px;display:grid;place-items:center">📊 관리자 대시보드 보기</a>
+    </div>
+
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/survey.js"></script>
+</body>
+</html>

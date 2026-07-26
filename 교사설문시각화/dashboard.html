@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLASSPULSE — 관리자 통계 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23509EE3'/><path d='M28 72V44M50 72V28M72 72V56' stroke='white' stroke-width='10' stroke-linecap='round'/></svg>">
+</head>
+<body>
+<div class="dash">
+  <aside class="d-side">
+    <div class="logo">
+      <span class="logo-mark" style="background:var(--blue)">C</span>
+      <div><b>CLASSPULSE</b><small>ADMIN</small></div>
+    </div>
+
+    <div class="nav-cap">분석</div>
+    <nav>
+      <button class="on" data-p="overview"><span class="ico">📊</span>개요<span class="n" id="nTotal">0</span></button>
+      <button data-p="cross"><span class="ico">⊞</span>교차분석</button>
+      <button data-p="trend"><span class="ico">📈</span>연도 추이</button>
+    </nav>
+
+    <div class="nav-cap">관리</div>
+    <nav>
+      <button data-p="questions"><span class="ico">📝</span>문항 관리<span class="n">8</span></button>
+      <button data-p="risks"><span class="ico">⚠️</span>검토 항목<span class="n">6</span></button>
+    </nav>
+
+    <div class="d-foot">
+      조사 기간<br>
+      <span class="mono" id="svPeriod" style="color:var(--teal);font-weight:600"></span><br><br>
+      <a href="index.html" style="color:var(--blue);font-weight:600">← 응답 화면 보기</a>
+    </div>
+  </aside>
+
+  <main class="d-main">
+    <div class="d-top">
+      <h1 id="dTitle">개요</h1>
+      <span class="crumb" id="dCrumb">문항별 분포 · 집단별 평균</span>
+      <div class="right">
+        <span class="tag tag-teal">2026 제7차</span>
+        <span class="tag tag-gray">최소 공개 n≥5</span>
+      </div>
+    </div>
+
+    <div class="d-content">
+      <div class="print-only" style="margin-bottom:14px">
+        <h2 style="font-size:17pt;font-weight:700">2026 교직문화 인식 조사 결과</h2>
+        <p style="font-size:9pt;color:#666">CLASSPULSE · 인쇄일 기준 집계 · 응답 5명 미만 집단은 비공개 처리됨</p>
+      </div>
+      <div class="filters" id="filterBar"></div>
+      <div id="dContent"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/dash.js"></script>
+</body>
+</html>
