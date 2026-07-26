@@ -1,0 +1,12 @@
+{
+  "name": "most-migrant-life-demo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "serve": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.0"
+  }
+}

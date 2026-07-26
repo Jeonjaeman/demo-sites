@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MOST 모스트 | 이주민 생활정보</title>
+    <meta name="description" content="MOST 모스트 러시아어권 이주민 주거, 생활, 법률, 비자 정보 정적 데모">
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body data-page="user">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="MOST 홈">
+        <span class="brand__mark" aria-hidden="true">M</span>
+        <span><strong>MOST 모스트</strong><small data-i18n="brandTagline">мост, 다리를 놓는 생활정보</small></span>
+      </a>
+      <nav class="top-nav" aria-label="주 메뉴">
+        <a href="#housing" data-i18n="navHousing">매물</a>
+        <a href="#guide" data-i18n="navGuide">생활정보</a>
+        <a href="#register" data-i18n="navRegister">등록</a>
+        <a href="admin.html" data-i18n="navAdmin">관리자</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="언어 선택">
+        <button type="button" class="is-active" data-lang="ko" aria-pressed="true">KO</button>
+        <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero reveal">
+        <div class="hero__copy">
+          <p class="kicker" data-i18n="kicker">승인 투명성을 우선하는 주거검색</p>
+          <h1 data-i18n="heroTitle">러시아어권 이주민을 위한 믿을 수 있는 생활정보 다리</h1>
+          <p data-i18n="heroBody">매물 승인상태, 광고정보, 출처와 최종검토일을 한 화면에서 확인하고 신고까지 이어집니다.</p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="#housing" data-i18n="findHome">매물 찾기</a>
+            <a class="btn btn--ghost" href="#register" data-i18n="registerHome">매물 등록</a>
+          </div>
+        </div>
+        <div class="bridge-card" aria-label="MOST 검증 흐름">
+          <div class="bridge-card__arc"></div>
+          <dl class="metric-grid">
+            <div><dt data-i18n="metricListings">검수 매물</dt><dd data-count="4">0</dd></div>
+            <div><dt data-i18n="metricGuides">검토 콘텐츠</dt><dd data-count="3">0</dd></div>
+            <div><dt data-i18n="metricReports">신고 처리</dt><dd data-count="2">0</dd></div>
+          </dl>
+          <div class="bar-meter"><span style="--w:76%"></span></div>
+        </div>
+      </section>
+
+      <section class="section reveal" id="housing">
+        <div class="section__head">
+          <p class="kicker" data-i18n="housingKicker">주거검색</p>
+          <h2 data-i18n="housingTitle">필터가 실제 결과를 바꾸는 매물 카드</h2>
+        </div>
+        <form class="filters" id="filters" aria-label="매물 필터">
+          <label><span data-i18n="filterDistrict">지역</span><select name="district"><option value="" data-i18n="filterAll">전체</option><option value="안산" data-i18n="districtAnsan">안산</option><option value="시흥" data-i18n="districtSiheung">시흥</option><option value="화성" data-i18n="districtHwaseong">화성</option><option value="김포" data-i18n="districtGimpo">김포</option></select></label>
+          <label><span data-i18n="filterType">유형</span><select name="type"><option value="" data-i18n="filterAll">전체</option><option value="원룸" data-i18n="typeStudio">원룸</option><option value="투룸" data-i18n="typeTwoRoom">투룸</option><option value="쉐어" data-i18n="typeShare">쉐어</option><option value="오피스텔" data-i18n="typeOfficetel">오피스텔</option></select></label>
+          <label><span data-i18n="rentLimit">월세 상한</span><input name="rent" type="range" min="25" max="70" value="70"><span id="rent-output">70만원</span></label>
+          <label class="check"><input name="approved" type="checkbox"> <span data-i18n="approvedOnly">승인완료만</span></label>
+        </form>
+        <div class="listing-grid" id="listing-grid"></div>
+      </section>
+
+      <section class="section section--split reveal" id="guide">
+        <div>
+          <p class="kicker" data-i18n="guideKicker">검토된 정보</p>
+          <h2 data-i18n="guideTitle">출처와 최종검토일이 있는 생활, 법률, 비자 콘텐츠</h2>
+          <div class="guide-list" id="guide-list"></div>
+        </div>
+        <aside class="dictionary" aria-labelledby="terms-title">
+          <h3 id="terms-title" data-i18n="termsTitle">계약용어 미니사전</h3>
+          <div id="terms-list"></div>
+        </aside>
+      </section>
+
+      <section class="section reveal" id="register">
+        <div class="section__head">
+          <p class="kicker" data-i18n="providerKicker">공급자 등록</p>
+          <h2 data-i18n="providerTitle">역할별 검증과 개인정보 최소수집 동의</h2>
+        </div>
+        <form class="provider-form" id="provider-form" novalidate>
+          <div class="form-grid">
+            <label><span data-i18n="roleLabel">역할</span><select name="role"><option value="agent" data-i18n="roleAgent">중개사</option><option value="landlord" data-i18n="roleLandlord">임대인</option></select></label>
+            <label><span data-i18n="listingName">매물명</span><input name="title" required placeholder="예: 안산 원룸" data-i18n-placeholder="listingNamePlaceholder"></label>
+            <label><span data-i18n="contact">연락처</span><input name="phone" required placeholder="010-0000-0000"></label>
+            <label data-agent-only><span data-i18n="licenseLabel">중개 등록번호</span><input name="license" placeholder="00000-0000-0000"></label>
+            <label data-agent-only><span data-i18n="adInfoLabel">필수 광고정보</span><input name="adInfo" placeholder="중개보수, 광고주, 관리비" data-i18n-placeholder="adInfoPlaceholder"></label>
+            <label class="form-grid__wide"><span data-i18n="descriptionLabel">설명</span><textarea name="description" rows="4" placeholder="임대인 등록 시 중개, 알선, 수수료 표현은 사용할 수 없습니다." data-i18n-placeholder="descriptionPlaceholder"></textarea></label>
+          </div>
+          <label class="check"><input name="privacy" type="checkbox"> <span data-i18n="privacy">연락에 필요한 최소 개인정보 수집에 동의합니다.</span></label>
+          <p class="demo-note" data-i18n="demoFormNote">정적 제안 데모입니다. 입력값은 서버로 전송되거나 브라우저에 저장되지 않습니다.</p>
+          <output class="form-result" id="form-result" aria-live="polite"></output>
+          <button class="btn btn--primary" type="submit" data-i18n="submitListing">검수 요청</button>
+        </form>
+      </section>
+    </main>
+
+    <dialog class="modal" id="listing-modal" aria-labelledby="modal-title">
+      <button class="modal__close" type="button" data-close aria-label="닫기" data-i18n-aria-label="close">×</button>
+      <div id="modal-body"></div>
+    </dialog>
+
+    <div class="report-panel" id="report-panel" hidden>
+      <form id="report-form">
+        <strong data-i18n="reportTitle">매물 신고</strong>
+        <label><span data-i18n="reportTarget">신고 대상</span><input name="target" readonly></label>
+        <label><span data-i18n="reportReasonLabel">신고 사유</span><textarea name="reason" required placeholder="신고 사유" data-i18n-placeholder="reportReason"></textarea></label>
+        <p class="demo-note" data-i18n="demoReportNote">정적 데모입니다. 신고는 전송·저장되지 않고 화면에서만 시뮬레이션됩니다.</p>
+        <button class="btn btn--primary" type="submit" data-i18n="sendReport">신고 접수</button>
+      </form>
+    </div>
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
+</html>

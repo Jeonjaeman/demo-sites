@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MOST 관리자 | 이주민 생활정보</title>
+    <meta name="description" content="MOST 모스트 관리자 승인, 신고, 콘텐츠 최신성, 광고 관리 데모">
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body data-page="admin">
+    <header class="site-header">
+      <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true">M</span><span><strong>MOST 관리자</strong><small>approval desk</small></span></a>
+      <nav class="top-nav" aria-label="관리 메뉴">
+        <a href="#queue">승인대기</a>
+        <a href="#reports">신고</a>
+        <a href="#freshness">콘텐츠</a>
+        <a href="#ads">광고</a>
+        <a href="index.html">사용자</a>
+      </nav>
+    </header>
+    <main class="admin-shell">
+      <section class="admin-hero reveal">
+        <div>
+          <p class="kicker">운영 투명성</p>
+          <h1>승인, 반려, 신고, 최신성, 광고 상태를 한 곳에서 관리</h1>
+          <p class="demo-note">정적 제안 데모 · 인증 및 영구 저장은 실제 구축 범위에서 연동</p>
+        </div>
+        <button class="btn btn--primary" id="csv-download" type="button">UTF-8 BOM CSV 다운로드</button>
+      </section>
+      <section class="admin-stats reveal" id="admin-stats"></section>
+      <section class="admin-panel reveal" id="queue">
+        <div class="section__head">
+          <p class="kicker">검수 큐</p>
+          <h2>승인대기 매물</h2>
+        </div>
+        <form class="filters" id="admin-filter">
+          <label>상태<select name="status"><option value="">전체</option><option value="pending">승인대기</option><option value="approved">승인완료</option><option value="rejected">반려</option></select></label>
+          <label>지역<select name="district"><option value="">전체</option><option>안산</option><option>시흥</option><option>화성</option><option>김포</option></select></label>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>매물</th><th>지역</th><th>공급자</th><th>광고</th><th>상태</th><th>조치</th></tr></thead>
+            <tbody id="queue-body"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="admin-grid">
+        <article class="admin-panel reveal" id="reports"><h2>신고 관리</h2><div id="report-list"></div></article>
+        <article class="admin-panel reveal" id="freshness"><h2>콘텐츠 최신성</h2><div id="freshness-list"></div></article>
+        <article class="admin-panel reveal" id="ads"><h2>광고 관리</h2><div id="ad-list"></div></article>
+      </section>
+    </main>
+    <div class="toast-region" id="toast-region" aria-live="polite"></div>
+    <script src="assets/js/data.js"></script>
+    <script src="assets/js/admin.js"></script>
+  </body>
+</html>
