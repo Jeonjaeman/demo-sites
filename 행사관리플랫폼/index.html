@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOOTHPIN 부스핀 — 플리마켓·행사 셀러 매칭 플랫폼</title>
+<meta name="description" content="행사 주최자와 셀러를 잇는 모바일 플랫폼 — 지도 탐색·부스 신청·승인·QR 출석·채팅 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23FF6600'/><path d='M50 20c-11 0-20 9-20 20 0 15 20 40 20 40s20-25 20-40c0-11-9-20-20-20z' fill='white'/><circle cx='50' cy='40' r='7' fill='%23FF6600'/></svg>">
+</head>
+<body>
+
+<div class="stage">
+  <!-- 좌: 화면 인덱스 -->
+  <aside class="idx">
+    <div class="brand">
+      <span class="brand-mark">📍</span>
+      <div><b>부스핀</b><small>BOOTHPIN</small></div>
+    </div>
+
+    <div class="idx-hero">
+      <img src="assets/img/market.jpg" alt="플리마켓 부스 전경">
+      <div class="idx-hero-t">플리마켓·야시장·팝업<br>셀러와 주최자를 잇는 앱</div>
+    </div>
+
+    <div class="idx-note">
+      의뢰자께서 주신 <b>기능 명세서 2장</b>을 화면으로 옮긴 데모입니다.
+      아래 목록에서 화면을 눌러 보세요. 실제로 동작합니다.
+    </div>
+
+    <div class="idx-scroll">
+      <div class="idx-cap">홈</div>
+      <button class="idx-item on" data-v="home"><span class="n">1</span>홈</button>
+      <button class="idx-item" data-v="seller"><span class="n">2</span>셀러 등록</button>
+      <button class="idx-item" data-v="create"><span class="n">3</span>행사 만들기</button>
+      <button class="idx-item" data-v="hosted"><span class="n">4</span>개최 행사관리</button>
+      <button class="idx-item" data-v="participants"><span class="n">5</span>참여자 목록 · 출석</button>
+      <button class="idx-item" data-v="attendee"><span class="n">6</span>참여자 상세 · 승인/거절</button>
+      <button class="idx-item" data-v="qr"><span class="n">7</span>출석용 QR 발급</button>
+      <button class="idx-item" data-v="joined"><span class="n">8</span>참여 행사관리</button>
+      <button class="idx-item" data-v="scan"><span class="n">9</span>QR 출석 체크</button>
+
+      <div class="idx-cap">지도</div>
+      <button class="idx-item" data-v="map"><span class="n">10</span>지도 탐색 · 참여기록</button>
+      <button class="idx-item" data-v="nearby"><span class="n">11</span>근처 행사</button>
+      <button class="idx-item" data-v="detail"><span class="n">12</span>행사 정보 보기</button>
+      <button class="idx-item" data-v="apply"><span class="n">13</span>참여 신청</button>
+
+      <div class="idx-cap">채팅</div>
+      <button class="idx-item" data-v="chat"><span class="n">14</span>채팅 목록</button>
+      <button class="idx-item" data-v="room"><span class="n">15</span>채팅방 · 참가자</button>
+
+      <div class="idx-cap">내정보</div>
+      <button class="idx-item" data-v="profile"><span class="n">16</span>마이프로필 · 등급</button>
+
+      <div class="idx-cap">제안 화면</div>
+      <button class="idx-item" data-v="grade"><span class="n">17</span>등급 규칙 진단</button>
+      <button class="idx-item" data-v="risks"><span class="n">18</span>착수 전 검토 항목</button>
+    </div>
+
+    <div class="idx-foot">
+      원본 기획서 · <a href="기능명세(의뢰자 원본).txt">기능명세 텍스트</a><br>
+      분석 문서 · <a href="분석/기획_설계.md">기획_설계.md</a><br><br>
+      모든 행사·셀러·수치는 가상 데이터입니다.
+    </div>
+  </aside>
+
+  <!-- 우: 폰 프레임 -->
+  <main class="phone-wrap">
+    <div class="phone-side" id="sideInfo"></div>
+
+    <div class="phone">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="r">📶 📡 🔋</span>
+        </div>
+        <div id="screen" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>
+        <div class="toasts" id="toasts"></div>
+        <div class="sheet-back" id="sheetWrap"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
