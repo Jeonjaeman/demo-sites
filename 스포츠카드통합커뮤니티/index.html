@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>탑로더 TOPLOADER — 스포츠카드·TCG 통합 커뮤니티</title>
+<meta name="description" content="스포츠카드, 원피스, 포켓몬 콜렉터가 한곳에 — 게시판·쇼케이스·직거래 장터·실거래 시세 통합 커뮤니티 (데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='18' y='8' width='64' height='84' rx='10' fill='%233E7BFF'/><rect x='26' y='16' width='48' height='44' rx='6' fill='%23FFC24B'/></svg>">
+</head>
+<body>
+
+<!-- 시세 틱커 (Card Ladder 상단 마켓 틱커 카피) -->
+<div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
+
+<!-- 헤더 -->
+<header class="header">
+  <div class="wrap header-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">🃏</span>
+      <span>탑로더<small>TOPLOADER</small></span>
+    </a>
+    <nav class="gnb">
+      <button data-view="home" class="on">홈</button>
+      <button data-view="board">게시판</button>
+      <button data-view="showcase">쇼케이스</button>
+      <button data-view="market">장터</button>
+      <button data-view="prices">시세</button>
+    </nav>
+    <div class="header-actions">
+      <a class="btn-search" href="admin.html" title="관리자 페이지 (데모)">⚙️</a>
+      <div id="authBox" style="display:flex;gap:10px;align-items:center"></div>
+    </div>
+  </div>
+</header>
+
+<!-- 전역 관심사 필터 (요구사항 2-1: localStorage 유지) -->
+<div class="topic-bar">
+  <div class="wrap topic-bar-in">
+    <span class="topic-label">🎯 관심사</span>
+    <button class="chip on" data-topic="all"><span class="dot" style="background:linear-gradient(135deg,#3E7BFF,#8A5CFF)"></span>전체</button>
+    <button class="chip" data-topic="sports"><span class="dot" style="background:var(--t-sports)"></span>스포츠카드</button>
+    <button class="chip" data-topic="onepiece"><span class="dot" style="background:var(--t-onepiece)"></span>원피스</button>
+    <button class="chip" data-topic="pokemon"><span class="dot" style="background:var(--t-pokemon)"></span>포켓몬</button>
+    <button class="chip" data-topic="etc"><span class="dot" style="background:var(--t-etc)"></span>기타</button>
+    <span class="topic-hint">💾 선택한 관심사는 다음 접속에도 유지됩니다</span>
+  </div>
+</div>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-bg" style="background-image:url('assets/img/hero.jpg')"></div>
+  <div class="hero-in wrap">
+    <div class="hero-badge"><span class="pulse"></span>지금 2,841명의 콜렉터가 접속 중</div>
+    <h1>흩어져 있던 콜렉터들,<br><span class="grad">이제 한 곳에서 모입니다</span></h1>
+    <p>네이버 카페, 오픈채팅에 흩어져 있던 스포츠카드·원피스·포켓몬 정보와 직거래를<br>가장 가볍고 빠른 게시판에서 — 탑로더</p>
+    <div class="hero-cta">
+      <button class="btn-hero" onclick="go('market')">🔥 실시간 장터 구경하기</button>
+      <button class="btn-hero-ghost" onclick="go('prices')">📈 오늘의 시세 보기</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat reveal"><b data-n="12847">0</b><span>누적 콜렉터</span></div>
+      <div class="hstat reveal reveal-d1"><b data-n="48210">0</b><span>누적 게시글</span></div>
+      <div class="hstat reveal reveal-d2"><b data-n="3105">0</b><span>이번 달 직거래 성사</span></div>
+      <div class="hstat reveal reveal-d3"><b data-n="142">0</b><span>오늘 등록된 매물</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 메인 레이아웃 -->
+<div class="wrap layout">
+  <main class="main-col" id="appRoot"></main>
+  <aside class="side-col" id="sideCol"></aside>
+</div>
+
+<!-- 푸터 -->
+<footer class="footer">
+  <div class="wrap footer-in">
+    <div class="f-brand">
+      <b>🃏 탑로더 TOPLOADER</b>
+      <p>스포츠카드 및 TCG 올인원 통합 커뮤니티 (제안용 데모)<br>
+      본 사이트의 모든 게시글·매물·시세·인물은 시연을 위한 가상 데이터입니다.<br>
+      실서비스: 소셜 로그인(카카오·네이버·구글) · SEO/SSR · 자동 백업 구성</p>
+    </div>
+    <div class="f-links">
+      <div><b>커뮤니티</b><a href="javascript:go('board')">게시판</a><a href="javascript:go('showcase')">쇼케이스</a><a href="javascript:go('market')">장터</a></div>
+      <div><b>서비스</b><a href="javascript:go('prices')">실거래 시세</a><a href="admin.html">관리자 (데모)</a><a href="javascript:void(0)" onclick="toast('📣 광고 제휴 문의 폼 (데모)')">광고·제휴</a></div>
+      <div><b>정책</b><a href="javascript:void(0)" onclick="toast('문서 데모')">이용약관</a><a href="javascript:void(0)" onclick="toast('문서 데모')">개인정보처리방침</a><a href="javascript:void(0)" onclick="toast('문서 데모')">거래 안전 가이드</a></div>
+    </div>
+  </div>
+</footer>
+
+<!-- 모바일 하단 탭바 -->
+<nav class="mobile-tabbar">
+  <button class="mtab on" data-view="home"><span class="ico">🏠</span>홈</button>
+  <button class="mtab" data-view="board"><span class="ico">📋</span>게시판</button>
+  <button class="mtab" data-view="showcase"><span class="ico">✨</span>쇼케이스</button>
+  <button class="mtab" data-view="market"><span class="ico">🛒</span>장터</button>
+  <button class="mtab" data-view="prices"><span class="ico">📈</span>시세</button>
+</nav>
+
+<!-- 플로팅 글쓰기 (모든 화면에서 2클릭 이내 — 요구사항 2-2) -->
+<button class="fab" onclick="openWrite()" title="글쓰기">✏️</button>
+
+<!-- 로그인 모달 (소셜 온리 — 요구사항 2-1) -->
+<div class="modal-back" id="loginModal">
+  <div class="modal">
+    <button class="modal-x" onclick="closeLogin()">✕</button>
+    <h2>3초만에 시작하기</h2>
+    <p class="sub">이메일 가입 없이 소셜 계정으로 바로 시작하세요.<br>복잡한 절차는 카드 정리에만 쓰기로 해요.</p>
+    <div class="social-btns">
+      <button class="btn-social btn-kakao" onclick="socialLogin('kakao')">💬 카카오로 3초만에 시작</button>
+      <button class="btn-social btn-naver" onclick="socialLogin('naver')">N 네이버로 시작</button>
+      <button class="btn-social btn-google" onclick="socialLogin('google')">G 구글로 시작</button>
+    </div>
+    <p class="login-note">가입 시 봇 방지 검증(reCAPTCHA v3 · 무화면)이 자동 적용됩니다<br>자체 이메일 가입은 지원하지 않습니다 (요구사항 2-1)</p>
+  </div>
+</div>
+
+<!-- 글쓰기 모달 (이중 말머리 필수 — 요구사항 2-3) -->
+<div class="modal-back" id="writeModal">
+  <div class="modal modal-lg">
+    <button class="modal-x" onclick="closeWrite()">✕</button>
+    <h2>새 글 쓰기</h2>
+    <p class="sub">말머리와 주제 태그는 필수예요. 장터 말머리를 고르면 거래 정보 입력란이 열립니다.</p>
+    <div class="wform">
+      <div>
+        <label>말머리 (게시판 성격) <span class="req">*</span></label>
+        <div class="flair-pick" id="flairPick">
+          <button class="pick" data-v="free" onclick="pickFlair(this)">자유</button>
+          <button class="pick" data-v="show" onclick="pickFlair(this)">쇼케이스</button>
+          <button class="pick" data-v="qna" onclick="pickFlair(this)">질문</button>
+          <button class="pick" data-v="info" onclick="pickFlair(this)">정보</button>
+          <button class="pick" data-v="sell" onclick="pickFlair(this)">팝니다</button>
+          <button class="pick" data-v="buy" onclick="pickFlair(this)">삽니다</button>
+        </div>
+      </div>
+      <div>
+        <label>주제 태그 <span class="req">*</span></label>
+        <div class="topic-pick" id="topicPick">
+          <button class="pick" data-v="sports" onclick="pickTopic(this)">스포츠카드</button>
+          <button class="pick" data-v="onepiece" onclick="pickTopic(this)">원피스</button>
+          <button class="pick" data-v="pokemon" onclick="pickTopic(this)">포켓몬</button>
+          <button class="pick" data-v="etc" onclick="pickTopic(this)">기타</button>
+        </div>
+      </div>
+      <div>
+        <label>제목 <span class="req">*</span></label>
+        <input type="text" id="wTitle" placeholder="제목을 입력하세요">
+      </div>
+      <!-- 장터 구조화 입력 (요구사항 2-4: 시세 DB 확장 대비 구조화 저장) -->
+      <div class="trade-fields hide" id="tradeFields">
+        <div><label>가격 (원)</label><input type="number" id="wPrice" placeholder="480000"></div>
+        <div><label>카드 상태</label>
+          <select id="wCond"><option>S급 (민트)</option><option>A급</option><option>B급</option><option>PSA/BGS 슬랩</option><option>미개봉</option></select>
+        </div>
+        <div><label>거래 방식</label>
+          <select id="wMethod"><option>택배</option><option>직거래</option><option>택배/직거래</option></select>
+        </div>
+        <div><label>오픈채팅 링크</label><input type="url" placeholder="https://open.kakao.com/o/…"></div>
+        <p class="full" style="font-size:11.5px;color:var(--ink-faint)">💡 가격·상태·거래방식은 구조화 저장되어 2차 페이즈 시세 데이터베이스의 원천이 됩니다</p>
+      </div>
+      <div>
+        <label>사진 첨부 <span style="font-weight:400;color:var(--ink-faint)">(다중 업로드 · AI 카드 인식 협의 기능)</span></label>
+        <div class="upload-zone" id="uploadZone" onclick="simulateAIScan()">📷 클릭해서 카드 사진 업로드 — AI가 카드를 자동 인식합니다 (데모)</div>
+        <div class="ai-scan hide" id="aiScanResult" style="margin-top:10px"></div>
+      </div>
+      <div>
+        <label>본문</label>
+        <textarea id="wBody" placeholder="내용을 입력하세요. 장터 글은 상태 설명과 하자 여부를 자세히 적을수록 거래가 빨라요."></textarea>
+      </div>
+      <button class="btn-submit" onclick="submitPost()">등록하기</button>
+      <p style="font-size:11.5px;color:var(--ink-faint);text-align:center">🚫 도배 방지를 위해 글 등록 후 60초 동안 재등록이 제한됩니다 (요구사항 2-1)</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

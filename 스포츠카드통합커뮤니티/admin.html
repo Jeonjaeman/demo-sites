@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>탑로더 관리자 — 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='18' y='8' width='64' height='84' rx='10' fill='%23FF5A6E'/><rect x='26' y='16' width='48' height='44' rx='6' fill='%23FFC24B'/></svg>">
+</head>
+<body>
+<div class="admin-body">
+  <!-- 사이드 내비 -->
+  <aside class="admin-side">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">🃏</span>
+      <span style="font-size:16px">탑로더 <small style="display:inline;letter-spacing:.06em">ADMIN</small></span>
+    </a>
+    <nav class="anav">
+      <button class="on" data-p="dash">📊 대시보드</button>
+      <button data-p="reports">🚨 신고 관리 <span class="badge-n">4</span></button>
+      <button data-p="members">👥 회원 관리</button>
+      <button data-p="ads">📣 광고 슬롯</button>
+      <button onclick="location.href='index.html'" style="margin-top:auto">← 사용자 사이트로</button>
+    </nav>
+  </aside>
+
+  <main class="admin-main" id="adminRoot"></main>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
