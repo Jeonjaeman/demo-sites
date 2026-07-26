@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABCHAT — 연구용 실험 챗봇 (참가자용)</title>
+<meta name="description" content="학술 연구용 대화 실험 플랫폼 — 4개 실험 집단 무작위 배정, 대화 로그 CSV 수집 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23601AE5'/><path d='M26 34h48M26 50h34M26 66h40' stroke='white' stroke-width='7' stroke-linecap='round'/></svg>">
+</head>
+<body>
+
+<!-- ===== 1. 연구 참여 동의 (IRB — 요구사항에 없던 제안 항목) ===== -->
+<div class="stage" data-step="consent">
+  <div class="stage-bg" style="background-image:url('assets/img/bg.jpg')"></div>
+  <div class="stage-in">
+    <div class="card">
+      <div class="brand">
+        <span class="brand-mark">L</span>
+        <div><b>LABCHAT</b><small>RESEARCH PLATFORM</small></div>
+      </div>
+
+      <span class="irb-badge">✓ IRB 2026-0714-A 승인 연구</span>
+      <h1 class="title">연구 참여 동의</h1>
+      <p class="lead">본 연구는 대화형 AI의 응답 방식이 조언 수용도에 미치는 영향을 살펴봅니다.<br>아래 내용을 읽고 동의해 주시면 참여를 시작합니다.</p>
+
+      <div class="consent">
+        <h3>1. 연구 목적</h3>
+        <p>대화형 AI가 서로 다른 방식으로 응답할 때, 이용자가 조언을 어떻게 받아들이는지 비교합니다. 참가자는 수면 습관을 주제로 챗봇과 대화하게 됩니다.</p>
+
+        <h3>2. 참여 방법 및 소요 시간</h3>
+        <p>챗봇과 <span class="hl">최소 6턴 이상</span> 대화한 뒤 종료합니다. 약 <span class="hl">10~15분</span>이 소요됩니다.</p>
+
+        <h3>3. 수집하는 정보</h3>
+        <ul>
+          <li>참가자 고유 ID (연구용 익명 코드, 실명·연락처 수집하지 않음)</li>
+          <li>챗봇과 주고받은 대화 내용 전문</li>
+          <li>대화 시작·종료 시각, 턴 수, 응답 소요 시간</li>
+        </ul>
+        <p>대화 중 전화번호·이메일 등이 입력될 경우 <span class="hl">저장 단계에서 자동으로 마스킹</span>됩니다.</p>
+
+        <h3>4. 보관 및 파기</h3>
+        <p>수집된 자료는 연구 목적으로만 사용하며, 연구 종료 후 <span class="hl">3년간 보관 후 파기</span>합니다. 접근 권한은 연구책임자에게만 부여됩니다.</p>
+
+        <h3>5. 참여 철회</h3>
+        <p>참여는 자발적이며, <span class="hl">언제든 중단할 수 있고 불이익은 없습니다.</span> 종료 후에도 참가자 ID를 알려 주시면 자료를 삭제해 드립니다.</p>
+
+        <h3>6. 문의</h3>
+        <p>연구책임자 · labchat-study@univ.demo (데모용 가상 정보입니다)</p>
+      </div>
+
+      <div id="consentChecks">
+        <label class="check-row"><input type="checkbox"><span>위 연구 내용을 <b>충분히 읽고 이해</b>했습니다.</span></label>
+        <label class="check-row"><input type="checkbox"><span>대화 내용이 <b>연구 자료로 수집·보관</b>되는 것에 동의합니다.</span></label>
+        <label class="check-row"><input type="checkbox"><span><b>자발적으로 참여</b>하며, 언제든 중단할 수 있음을 확인했습니다.</span></label>
+      </div>
+
+      <button class="btn-main" id="btnConsent" disabled>동의하고 참여 시작</button>
+      <p class="field hint" style="text-align:center;margin-top:12px">동의 시각과 동의서 버전(v1.0)이 함께 기록됩니다</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 참가자 ID 입력 ===== -->
+<div class="stage hide" data-step="id">
+  <div class="stage-bg" style="background-image:url('assets/img/bg.jpg')"></div>
+  <div class="stage-in">
+    <div class="card card-sm">
+      <div class="brand">
+        <span class="brand-mark">L</span>
+        <div><b>LABCHAT</b><small>RESEARCH PLATFORM</small></div>
+      </div>
+      <h1 class="title">참가자 ID 입력</h1>
+      <p class="lead">모집 안내에서 받으신 참가자 고유 ID를 입력해 주세요.</p>
+
+      <div class="field">
+        <label>참가자 ID</label>
+        <input type="text" id="pidInput" placeholder="예: P1042" maxlength="5" autocomplete="off">
+        <p class="hint">P + 4자리 숫자 · 1인 1회만 참여할 수 있습니다 (중복 참여 차단)</p>
+      </div>
+
+      <button class="btn-main" id="btnId">다음</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. 조건 배정 ===== -->
+<div class="stage hide" data-step="assign">
+  <div class="stage-bg" style="background-image:url('assets/img/bg.jpg')"></div>
+  <div class="stage-in">
+    <div class="card card-sm">
+      <div class="brand">
+        <span class="brand-mark">L</span>
+        <div><b>LABCHAT</b><small>RESEARCH PLATFORM</small></div>
+      </div>
+      <h1 class="title">준비되었습니다</h1>
+      <p class="lead">이제 챗봇과 대화를 시작합니다. 편하게 이야기해 주시면 됩니다.</p>
+
+      <div class="assign" id="assignBox"></div>
+
+      <button class="btn-main" id="btnStart">대화 시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 챗 화면 (ChatGPT UI 카피) ===== -->
+<div class="chat-wrap hide" data-step="chat">
+  <div class="chat-top">
+    <span class="brand-mark" style="width:26px;height:26px;font-size:12px">L</span>
+    <div>
+      <div class="who">수면 습관 상담 챗봇</div>
+      <div class="pid">참가자 <span id="chatPid" class="mono"></span> · <span id="chatCond" style="font-weight:600"></span></div>
+    </div>
+    <div class="right">
+      <span class="turn-pill" id="turnCount"></span>
+      <button class="btn-end" id="btnEnd" disabled></button>
+    </div>
+  </div>
+
+  <div class="chat-scroll" id="chatScroll">
+    <div class="chat-inner" id="chatInner"></div>
+  </div>
+
+  <div class="composer-wrap">
+    <div class="composer">
+      <textarea id="composerInput" rows="1" placeholder="메시지를 입력하세요"></textarea>
+      <button class="btn-send" id="btnSend" disabled>↑</button>
+    </div>
+    <p class="composer-note">
+      대화 내용은 연구 자료로 수집됩니다 · 응답은 매 턴 즉시 저장되어 새로고침해도 이어집니다 · 모델 <span class="mono" id="studyModel"></span>
+    </p>
+  </div>
+</div>
+
+<!-- ===== 5. 완료 ===== -->
+<div class="stage hide" data-step="done">
+  <div class="stage-bg" style="background-image:url('assets/img/bg.jpg')"></div>
+  <div class="stage-in">
+    <div class="card card-sm">
+      <div class="done-icon">✓</div>
+      <h1 class="title" style="text-align:center">참여해 주셔서 감사합니다</h1>
+      <p class="lead" style="text-align:center">응답이 정상적으로 저장되었습니다.<br>아래 완료 코드를 모집 플랫폼에 입력해 주세요.</p>
+
+      <div class="code-box">
+        <div class="lbl">완료 코드</div>
+        <div class="code" id="doneCode"></div>
+      </div>
+
+      <div style="margin-top:22px" id="doneSummary"></div>
+
+      <button class="btn-ghost" id="btnRestart" style="margin-top:22px">🔄 데모 다시 체험하기 (다른 조건 배정)</button>
+      <a class="btn-ghost" href="admin.html" style="display:grid;place-items:center">🔬 연구자 콘솔 보기</a>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/chat.js"></script>
+</body>
+</html>

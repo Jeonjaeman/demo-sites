@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LABCHAT — 연구자 콘솔</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230F2BC9'/><path d='M30 70V38M50 70V26M70 70V50' stroke='white' stroke-width='9' stroke-linecap='round'/></svg>">
+</head>
+<body>
+<div class="admin">
+  <aside class="a-side">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <div><b>LABCHAT</b><small>RESEARCHER</small></div>
+    </div>
+    <nav>
+      <button class="on" data-p="dash"><span class="ico">📊</span>대시보드</button>
+      <button data-p="prompts"><span class="ico">✏️</span>프롬프트<span class="n">4</span></button>
+      <button data-p="data"><span class="ico">🗂</span>데이터<span class="n">46</span></button>
+      <button data-p="risks"><span class="ico">⚠️</span>검토 항목<span class="n">6</span></button>
+    </nav>
+    <div class="a-foot">
+      모델 고정<br>
+      <span class="mono" id="modelPin" style="color:var(--purple);font-weight:600"></span><br><br>
+      <a href="index.html" style="color:var(--purple);font-weight:600">← 참가자 화면 보기</a>
+    </div>
+  </aside>
+
+  <main class="a-main">
+    <div class="a-top">
+      <h1 id="aTitle">대시보드</h1>
+      <span class="crumb" id="aCrumb">수집 현황 · 집단 균형</span>
+      <div class="right">
+        <span class="pill-s pill-done">IRB 승인</span>
+        <span class="mono faint" style="font-size:12px">LABCHAT-2026-07</span>
+      </div>
+    </div>
+    <div class="a-content" id="aContent"></div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
