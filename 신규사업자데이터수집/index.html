@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIZSEED — 신규 사업자 리드 수집 파이프라인</title>
+<meta name="description" content="신규 개업 사업자 데이터 자동 수집·연락처 확보·DB 적재 관리 콘솔 (제안용 데모)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23020202'/><circle cx='30' cy='50' r='9' fill='%233FCF8E'/><circle cx='70' cy='30' r='7' fill='%236B9FFF'/><circle cx='70' cy='70' r='7' fill='%23A299FF'/><path d='M36 47L64 33M36 54L64 67' stroke='%233FCF8E' stroke-width='3'/></svg>">
+</head>
+<body>
+
+<!-- 로그인 게이트 -->
+<div class="gate" id="gate">
+  <div class="gate-bg" style="background-image:url('assets/img/gate.jpg')"></div>
+  <div class="gate-card">
+    <div class="brand">
+      <span class="mark">🌱</span>
+      <div>
+        <h1>BIZSEED</h1>
+        <p>신규 사업자 리드 수집 파이프라인</p>
+      </div>
+    </div>
+    <form class="gate-form" id="gateForm">
+      <input type="text" value="admin@bizseed.demo" readonly>
+      <input type="password" value="demo-account" readonly>
+      <button type="submit" class="gate-btn">관리자 콘솔 접속</button>
+    </form>
+    <p class="gate-note">
+      제안용 데모입니다 · 버튼을 누르면 바로 입장합니다<br>
+      모든 사업자·연락처·수치는 가상 데이터입니다
+    </p>
+  </div>
+</div>
+
+<!-- 앱 -->
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <span class="mark">🌱</span>
+      <div><b>BIZSEED</b><small>COLLECTOR</small></div>
+    </div>
+
+    <div class="nav-label">운영</div>
+    <nav>
+      <button class="on" data-v="dash"><span class="ico">📊</span>대시보드</button>
+      <button data-v="leads"><span class="ico">🗂</span>사업자 목록<span class="n">24.8k</span></button>
+      <button data-v="pipeline"><span class="ico">🔄</span>파이프라인<span class="n">3</span></button>
+    </nav>
+
+    <div class="nav-label">산출물</div>
+    <nav>
+      <button data-v="schema"><span class="ico">🗄</span>DB 스키마<span class="n">6</span></button>
+      <button data-v="compliance"><span class="ico">⚖️</span>컴플라이언스<span class="n">6</span></button>
+    </nav>
+
+    <div class="side-foot">
+      <div class="sched-mini"><span class="dot-live"></span>스케줄러 가동 중</div>
+      <div class="sched-mini" style="padding-top:0"><span style="width:6px"></span><span class="mono faint">다음 실행 07-27 04:00</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">대시보드</h1>
+      <span class="crumb" id="pageCrumb">수집 현황 개요</span>
+      <div class="topbar-right">
+        <span class="tag tag-gray mono">2026-07-26</span>
+        <button class="btn" onclick="go('compliance')">⚖️ 리스크 6건</button>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
