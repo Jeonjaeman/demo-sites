@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADSUM 관리자 — 연동·배치·검토</title>
+<meta name="description" content="4개 광고 채널 API 연동 상태, 수집 배치 로그, 지표 매핑, 목표 CPA 설정, 권한 관리, 리스크 검토 항목">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%237F22FE'/%3E%3Cpath d='M9 22l7-13 7 13' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <div class="brand"><span class="mk" style="background:linear-gradient(135deg,#7F22FE,#4C8DFF)">▲</span> ADSUM <small>관리자</small></div>
+    <nav>
+      <a href="index.html">대시보드</a>
+      <a href="#src" class="on">연동</a>
+      <a href="#batch">배치</a>
+      <a href="#map">매핑</a>
+      <a href="#cpa">목표 CPA</a>
+      <a href="#role">권한</a>
+      <a href="#risk">검토 항목</a>
+    </nav>
+    <div class="sp"></div>
+    <div class="who"><span class="av">대</span><span class="nm">대표 · 전체 권한</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <h1>연동 · 배치 · 검토</h1>
+    <p>요구사항 2-5의 "채널별 API 연동을 위한 설정 페이지"와 "로그인 및 권한 관리"를 구현하고,
+       <b>공고에 없지만 없으면 프로젝트가 멈추는 항목</b>을 함께 넣었습니다.</p>
+    <div class="tags">
+      <span class="bd info">착수 가정일 <span class="num" id="kickoff"></span></span>
+      <span class="bd mute">가상 데이터</span>
+    </div>
+  </section>
+
+  <!-- ── 연동 상태 ─────────────────────────────────────────── -->
+  <section class="sec" id="src" style="padding-top:24px">
+    <div class="card rv">
+      <h3>데이터 소스 연동 상태</h3>
+      <div class="sub">광고 4채널 + <b>매출 1채널</b>입니다. 공고에는 광고 4개만 있지만,
+        매출 기준선이 없으면 ROAS를 검증할 방법이 없습니다.</div>
+      <div class="rows" id="srcRows" style="margin-top:16px"></div>
+
+      <div class="banner warnish" style="margin-top:16px">
+        <span class="ic">!</span>
+        <div style="flex:1;min-width:240px">
+          <b>카카오모먼트는 심사가 통제 불가능한 변수입니다</b>
+          <p>비즈니스 앱 전환 → 앱 소유자 본인인증 → 추가 기능(권한) 신청 심사를 통과해야 호출이 가능합니다.
+             심사 기간이 공식적으로 명시돼 있지 않아 일정에 넣고 계산할 수 없습니다.
+             <b>착수 첫날 신청을 걸고 3채널을 먼저 오픈하는 구조</b>로 설계했습니다.
+             표준 스키마가 확정돼 있으면 카카오는 어댑터 한 장만 추가하면 됩니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 배치 ─────────────────────────────────────────────── -->
+  <section class="sec" id="batch">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>수집 배치</h3>
+        <div class="sub">일별 1회 수집만으로는 과거 수치가 갱신되지 않습니다.
+          <b>최근 N일을 매일 다시 조회해 덮어쓰는 롤링 재수집</b>이 필요합니다.</div>
+
+        <div class="bar" style="margin:16px 0 12px">
+          <span class="lbl">재수집 창</span>
+          <div class="seg" id="segRoll">
+            <button data-v="3" aria-pressed="false">3일</button>
+            <button data-v="7" aria-pressed="false">7일</button>
+            <button data-v="14" aria-pressed="true">14일</button>
+            <button data-v="30" aria-pressed="false">30일</button>
+          </div>
+          <button class="btn primary sm" id="btnRun">배치 실행</button>
+        </div>
+
+        <div class="grid3" style="margin-bottom:12px">
+          <div class="row"><div class="tx"><b class="num" id="mCalls" style="font-size:19px">0</b>
+            <p>일 API 호출 수</p></div></div>
+          <div class="row"><div class="tx"><b class="num" id="mRows" style="font-size:19px">0</b>
+            <p>갱신 대상 행</p></div></div>
+          <div class="row"><div class="tx"><b class="num" id="mDelta" style="font-size:19px">0</b>
+            <p>1회 수집 대비 매출 보정</p></div></div>
+        </div>
+
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="card rv">
+        <h3>재수집 창을 늘리면 무엇이 달라지나</h3>
+        <div class="sub">창이 짧으면 호출은 적지만 과거 값이 덜 성숙한 채로 굳습니다.
+          창이 길면 정확해지지만 호출과 시간이 늘어납니다.</div>
+        <div class="chart" style="margin-top:14px"><canvas id="cvRoll" height="220"></canvas></div>
+        <div class="lg">
+          <span><i class="dot" style="background:#45e07f"></i>집계된 채널 신고 매출</span>
+          <span><i class="dot" style="background:#8ab4ff"></i>일 API 호출 수</span>
+        </div>
+        <p style="font-size:12.5px;color:var(--ink-2);margin-top:12px" id="rollNote">—</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 매핑 ─────────────────────────────────────────────── -->
+  <section class="sec" id="map">
+    <div class="card rv">
+      <h3>지표 매핑 (표준 스키마)</h3>
+      <div class="sub">요구사항 1의 "API 연동 데이터 매핑 문서"에 해당합니다.
+        채널마다 필드명과 단위가 다르고, <b>같은 이름의 지표가 같은 뜻이 아닙니다.</b></div>
+      <div class="tw" style="margin-top:14px;border:0">
+        <table class="t" id="tblMap">
+          <thead><tr><th>표준 필드</th><th>의미</th><th>메타</th><th>구글</th><th>카카오모먼트</th><th>네이버</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="banner" style="margin-top:14px">
+        <span class="ic" style="background:rgba(255,90,95,.14);color:var(--bad)">△</span>
+        <div style="flex:1;min-width:240px">
+          <b>주의해야 할 세 지점</b>
+          <p>① 구글 광고비는 <code>cost_micros</code>라 100만으로 나눠야 합니다.
+             ② 네이버 검색광고에는 <b>소재 단위가 사실상 없습니다</b> — 키워드/광고그룹 단위라
+             "소재별 목표 CPA"를 그대로 적용할 수 없어 매핑 규칙 합의가 필요합니다.
+             ③ 전환수는 매체마다 기여 기간이 달라 <b>더하면 안 되는 값</b>입니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 목표 CPA ─────────────────────────────────────────── -->
+  <section class="sec" id="cpa">
+    <div class="card rv">
+      <h3>소재별 목표 CPA 설정</h3>
+      <div class="sub">값을 바꾸면 <b>아래 판정 집계가 즉시 다시 계산됩니다.</b>
+        (데모에서는 이 화면 안에서만 반영됩니다)</div>
+
+      <div class="grid3" style="margin-top:16px">
+        <div class="row" style="background:rgba(255,90,95,.06);border-color:rgba(255,90,95,.28)">
+          <div class="tx"><b class="num" id="aOver" style="font-size:22px">0</b><p>목표 초과</p></div></div>
+        <div class="row" style="background:rgba(255,176,32,.06);border-color:rgba(255,176,32,.28)">
+          <div class="tx"><b class="num" id="aNoconv" style="font-size:22px">0</b><p>무전환 소진</p></div></div>
+        <div class="row"><div class="tx"><b class="num" id="aHold" style="font-size:22px">0</b><p>판정 보류</p></div></div>
+      </div>
+
+      <div class="bar" style="margin-top:16px">
+        <button class="btn sm" id="btnBulk">전체 +10%</button>
+        <button class="btn sm" id="btnBulkDn">전체 −10%</button>
+        <button class="btn sm" id="btnReset">초기화</button>
+        <span class="lbl">최근 7일 성과 기준으로 판정합니다</span>
+      </div>
+
+      <div class="tw" style="margin-top:12px">
+        <table class="t" id="tblCpa">
+          <thead><tr><th>소재</th><th>채널</th><th>7일 광고비</th><th>전환</th><th>실제 CPA</th><th>목표 CPA</th><th>판정</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 권한 ─────────────────────────────────────────────── -->
+  <section class="sec" id="role">
+    <div class="card rv">
+      <h3>로그인 및 권한 관리</h3>
+      <div class="sub">협업 인력은 퍼포먼스 마케터 1인과 대표입니다.
+        <b>역할을 바꾸면 실제로 보이는 항목이 달라집니다.</b></div>
+      <div class="bar" style="margin-top:16px">
+        <div class="seg" id="segRole">
+          <button data-v="owner" aria-pressed="true">대표</button>
+          <button data-v="marketer" aria-pressed="false">퍼포먼스 마케터</button>
+          <button data-v="viewer" aria-pressed="false">뷰어(외부 대행사)</button>
+        </div>
+      </div>
+      <div class="tw" style="margin-top:14px;border:0">
+        <table class="t" id="tblRole">
+          <thead><tr><th>항목</th><th>현재 역할</th><th>이유</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 검토 항목 ─────────────────────────────────────────── -->
+  <section class="sec" id="risk">
+    <div class="card rv">
+      <h3>착수 전 검토 항목</h3>
+      <div class="sub">공고와 요구사항정의서를 시나리오로 펼쳤을 때 정의가 비어 있거나
+        <b>그대로 만들면 작동하지 않는 지점</b>입니다. 전부 화면으로 대응해 두었습니다.</div>
+      <div class="bar" style="margin-top:14px">
+        <div class="seg" id="segLevel">
+          <button data-v="all" aria-pressed="true">전체</button>
+          <button data-v="high" aria-pressed="false">그대로 만들면 작동 안 함</button>
+          <button data-v="mid" aria-pressed="false">운영 중 반드시 터짐</button>
+          <button data-v="low" aria-pressed="false">있으면 좋음</button>
+        </div>
+      </div>
+      <div class="rows" id="riskRows" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <footer class="ft">
+    <b style="color:var(--ink-2)">ADSUM 애드섬 관리자</b> — 제안용 데모.
+    데이터는 전부 가상이며 실제 광고 계정과 연결돼 있지 않습니다.
+    <a href="index.html">대시보드로 이동</a> · <a href="분석/기획_설계.md">기획·설계</a>
+  </footer>
+</div>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

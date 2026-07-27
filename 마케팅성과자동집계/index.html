@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADSUM 애드섬 — 마케팅 성과 자동 집계 대시보드</title>
+<meta name="description" content="메타·구글·카카오모먼트·네이버 4개 채널 광고 성과와 스마트스토어 실매출을 함께 보는 사내용 대시보드 데모">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234C8DFF'/%3E%3Cpath d='M9 22l7-13 7 13' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-in">
+    <div class="brand"><span class="mk">▲</span> ADSUM <small>애드섬</small></div>
+    <nav>
+      <a href="#kpi" class="on">성과</a>
+      <a href="#creative">소재</a>
+      <a href="#insight">인사이트</a>
+      <a href="admin.html">관리자</a>
+    </nav>
+    <div class="sp"></div>
+    <button class="btn sm ghost" id="btnCsv">CSV 내보내기</button>
+    <div class="who"><span class="av">마</span><span class="nm">퍼포먼스 마케터</span></div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ── 히어로 ─────────────────────────────────────────────── -->
+  <section class="hero">
+    <h1>통합 성과 대시보드</h1>
+    <p>메타·구글·카카오모먼트·네이버 4개 광고 채널과 스마트스토어 주문을 함께 집계합니다.
+       <b>모든 수치는 화면에서 실제로 계산됩니다</b> — 기준을 바꾸면 값이 바뀝니다.</p>
+    <div class="tags">
+      <span class="bd info">데이터 기준일 <span id="asOf" class="num"></span></span>
+      <span class="bd mute">가상 데이터</span>
+      <span class="bd vio">제안용 데모</span>
+    </div>
+  </section>
+
+  <!-- ── 컨트롤 ─────────────────────────────────────────────── -->
+  <section class="sec" id="kpi" style="padding-top:24px">
+
+    <div class="bar">
+      <span class="lbl">기간</span>
+      <div class="seg" id="segPeriod">
+        <button data-v="7" aria-pressed="false">최근 7일</button>
+        <button data-v="28" aria-pressed="true">최근 28일</button>
+        <button data-v="60" aria-pressed="false">최근 60일</button>
+      </div>
+
+      <span class="lbl" style="margin-left:8px">수집 방식</span>
+      <div class="seg" id="segMode">
+        <button data-v="once" aria-pressed="false">일 1회 수집</button>
+        <button data-v="rolling" aria-pressed="true">롤링 재수집 <span class="num" id="rollLbl">14일</span></button>
+      </div>
+
+      <span class="lbl" style="margin-left:8px">매출 기준</span>
+      <div class="seg accent" id="segBasis">
+        <button data-v="channel" aria-pressed="false">채널 합산</button>
+        <button data-v="adonly" aria-pressed="false">광고 기여</button>
+        <button data-v="total" aria-pressed="true">전체 실매출</button>
+      </div>
+    </div>
+
+    <div class="banner warnish rv" id="freshBanner">
+      <span class="ic">!</span>
+      <div style="flex:1;min-width:240px">
+        <b id="freshTitle">—</b>
+        <p id="freshBody">—</p>
+      </div>
+    </div>
+
+    <div class="kpis rv">
+      <div class="kpi"><div class="k">총 광고비</div><div class="v num" data-kpi="spend">0</div><div class="d" data-sub="spend">4개 채널 합계</div></div>
+      <div class="kpi hl"><div class="k">매출 <span class="bd info" id="basisChip" style="height:18px;font-size:10.5px">—</span></div><div class="v num" data-kpi="rev">0</div><div class="d" data-sub="rev">—</div></div>
+      <div class="kpi hl"><div class="k">ROAS</div><div class="v num" data-kpi="roas">0</div><div class="d" data-sub="roas">매출 ÷ 광고비</div></div>
+      <div class="kpi"><div class="k">CTR</div><div class="v num" data-kpi="ctr">0</div><div class="d" data-sub="ctr">클릭 ÷ 노출</div></div>
+      <div class="kpi"><div class="k">전환수</div><div class="v num" data-kpi="conv">0</div><div class="d" data-sub="conv">—</div></div>
+      <div class="kpi"><div class="k">CPA</div><div class="v num" data-kpi="cpa">0</div><div class="d" data-sub="cpa">광고비 ÷ 전환수</div></div>
+    </div>
+  </section>
+
+  <!-- ── 중복 진단 ───────────────────────────────────────────── -->
+  <section class="sec">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>일별 광고비와 매출</h3>
+        <div class="sub">막대는 채널별 광고비, 선은 선택한 기준의 매출입니다.</div>
+        <div class="chart" style="margin-top:14px"><canvas id="cvMain" height="260"></canvas></div>
+        <div class="lg" id="lgMain"></div>
+      </div>
+
+      <div class="card rv" style="border-color:rgba(255,90,95,.28)">
+        <h3>중복 진단 <span class="bd bad">그대로 만들면 틀리는 지점</span></h3>
+        <div class="sub">매체마다 기여를 인정하는 기간이 다릅니다. 한 건의 주문을 여러 매체가
+          각자 전액으로 신고하므로 채널 ROAS를 더하면 실매출을 넘습니다.</div>
+
+        <div class="rows" style="margin-top:14px">
+          <div class="row"><span class="n">1</span><div class="tx">
+            <b>채널 합산 전환매출</b>
+            <p class="num" id="dupA">—</p>
+            <div class="gauge" style="margin-top:7px"><i id="barA" style="background:var(--bad)"></i></div>
+          </div></div>
+          <div class="row"><span class="n">2</span><div class="tx">
+            <b>광고 기여 매출 (중복 제거)</b>
+            <p class="num" id="dupB">—</p>
+            <div class="gauge" style="margin-top:7px"><i id="barB" style="background:var(--accent)"></i></div>
+          </div></div>
+          <div class="row"><span class="n">3</span><div class="tx">
+            <b>스마트스토어 전체 실매출</b>
+            <p class="num" id="dupC">—</p>
+            <div class="gauge" style="margin-top:7px"><i id="barC" style="background:var(--ok)"></i></div>
+          </div></div>
+        </div>
+
+        <div class="banner" style="margin:14px 0 0">
+          <span class="ic" style="background:rgba(255,90,95,.14);color:var(--bad)">△</span>
+          <div style="flex:1;min-width:200px">
+            <b>중복 신고율 <span class="num" id="dupRate">—</span></b>
+            <p id="dupNote">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 채널별 ─────────────────────────────────────────────── -->
+  <section class="sec">
+    <div class="card rv">
+      <h3>채널별 성과</h3>
+      <div class="sub">각 채널의 ROAS는 <b>그 채널이 신고한 전환매출</b> 기준입니다.
+        기여 기간이 서로 다르므로 세로로 더하지 마세요.</div>
+      <div class="tw" style="margin-top:14px;border:0">
+        <table class="t" id="tblCh">
+          <thead><tr>
+            <th>채널</th><th>기여 인정 기간</th><th>광고비</th><th>노출</th><th>클릭</th>
+            <th>CTR</th><th>전환</th><th>신고 매출</th><th>채널 ROAS</th><th>CPA</th>
+          </tr></thead>
+          <tbody></tbody>
+          <tfoot></tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 소재 / 목표 CPA ─────────────────────────────────────── -->
+  <section class="sec" id="creative">
+    <div class="card rv">
+      <h3>목표 CPA 트래킹 <span class="bd warn">판정 규칙을 직접 바꿔 보세요</span></h3>
+      <div class="sub">요구사항은 "목표 CPA를 초과하는 소재를 매일 자동 트래킹"입니다.
+        그런데 <b>전환이 0이면 CPA가 정의되지 않아 초과 비교에 아예 걸리지 않습니다.</b>
+        판정을 4단계로 나눈 이유입니다.</div>
+
+      <div class="grid3" style="margin-top:16px">
+        <div>
+          <div class="lbl">최소 전환수 (이 값 미만은 판정 보류) — <b class="num" id="vMinConv">3</b>건</div>
+          <input type="range" id="rMinConv" min="1" max="10" value="3" style="margin-top:9px">
+        </div>
+        <div>
+          <div class="lbl">무전환 소진 경보 배수 (목표CPA × <b class="num" id="vMult">2.0</b>)</div>
+          <input type="range" id="rMult" min="10" max="300" value="20" style="margin-top:9px">
+        </div>
+        <div>
+          <div class="lbl">평가 창</div>
+          <div class="seg" id="segWin" style="margin-top:6px">
+            <button data-v="1" aria-pressed="false">1일</button>
+            <button data-v="7" aria-pressed="true">7일</button>
+            <button data-v="28" aria-pressed="false">28일</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid3" style="margin-top:16px">
+        <div class="row" style="background:rgba(255,90,95,.06);border-color:rgba(255,90,95,.28)">
+          <div class="tx"><b class="num" id="cntOver" style="font-size:22px">0</b>
+            <p>목표 CPA 초과 <span class="bd bad">조치 필요</span></p></div>
+        </div>
+        <div class="row" style="background:rgba(255,176,32,.06);border-color:rgba(255,176,32,.28)">
+          <div class="tx"><b class="num" id="cntNoconv" style="font-size:22px">0</b>
+            <p>무전환 소진 <span class="bd warn">요구사항엔 없던 경보</span></p></div>
+        </div>
+        <div class="row">
+          <div class="tx"><b class="num" id="cntHold" style="font-size:22px">0</b>
+            <p>판정 보류 <span class="bd mute">표본 부족</span></p></div>
+        </div>
+      </div>
+
+      <div class="banner" style="margin-top:14px">
+        <span class="ic" style="background:rgba(76,141,255,.14);color:var(--accent)">?</span>
+        <div style="flex:1;min-width:240px">
+          <b>요구사항을 문자 그대로 구현하면</b>
+          <p id="naiveNote">—</p>
+        </div>
+        <button class="btn sm" id="btnNaive" aria-pressed="false">비교 보기</button>
+      </div>
+
+      <div class="bar" style="margin:16px 0 0">
+        <div class="seg" id="segStatus">
+          <button data-v="all" aria-pressed="true">전체</button>
+          <button data-v="over" aria-pressed="false">목표 초과</button>
+          <button data-v="noconv" aria-pressed="false">무전환 소진</button>
+          <button data-v="hold" aria-pressed="false">판정 보류</button>
+          <button data-v="ok" aria-pressed="false">정상</button>
+        </div>
+        <select id="selCh">
+          <option value="">전체 채널</option>
+        </select>
+        <span class="lbl" id="crCount"></span>
+      </div>
+
+      <div class="tw" style="margin-top:12px">
+        <table class="t" id="tblCr">
+          <thead><tr>
+            <th>소재</th><th>채널</th><th>광고비</th><th>클릭</th><th>전환</th>
+            <th>CPA</th><th>목표</th><th>ROAS</th><th>판정</th><th>이미지</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 베스트 / 워스트 + 인사이트 ─────────────────────────── -->
+  <section class="sec" id="insight">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>베스트 / 워스트 소재</h3>
+        <div class="sub">ROAS만으로 정렬하면 3만원 쓰고 우연히 1건 팔린 소재가 1등이 됩니다.
+          <b>최소 소진액과 최소 전환수를 넘은 소재만</b> 후보로 올립니다.</div>
+        <div class="bar" style="margin:14px 0 0">
+          <span class="lbl">단위</span>
+          <div class="seg" id="segBW">
+            <button data-v="7" aria-pressed="true">주간</button>
+            <button data-v="28" aria-pressed="false">월간</button>
+          </div>
+          <span class="lbl" id="bwGate"></span>
+        </div>
+        <div id="bwBox" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card rv">
+        <h3>자동 생성 인사이트</h3>
+        <div class="sub">소재 디자인 요소별 성과를 <b>실제 데이터로 계산</b>한 뒤 문장으로 옮깁니다.
+          판단은 서버에서 하고, 모델은 문장만 씁니다.</div>
+        <div id="scoreBox" style="margin-top:14px"></div>
+        <div id="insightBox" style="margin-top:14px"></div>
+        <div class="bar" style="margin:16px 0 0">
+          <button class="btn sm" id="btnPayload">LLM 전송 페이로드 미리보기</button>
+          <span class="lbl">사내 데이터가 외부로 나가는 지점입니다</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ft">
+    <b style="color:var(--ink-2)">ADSUM 애드섬</b> — 위시켓 「마케팅 성과 자동 집계 및 인사이트 도출 대시보드 개발」 제안용 데모.
+    화면의 브랜드·상품·소재·수치는 전부 가상이며 실존 업체와 무관합니다.
+    관련 문서: <a href="분석/기획_설계.md">기획·설계</a> · <a href="분석/시나리오_사용자여정.md">시나리오</a> ·
+    <a href="README.md">README</a> · <a href="admin.html">관리자 화면</a>
+  </footer>
+</div>
+
+<div class="mask" id="mask"><div class="modal" id="modal"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
