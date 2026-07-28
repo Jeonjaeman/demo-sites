@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>병원 상세 — MIYO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./assets/style.css" />
+<link rel="stylesheet" href="./assets/motion.css" />
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="logo" href="./index.html">MI<em>YO</em><small>MEDICAL · BEAUTY</small></a>
+    <nav class="nav-links">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索" data-en="Find Clinics">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科" data-en="Plastic Surgery">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科" data-en="Dental">치과</a>
+      <a href="./admin.html" data-ko="파트너·관리자" data-ja="パートナー・管理" data-en="Partners">파트너·관리자</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle"><button data-l="ko">KO</button><button data-l="ja">JA</button><button data-l="en">EN</button></div>
+      <button class="btn btn-ghost btn-sm" data-login data-ko="로그인" data-ja="ログイン" data-en="Log in">로그인</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- 갤러리 -->
+  <div class="detail-hero">
+    <div class="big"><img id="ph0" src="" alt="" /></div>
+    <div class="col">
+      <div class="sml"><img id="ph1" src="" alt="" /></div>
+      <div class="sml"><img id="ph2" src="" alt="" /></div>
+    </div>
+  </div>
+
+  <!-- 헤드 -->
+  <div class="detail-head">
+    <div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <span class="badge" id="catBadge"></span>
+        <span class="badge dist" id="areaBadge"></span>
+      </div>
+      <h1 id="cName"></h1>
+      <div class="meta" id="cMeta"></div>
+    </div>
+    <div class="score">
+      <b id="cScore"></b>
+      <div style="font-size:12px;color:var(--ink-3);font-weight:700" id="cRevCnt"></div>
+    </div>
+  </div>
+
+  <div class="detail-layout">
+    <div>
+      <!-- 탭 -->
+      <div class="tabs" id="tabs">
+        <button data-tab="intro" class="on"></button>
+        <button data-tab="proc"></button>
+        <button data-tab="reviews"></button>
+        <button data-tab="loc"></button>
+      </div>
+      <div class="tabpane" id="pane"></div>
+    </div>
+
+    <!-- 예약 사이드 -->
+    <aside class="book-side">
+      <h3 id="bkTitle"></h3>
+      <p class="hint" id="bkHint"></p>
+      <div class="cal">
+        <div class="cal-head">
+          <button id="calPrev">‹</button><span id="calTitle"></span><button id="calNext">›</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="slots" id="slots"></div>
+      </div>
+      <div class="field"><label id="lbName"></label><input id="bkName" /></div>
+      <div class="field"><label id="lbPhone"></label><input id="bkPhone" placeholder="010-0000-0000" /></div>
+      <div class="field"><label id="lbMemo"></label><textarea id="bkMemo" rows="2"></textarea></div>
+      <button class="btn btn-primary btn-lg" id="bkSubmit" style="width:100%;margin-top:18px"></button>
+      <div class="consult-ch">
+        <button id="chCall"><span class="ic">📞</span><span></span></button>
+        <button id="chKakao"><span class="ic" style="filter:hue-rotate(0)">💬</span><span>KakaoTalk</span></button>
+        <button id="chLine"><span class="ic">💚</span><span>LINE</span></button>
+      </div>
+      <p style="font-size:11px;color:var(--ink-3);margin-top:14px" data-ko="상담·예약 내역은 저장되어 병원과 MIYO 운영팀이 함께 확인합니다. 이력은 관계 법령 기준 5년 보존됩니다."
+         data-ja="相談・予約履歴は保存され、クリニックとMIYO運営が共に確認します。履歴は法令基準で5年保存。"
+         data-en="Consult & booking records are saved and visible to both the clinic and MIYO ops. Retained 5 years per applicable law.">상담·예약 내역은 저장되어 병원과 운영팀이 함께 확인합니다.</p>
+    </aside>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap f-bottom" style="border:0">
+    <span>© 2026 MIYO Demo. All figures are fictional.</span>
+    <a href="./clinics.html" data-ko="← 목록으로" data-ja="← 一覧へ" data-en="← Back to list">← 목록으로</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="./assets/i18n.js"></script>
+<script src="./assets/data.js"></script>
+<script src="./assets/app.js"></script>
+<script src="./assets/motion.js"></script>
+<script>
+(function () {
+  const { CLINICS, clinicById, catLabel, cityLabel, fmtPrice, M } = window.MIYO;
+  const P = (o) => I18N.pick(o);
+  const $ = APP.$, $$ = APP.$$;
+
+  const id = new URLSearchParams(location.search).get("id") || CLINICS[0].id;
+  const c = clinicById(id) || CLINICS[0];
+  let tab = "intro";
+  let selDate = null, selSlot = null;
+  let calY = 2026, calM = 6; // 2026-07
+  const blockedReviews = new Set();
+
+  /* 갤러리 3장: 대표 + 보조 */
+  const gallery = [c.img, c.doctor, c.cat === "dental" ? M.dental2 : M.treatment];
+  $("#ph0").src = gallery[0]; $("#ph1").src = gallery[1]; $("#ph2").src = gallery[2];
+
+  function head() {
+    const L = I18N.getLang();
+    $("#cName").textContent = P(c.name);
+    $("#cMeta").textContent = P(c.area_full) + " · " + P(c.hours);
+    $("#catBadge").className = "badge cat-" + c.cat;
+    $("#catBadge").textContent = catLabel(c.cat, L);
+    $("#areaBadge").textContent = cityLabel(c.city, L) + " · SINCE " + c.since;
+    $("#cScore").textContent = "★ " + c.rating.toFixed(1);
+    $("#cRevCnt").textContent = c.reviews.toLocaleString() + " " + I18N.t("reviews_cnt");
+    document.title = P(c.name) + " — MIYO";
+  }
+
+  /* ---- 탭 ---- */
+  function tabLabels() {
+    const bs = $$("#tabs button");
+    bs[0].textContent = I18N.t("intro");
+    bs[1].textContent = I18N.t("procedures");
+    bs[2].textContent = I18N.t("tab_reviews");
+    bs[3].textContent = I18N.t("location");
+  }
+  $$("#tabs button").forEach((b) => b.addEventListener("click", () => {
+    tab = b.dataset.tab;
+    $$("#tabs button").forEach((x) => x.classList.toggle("on", x === b));
+    pane();
+  }));
+
+  function stars(n) { return "★★★★★".slice(0, n) + '<span style="opacity:.25">' + "★★★★★".slice(n) + "</span>"; }
+
+  function pane() {
+    const L = I18N.getLang();
+    const el = $("#pane");
+    if (tab === "intro") {
+      el.innerHTML = '<p style="font-size:15.5px;color:var(--ink-2);max-width:640px">' + P(c.about) + "</p>" +
+        '<div class="tags" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:20px">' +
+        P(c.tags).map((t) => '<i style="font-style:normal;font-size:12px;font-weight:700;color:var(--orange-deep);background:var(--bg-soft);padding:6px 14px;border-radius:999px">#' + t + "</i>").join("") + "</div>" +
+        '<div style="margin-top:26px;border-radius:var(--r-md);overflow:hidden"><img src="' + c.doctor + '" style="width:100%;max-height:420px;object-fit:cover" /></div>';
+    }
+    if (tab === "proc") {
+      el.innerHTML = c.procedures.map((p) =>
+        '<div class="proc-row"><div><div class="nm">' + P(p.name) + '</div><div class="ds">' + P(p.desc) + "</div></div>" +
+        '<div class="pr">' + fmtPrice(p.price, L) + "</div></div>").join("") +
+        '<p style="font-size:11.5px;color:var(--ink-3);margin-top:16px">' +
+        { ko: "* 표시 가격은 파트너사 제출 후 운영팀 승인을 거친 기준가입니다. 상태에 따라 상담 시 달라질 수 있습니다.",
+          ja: "* 表示価格はパートナー提出後、運営承認済みの基準価格です。状態により相談時に変わる場合があります。",
+          en: "* Prices are operator-approved reference prices submitted by the partner; final quotes may vary after consult." }[L] + "</p>";
+    }
+    if (tab === "reviews") {
+      el.innerHTML = c.reviewList.map((r, i) => {
+        const blocked = blockedReviews.has(i);
+        const who = r.type === "hospital" ? P(c.name) : r.user;
+        return '<div class="review' + (blocked ? " blocked" : "") + '">' +
+          '<div class="rhead"><span class="avatar">' + who.charAt(0).toUpperCase() + "</span>" +
+          '<span class="who">' + who + '</span>' +
+          '<span class="rtype ' + r.type + '">' + I18N.t(r.type === "hospital" ? "review_hospital" : "review_user") + "</span>" +
+          '<span class="stars">' + stars(r.rating) + "</span><time>" + r.date + " · " + P(r.proc) + "</time></div>" +
+          '<p class="txt">' + (blocked ? I18N.t("blocked") : P(r.text)) + "</p>" +
+          (blocked ? "" : '<div class="ract"><button data-report="' + i + '">🚩 ' + I18N.t("report") + "</button></div>") +
+          "</div>";
+      }).join("") +
+      '<button class="btn btn-ghost" style="width:100%;margin-top:8px">' + I18N.t("write_review") + " ✏️</button>";
+      $$("#pane [data-report]").forEach((b) => b.addEventListener("click", () => {
+        blockedReviews.add(Number(b.dataset.report));
+        APP.toast(I18N.t("report_done"),
+          { ko: "운영팀 검토 → 차단/환불 페이지에서 처리", ja: "運営確認 → ブロック/返金ページで対応", en: "Ops review → handled in the block/refund console" }[I18N.getLang()], "🚩");
+        pane();
+      }));
+    }
+    if (tab === "loc") {
+      el.innerHTML =
+        '<div class="mock-map" style="height:320px;border-radius:var(--r-md)">' +
+        '<div class="road" style="left:10%;top:40%;width:80%;height:6px"></div>' +
+        '<div class="road" style="left:50%;top:10%;width:6px;height:80%"></div>' +
+        '<div class="pin on" style="left:50%;top:42%"><span class="tip">' + P(c.name) + '</span><span class="dot"><span>' + (c.cat === "dental" ? "🦷" : "✚") + "</span></span></div></div>" +
+        '<div class="proc-row"><div class="nm">🕐 ' + I18N.t("location") + '</div><div class="pr" style="font-weight:600">' + P(c.hours) + "</div></div>" +
+        '<div class="proc-row"><div class="nm">📍</div><div class="pr" style="font-weight:600">' + P(c.area_full) + "</div></div>" +
+        '<div class="proc-row"><div class="nm">📞</div><div class="pr" style="font-weight:600">' + c.phone + "</div></div>";
+    }
+    if (window.I18N) I18N.applyStatic(el);
+  }
+
+  /* ---- 달력 ---- */
+  const CLOSED_DOW = 0; // 일요일 휴무
+  const FULL_DAYS = [8, 15, 21]; // 데모: 마감일
+  function cal() {
+    const L = I18N.getLang();
+    const names = { ko: ["일","월","화","수","목","금","토"], ja: ["日","月","火","水","木","金","土"], en: ["S","M","T","W","T","F","S"] }[L];
+    const mName = { ko: (calM + 1) + "월 " + calY, ja: calY + "年" + (calM + 1) + "月", en: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][calM] + " " + calY }[L];
+    $("#calTitle").textContent = mName;
+    const first = new Date(calY, calM, 1).getDay();
+    const days = new Date(calY, calM + 1, 0).getDate();
+    let html = names.map((n) => '<span class="dow">' + n + "</span>").join("");
+    for (let i = 0; i < first; i++) html += "<span></span>";
+    for (let d = 1; d <= days; d++) {
+      const dow = new Date(calY, calM, d).getDay();
+      const past = calY === 2026 && calM === 6 && d < 7;
+      const off = dow === CLOSED_DOW || past || FULL_DAYS.indexOf(d) >= 0;
+      const sel = selDate === calY + "-" + (calM + 1) + "-" + d;
+      const today = calY === 2026 && calM === 6 && d === 7;
+      html += '<span class="day' + (off ? " off" : "") + (sel ? " sel" : "") + (today ? " today" : "") + '" data-d="' + (off ? "" : d) + '">' + d + "</span>";
+    }
+    $("#calGrid").innerHTML = html;
+    $$("#calGrid .day[data-d]").forEach((el) => {
+      if (!el.dataset.d) return;
+      el.addEventListener("click", () => { selDate = calY + "-" + (calM + 1) + "-" + el.dataset.d; selSlot = null; cal(); slots(); });
+    });
+  }
+  $("#calPrev").addEventListener("click", () => { if (calM > 6 || calY > 2026) { calM--; if (calM < 0) { calM = 11; calY--; } cal(); } });
+  $("#calNext").addEventListener("click", () => { calM++; if (calM > 11) { calM = 0; calY++; } cal(); });
+
+  const SLOT_TIMES = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
+  function slots() {
+    if (!selDate) { $("#slots").innerHTML = ""; return; }
+    const taken = [2, 5]; // 데모: 이미 예약된 슬롯
+    $("#slots").innerHTML = SLOT_TIMES.map((t, i) =>
+      '<button data-s="' + t + '"' + (taken.indexOf(i) >= 0 ? " disabled" : "") + ' class="' + (selSlot === t ? "sel" : "") + '">' + t + "</button>").join("");
+    $$("#slots button[data-s]").forEach((b) => b.addEventListener("click", () => { selSlot = b.dataset.s; slots(); }));
+  }
+
+  /* ---- 예약 제출 ---- */
+  function bookLabels() {
+    $("#bkTitle").textContent = I18N.t("tab_book") + " · " + I18N.t("consult_free");
+    $("#bkHint").textContent = { ko: "병원 스케줄에서 가능한 날짜·시간을 선택하세요.", ja: "クリニックの空き日時を選択してください。", en: "Pick an available date & time from the clinic schedule." }[I18N.getLang()];
+    $("#lbName").textContent = I18N.t("name");
+    $("#lbPhone").textContent = I18N.t("phone");
+    $("#lbMemo").textContent = I18N.t("memo");
+    $("#bkSubmit").textContent = I18N.t("book_now");
+    $("#chCall .ic + span, #chCall span:last-child").textContent = I18N.t("call");
+  }
+  $("#bkSubmit").addEventListener("click", () => {
+    const L = I18N.getLang();
+    if (!selDate || !selSlot) {
+      APP.toast({ ko: "날짜와 시간을 선택해주세요", ja: "日付と時間を選択してください", en: "Please select a date and time" }[L], "", "🗓️");
+      return;
+    }
+    const name = $("#bkName").value.trim() || { ko: "게스트", ja: "ゲスト", en: "Guest" }[L];
+    APP.addBooking({
+      clinic: c.id, clinicName: P(c.name), date: selDate, slot: selSlot,
+      user: name, phone: $("#bkPhone").value.trim(), memo: $("#bkMemo").value.trim(), channel: "web", lang: L,
+    });
+    APP.toast(I18N.t("book_confirm"), I18N.t("book_done_desc"), "✅");
+    setTimeout(() => APP.toast(
+      { ko: "🔔 병원·운영팀 대시보드에 실시간 알림 전송됨", ja: "🔔 クリニック・運営ダッシュボードへ即時通知", en: "🔔 Real-time alert sent to clinic & ops dashboards" }[L],
+      { ko: "관리자 페이지에서 확인해보세요", ja: "管理ページでご確認ください", en: "Check the admin page" }[L], "📡"), 1400);
+    selDate = null; selSlot = null; cal(); slots();
+  });
+
+  /* 상담 채널 */
+  $("#chCall").addEventListener("click", () => APP.toast("📞 " + c.phone, P(c.name), "📞"));
+  $("#chKakao").addEventListener("click", () => APP.toast("KakaoTalk: " + c.kakao, { ko: "채널 연결 (데모)", ja: "チャンネル接続(デモ)", en: "Channel link (demo)" }[I18N.getLang()], "💬"));
+  $("#chLine").addEventListener("click", () => APP.toast("LINE: " + c.line, { ko: "채널 연결 (데모)", ja: "チャンネル接続(デモ)", en: "Channel link (demo)" }[I18N.getLang()], "💚"));
+
+  function renderAll() { head(); tabLabels(); pane(); cal(); slots(); bookLabels(); }
+  renderAll();
+  document.addEventListener("langchange", renderAll);
+})();
+</script>
+</body>
+</html>

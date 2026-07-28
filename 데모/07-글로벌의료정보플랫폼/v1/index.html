@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUMIÈRE · 한·일 프리미엄 성형·치과 정보 플랫폼</title>
+<meta name="description" content="한국과 일본의 프리미엄 성형외과·치과를 한 곳에서. 검증된 병원 정보·실후기·간편 예약. 한국어/일본어." />
+<meta name="theme-color" content="#E85D9E" />
+<link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body class="loading">
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader">
+  <div class="pl-inner">
+    <div class="pl-mark" id="plMark">L</div>
+    <div class="pl-word en" id="plWord">LUMIÈRE</div>
+    <div class="pl-sub" id="plSub">K · J MEDICAL BEAUTY</div>
+  </div>
+  <div class="pl-bar" id="plBar"></div>
+</div>
+
+<div class="scroll-progress" id="sp"></div>
+<div class="cursor-glow" id="glow"></div>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="top">
+  <div class="bar">
+    <a class="brand" href="./index.html"><span class="mark">L</span><span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span></a>
+    <nav class="nav">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科">치과</a>
+      <a href="#film" data-ko="브랜드필름" data-ja="フィルム">브랜드필름</a>
+      <a href="#reviews" data-ko="실후기" data-ja="口コミ">실후기</a>
+    </nav>
+    <div class="header-tools">
+      <div class="lang-toggle"><button data-l="ko">KOR</button><button data-l="ja">JPN</button></div>
+      <a class="btn btn-primary" href="./clinics.html" style="padding:11px 20px;font-size:14px" data-ko="상담 예약" data-ja="予約する">상담 예약</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO (pinned scrub) ============ -->
+<section class="hero-cine" id="hero">
+  <div class="canvas-wrap">
+    <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="none" aria-hidden="true"></video>
+    <canvas id="heroCanvas"></canvas>
+  </div>
+  <div class="hero-grain"></div>
+  <div class="hero-veil"></div>
+
+  <div class="float-card hero-layer" data-depth="0.14" style="top:19%;left:6%">
+    <div class="fc-row"><div class="fc-ava" style="background:linear-gradient(135deg,#FDA4C7,#E85D9E)"></div>
+      <div><b>라온 성형외과</b><small><span style="color:#FFB020">★</span> 4.9 · <span data-ko="후기 1,284" data-ja="口コミ 1,284">후기 1,284</span></small></div></div>
+  </div>
+  <div class="float-card hero-layer" data-depth="0.22" style="top:31%;right:7%">
+    <div class="fc-row"><div class="fc-ava" style="background:linear-gradient(135deg,#A78BFA,#8B5CF6);display:grid;place-items:center;color:#fff">✓</div>
+      <div><b data-ko="예약 확정" data-ja="予約確定">예약 확정</b><small data-ko="7월 9일 (목) 11:00" data-ja="7月9日(木) 11:00">7월 9일 (목) 11:00</small></div></div>
+  </div>
+  <div class="float-card hero-layer" data-depth="0.30" style="bottom:16%;right:14%">
+    <div class="fc-row"><div class="fc-ava" style="background:linear-gradient(135deg,#FFD1E8,#C9A0FF);display:grid;place-items:center">🇯🇵</div>
+      <div><b data-ko="일본어 상담 가능" data-ja="日本語対応OK">일본어 상담 가능</b><small data-ko="통역 지원 병원 42곳" data-ja="通訳対応 42院">통역 지원 병원 42곳</small></div></div>
+  </div>
+
+  <div class="wrap inner hero-layer" id="heroInner">
+    <span class="eyebrow" id="heroEy" data-scramble>✦ K · J MEDICAL BEAUTY PLATFORM</span>
+    <h1 id="heroH1" style="opacity:0">아름다움을,<br>국경 없이 <span class="grad-text">잇다.</span></h1>
+    <p class="lead" id="heroLead" style="opacity:0" data-ko="한국과 일본의 프리미엄 성형외과·치과를 한 곳에서. 검증된 정보와 실후기, 몇 번의 터치로 끝나는 간편 예약." data-ja="韓国と日本のプレミアム美容外科・歯科をひとつに。信頼できる情報と口コミ、数タップで完了する簡単予約。">한국과 일본의 프리미엄 성형외과·치과를 한 곳에서. 검증된 정보와 실후기, 몇 번의 터치로 끝나는 간편 예약.</p>
+    <div class="hero-cta" id="heroCta" style="opacity:0">
+      <a class="btn btn-primary btn-lg" href="./clinics.html" data-ko="병원 둘러보기 →" data-ja="クリニックを見る →">병원 둘러보기 →</a>
+      <a class="btn btn-ghost btn-lg" href="#film" data-ko="브랜드 필름" data-ja="ブランドフィルム">브랜드 필름</a>
+    </div>
+  </div>
+  <div class="hero-scroll-hint"><span>SCROLL</span><div class="mouse"></div></div>
+</section>
+
+<!-- ============ MARQUEE (dual) ============ -->
+<div style="padding:26px 0">
+  <div class="marquee"><div class="track" id="marq1"></div></div>
+  <div class="marquee rev marq2"><div class="track" id="marq2"></div></div>
+</div>
+
+<!-- ============ CATEGORY letter-split ============ -->
+<section class="catsplit wrap" id="cats">
+  <span class="eyebrow" data-scramble>CATEGORY</span>
+  <div class="huge" id="catHuge">BEAUTY</div>
+  <div class="sub" data-anim="fade" data-ko="성형외과와 치과, 두 전문 분야의 검증된 병원." data-ja="美容外科と歯科、二つの専門分野の厳選クリニック。">성형외과와 치과, 두 전문 분야의 검증된 병원.</div>
+  <div class="catcards">
+    <a class="clinic-card" href="./clinics.html?cat=plastic" data-anim="zoom">
+      <div class="thumb" style="height:220px"><div class="art art-mesh" style="background-image:linear-gradient(135deg,#FDA4C7,#E85D9E 55%,#A78BFA)"></div>
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;color:#fff">
+          <div class="en" style="font-weight:800;letter-spacing:.1em;opacity:.85;font-size:12px">PLASTIC SURGERY</div>
+          <div style="font-size:28px;font-weight:800" data-ko="성형외과" data-ja="美容外科">성형외과</div>
+          <div style="opacity:.92;font-size:14px" data-ko="눈·코·안면윤곽·리프팅·피부" data-ja="目・鼻・輪郭・リフト・肌">눈·코·안면윤곽·리프팅·피부</div></div></div>
+    </a>
+    <a class="clinic-card" href="./clinics.html?cat=dental" data-anim="zoom" data-delay="0.1">
+      <div class="thumb" style="height:220px"><div class="art art-mesh" style="background-image:linear-gradient(135deg,#A78BFA,#8B5CF6 55%,#6D5CF5)"></div>
+        <div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding:26px;color:#fff">
+          <div class="en" style="font-weight:800;letter-spacing:.1em;opacity:.85;font-size:12px">DENTAL CLINIC</div>
+          <div style="font-size:28px;font-weight:800" data-ko="치과" data-ja="歯科">치과</div>
+          <div style="opacity:.92;font-size:14px" data-ko="임플란트·교정·미백·심미보철" data-ja="インプラント・矯正・ホワイトニング">임플란트·교정·미백·심미보철</div></div></div>
+    </a>
+  </div>
+</section>
+
+<!-- ============ HORIZONTAL clinic showcase (pinned) ============ -->
+<section class="hscroll section" id="showcase">
+  <div class="hpin">
+    <div class="hhead">
+      <span class="eyebrow" data-scramble>FEATURED CLINICS</span>
+      <h2 data-anim="lines" style="font-size:clamp(28px,4vw,42px);margin:16px 0 8px" data-ko="옆으로 <span class='grad-text'>스크롤</span>하며 만나보세요" data-ja="横スクロールで <span class='grad-text'>出会う</span>">옆으로 <span class="grad-text">스크롤</span>하며 만나보세요</h2>
+    </div>
+    <div class="htrack" id="htrack"></div>
+    <div class="hprogress"><div class="b" id="hbar"></div></div>
+  </div>
+</section>
+
+<!-- ============ BRAND FILM ============ -->
+<section class="section wrap" id="film-sec">
+  <div class="shead">
+    <span class="eyebrow" data-scramble>BRAND FILM</span>
+    <h2 data-anim="lines" data-ko="30초로 느끼는 <span class='grad-text'>브랜드 필름</span>" data-ja="30秒で感じる <span class='grad-text'>ブランドフィルム</span>">30초로 느끼는 <span class="grad-text">브랜드 필름</span></h2>
+    <p data-anim="fade" data-ko="재생 버튼을 눌러보세요." data-ja="再生ボタンを押してください。">재생 버튼을 눌러보세요.</p>
+  </div>
+  <div class="film" id="film" data-tilt data-anim="zoom">
+    <video id="filmVideo" muted loop playsinline preload="none"></video>
+    <canvas id="filmCanvas"></canvas>
+    <div class="film-veil"></div>
+    <div class="film-ui">
+      <div class="f-top"><span class="rec"></span> LUMIÈRE FILM · 00:30</div>
+      <div class="f-bottom">
+        <div class="f-title"><b data-ko="아름다움을, 국경 없이 잇다" data-ja="美しさを、国境を越えてつなぐ">아름다움을, 국경 없이 잇다</b>
+          <span data-ko="한·일 프리미엄 메디컬 뷰티" data-ja="韓日プレミアム・メディカルビューティー">한·일 프리미엄 메디컬 뷰티</span></div>
+        <div class="f-ctrl"><button id="filmMute" title="mute">🔊</button><button id="filmFull" title="fullscreen">⤢</button></div>
+      </div>
+    </div>
+    <div class="f-center"><div class="playbtn" id="filmPlay">▶</div></div>
+    <div class="f-progress" id="filmProg"><div class="bar" id="filmBar"></div></div>
+  </div>
+</section>
+
+<!-- ============ BEFORE/AFTER GALLERY ============ -->
+<section class="section band-soft" id="ba-gallery">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow" data-scramble>BEFORE · AFTER</span>
+      <h2 data-anim="lines" data-ko="결과로 <span class='grad-text'>증명</span>합니다" data-ja="結果で <span class='grad-text'>証明</span>します">결과로 <span class="grad-text">증명</span>합니다</h2>
+      <p data-anim="fade" data-ko="각 카드의 슬라이더를 드래그해 변화를 비교하세요." data-ja="各カードのスライダーをドラッグして比較。">각 카드의 슬라이더를 드래그해 변화를 비교하세요.</p>
+    </div>
+    <div class="center" style="margin-bottom:28px">
+      <div class="seg" id="baSeg" style="justify-content:center">
+        <button data-bacat="all" class="on" data-ko="전체" data-ja="すべて">전체</button>
+        <button data-bacat="plastic" data-ko="성형외과" data-ja="美容外科">성형외과</button>
+        <button data-bacat="dental" data-ko="치과" data-ja="歯科">치과</button>
+      </div>
+    </div>
+    <div class="grid g-4" id="baGallery"></div>
+  </div>
+</section>
+
+<!-- ============ MAGNETIC FILL words ============ -->
+<section class="section wrap center" id="values">
+  <span class="eyebrow" data-scramble>OUR VALUES</span>
+  <p class="muted" data-anim="fade" style="margin:14px 0 34px;font-size:16px" data-ko="글자 위에 마우스를 올려보세요." data-ja="文字にマウスを乗せてください。">글자 위에 마우스를 올려보세요.</p>
+  <div class="fillwrap" id="fillWrap"></div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="section wrap">
+  <div class="stats-band" data-anim="zoom">
+    <div class="row">
+      <div><div class="num"><span data-count="128">0</span></div><div class="cap" data-ko="입점 병원" data-ja="提携クリニック">입점 병원</div></div>
+      <div><div class="num"><span data-count="12840">0</span>+</div><div class="cap" data-ko="누적 예약" data-ja="累計予約">누적 예약</div></div>
+      <div><div class="num"><span data-count="42">0</span></div><div class="cap" data-ko="일본어 지원 병원" data-ja="日本語対応院">일본어 지원 병원</div></div>
+      <div><div class="num"><span data-count="98">0</span>%</div><div class="cap" data-ko="상담 만족도" data-ja="相談満足度">상담 만족도</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REVIEWS (spotlight) ============ -->
+<section class="section band-soft" id="reviews">
+  <div class="wrap">
+    <div class="shead">
+      <span class="eyebrow" data-scramble>REAL VOICES</span>
+      <h2 data-anim="lines" data-ko="실제 이용자 <span class='grad-text'>후기</span>" data-ja="利用者の <span class='grad-text'>口コミ</span>">실제 이용자 <span class="grad-text">후기</span></h2>
+    </div>
+    <div class="grid g-3" id="reviewGrid"></div>
+  </div>
+</section>
+
+<!-- ============ BILINGUAL ============ -->
+<section class="section wrap">
+  <div class="glass" data-anim="zoom" style="padding:clamp(30px,5vw,56px);border-radius:var(--radius-lg);display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+    <div>
+      <span class="eyebrow">🇰🇷 KO · 🇯🇵 JA</span>
+      <h2 style="font-size:clamp(26px,3.6vw,38px);margin:16px 0 12px" data-ko="한 번의 클릭으로 <span class='grad-text'>언어 전환</span>" data-ja="ワンクリックで <span class='grad-text'>言語切替</span>">한 번의 클릭으로 <span class="grad-text">언어 전환</span></h2>
+      <p class="muted" style="font-size:16px" data-ko="사이트 전체가 한국어와 일본어로 완전 전환됩니다. 병원 정보·시술·후기까지 이중언어." data-ja="サイト全体が韓国語と日本語に完全対応。クリニック情報・施術・口コミまで二言語。">사이트 전체가 한국어와 일본어로 완전 전환됩니다. 병원 정보·시술·후기까지 이중언어.</p>
+      <div class="stack mt-m">
+        <button class="btn btn-soft" onclick="I18N.setLang('ko')">🇰🇷 한국어</button>
+        <button class="btn btn-soft" onclick="I18N.setLang('ja')">🇯🇵 日本語</button>
+      </div>
+    </div>
+    <div style="display:grid;gap:14px">
+      <div class="tcard" data-spotlight style="box-shadow:none"><div class="spot"></div><div class="q display" style="font-size:22px;font-weight:700">"아름다움을, 국경 없이 잇다."</div><div class="who"><div class="a" style="background:var(--grad)"></div><div><b>KOREAN</b><small>Pretendard</small></div></div></div>
+      <div class="tcard" data-spotlight style="box-shadow:none"><div class="spot"></div><div class="q display" style="font-size:22px;font-weight:700;font-family:'Noto Sans JP'">"美しさを、国境を越えて。"</div><div class="who"><div class="a" style="background:linear-gradient(135deg,#A78BFA,#8B5CF6)"></div><div><b>JAPANESE</b><small>Noto Sans JP</small></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section wrap center">
+  <div style="max-width:680px;margin:0 auto">
+    <span class="eyebrow" data-scramble>GET STARTED</span>
+    <h2 data-anim="chars" style="font-size:clamp(30px,5vw,52px);letter-spacing:-.02em;margin:18px 0 16px" data-ko="지금, 당신의 병원을 찾아보세요" data-ja="今、あなたのクリニックを見つけよう">지금, 당신의 병원을 찾아보세요</h2>
+    <p class="muted" data-anim="fade" style="font-size:17px;margin:0 0 30px" data-ko="검증된 병원, 투명한 후기, 간편한 예약. 무료로 시작하세요." data-ja="信頼できるクリニック、透明な口コミ、簡単予約。無料で。">검증된 병원, 투명한 후기, 간편한 예약. 무료로 시작하세요.</p>
+    <div class="stack" style="justify-content:center">
+      <a class="btn btn-primary btn-lg" href="./clinics.html" data-ko="병원 둘러보기 →" data-ja="クリニックを見る →">병원 둘러보기 →</a>
+      <a class="btn btn-ghost btn-lg" href="./admin.html" data-ko="🗂 관리자 데모" data-ja="🗂 管理者デモ">🗂 관리자 데모</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="in">
+    <div>
+      <div class="brand"><span class="mark">L</span><span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span></div>
+      <p data-ko="한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모" data-ja="韓日プレミアム美容・歯科情報プラットフォーム · 提案デモ">한·일 프리미엄 성형·치과 정보 플랫폼 · 제안용 데모</p>
+    </div>
+    <div class="flinks">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索">병원 찾기</a>
+      <a href="./hospital.html" data-ko="병원 로그인" data-ja="クリニックログイン">병원 로그인</a>
+      <a href="./admin.html" data-ko="관리자" data-ja="管理者">관리자</a>
+      <a href="../index.html">← 데모 포털</a>
+    </div>
+  </div>
+</footer>
+<div class="footer-note">© 2026 LUMIÈRE · <b data-ko="제안용 데모입니다." data-ja="提案用デモです。">제안용 데모입니다.</b> · <span data-ko="가상의 병원·후기 데이터로 구성." data-ja="架空のクリニック・口コミデータ。">가상의 병원·후기 데이터로 구성.</span></div>
+
+<!-- ============ LIBS ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script src="./assets/data.js"></script>
+<script src="./assets/i18n.js"></script>
+<script src="./assets/motion.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const D=window.LUMIERE_DATA;
+  const OFF=(location.search.indexOf('nofx')>=0)||matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const hasG=typeof gsap!=='undefined';
+
+  /* ---- cursor glow + scroll progress ---- */
+  (function(){const g=$('glow');if(g&&!OFF){let x=innerWidth/2,y=innerHeight/2,tx=x,ty=y;
+    addEventListener('pointermove',e=>{tx=e.clientX;ty=e.clientY;},{passive:true});
+    (function l(){x+=(tx-x)*.12;y+=(ty-y)*.12;g.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;requestAnimationFrame(l);})();}else if(g){g.style.display='none';}})();
+  (function(){const sp=$('sp');if(!sp)return;function u(){const dh=document.body.scrollHeight-innerHeight;sp.style.width=(dh>0?scrollY/dh*100:0)+'%';}addEventListener('scroll',u,{passive:true});u();})();
+
+  /* ---- hero aurora canvas ---- */
+  (function(){const cv=$('heroCanvas');if(!cv||OFF)return;const ctx=cv.getContext('2d');let w,h,dpr;
+    const blobs=[{x:.25,y:.35,r:.42,c:[253,164,199]},{x:.72,y:.30,r:.40,c:[167,139,250]},{x:.55,y:.72,r:.46,c:[248,143,184]},{x:.85,y:.68,r:.34,c:[201,160,255]}];
+    function size(){dpr=Math.min(devicePixelRatio||1,2);w=cv.clientWidth;h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+    function frame(t){ctx.fillStyle='#FFF7FB';ctx.fillRect(0,0,w,h);
+      blobs.forEach((b,i)=>{const cx=(b.x+Math.sin(t/4000+i)*.05)*w,cy=(b.y+Math.cos(t/5200+i)*.05)*h,rad=b.r*Math.max(w,h);
+        const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,rad);gr.addColorStop(0,`rgba(${b.c[0]},${b.c[1]},${b.c[2]},.55)`);gr.addColorStop(1,`rgba(${b.c[0]},${b.c[1]},${b.c[2]},0)`);
+        ctx.fillStyle=gr;ctx.beginPath();ctx.arc(cx,cy,rad,0,7);ctx.fill();});requestAnimationFrame(frame);}
+    size();addEventListener('resize',size);requestAnimationFrame(frame);})();
+
+  /* ---- optional real footage ---- */
+  function tryVideo(u,cb){try{fetch(u,{method:'HEAD'}).then(r=>{if(r.ok)cb(u);}).catch(()=>{});}catch(e){}}
+  if($('heroVideo')&&!OFF)tryVideo('./assets/hero.mp4',u=>{$('heroVideo').src=u;$('heroVideo').addEventListener('loadeddata',()=>$('heroVideo').classList.add('ready'));});
+
+  /* ---- marquee (dual) ---- */
+  function buildMarq(){const lang=I18N.getLang();
+    const items={ko:['눈성형','코성형','안면윤곽','임플란트','투명교정','리프팅','피부·쁘띠','미백','라미네이트','양악','지방흡입','강남','압구정','청담','신사','서초'],
+                 ja:['目の整形','鼻の整形','輪郭','インプラント','マウスピース矯正','リフト','肌・プチ','ホワイトニング','ラミネート','両顎','脂肪吸引','江南','狎鴎亭','清潭','新沙','瑞草']}[lang];
+    const one=items.map(x=>`<span class="marq-chip"><span class="dot"></span>${x}</span>`).join('');
+    $('marq1').innerHTML=one+one;$('marq2').innerHTML=one+one;}
+
+  /* ---- render clinics (horizontal), reviews, before/after, values ---- */
+  function star(n){return '★'.repeat(Math.round(n));}
+  function renderH(){const lang=I18N.getLang();
+    $('htrack').innerHTML=D.CLINICS.map(c=>`
+      <a class="clinic-card hcard" href="./clinic.html?id=${c.id}">
+        <div class="thumb"><div class="art art-mesh" style="background-image:${c.grad}"></div>
+          <span class="pill ${c.cat==='plastic'?'pill-plastic':'pill-dental'} cat-pill">${D.catLabel(c.cat,lang)}</span><span class="fav">♡</span></div>
+        <div class="body"><h3>${c.name[lang]}</h3><div class="area">📍 ${c.area_full[lang]}</div>
+          <div class="muted" style="font-size:13.5px">${c.tagline[lang]}</div>
+          <div class="tags">${c.tags[lang].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+          <div class="foot"><span class="rating"><span class="star">★</span>${c.rating} <span class="cnt">(${c.reviews.toLocaleString()})</span></span>
+            <span class="price"><small>${lang==='ja'?'相談':'상담'}</small> <b>${lang==='ja'?'無料':'무료'}</b></span></div></div></a>`).join('');}
+  function renderReviews(){const lang=I18N.getLang();const rev=[];D.CLINICS.forEach(c=>c.reviewList.forEach(r=>rev.push({r,c})));
+    $('reviewGrid').innerHTML=rev.slice(0,6).map(o=>`
+      <div class="tcard" data-spotlight data-anim="fade"><div class="spot"></div>
+        <div class="rating" style="margin-bottom:10px"><span class="star">${star(o.r.rating)}</span></div>
+        <div class="q">"${o.r.text[lang]}"</div>
+        <div class="who"><div class="a" style="background:${o.c.grad}"></div><div><b>${o.r.user}</b><small>${o.c.name[lang]} · ${o.r.proc[lang]} · ${o.r.date}</small></div></div></div>`).join('');}
+  let bacat='all';
+  function renderBA(){const lang=I18N.getLang();const list=D.baByCat(bacat==='all'?null:bacat);
+    const face=(o,r)=>`<svg class="face" viewBox="0 0 200 200" fill="none"><ellipse cx="100" cy="95" rx="${r}" ry="${r+14}" fill="rgba(255,255,255,${o})"/></svg>`;
+    $('baGallery').innerHTML=list.map((b,i)=>`
+      <div class="ba-mini" data-ba data-anim="fade" data-delay="${(i%4)*.05}">
+        <div class="layer before" style="background-image:${b.before}">${face(.28,50)}<span class="lab b">BEFORE</span></div>
+        <div class="layer after" style="background-image:${b.after};clip-path:inset(0 0 0 50%)">${face(.42,46)}<span class="lab a">AFTER</span></div>
+        <div class="handle" style="left:50%"><div class="grip">⟺</div></div>
+        <div class="cap"><b>${b.part[lang]}</b><span>${b.proc[lang]} · ${D.clinicName(b.clinic,lang)}</span></div></div>`).join('');
+    $('baGallery').querySelectorAll('[data-ba]').forEach(initMiniDrag);}
+  function initMiniDrag(el){const after=el.querySelector('.layer.after'),handle=el.querySelector('.handle');let drag=false;
+    function set(px){const r=el.getBoundingClientRect();let p=(px-r.left)/r.width;p=Math.max(.05,Math.min(.95,p));after.style.clipPath=`inset(0 0 0 ${p*100}%)`;handle.style.left=p*100+'%';}
+    el.addEventListener('pointerdown',e=>{drag=true;set(e.clientX);el.setPointerCapture(e.pointerId);});
+    el.addEventListener('pointermove',e=>{if(drag)set(e.clientX);});el.addEventListener('pointerup',()=>drag=false);el.addEventListener('pointercancel',()=>drag=false);}
+  function renderFill(){const lang=I18N.getLang();
+    const words={ko:['신뢰','아름다움','연결','경험'],ja:['信頼','美しさ','つながり','体験']}[lang];
+    $('fillWrap').innerHTML=words.map(w=>`<div class="fillrow" data-fill>${w}<span class="fill">${w}</span><span class="dot"></span></div>`).join('');
+    if(!OFF)$('fillWrap').querySelectorAll('[data-fill]').forEach(initFill);}
+  function initFill(el){const dot=el.querySelector('.dot');
+    el.addEventListener('pointermove',e=>{const r=el.getBoundingClientRect();
+      el.style.transform=`translate(${(e.clientX-r.left-r.width/2)*.14}px,${(e.clientY-r.top-r.height/2)*.28}px)`;
+      dot.style.left=(e.clientX-r.left)+'px';dot.style.top=(e.clientY-r.top)+'px';});
+    el.addEventListener('pointerenter',()=>el.classList.add('on'));
+    el.addEventListener('pointerleave',()=>{el.classList.remove('on');
+      if(hasG)gsap.to(el,{x:0,y:0,duration:.6,ease:'elastic.out(1,0.4)'});else el.style.transform='';});}
+
+  /* ---- film player ---- */
+  function setupFilm(){const film=$('film');if(!film)return;const cv=$('filmCanvas'),ctx=cv.getContext('2d'),vid=$('filmVideo');
+    const bar=$('filmBar');let playing=false,raf=0,t0=0,hasVid=false;const DUR=30000;
+    tryVideo('./assets/film.mp4',u=>{vid.src=u;vid.addEventListener('loadeddata',()=>{hasVid=true;cv.style.display='none';});});
+    function size(){const dpr=Math.min(devicePixelRatio||1,2);const r=cv.getBoundingClientRect();cv.width=r.width*dpr;cv.height=r.height*dpr;}
+    function draw(t){const w=cv.width,h=cv.height;ctx.fillStyle='#180f22';ctx.fillRect(0,0,w,h);const cols=[[253,164,199],[232,93,158],[167,139,250],[139,92,246]];
+      for(let i=0;i<cols.length;i++){const c=cols[i];const cx=w*(0.25+0.18*i)+Math.sin(t/1300+i*1.7)*w*0.22,cy=h*(0.4)+Math.cos(t/1500+i)*h*0.2;
+        const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,w*0.55);gr.addColorStop(0,`rgba(${c[0]},${c[1]},${c[2]},.6)`);gr.addColorStop(1,`rgba(${c[0]},${c[1]},${c[2]},0)`);ctx.fillStyle=gr;ctx.beginPath();ctx.arc(cx,cy,w*0.55,0,7);ctx.fill();}}
+    function loop(t){if(!playing)return;if(!t0)t0=t;const el=t-t0;bar.style.width=Math.min(100,el/DUR*100)+'%';if(!hasVid)draw(t);if(el>=DUR){stop();return;}raf=requestAnimationFrame(loop);}
+    function play(){playing=true;film.classList.add('playing');t0=0;if(hasVid){try{vid.currentTime=0;vid.play();}catch(e){}}size();raf=requestAnimationFrame(loop);}
+    function stop(){playing=false;film.classList.remove('playing');cancelAnimationFrame(raf);bar.style.width='0%';if(hasVid)vid.pause();}
+    $('filmPlay').addEventListener('click',e=>{e.stopPropagation();play();});
+    film.addEventListener('click',e=>{if(playing&&!e.target.closest('.f-ctrl')&&!e.target.closest('.f-progress'))stop();});
+    $('filmMute').addEventListener('click',e=>{e.stopPropagation();vid.muted=!vid.muted;e.target.textContent=vid.muted?'🔊':'🔇';});
+    $('filmFull').addEventListener('click',e=>{e.stopPropagation();if(film.requestFullscreen)film.requestFullscreen().catch(()=>{});});
+    $('filmProg').addEventListener('click',e=>e.stopPropagation());addEventListener('resize',()=>{if(playing)size();});}
+
+  /* ---- count-up ---- */
+  function initCount(){document.querySelectorAll('[data-count]').forEach(el=>{
+    if(OFF||!window.ScrollTrigger){el.textContent=(+el.dataset.count).toLocaleString();return;}
+    ScrollTrigger.create({trigger:el,start:'top 90%',once:true,onEnter:()=>{const end=+el.dataset.count,t0=performance.now();
+      (function tick(t){let p=Math.min(1,(t-t0)/1400);p=1-Math.pow(1-p,3);el.textContent=Math.round(end*p).toLocaleString();if(p<1)requestAnimationFrame(tick);})(t0);}});});}
+
+  /* ---- section choreography ---- */
+  function setupHero(){
+    if(OFF||!hasG){$('heroH1').style.opacity=1;$('heroLead').style.opacity=1;$('heroCta').style.opacity=1;return;}
+    // parallax float cards
+    document.querySelectorAll('.float-card').forEach(c=>{const d=parseFloat(c.dataset.depth)||.2;
+      gsap.to(c,{yPercent:-d*130,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});});
+    // pin + fade hero content out on scroll
+    gsap.to('#heroInner',{yPercent:-14,opacity:0,ease:'none',scrollTrigger:{trigger:'#hero',start:'top top',end:'bottom top',scrub:true}});
+    addEventListener('pointermove',e=>{const dx=(e.clientX/innerWidth-.5),dy=(e.clientY/innerHeight-.5);
+      document.querySelectorAll('.float-card').forEach(c=>{const d=parseFloat(c.dataset.depth)||.2;c.style.marginLeft=(dx*d*40)+'px';c.style.marginTop=(dy*d*40)+'px';});},{passive:true});
+  }
+  function heroIntro(){
+    if(OFF||!hasG){$('heroH1').style.opacity=1;$('heroLead').style.opacity=1;$('heroCta').style.opacity=1;return;}
+    const lines=LUMOTION.splitLines($('heroH1'));gsap.set('#heroH1',{opacity:1});
+    gsap.timeline()
+      .from(lines,{yPercent:120,duration:1,ease:'power4.out',stagger:.12})
+      .from($('heroLead'),{y:24,opacity:0,duration:.8,ease:'power3.out',onStart:()=>$('heroLead').style.opacity=1},'-=.4')
+      .from($('heroCta'),{y:20,opacity:0,duration:.8,ease:'back.out(1.5)',onStart:()=>$('heroCta').style.opacity=1},'-=.5');
+  }
+  function setupCatSplit(){
+    const huge=$('catHuge');if(!huge)return;const chars=LUMOTION.splitChars(huge);
+    if(OFF||!hasG){return;}
+    const n=chars.length,mid=(n-1)/2;
+    chars.forEach((c,i)=>{const dir=i<mid?-1:1;gsap.set(c,{x:dir*(Math.abs(i-mid)*36+50),opacity:0});});
+    gsap.to(chars,{x:0,opacity:1,ease:'power3.out',scrollTrigger:{trigger:'#cats',start:'top 78%',end:'top 28%',scrub:1}});
+  }
+  function setupHorizontal(){
+    const track=$('htrack');if(!track)return;
+    if(OFF||!hasG){document.getElementById('showcase').classList.remove('hscroll');track.style.flexWrap='wrap';track.style.width='auto';return;}
+    function build(){const dist=track.scrollWidth-innerWidth+48;if(dist<=0)return;
+      gsap.to(track,{x:-dist,ease:'none',scrollTrigger:{id:'hsc',trigger:'#showcase',start:'top top',end:'+='+dist,scrub:1,pin:true,invalidateOnRefresh:true,
+        onUpdate:s=>{$('hbar').style.width=(s.progress*100)+'%';}}});}
+    build();
+  }
+
+  /* ---- boot sequence ---- */
+  let booted=false;
+  function startSite(){
+    if(booted)return;booted=true;
+    document.body.classList.remove('loading');
+    buildMarq();renderH();renderReviews();renderBA();renderFill();
+    if(window.LUMOTION)LUMOTION.boot();          // smooth + reveals + scrambles + magnetic + spotlight
+    setupHero();setupCatSplit();setupHorizontal();setupFilm();initCount();
+    heroIntro();
+    if(window.ScrollTrigger)setTimeout(()=>ScrollTrigger.refresh(),400);
+    document.addEventListener('langchange',()=>{buildMarq();renderH();renderReviews();renderBA();renderFill();
+      if(window.LUMOTION){LUMOTION.scanReveals(document);LUMOTION.initSpotlight(document);}
+      if(window.ScrollTrigger)setTimeout(()=>ScrollTrigger.refresh(),200);});
+  }
+
+  /* ---- preloader ---- */
+  function runPreloader(done){
+    const pre=$('preloader');
+    if(OFF||!hasG||sessionStorage.getItem('lum_intro')){if(pre)pre.remove();done();return;}
+    sessionStorage.setItem('lum_intro','1');
+    const chars=LUMOTION.splitChars($('plWord'));
+    gsap.timeline({onComplete:()=>{done();gsap.to(pre,{yPercent:-100,opacity:0,duration:.9,ease:'power4.inOut',onComplete:()=>pre.remove()});}})
+      .to('#plMark',{scale:1,opacity:1,filter:'blur(0px)',duration:.9,ease:'back.out(1.6)'})
+      .from(chars,{yPercent:120,opacity:0,duration:.7,ease:'power4.out',stagger:.05},'-=.3')
+      .to('#plSub',{opacity:1,duration:.6},'-=.2')
+      .to('#plBar',{width:'100%',duration:.9,ease:'power2.inOut'},0)
+      .to({},{duration:.35});
+  }
+
+  window.addEventListener('load',()=>runPreloader(startSite));
+  // safety net
+  setTimeout(()=>{if(!booted){const pre=$('preloader');if(pre)pre.remove();startSite();}},4500);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>페이지를 찾을 수 없습니다 — 데모사이트 모음</title>
+<meta name="robots" content="noindex">
+<style>
+  body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px;
+         background:#0b0d10; color:#e8eaed; text-align:center;
+         font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif; }
+  .box { max-width:520px }
+  h1 { font-size:20px; margin:0 0 10px; letter-spacing:-.02em }
+  p { margin:0 0 8px; color:#9aa3ae; font-size:14px; line-height:1.7 }
+  code { background:#171a1f; padding:2px 6px; border-radius:5px; font-size:12.5px; color:#c9d1d9 }
+  a { color:#6ea8fe }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1 id="t">페이지를 찾을 수 없습니다</h1>
+  <p id="m">주소를 다시 확인해 주세요.</p>
+  <p><a href="/demo-sites/">데모사이트 모음으로 이동</a></p>
+</div>
+<script>
+/* 폴더 정리(2026-07) 전 경로로 들어온 요청을 새 경로로 넘깁니다.
+   이미 발송한 지원서의 링크가 계속 동작하도록 하기 위한 것입니다.
+   하위 경로와 쿼리·해시는 그대로 이어붙입니다. */
+(function () {
+  var ROOT = '/demo-sites/';
+  var MAP = {
+    "운송포탈"                      : "데모/01-운송포탈",
+    "창업지원협회"                    : "데모/02-창업지원협회",
+    "커뮤니티광고플랫폼"                 : "데모/03-커뮤니티광고플랫폼",
+    "타겟키워드자동수집"                 : "데모/04-타겟키워드자동수집",
+    "키워드분석플랫폼"                  : "데모/05-키워드분석플랫폼",
+    "태블릿기부약정서"                  : "데모/06-태블릿기부약정서",
+    "글로벌의료정보플랫폼"                : "데모/07-글로벌의료정보플랫폼",
+    "B2B코칭"                     : "데모/08-B2B코칭",
+    "전기설비내장형웹"                  : "데모/09-전기설비내장형웹",
+    "유아동기질검사"                   : "데모/10-유아동기질검사",
+    "사내직원스케쥴링"                  : "데모/11-사내직원스케쥴링",
+    "오픈소스플랫폼"                   : "데모/12-오픈소스플랫폼",
+    "탐정법인"                      : "데모/13-탐정법인",
+    "글로벌투자사"                    : "데모/14-글로벌투자사",
+    "쇼핑몰연동핏"                    : "데모/15-쇼핑몰연동핏",
+    "커뮤회사리뷰플랫폼"                 : "데모/16-커뮤회사리뷰플랫폼",
+    "22인치설문웹"                   : "데모/17-22인치설문웹",
+    "스포츠카드통합커뮤니티"               : "데모/18-스포츠카드통합커뮤니티",
+    "신규사업자데이터수집"                : "데모/19-신규사업자데이터수집",
+    "연구용챗봇"                     : "데모/20-연구용챗봇",
+    "교사설문시각화"                   : "데모/21-교사설문시각화",
+    "행사관리플랫폼"                   : "데모/22-행사관리플랫폼",
+    "마케팅세미나플랫폼"                 : "데모/23-마케팅세미나플랫폼",
+    "이주민생활정보"                   : "데모/24-이주민생활정보",
+    "광융합기업지도"                   : "데모/25-광융합기업지도",
+    "데이터수집여성커뮤니티"               : "데모/26-데이터수집여성커뮤니티",
+    "마케팅성과자동집계"                 : "데모/27-마케팅성과자동집계",
+    "가족소통앱"                     : "데모/_미커밋/가족소통앱",
+    "청년지역매칭"                    : "데모/_미커밋/청년지역매칭"
+  };
+  var path = location.pathname;
+  if (path.indexOf(ROOT) !== 0) return;
+  var rest = path.slice(ROOT.length);
+  var seg = rest.split('/')[0];
+  var key;
+  try { key = decodeURIComponent(seg); } catch (e) { key = seg; }
+  var to = MAP[key];
+  if (!to) return;
+  var tail = rest.slice(seg.length);          // 예: "/companies/yuzu.html"
+  var url = ROOT + to.split('/').map(encodeURIComponent).join('/') + tail
+            + location.search + location.hash;
+  document.getElementById('t').textContent = '새 주소로 이동합니다…';
+  document.getElementById('m').innerHTML = '폴더가 정리되어 경로가 바뀌었습니다.';
+  location.replace(url);
+})();
+</script>
+</body>
+</html>

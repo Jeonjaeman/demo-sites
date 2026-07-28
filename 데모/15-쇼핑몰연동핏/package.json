@@ -1,0 +1,13 @@
+{
+  "name": "forme-fit-widget-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "python -m http.server 4173 --bind 127.0.0.1",
+    "test": "playwright test tests/prototype.spec.js tests/platform.spec.js --reporter=line --workers=1",
+    "test:visual": "playwright test tests/visual-capture.spec.js --reporter=line --workers=1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}

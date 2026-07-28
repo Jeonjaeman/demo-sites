@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LUMIÈRE · 스타일 타일 (디자인 방향 시안)</title>
+<meta name="description" content="한·일 프리미엄 성형·치과 정보 플랫폼 — K/J 뷰티 그라디언트 디자인 시스템 시안" />
+<link rel="stylesheet" href="./assets/style.css" />
+<style>
+  /* style-tile 전용 레이아웃 */
+  .st-hero{padding:120px 0 40px;text-align:center;position:relative}
+  .st-hero h1{font-size:clamp(38px,7vw,76px);line-height:1.02;letter-spacing:-.03em;margin:20px 0 16px;font-weight:800}
+  .st-hero .sub{color:var(--ink-2);font-size:18px;max-width:600px;margin:0 auto}
+  .st-hero .ja-note{margin-top:14px;font-size:13px;color:var(--muted)}
+  .board{display:grid;grid-template-columns:repeat(12,1fr);gap:22px;padding:20px 0 100px}
+  .tile{background:var(--card-solid);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow-sm)}
+  .tile h4{margin:0 0 4px;font-size:13px;font-family:"Poppins";letter-spacing:.16em;text-transform:uppercase;color:var(--rose)}
+  .tile .desc{color:var(--muted);font-size:13px;margin:0 0 18px}
+  .col-4{grid-column:span 4}.col-5{grid-column:span 5}.col-6{grid-column:span 6}.col-7{grid-column:span 7}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+  @media(max-width:900px){.col-4,.col-5,.col-6,.col-7,.col-8{grid-column:span 12}}
+  /* swatches */
+  .sw{display:flex;flex-direction:column;gap:6px}
+  .swrow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+  @media(max-width:600px){.swrow{grid-template-columns:repeat(3,1fr)}}
+  .chip{border-radius:14px;height:74px;border:1px solid var(--line);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:8px;font-size:10.5px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+  .chip.dark{color:var(--ink);text-shadow:none}
+  .type-row{display:flex;align-items:baseline;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .type-row:last-child{border:none}
+  .type-row .tag2{font-size:11px;color:var(--muted);width:120px;flex:none;font-family:"Poppins"}
+  .kbd{font-family:"Poppins";font-size:11px;background:rgba(150,90,150,.08);padding:2px 8px;border-radius:6px;color:var(--ink-2)}
+  .stack{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .label-s{font-size:11px;font-family:"Poppins";letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+  .mini-cal{max-width:300px}
+</style>
+</head>
+<body>
+
+<!-- ========== 글래스 헤더 시안 ========== -->
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="#top">
+      <span class="mark">L</span>
+      <span><b>LUMIÈRE</b><small>K · J MEDICAL BEAUTY</small></span>
+    </a>
+    <nav class="nav">
+      <a href="#">병원 찾기</a>
+      <a href="#">성형외과</a>
+      <a href="#">치과</a>
+      <a href="#">이용안내</a>
+    </nav>
+    <div class="header-tools">
+      <div class="lang-toggle" id="langToggle">
+        <button data-l="ko" class="on">KOR</button>
+        <button data-l="ja">JPN</button>
+      </div>
+      <a class="btn btn-primary" href="#" style="padding:11px 20px;font-size:14px" data-ko="상담 예약" data-ja="予約する">상담 예약</a>
+    </div>
+  </div>
+</header>
+
+<!-- ========== 히어로 시안 ========== -->
+<section class="st-hero wrap" id="top">
+  <span class="eyebrow">DESIGN DIRECTION · STYLE TILE</span>
+  <h1 data-ko="아름다움을,<br>국경 없이 잇다." data-ja="美しさを、<br>国境を越えて。">아름다움을,<br>국경 없이 잇다.</h1>
+  <p class="sub" data-ko="한국과 일본의 프리미엄 성형외과·치과를 한 곳에서. 이 페이지는 실제 데모에 적용될 컬러·타이포·컴포넌트 시안입니다."
+     data-ja="韓国と日本のプレミアム美容外科・歯科をひとつに。本ページは実際のデモに適用するカラー・タイポ・コンポーネントの試案です。">한국과 일본의 프리미엄 성형외과·치과를 한 곳에서. 이 페이지는 실제 데모에 적용될 컬러·타이포·컴포넌트 시안입니다.</p>
+  <p class="ja-note">↑ 우측 상단 <span class="kbd">KOR / JPN</span> 토글로 실시간 언어 전환을 확인하세요.</p>
+  <div class="stack" style="justify-content:center;margin-top:26px">
+    <a class="btn btn-primary btn-lg" href="#" data-ko="병원 둘러보기" data-ja="クリニックを見る">병원 둘러보기</a>
+    <a class="btn btn-ghost btn-lg" href="#" data-ko="이용 방법" data-ja="ご利用方法">이용 방법</a>
+  </div>
+</section>
+
+<!-- ========== 디자인 시스템 보드 ========== -->
+<div class="wrap">
+<div class="board">
+
+  <!-- 컬러 -->
+  <div class="tile col-8">
+    <h4>01 · Color</h4>
+    <p class="desc">로즈→라일락 그라디언트를 주축으로, 화사하되 여백으로 절제한 프리미엄 뷰티 팔레트.</p>
+    <div class="label-s">Primary</div>
+    <div class="swrow">
+      <div class="chip" style="background:#E85D9E">Rose #E85D9E</div>
+      <div class="chip" style="background:#D23F84">Rose-D</div>
+      <div class="chip" style="background:#FDA4C7">Rose-L</div>
+      <div class="chip" style="background:#A78BFA">Lilac</div>
+      <div class="chip" style="background:#8B5CF6">Violet</div>
+      <div class="chip" style="background:var(--grad)">Gradient</div>
+    </div>
+    <div class="label-s">Soft / Surface</div>
+    <div class="swrow">
+      <div class="chip dark" style="background:#FFE1EC">Peach</div>
+      <div class="chip dark" style="background:#E9D5FF">Lav</div>
+      <div class="chip dark" style="background:#FFF7FB;border-color:var(--line-2)">Blush</div>
+      <div class="chip dark" style="background:var(--grad-soft)">Grad-soft</div>
+      <div class="chip" style="background:#2B1F33">Ink</div>
+      <div class="chip dark" style="background:#948AA0;color:#fff;text-shadow:none">Muted</div>
+    </div>
+  </div>
+
+  <!-- 로고/마크 -->
+  <div class="tile col-4" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:18px;background:var(--grad-warm)">
+    <h4 style="align-self:flex-start">02 · Brand</h4>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+      <span class="mark" style="width:70px;height:70px;border-radius:20px;font-size:34px">L</span>
+      <b class="display" style="font-size:26px;letter-spacing:-.01em">LUMIÈRE</b>
+      <small class="display" style="letter-spacing:.24em;color:var(--muted);font-size:11px">K · J MEDICAL BEAUTY</small>
+    </div>
+    <p class="desc" style="text-align:center;margin:0">가칭 · 데모 브랜드명<br>(“빛나다”, 한·일 공통 감성)</p>
+  </div>
+
+  <!-- 타이포 -->
+  <div class="tile col-7">
+    <h4>03 · Typography</h4>
+    <p class="desc">Poppins(영문 디스플레이) · Pretendard(국문) · Noto Sans JP(일문). 라운드하고 친근하되 정제된 조합.</p>
+    <div class="type-row"><span class="tag2">Display / 76</span><span class="display" style="font-size:40px;font-weight:800;letter-spacing:-.02em">Lumière</span></div>
+    <div class="type-row"><span class="tag2">H2 / KO 800</span><span style="font-size:26px;font-weight:800">아름다움을 잇다</span></div>
+    <div class="type-row"><span class="tag2">H2 / JP 700</span><span style="font-size:26px;font-weight:700;font-family:'Noto Sans JP'">美をつなぐ</span></div>
+    <div class="type-row"><span class="tag2">Body / 16</span><span style="font-size:16px;color:var(--ink-2)">눈·코·안면윤곽부터 임플란트·교정까지, 검증된 병원 정보.</span></div>
+    <div class="type-row"><span class="tag2">Body / JP</span><span style="font-size:16px;color:var(--ink-2);font-family:'Noto Sans JP'">目・鼻から歯科矯正まで、信頼できるクリニック情報。</span></div>
+  </div>
+
+  <!-- 버튼 -->
+  <div class="tile col-5">
+    <h4>04 · Buttons</h4>
+    <p class="desc">라운드 필 + 그라디언트 글로우. 호버 시 살짝 떠오르는 마이크로 인터랙션.</p>
+    <div class="label-s">Primary / Ghost / Soft</div>
+    <div class="stack">
+      <a class="btn btn-primary" href="#">상담 예약</a>
+      <a class="btn btn-ghost" href="#">병원 보기</a>
+      <a class="btn btn-soft" href="#">찜하기</a>
+    </div>
+    <div class="label-s">Segmented (필터 탭)</div>
+    <div class="seg">
+      <button class="on">전체</button>
+      <button>성형외과</button>
+      <button>치과</button>
+    </div>
+    <div class="label-s">Pills / Tags / Badge</div>
+    <div class="stack">
+      <span class="pill pill-plastic">성형외과</span>
+      <span class="pill pill-dental">치과</span>
+      <span class="tag">눈성형</span>
+      <span class="tag">#강남</span>
+      <span class="badge new">NEW</span>
+      <span class="badge ok">예약확정</span>
+      <span class="badge wait">대기</span>
+    </div>
+  </div>
+
+  <!-- 병원 카드 -->
+  <div class="tile col-4">
+    <h4>05 · Clinic Card</h4>
+    <p class="desc">그라디언트 아트 + 글래스 톤. 호버 시 상승·이미지 줌.</p>
+    <div class="clinic-card" style="cursor:default">
+      <div class="thumb">
+        <div class="art art-mesh" style="background-image:linear-gradient(135deg,#FDA4C7,#E85D9E 55%,#A78BFA)"></div>
+        <span class="pill pill-plastic cat-pill">성형외과</span>
+        <span class="fav">♡</span>
+      </div>
+      <div class="body">
+        <h3>라온 성형외과</h3>
+        <div class="area">📍 서울 강남 · 압구정</div>
+        <div class="tags"><span class="tag">눈성형</span><span class="tag">코성형</span><span class="tag">안면윤곽</span></div>
+        <div class="foot">
+          <span class="rating"><span class="star">★</span>4.9 <span class="cnt">(1,284)</span></span>
+          <span class="price"><small>상담</small> <b>무료</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 예약 모달/캘린더 -->
+  <div class="tile col-5">
+    <h4>06 · Booking · Calendar</h4>
+    <p class="desc">단계형 예약 모달의 핵심 — 날짜·시간 선택 마이크로 인터랙션.</p>
+    <div class="cal mini-cal">
+      <div class="cal-head"><button>‹</button><b>2026 · 7월</b><button>›</button></div>
+      <div class="cal-grid">
+        <span class="dow">일</span><span class="dow">월</span><span class="dow">화</span><span class="dow">수</span><span class="dow">목</span><span class="dow">금</span><span class="dow">토</span>
+        <span class="day off"></span><span class="day off"></span><span class="day disabled">1</span><span class="day disabled">2</span><span class="day disabled">3</span><span class="day">4</span><span class="day">5</span>
+        <span class="day">6</span><span class="day">7</span><span class="day">8</span><span class="day sel">9</span><span class="day">10</span><span class="day">11</span><span class="day">12</span>
+        <span class="day">13</span><span class="day">14</span><span class="day">15</span><span class="day">16</span><span class="day">17</span><span class="day">18</span><span class="day">19</span>
+      </div>
+    </div>
+    <div class="label-s">Time slots</div>
+    <div class="slots" style="max-width:300px">
+      <button>10:00</button><button class="on">11:00</button><button disabled>13:00</button><button>14:00</button>
+    </div>
+  </div>
+
+  <!-- 폼 / 인풋 -->
+  <div class="tile col-3" style="grid-column:span 3">
+    <h4>07 · Form</h4>
+    <div class="field"><label>이름 / お名前</label><input class="input" placeholder="홍길동" /></div>
+    <div class="field" style="margin:0"><label>연락처</label><input class="input" placeholder="010-0000-0000" /></div>
+  </div>
+
+  <!-- 통계 카드 -->
+  <div class="tile col-4" style="grid-column:span 4">
+    <h4>08 · Stat (관리자)</h4>
+    <div class="stat" style="box-shadow:none">
+      <div class="ic" style="background:var(--rose-100)">📅</div>
+      <div class="n grad-text">1,284</div>
+      <div class="l">이번 달 예약 접수</div>
+      <div class="d up">▲ 18.2% vs 지난달</div>
+    </div>
+  </div>
+
+  <!-- 섹션 헤드 스타일 -->
+  <div class="tile col-5" style="grid-column:span 5">
+    <h4>09 · Section head</h4>
+    <div class="shead" style="margin:10px 0 0;text-align:left">
+      <span class="eyebrow">HOW IT WORKS</span>
+      <h2 style="font-size:26px">3단계로 <span class="grad-text">간편 예약</span></h2>
+      <p style="font-size:14px">병원을 고르고, 원하는 날짜를 선택하고, 상담을 예약하세요.</p>
+    </div>
+  </div>
+
+  <!-- 인터랙션 노트 -->
+  <div class="tile col-12" style="background:var(--grad-warm)">
+    <h4>10 · Motion &amp; Interaction</h4>
+    <div class="grid g-4" style="gap:16px">
+      <div><b>스크롤 리빌</b><p class="desc" style="margin-top:4px">진입 시 fade+up (IntersectionObserver). 스크롤해서 이 보드가 올라온 것도 그 효과입니다.</p></div>
+      <div><b>글래스 depth</b><p class="desc" style="margin-top:4px">헤더·카드 backdrop-blur. iOS26 Liquid Glass 감성.</p></div>
+      <div><b>호버 마이크로</b><p class="desc" style="margin-top:4px">버튼 상승·카드 리프트·이미지 줌.</p></div>
+      <div><b>오로라 배경</b><p class="desc" style="margin-top:4px">뒤에서 천천히 떠다니는 파스텔 블롭(움직임 확인).</p></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<footer class="site-footer">
+  <div class="in">
+    <div class="brand"><span class="mark">L</span><span><b>LUMIÈRE</b><small>제안용 디자인 시안</small></span></div>
+    <div class="flinks"><a href="../index.html">← 데모 포털</a></div>
+  </div>
+</footer>
+<div class="footer-note">본 페이지는 <b>디자인 방향 확정용 스타일 타일</b>입니다 · 확정 후 랜딩·병원목록·상세·병원·관리자 5개 화면으로 확장합니다.</div>
+
+<script>
+  // 스타일 타일 전용 · 간이 언어 토글 + 스크롤 리빌
+  const T=document.getElementById('langToggle');
+  function setLang(l){
+    document.documentElement.lang=l;
+    document.querySelectorAll('[data-ko]').forEach(el=>{
+      const v=el.getAttribute('data-'+l); if(v!=null) el.innerHTML=v;
+    });
+    T.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+  }
+  T.addEventListener('click',e=>{const b=e.target.closest('button');if(b)setLang(b.dataset.l);});
+
+  // reveal
+  const io=new IntersectionObserver((es)=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.12});
+  document.querySelectorAll('.tile').forEach((el,i)=>{el.classList.add('reveal');el.classList.add('d'+((i%4)+1));io.observe(el);});
+</script>
+</body>
+</html>

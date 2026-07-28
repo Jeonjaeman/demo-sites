@@ -294,9 +294,26 @@ const hex = v => { c.fillStyle = '#fff'; c.fillRect(0,0,1,1); c.fillStyle = v; c
 - 스크롤 하이재킹, 자동재생 오디오
 - 모션 때문에 **첫 렌더가 늦어지는 것** — 리빌은 뷰포트 진입분만
 
-**파일 구조 (고정)**
+**저장소 구조 (2026.07 정리 후)**
 ```
-<한글폴더명>/
+/                              루트 = https://jeonjaeman.github.io/demo-sites/
+├─ index.html                  포털
+├─ 404.html                    ★ 옛 경로 → 새 경로 리다이렉트 맵 (제출한 지원서 링크 보존)
+├─ CLAUDE.md · README.md
+├─ 데모/                       ★ 데모사이트 전부. 작업순서 번호
+│  ├─ 01-운송포탈/ … 27-마케팅성과자동집계/
+│  ├─ _별도레포/               개별 레포로 관리(gitignore)
+│  ├─ _미구축/                 공고문만 있음(gitignore)
+│  └─ _미커밋/                 포털은 가리키나 미배포(gitignore)
+├─ 포트폴리오/                 작업 산출물(gitignore · 배포 대상 아님)
+└─ <영문별칭>/                 ASCII 별칭 — 루트 유지. 지원서에 쓰는 공개 URL
+```
+
+**새 데모를 추가할 때는 `데모/<다음번호>-<한글폴더명>/`** 에 만듭니다.
+
+**데모 폴더 내부 구조 (고정)**
+```
+데모/NN-<한글폴더명>/
 ├─ index.html                    사용자 화면
 ├─ admin.html / dashboard.html   관리자 (필요 시)
 ├─ assets/{css,js,img}/
@@ -369,10 +386,12 @@ preview_start {name} → javascript_tool로 기능 직접 호출 검증
 1. **포털 등록** — 루트 `index.html`의 `DEMOS` 배열 **맨 앞쪽**에 추가
    ```js
    { name:"한글명", en:"BRAND", cat:"platform|admin|home", desc:"핵심기능·차별점·디자인출처", 
-     url:"./한글폴더/index.html", status:"live", g:"linear-gradient(...)", here:true },
+     url:"./데모/NN-한글폴더/index.html", status:"live", g:"linear-gradient(...)", here:true },
    ```
-2. **ASCII 별칭 폴더** — `/영문명/index.html`에 리다이렉트 (한글 경로가 폼에서 잘리는 것 방지)
-   - 관리자 화면이 있으면 `/영문명/admin/index.html`도 생성
+2. **ASCII 별칭 폴더** — **루트에** `/영문명/index.html`을 만들어 `../데모/NN-한글폴더/`로 리다이렉트
+   - 관리자 화면이 있으면 `/영문명/admin/index.html`도 생성 (`../../데모/NN-…/admin.html`)
+   - **별칭이 공개 URL입니다.** 지원서에는 항상 별칭만 씁니다 — 한글 경로는 폼에서 잘립니다
+   - 폴더 위치가 바뀌면 별칭의 `canonical`·`meta refresh`·`location.replace` **3곳을 모두** 고칩니다
 3. **launch.json** — 포트 추가. **다음 사용 포트: 8087부터 내림차순** (8088~8099 사용 중)
 4. **커밋·푸시**
    ```
@@ -382,6 +401,21 @@ preview_start {name} → javascript_tool로 기능 직접 호출 검증
    ```
    - **해당 폴더 + 루트 index.html + 별칭 폴더만** staging (다른 미완성 작업 건드리지 않기)
 5. **배포 확인** — Pages 200 확인 (until 루프로 대기, 한글 경로는 URL 인코딩)
+
+**★ 폴더를 옮기거나 이름을 바꿀 때**
+
+이 저장소는 GitHub Pages라 **폴더명이 곧 공개 URL**이고, 이미 발송한 지원서에 그 URL이 들어 있습니다.
+경로를 바꾸면 반드시 아래를 함께 처리합니다.
+
+| 대상 | 처리 |
+|---|---|
+| `404.html` | 옛 경로 → 새 경로 매핑 추가. 하위 경로·쿼리·해시를 이어붙여 **딥링크까지** 살립니다 |
+| 별칭 폴더 | canonical · meta refresh · location.replace 3곳 |
+| 루트 `index.html` | `DEMOS` 배열의 `url` |
+| 사이트 내부 절대 URL | canonical·sitemap·hreflang에 `https://jeonjaeman.github.io/...`가 박힌 데모가 있습니다(글로벌투자사 168파일). **percent-encoding 형태로도** 치환해야 합니다 |
+| `.claude/launch.json` | `--directory` 경로 |
+
+옮긴 뒤에는 **루트에 서버를 띄워 옛 경로·새 경로·별칭을 전수 확인**하고 커밋합니다.
 
 ### 8단계 — 보고
 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MOA 광고주 대시보드 | 캠페인 성과</title>
+<meta name="description" content="MOA 광고주 대시보드 — 본인 캠페인 집행 현황과 소재별 성과를 노출/클릭/CTR 그래프로 확인하고 리포트를 CSV로 내려받습니다." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" />
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body style="background:var(--bg-soft)">
+
+<header class="adv-top">
+  <div class="wrap">
+    <a class="logo" href="index.html">
+      <span class="mk"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19V8.5L12 4l8 4.5V19" stroke="#fff" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="2.4" fill="#fff"/></svg></span>
+      <span><b class="en">MOA</b><small>광고주 센터</small></span>
+    </a>
+    <div class="who">
+      <div style="text-align:right"><b id="advName">광고주</b><br/><small id="advId">AD-00</small></div>
+      <span class="av" id="advAvatar">F</span>
+      <a class="btn-sm" href="index.html" style="margin-left:6px">로그아웃</a>
+    </div>
+  </div>
+</header>
+
+<div class="adv-wrap">
+  <div class="adv-hello">
+    <div>
+      <h1 id="hello">안녕하세요 👋</h1>
+      <p id="helloSub">집행 중인 캠페인의 성과를 한눈에 확인하세요.</p>
+    </div>
+    <div class="tool-r">
+      <div class="seg" id="rangeSeg"><button data-r="7" class="on">최근 7일</button><button data-r="30">30일</button><button data-r="all">전체</button></div>
+      <button class="csv" id="csvAdv"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 21h16"/></svg>리포트 CSV</button>
+      <button class="btn-primary" id="newCmpAdv" style="padding:10px 20px">＋ 새 캠페인</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="advKpis" style="margin-bottom:18px"></div>
+
+  <div class="cols" style="margin-bottom:18px">
+    <div class="acard">
+      <h3>노출 · 클릭 추이 <span class="mini">최근 7일</span></h3>
+      <p class="csub">일자별 캠페인 집행 성과</p>
+      <div class="chart" id="advChart"></div>
+      <div class="legend"><span><i style="background:#f45757"></i>노출(Impressions)</span><span><i style="background:#3c377a"></i>클릭(Clicks)</span></div>
+    </div>
+    <div class="acard" style="padding:0;border:none;background:none;box-shadow:none;display:flex;flex-direction:column;gap:14px">
+      <div class="wallet" id="walletCard"></div>
+      <div class="acard" style="flex:1">
+        <h3>충전·소진 내역</h3>
+        <ul class="whist" id="walletHist"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="acard">
+      <h3>내 캠페인</h3>
+      <p class="csub">집행 현황</p>
+      <div class="tbl-card" style="box-shadow:none;border-radius:12px"><table class="tbl"><thead><tr><th>캠페인</th><th>타입</th><th>상태</th><th>노출</th><th>클릭</th><th>CTR</th></tr></thead><tbody id="advCmpBody"></tbody></table></div>
+    </div>
+    <div class="acard">
+      <h3>소재별 성과</h3>
+      <p class="csub">CTR 기준</p>
+      <div id="advCre"></div>
+    </div>
+  </div>
+
+  <div class="cols" style="margin-top:18px">
+    <div class="acard">
+      <h3>A/B 소재 테스트 <span class="mini">노출 50:50 자동 분배</span></h3>
+      <p class="csub">같은 캠페인에 소재 2종을 등록하면 노출을 절반씩 나눠 CTR를 비교합니다. (Meta 분할 테스트 벤치마킹)</p>
+      <div id="abTest"></div>
+    </div>
+    <div class="acard">
+      <h3>소재 심사 현황 <span class="mini">영업일 1일 내</span></h3>
+      <p class="csub">보류 소재는 사유 확인 후 수정하여 재심사를 요청할 수 있습니다. (카카오모먼트 심사 벤치마킹)</p>
+      <div id="advReview"></div>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:30px"><a href="index.html" style="color:var(--brand);font-weight:700">← 플랫폼 소개</a> · 본 대시보드는 제안용 데모이며 데이터는 가상입니다.</p>
+</div>
+
+<!-- modal (퀵 캠페인 마법사 등) -->
+<div class="modal-back" id="modalBack"><div class="modal" id="modal"></div></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/advertiser.js"></script>
+</body>
+</html>

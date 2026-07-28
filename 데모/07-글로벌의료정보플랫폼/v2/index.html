@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIYO — K·J Medical & Beauty Platform</title>
+<meta name="description" content="한국·일본 프리미엄 성형외과·치과 정보 및 예약 플랫폼 데모 (v2)" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="./assets/style.css" />
+<link rel="stylesheet" href="./assets/motion.css" />
+</head>
+<body class="home">
+
+<!-- 프리로더 -->
+<div class="preloader">
+  <div class="pl-col"></div><div class="pl-col"></div><div class="pl-col"></div><div class="pl-col"></div><div class="pl-col"></div>
+  <div class="pl-center">
+    <span class="pl-mask"><span class="pl-word">MI<em>YO</em></span></span>
+    <span class="pl-num">000</span>
+  </div>
+</div>
+
+<!-- 헤더 (홈: 투명 → 스크롤 시 다크 블러) -->
+<header class="site">
+  <div class="wrap nav">
+    <a class="logo" href="./index.html">MI<em>YO</em><small>MEDICAL · BEAUTY</small></a>
+    <nav class="nav-links">
+      <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索" data-en="Find Clinics">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科" data-en="Plastic Surgery">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科" data-en="Dental">치과</a>
+      <a href="#journal" data-ko="저널" data-ja="ジャーナル" data-en="Journal">저널</a>
+      <a href="./admin.html" data-ko="파트너·관리자" data-ja="パートナー・管理" data-en="Partners">파트너·관리자</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle"><button data-l="ko">KO</button><button data-l="ja">JA</button><button data-l="en">EN</button></div>
+      <button class="btn btn-ghost btn-sm" data-login data-ko="로그인" data-ja="ログイン" data-en="Log in">로그인</button>
+      <a class="btn btn-primary btn-sm" href="./clinics.html" data-ko="상담 예약" data-ja="相談予約" data-en="Book Consult">상담 예약</a>
+    </div>
+  </div>
+</header>
+
+<!-- 히어로: 풀블리드 100vh 영상 + 라인 마스크 인트로 + 스크럽 패럴럭스 -->
+<section class="hero-tk">
+  <div class="hero-media">
+    <video autoplay muted loop playsinline poster="./assets/media/hero.webp">
+      <source src="./assets/media/hero-video.mp4" type="video/mp4" />
+    </video>
+  </div>
+  <div class="hero-inner">
+    <span class="eyebrow hero-fade">SEOUL ✕ TOKYO · MEDICAL BEAUTY</span>
+    <h1 data-lines-hero
+        data-ko="나에게 진실하게,<br><span class='it'>아름다움</span>에 다정하게"
+        data-ja="自分に正直に、<br><span class='it'>美しさ</span>にやさしく"
+        data-en="True to yourself,<br>kind to your <span class='it'>beauty</span>">나에게 진실하게,<br><span class="it">아름다움</span>에 다정하게</h1>
+    <div class="hero-bottom">
+      <p class="lead hero-fade" data-ko="한국과 일본의 검증된 프리미엄 성형외과·치과를 한 곳에서. 위치 기반 검색부터 예약, 사후관리까지 — 당신의 언어로."
+         data-ja="韓国と日本の審査済みプレミアム美容外科・歯科をひとつに。位置検索から予約、アフターケアまで — あなたの言語で。"
+         data-en="Verified premium clinics across Korea and Japan, in one place. From location search to booking and aftercare — in your language.">한국과 일본의 검증된 프리미엄 성형외과·치과를 한 곳에서.</p>
+      <div class="hero-cta hero-fade" style="margin:0">
+        <a class="btn btn-primary btn-lg" href="./clinics.html" data-ko="내 주변 병원 찾기" data-ja="近くのクリニックを探す" data-en="Find Clinics Near Me">내 주변 병원 찾기</a>
+        <a class="btn btn-lg" style="background:rgba(255,255,255,.92);color:var(--ink)" href="#collections" data-ko="컬렉션 보기" data-ja="コレクションを見る" data-en="Browse Collections">컬렉션 보기</a>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint hero-fade"><span>SCROLL</span><i></i></div>
+</section>
+
+<!-- 아웃라인 마키 (스크럽 가속) -->
+<div class="marquee-scrub">
+  <div class="mq-track"><div class="mq-inner" id="marquee"></div></div>
+</div>
+
+<!-- 스테이트먼트: 라인 리빌 + 플로팅 칩 패럴럭스 -->
+<section class="statement wrap">
+  <span class="float-chip" style="top:12%;left:4%" data-parallax-speed="1.6">✚ PLASTIC SURGERY</span>
+  <span class="float-chip" style="top:28%;right:6%" data-parallax-speed="-1.2">🦷 DENTAL CARE</span>
+  <span class="float-chip" style="bottom:16%;left:10%" data-parallax-speed="-1.8">📍 SEOUL · TOKYO</span>
+  <span class="float-chip" style="bottom:8%;right:12%" data-parallax-speed="1.2">문A KO · JA · EN</span>
+  <span class="kicker" data-reveal>CLEAN · CONSCIOUS · CARE</span>
+  <h2 data-lines
+      data-ko="과장 없는 정보, 투명한 가격, 검증된 실후기.<br>의료 뷰티의 기준을 <span class='it'>다시 씁니다</span>."
+      data-ja="誇張のない情報、透明な料金、検証済みの口コミ。<br>メディカルビューティーの基準を<span class='it'>書き換えます</span>。"
+      data-en="Honest information, transparent pricing, verified reviews.<br>We're <span class='it'>rewriting</span> the standard of medical beauty.">과장 없는 정보, 투명한 가격, 검증된 실후기.<br>의료 뷰티의 기준을 <span class="it">다시 씁니다</span>.</h2>
+  <p data-reveal="0.15" data-ko="MIYO는 템플릿 몰이 아닌 독립 구축 플랫폼입니다. 병원별 독립몰 구조로 각 파트너사의 브랜드를 살리고, 운영팀의 승인 아래 모든 정보가 게시됩니다."
+     data-ja="MIYOはテンプレートモールではなく独立構築プラットフォーム。医院別の独立ストア構造で各パートナーのブランドを活かし、運営承認のもとで情報が公開されます。"
+     data-en="MIYO is an independently built platform — not a template mall. Each partner clinic keeps its own brand, and every listing is published only after operator approval.">MIYO는 템플릿 몰이 아닌 독립 구축 플랫폼입니다.</p>
+</section>
+
+<!-- 에토스: 4행 스태거 리빌 -->
+<section class="blk wrap ethos" style="padding-top:0">
+  <div id="ethosRows" data-reveal-group></div>
+</section>
+
+<!-- 컬렉션 1: 성형외과 (Swiper 드래그 캐러셀 + 호버 이미지 스왑) -->
+<section class="blk wrap" id="collections">
+  <div class="sec-head">
+    <div>
+      <span class="kicker" data-reveal>COLLECTION 01</span>
+      <h2 class="disp" data-lines data-ko="성형외과 <span class='it'>Signature</span>" data-ja="美容外科 <span class='it'>Signature</span>" data-en="Plastic Surgery <span class='it'>Signature</span>">성형외과 <span class="it">Signature</span></h2>
+    </div>
+    <a class="btn btn-ghost" href="./clinics.html?cat=plastic" data-reveal data-ko="전체 보기" data-ja="すべて見る" data-en="View All">전체 보기</a>
+  </div>
+  <div class="swiper" id="swPlastic"><div class="swiper-wrapper" id="rowPlastic"></div></div>
+  <div class="swiper-progress"><i id="pgPlastic"></i></div>
+</section>
+
+<!-- 컬렉션 2: 치과 -->
+<section class="blk wrap" style="padding-top:10px">
+  <div class="sec-head">
+    <div>
+      <span class="kicker" data-reveal>COLLECTION 02</span>
+      <h2 class="disp" data-lines data-ko="치과 <span class='it'>Collection</span>" data-ja="歯科 <span class='it'>Collection</span>" data-en="Dental <span class='it'>Collection</span>">치과 <span class="it">Collection</span></h2>
+    </div>
+    <a class="btn btn-ghost" href="./clinics.html?cat=dental" data-reveal data-ko="전체 보기" data-ja="すべて見る" data-en="View All">전체 보기</a>
+  </div>
+  <div class="swiper" id="swDental"><div class="swiper-wrapper" id="rowDental"></div></div>
+  <div class="swiper-progress"><i id="pgDental"></i></div>
+</section>
+
+<!-- 하프그리드 1: 승인제 입점 (이미지 패럴럭스) -->
+<section class="wrap halfgrid">
+  <div class="hg-img" data-reveal>
+    <div class="pxwrap"><img src="./assets/media/lounge1.webp" alt="파트너 병원 라운지" /></div>
+    <div class="stamp"><b>OPERATOR APPROVED</b> · <span data-ko="모든 정보는 운영팀 승인 후 게시" data-ja="全情報は運営承認後に公開" data-en="Every listing is operator-approved">모든 정보는 운영팀 승인 후 게시</span></div>
+  </div>
+  <div>
+    <span class="kicker" data-reveal data-ko="입점 철학" data-ja="入店ポリシー" data-en="OUR STANDARD">입점 철학</span>
+    <h2 data-lines data-ko="아무 병원이나<br>올리지 <span class='it'>않습니다</span>" data-ja="どのクリニックでも<br>載せるわけでは<span class='it'>ありません</span>" data-en="Not every clinic<br><span class='it'>makes the cut</span>">아무 병원이나<br>올리지 <span class="it">않습니다</span></h2>
+    <p class="body" data-reveal style="color:var(--ink-2);font-size:15.5px"
+       data-ko="파트너사가 직접 정보·이미지·가격 수정을 요청해도, 운영팀 검수와 승인을 거친 뒤에만 사용자에게 노출됩니다. 광고성 리뷰는 별도 라벨로 구분합니다."
+       data-ja="パートナーが情報・画像・料金の修正を申請しても、運営の検収と承認を経てからユーザーに公開されます。広告性の口コミは別ラベルで区分します。"
+       data-en="Even when partners request edits to their info, images or pricing, changes go live only after our operations team reviews and approves them. Promotional reviews are always labeled.">파트너사의 수정 요청도 운영팀 승인 후에만 반영됩니다.</p>
+    <ul class="checks" data-reveal-group>
+      <li data-ko="의료기관 인허가·전문의 자격 검증" data-ja="医療機関の認可・専門医資格を確認" data-en="Licensing & board certification verified">의료기관 인허가·전문의 자격 검증</li>
+      <li data-ko="수정 요청 → 운영 승인 → 게시 (즉시 반영 없음)" data-ja="修正申請 → 運営承認 → 公開（即時反映なし）" data-en="Edit request → operator approval → publish">수정 요청 → 운영 승인 → 게시</li>
+      <li data-ko="병원 제공 리뷰 / 이용자 인증 리뷰 라벨 구분" data-ja="クリニック提供／利用者認証の口コミをラベル区分" data-en="Clinic-provided vs verified-visit review labels">리뷰 2종 라벨 구분</li>
+      <li data-ko="악성·허위 리뷰 신고 및 차단 시스템" data-ja="悪質・虚偽の口コミの通報＆ブロック体制" data-en="Report & block system for abusive reviews">악성·허위 리뷰 신고 및 차단</li>
+    </ul>
+    <a class="btn btn-dark" href="./admin.html" data-reveal data-ko="파트너 입점 안내" data-ja="パートナー入店のご案内" data-en="Become a Partner">파트너 입점 안내</a>
+  </div>
+</section>
+
+<!-- 하프그리드 2 (역방향): 위치 기반 검색 -->
+<section class="wrap halfgrid rev">
+  <div class="hg-img" data-reveal>
+    <div class="mock-map" id="homeMap" style="height:clamp(380px,44vw,600px);border-radius:var(--r-lg)">
+      <div class="road" style="left:10%;top:30%;width:80%;height:6px"></div>
+      <div class="road" style="left:48%;top:10%;width:6px;height:80%"></div>
+      <div class="road" style="left:20%;top:60%;width:60%;height:4px;transform:rotate(-14deg)"></div>
+      <div class="me-dot" style="left:42%;top:55%"></div>
+    </div>
+  </div>
+  <div>
+    <span class="kicker" data-reveal>LOCATION BASED</span>
+    <h2 data-lines data-ko="지금, 내 주변의<br><span class='it'>검증된</span> 병원" data-ja="いま、近くの<br><span class='it'>審査済み</span>クリニック" data-en="Verified clinics,<br><span class='it'>right around</span> you">지금, 내 주변의<br><span class="it">검증된</span> 병원</h2>
+    <p data-reveal style="color:var(--ink-2);font-size:15.5px"
+       data-ko="서울에 있든 도쿄에 있든 — 현재 위치 기준으로 가까운 파트너 병원을 지도에서 찾고, 바로 예약하세요. 구글 지도 연동은 실서비스에서 제공됩니다."
+       data-ja="ソウルでも東京でも — 現在地から近いパートナー医院を地図で探して、そのまま予約。Googleマップ連携は本番で提供します。"
+       data-en="Whether you're in Seoul or Tokyo — find nearby partner clinics on the map and book instantly. Google Maps integration ships in production.">현재 위치 기준으로 가까운 파트너 병원을 찾아보세요.</p>
+    <div style="margin-top:26px" data-reveal><a class="btn btn-primary btn-lg" href="./clinics.html" data-ko="지도에서 찾기" data-ja="地図で探す" data-en="Open the Map">지도에서 찾기</a></div>
+  </div>
+</section>
+
+<!-- 하프그리드 3: 예약·상담 채널 -->
+<section class="wrap halfgrid">
+  <div class="hg-img" data-reveal>
+    <div class="pxwrap"><img src="./assets/media/treatment.webp" alt="시술 케어" /></div>
+    <div class="stamp"><b>REAL-TIME</b> · <span data-ko="예약 즉시 병원·운영팀 알림" data-ja="予約と同時にクリニック・運営へ通知" data-en="Instant alerts to clinic & ops">예약 즉시 병원·운영팀 알림</span></div>
+  </div>
+  <div>
+    <span class="kicker" data-reveal data-ko="예약·상담" data-ja="予約・相談" data-en="BOOK & CONSULT">예약·상담</span>
+    <h2 data-lines data-ko="달력에서 고르면,<br>상담은 <span class='it'>당신의 언어로</span>" data-ja="カレンダーで選べば、<br>相談は<span class='it'>あなたの言語で</span>" data-en="Pick a slot —<br>consult <span class='it'>in your language</span>">달력에서 고르면,<br>상담은 <span class="it">당신의 언어로</span></h2>
+    <p data-reveal style="color:var(--ink-2);font-size:15.5px"
+       data-ko="병원별 스케줄 달력에서 가능한 시간을 고르고, 전화·카카오톡·LINE으로 이어서 상담하세요. 모든 상담 이력은 저장되어 병원과 운영팀이 함께 확인합니다."
+       data-ja="クリニック別のカレンダーで空き時間を選び、電話・カカオ・LINEで相談。全履歴が保存され、クリニックと運営が共に確認します。"
+       data-en="Choose an open slot on each clinic's calendar, then continue via phone, KakaoTalk or LINE. Every consult is logged and visible to both clinic and ops.">병원별 스케줄 달력에서 가능한 시간을 고르세요.</p>
+    <div class="sso" data-reveal-group style="margin-top:24px">
+      <button onclick="location.href='./clinics.html'">📞 <span data-ko="전화 상담" data-ja="電話相談" data-en="Phone">전화 상담</span></button>
+      <button onclick="location.href='./clinics.html'"><span class="dot-ic" style="background:#FEE500;color:#3C1E1E">K</span> KakaoTalk</button>
+      <button onclick="location.href='./clinics.html'"><span class="dot-ic" style="background:#06C755">L</span> LINE</button>
+    </div>
+  </div>
+</section>
+
+<!-- 프로모션 -->
+<section class="blk wrap">
+  <div class="promo" data-reveal>
+    <div>
+      <span class="note" id="promoNote"></span>
+      <h2 id="promoTitle"></h2>
+      <div style="margin-top:24px"><a class="btn btn-lg" style="background:#fff;color:var(--orange-deep)" href="./clinics.html" data-ko="프로모션 예약하기" data-ja="プロモーションを予約" data-en="Book the Promotion">프로모션 예약하기</a></div>
+    </div>
+    <div class="promo-table" id="promoTable"></div>
+  </div>
+</section>
+
+<!-- 저널 -->
+<section class="blk wrap" id="journal">
+  <div class="sec-head">
+    <div>
+      <span class="kicker" data-reveal>JOURNAL</span>
+      <h2 class="disp" data-lines data-ko="뷰티 트립 <span class='it'>가이드</span>" data-ja="ビューティートリップ<span class='it'>ガイド</span>" data-en="Beauty Trip <span class='it'>Journal</span>">뷰티 트립 <span class="it">가이드</span></h2>
+    </div>
+  </div>
+  <div class="journal" id="journalGrid" data-reveal-group></div>
+</section>
+
+<!-- QR / 앱 -->
+<section class="blk wrap" style="padding-top:0">
+  <div class="qr-sec" data-reveal>
+    <div>
+      <span class="kicker">APP · QR LOGIN</span>
+      <h2 class="disp" data-lines data-ko="스캔 한 번으로<br><span class='it'>3초</span> 로그인" data-ja="スキャン一回で<br><span class='it'>3秒</span>ログイン" data-en="One scan,<br>signed in within <span class='it'>3s</span>">스캔 한 번으로<br><span class="it">3초</span> 로그인</h2>
+      <p style="color:var(--ink-2);margin-top:14px" data-ko="앱에서 QR을 스캔하면 웹에 바로 로그인됩니다. 구글·네이버·카카오·LINE 간편 로그인도 지원해요."
+         data-ja="アプリでQRをスキャンすればWebに即ログイン。Google・Naver・Kakao・LINEのSNSログインにも対応。"
+         data-en="Scan the QR with our app to log in instantly on web. Google, Naver, Kakao and LINE sign-in are supported too.">앱에서 QR을 스캔하면 웹에 바로 로그인됩니다.</p>
+      <div class="sso">
+        <button data-login><span class="dot-ic" style="background:#4285F4">G</span> Google</button>
+        <button data-login><span class="dot-ic" style="background:#03C75A">N</span> Naver</button>
+        <button data-login><span class="dot-ic" style="background:#FEE500;color:#3C1E1E">K</span> Kakao</button>
+        <button data-login><span class="dot-ic" style="background:#06C755">L</span> LINE</button>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center">
+      <div class="qr-box" data-login style="cursor:pointer">
+        <div class="qr-grid" id="qrHome"></div>
+        <p data-ko="클릭하여 로그인 데모 보기" data-ja="クリックしてログインデモ" data-en="Click to try the login demo">클릭하여 로그인 데모 보기</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 푸터 -->
+<footer class="site">
+  <div class="wrap">
+    <div class="f-grid">
+      <div>
+        <a class="logo" href="./index.html">MI<em>YO</em><small>MEDICAL · BEAUTY</small></a>
+        <p style="font-size:13px;opacity:.7;margin-top:14px" data-ko="한국·일본 프리미엄 의료 뷰티 정보·예약 플랫폼.<br>본 사이트는 제안용 데모입니다 — 모든 병원·리뷰·수치는 가상 데이터입니다."
+           data-ja="韓国・日本のプレミアム医療ビューティー情報・予約プラットフォーム。<br>本サイトは提案用デモです — 医院・口コミ・数値はすべて架空です。"
+           data-en="Premium medical-beauty platform for Korea & Japan.<br>This is a proposal demo — all clinics, reviews and figures are fictional.">한국·일본 프리미엄 의료 뷰티 정보·예약 플랫폼.</p>
+      </div>
+      <div>
+        <h4 data-ko="탐색" data-ja="ナビ" data-en="EXPLORE">탐색</h4>
+        <a href="./clinics.html" data-ko="병원 찾기" data-ja="クリニック検索" data-en="Find Clinics">병원 찾기</a>
+        <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科" data-en="Plastic Surgery">성형외과</a>
+        <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科" data-en="Dental">치과</a>
+        <a href="#journal" data-ko="저널" data-ja="ジャーナル" data-en="Journal">저널</a>
+      </div>
+      <div>
+        <h4 data-ko="파트너" data-ja="パートナー" data-en="PARTNERS">파트너</h4>
+        <a href="./admin.html" data-ko="파트너(병원) 로그인" data-ja="パートナー(医院)ログイン" data-en="Partner Login">파트너(병원) 로그인</a>
+        <a href="./admin.html" data-ko="관리자 대시보드" data-ja="管理ダッシュボード" data-en="Admin Dashboard">관리자 대시보드</a>
+        <a href="./admin.html" data-ko="입점 문의" data-ja="入店のお問い合わせ" data-en="Partnership Inquiry">입점 문의</a>
+      </div>
+      <div>
+        <h4 data-ko="뉴스레터" data-ja="ニュースレター" data-en="NEWSLETTER">뉴스레터</h4>
+        <p style="font-size:13px;opacity:.7" data-ko="시즌 프로모션과 뷰티 트립 가이드를 받아보세요." data-ja="シーズンプロモとビューティートリップガイドをお届け。" data-en="Seasonal promos and beauty-trip guides, monthly.">시즌 프로모션과 뷰티 트립 가이드를 받아보세요.</p>
+        <div class="newsletter"><input type="email" placeholder="email@miyo.demo" /><button data-ko="구독" data-ja="購読" data-en="Join">구독</button></div>
+      </div>
+    </div>
+    <div class="f-bottom">
+      <span>© 2026 MIYO Demo. All figures are fictional.</span>
+      <span data-ko="상담 이력 보존: 관계 법령 기준 5년 (전자상거래법·의료법 준수)" data-ja="相談履歴の保存：関連法令基準5年" data-en="Consult history retained 5 years per applicable law">상담 이력 보존: 관계 법령 기준 5년</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="./assets/i18n.js"></script>
+<script src="./assets/data.js"></script>
+<script src="./assets/app.js"></script>
+<script>
+(function () {
+  const { CLINICS, PILLARS, JOURNAL, PROMO, areaLabel, cityLabel, fmtPrice } = window.MIYO;
+  const P = (o) => I18N.pick(o);
+  let swipers = [];
+
+  /* 마키 */
+  function marquee() {
+    const words = ["PLASTIC SURGERY", "DENTAL", "SKIN & LIFTING", "SEOUL", "TOKYO"];
+    document.getElementById("marquee").innerHTML =
+      words.map((w, i) => '<span class="' + (i % 2 ? "fill" : "") + '">' + w + " ·</span>").join("").repeat(3);
+  }
+
+  /* 에토스 4행 */
+  function ethos() {
+    document.getElementById("ethosRows").innerHTML = PILLARS.map((p, i) =>
+      '<div class="ethos-item"><span class="num">0' + (i + 1) + '</span><span class="ic">' + p.icon + "</span><h3>" + P(p.title) + "</h3><p>" + P(p.desc) + "</p></div>").join("");
+  }
+
+  /* 병원 카드 (Swiper 슬라이드, 호버 시 의료진 이미지 스왑) */
+  function card(c) {
+    const L = I18N.getLang();
+    const from = c.procedures.map((p) => p.price).filter((v) => typeof v === "number").sort((a, b) => a - b)[0];
+    return '<div class="swiper-slide"><a class="pcard" href="./clinic.html?id=' + c.id + '">' +
+      '<div class="ph"><img class="im1" src="' + c.img + '" alt="" loading="lazy" /><img class="im2" src="' + c.doctor + '" alt="" loading="lazy" />' +
+      '<span class="flag">' + cityLabel(c.city, L) + " · " + areaLabel(c.area, L) + "</span>" +
+      '<span class="rate">★ ' + c.rating.toFixed(1) + "</span></div>" +
+      '<div class="bd"><h3>' + P(c.name) + '</h3><div class="loc">' + P(c.area_full) + "</div>" +
+      '<p class="tagline">' + P(c.tagline) + "</p>" +
+      '<div class="foot"><span class="price">' + (from ? fmtPrice(from, L) + " <small>" + I18N.t("price_from") + "</small>" : I18N.t("consult_free")) + "</span>" +
+      '<span class="quick">' + I18N.t("book") + "</span></div></div></a></div>";
+  }
+  function rows() {
+    document.getElementById("rowPlastic").innerHTML = CLINICS.filter((c) => c.cat === "plastic").map(card).join("");
+    document.getElementById("rowDental").innerHTML = CLINICS.filter((c) => c.cat === "dental").map(card).join("");
+    swipers.forEach((s) => s.destroy(true, true));
+    swipers = [];
+    [["#swPlastic", "#pgPlastic"], ["#swDental", "#pgDental"]].forEach(([sel, pg]) => {
+      const bar = document.querySelector(pg);
+      const sw = new Swiper(sel, {
+        slidesPerView: "auto", spaceBetween: 20, grabCursor: true, freeMode: { enabled: true, momentum: true },
+        on: { progress: (s, p) => { if (bar) bar.style.left = Math.max(0, Math.min(75, p * 75)) + "%"; } },
+      });
+      swipers.push(sw);
+    });
+  }
+
+  /* 프로모션 */
+  function promo() {
+    const L = I18N.getLang();
+    document.getElementById("promoTitle").innerHTML = P(PROMO.title);
+    document.getElementById("promoNote").textContent = P(PROMO.note);
+    document.getElementById("promoTable").innerHTML = PROMO.rows.map((r) =>
+      '<div class="row"><span>' + P(r.name) + "</span><span><s>" + fmtPrice(r.was, L) + "</s><b>" + fmtPrice(r.now, L) + "</b></span></div>").join("");
+  }
+
+  /* 저널 */
+  function journal() {
+    document.getElementById("journalGrid").innerHTML = JOURNAL.map((j) =>
+      '<article class="jcard"><div class="ph"><img src="' + j.img + '" alt="" loading="lazy" /></div>' +
+      '<div class="bd"><div class="meta"><span>' + P(j.tag) + "</span><time>" + j.date + "</time></div>" +
+      "<h3>" + P(j.title) + '</h3><span class="rm">' + I18N.t("more") + "</span></div></article>").join("");
+  }
+
+  /* 지도 핀 */
+  function mapPins() {
+    const map = document.getElementById("homeMap");
+    map.querySelectorAll(".pin").forEach((p) => p.remove());
+    CLINICS.filter((c) => c.city === "seoul").forEach((c) => {
+      const el = document.createElement("a");
+      el.className = "pin"; el.href = "./clinic.html?id=" + c.id;
+      el.style.left = c.pin.x + "%"; el.style.top = c.pin.y + "%";
+      el.innerHTML = '<span class="tip">' + P(c.name) + " ★" + c.rating.toFixed(1) + '</span><span class="dot"><span>' + (c.cat === "dental" ? "🦷" : "✚") + "</span></span>";
+      map.appendChild(el);
+    });
+  }
+
+  /* QR 패턴 */
+  (function qr() {
+    let html = "";
+    for (let i = 0; i < 144; i++) {
+      const row = Math.floor(i / 12), col = i % 12;
+      const finder = (row < 3 && col < 3) || (row < 3 && col > 8) || (row > 8 && col < 3);
+      html += '<i class="' + (finder ? "" : (i * 2654435761 % 97) > 48 ? "" : "o") + '"></i>';
+    }
+    document.getElementById("qrHome").innerHTML = html;
+  })();
+
+  function renderAll() { marquee(); ethos(); rows(); promo(); journal(); mapPins(); }
+  renderAll();
+  document.addEventListener("langchange", () => { renderAll(); if (window.ScrollTrigger) ScrollTrigger.refresh(); });
+})();
+</script>
+<script src="./assets/motion.js"></script>
+</body>
+</html>

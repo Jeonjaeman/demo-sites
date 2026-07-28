@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="VoltGuard Console 디자인 시스템 프리미티브 검증 화면">
+  <title>VoltGuard Console · UI Primitive Showcase</title>
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/showcase.css">
+  <script defer src="assets/js/showcase.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <div class="showcase">
+    <header class="showcase__header">
+      <strong>VoltGuard Console</strong>
+      <p>Primitive Showcase · 375 / 768 / 1280 검증</p>
+      <span class="status status--offline">로컬 모드</span>
+    </header>
+
+    <div class="showcase__layout">
+      <nav class="demo-nav" aria-label="메뉴 상태 프리뷰">
+        <p class="demo-nav__label">Navigation states</p>
+        <button type="button">
+          <span class="demo-nav__icon" aria-hidden="true"></span>
+          <span class="demo-nav__text">기본 메뉴</span>
+        </button>
+        <button type="button" data-demo-state="hover">
+          <span class="demo-nav__icon" aria-hidden="true"></span>
+          <span class="demo-nav__text">호버 메뉴</span>
+        </button>
+        <button type="button" data-demo-state="active" aria-expanded="true">
+          <span class="demo-nav__icon" aria-hidden="true"></span>
+          <span class="demo-nav__text">활성 메인 메뉴</span>
+        </button>
+        <ul class="demo-nav__sub">
+          <li><button type="button">보조 메뉴</button></li>
+          <li><button type="button" aria-current="page">활성 보조 메뉴</button></li>
+        </ul>
+        <button type="button" class="demo-focus">
+          <span class="demo-nav__icon" aria-hidden="true"></span>
+          <span class="demo-nav__text">키보드 포커스</span>
+        </button>
+      </nav>
+
+      <main class="showcase__main" id="main" tabindex="-1">
+        <section class="showcase__intro" aria-labelledby="showcase-title">
+          <div>
+            <h1 id="showcase-title">프리미티브 및 상태 검증</h1>
+            <p>제품 화면을 조합하기 전에 탐색, 상태, 지표, 차트, 표, 빈 화면을 한 자리에서 확인합니다. 모든 색상과 간격은 DESIGN.md 토큰에 연결됩니다.</p>
+          </div>
+          <span class="status status--normal">시스템 정상</span>
+        </section>
+
+        <div class="primitive-grid">
+          <section class="panel" aria-labelledby="status-title">
+            <div class="panel__header"><h2 id="status-title">상태 배지</h2></div>
+            <div class="panel__body state-row">
+              <span class="status status--normal">정상</span>
+              <span class="status status--warning">주의</span>
+              <span class="status status--danger">경보</span>
+              <span class="status status--offline">로컬 모드</span>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="segments-title">
+            <div class="panel__header"><h2 id="segments-title">기간 선택</h2></div>
+            <div class="panel__body">
+              <div class="segmented" role="group" aria-label="부하 추이 기간">
+                <button type="button" aria-pressed="true" data-range="24h">24시간</button>
+                <button type="button" aria-pressed="false" data-range="7d">7일</button>
+                <button type="button" aria-pressed="false" data-range="30d">30일</button>
+                <button type="button" disabled>비활성</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel primitive--wide" aria-labelledby="metrics-title">
+            <div class="panel__header"><h2 id="metrics-title">핵심 지표</h2></div>
+            <div class="metric-demo">
+              <div class="metric-cell" role="group" aria-label="선간 전압 22900 볼트 정상">
+                <span class="metric-cell__label">선간 전압</span>
+                <span class="metric-cell__value">22,900 <span class="metric-cell__unit">V</span></span>
+                <span class="status status--normal">정상</span>
+              </div>
+              <div class="metric-cell" role="group" aria-label="전류 1248 암페어 주의">
+                <span class="metric-cell__label">전류</span>
+                <span class="metric-cell__value">1,248 <span class="metric-cell__unit">A</span></span>
+                <span class="status status--warning">주의</span>
+              </div>
+              <div class="metric-cell" role="group" aria-label="주파수 60 헤르츠 정상">
+                <span class="metric-cell__label">주파수</span>
+                <span class="metric-cell__value">60.0 <span class="metric-cell__unit">Hz</span></span>
+                <span class="status status--normal">정상</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel primitive--wide" aria-labelledby="chart-title">
+            <div class="panel__header">
+              <h2 id="chart-title">로컬 차트</h2>
+              <span class="status status--offline">데모 데이터</span>
+            </div>
+            <div class="panel__body">
+              <p id="chart-summary">24시간 유효전력은 최저 312kW에서 최고 1,286kW 사이이며 현재 1,154kW입니다.</p>
+              <div class="chart-demo" role="img" aria-labelledby="chart-title chart-summary">
+                <svg viewBox="0 0 800 256" preserveAspectRatio="none" aria-hidden="true">
+                  <path class="chart-demo__secondary" d="M0 178 L80 160 L160 172 L240 142 L320 150 L400 198 L480 216 L560 182 L640 122 L720 114 L800 130"/>
+                  <path class="chart-demo__primary" d="M0 150 L80 122 L160 130 L240 88 L320 104 L400 182 L480 212 L560 196 L640 116 L720 84 L800 92"/>
+                  <circle class="chart-demo__point" cx="800" cy="92" r="6"/>
+                </svg>
+              </div>
+              <div class="chart-state-grid" role="group" aria-label="차트 보조 상태">
+                <div class="chart-state chart-state--loading"><strong>불러오는 중</strong><p>로컬 데이터 집계 중입니다.</p></div>
+                <div class="chart-state"><strong>데이터 없음</strong><p>선택 기간에 표시할 값이 없습니다.</p></div>
+                <div class="chart-state chart-state--error"><strong>데이터 형식 오류</strong><p>어댑터 입력 형식을 확인하세요.</p></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="table-title">
+            <div class="panel__header"><h2 id="table-title">데이터 표</h2></div>
+            <div class="panel__body">
+              <table class="data-table">
+                <caption>설비 상태 데이터</caption>
+                <thead><tr><th scope="col">설비</th><th scope="col">부하율</th><th scope="col">상태</th></tr></thead>
+                <tbody>
+                  <tr><td>MAIN ACB</td><td class="u-mono">68%</td><td><span class="status status--normal">정상</span></td></tr>
+                  <tr><td>CAP BANK #1</td><td class="u-mono">38%</td><td><span class="status status--warning">주의</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="empty-title">
+            <div class="panel__header"><h2 id="empty-title">빈 본문</h2></div>
+            <div class="empty-stage">
+              <strong>점검 이력</strong>
+              <span>향후 콘텐츠가 이 영역에 추가됩니다.</span>
+            </div>
+          </section>
+
+          <section class="panel primitive--wide" aria-labelledby="toast-title">
+            <div class="panel__header"><h2 id="toast-title">피드백</h2></div>
+            <div class="panel__body state-row">
+              <div class="toast" role="status"><span>기간을 24시간으로 변경했습니다.</span><button type="button" aria-label="알림 닫기">닫기</button></div>
+              <div class="toast toast--warning" role="status"><span>CAP BANK #1 온도를 확인하세요.</span><button type="button" aria-label="경고 닫기">닫기</button></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

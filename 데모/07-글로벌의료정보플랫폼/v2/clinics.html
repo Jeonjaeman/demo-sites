@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>병원 찾기 — MIYO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500;1,600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./assets/style.css" />
+<link rel="stylesheet" href="./assets/motion.css" />
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a class="logo" href="./index.html">MI<em>YO</em><small>MEDICAL · BEAUTY</small></a>
+    <nav class="nav-links">
+      <a href="./clinics.html" class="on" data-ko="병원 찾기" data-ja="クリニック検索" data-en="Find Clinics">병원 찾기</a>
+      <a href="./clinics.html?cat=plastic" data-ko="성형외과" data-ja="美容外科" data-en="Plastic Surgery">성형외과</a>
+      <a href="./clinics.html?cat=dental" data-ko="치과" data-ja="歯科" data-en="Dental">치과</a>
+      <a href="./index.html#journal" data-ko="저널" data-ja="ジャーナル" data-en="Journal">저널</a>
+      <a href="./admin.html" data-ko="파트너·관리자" data-ja="パートナー・管理" data-en="Partners">파트너·관리자</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle"><button data-l="ko">KO</button><button data-l="ja">JA</button><button data-l="en">EN</button></div>
+      <button class="btn btn-ghost btn-sm" data-login data-ko="로그인" data-ja="ログイン" data-en="Log in">로그인</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap page-head">
+  <span class="kicker">FIND CLINICS</span>
+  <h1 data-ko="어디에 있든,<br>가까운 <span class='it'>검증된</span> 병원" data-ja="どこにいても、<br>近くの<span class='it'>審査済み</span>クリニック" data-en="Wherever you are,<br><span class='it'>verified</span> clinics nearby">어디에 있든, 가까운 <span class="it">검증된</span> 병원</h1>
+</div>
+
+<div class="wrap filterbar" id="filterbar">
+  <button class="chip orange" data-cat="" data-ko="전체" data-ja="すべて" data-en="All">전체</button>
+  <button class="chip orange" data-cat="plastic" data-ko="성형외과" data-ja="美容外科" data-en="Plastic">성형외과</button>
+  <button class="chip orange" data-cat="dental" data-ko="치과" data-ja="歯科" data-en="Dental">치과</button>
+  <span style="width:1px;height:24px;background:var(--line)"></span>
+  <button class="chip" data-city="" data-ko="전체 지역" data-ja="全エリア" data-en="All Areas">전체 지역</button>
+  <button class="chip" data-city="seoul" data-ko="서울" data-ja="ソウル" data-en="Seoul">서울</button>
+  <button class="chip" data-city="tokyo" data-ko="도쿄" data-ja="東京" data-en="Tokyo">도쿄</button>
+  <select class="chip" id="sortSel" style="appearance:none">
+    <option value="rating"></option>
+    <option value="review"></option>
+    <option value="near"></option>
+  </select>
+  <div class="searchbox">
+    <input id="q" data-ko-ph="병원·지역·시술 검색" data-ja-ph="クリニック・エリア・施術を検索" data-en-ph="Search clinics, areas, treatments" placeholder="병원·지역·시술 검색" />
+    <button data-ko="검색" data-ja="検索" data-en="Go">검색</button>
+  </div>
+</div>
+
+<div class="wrap clinics-layout">
+  <!-- 지도 패널 -->
+  <aside class="map-panel">
+    <div class="map-city">
+      <button class="chip on" data-mapcity="seoul" data-ko="서울" data-ja="ソウル" data-en="Seoul">서울</button>
+      <button class="chip" data-mapcity="tokyo" data-ko="도쿄" data-ja="東京" data-en="Tokyo">도쿄</button>
+      <button class="chip" id="nearBtn" style="margin-left:auto" data-ko="📍 내 주변" data-ja="📍 現在地" data-en="📍 Near Me">📍 내 주변</button>
+    </div>
+    <div class="mock-map" id="bigMap">
+      <div class="road" style="left:8%;top:26%;width:84%;height:7px"></div>
+      <div class="road" style="left:52%;top:8%;width:7px;height:84%"></div>
+      <div class="road" style="left:14%;top:64%;width:70%;height:5px;transform:rotate(-12deg)"></div>
+      <div class="road" style="left:24%;top:12%;width:5px;height:60%;transform:rotate(18deg)"></div>
+    </div>
+    <p style="font-size:11.5px;color:var(--ink-3);margin-top:10px" data-ko="* 데모용 지도입니다. 실서비스는 Google Maps SDK로 현재 위치·목적지 기반 검색을 제공합니다."
+       data-ja="* デモ用マップです。本番はGoogle Maps SDKで現在地・目的地検索を提供します。"
+       data-en="* Demo map. Production uses the Google Maps SDK for current-location and destination search.">* 데모용 지도입니다.</p>
+  </aside>
+
+  <!-- 리스트 -->
+  <div>
+    <div class="list-count"><b id="cnt">0</b> <span id="cntLabel"></span></div>
+    <div id="list"></div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap f-bottom" style="border:0">
+    <span>© 2026 MIYO Demo. All figures are fictional.</span>
+    <a href="./index.html" data-ko="← 홈으로" data-ja="← ホームへ" data-en="← Home">← 홈으로</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js"></script>
+<script src="./assets/i18n.js"></script>
+<script src="./assets/data.js"></script>
+<script src="./assets/app.js"></script>
+<script src="./assets/motion.js"></script>
+<script>
+(function () {
+  const { CLINICS, areaLabel, cityLabel, catLabel, fmtPrice } = window.MIYO;
+  const P = (o) => I18N.pick(o);
+  const $ = APP.$, $$ = APP.$$;
+
+  const params = new URLSearchParams(location.search);
+  const state = { cat: params.get("cat") || "", city: "", q: "", sort: "rating", mapCity: "seoul", near: false };
+
+  function sortLabels() {
+    const sel = $("#sortSel");
+    sel.options[0].text = I18N.t("sort_rating");
+    sel.options[1].text = I18N.t("sort_review");
+    sel.options[2].text = I18N.t("sort_near");
+    sel.value = state.sort;
+  }
+
+  function filtered() {
+    const L = I18N.getLang();
+    let list = CLINICS.filter((c) =>
+      (!state.cat || c.cat === state.cat) &&
+      (!state.city || c.city === state.city));
+    if (state.q) {
+      const q = state.q.toLowerCase();
+      list = list.filter((c) => {
+        const hay = [P(c.name), P(c.tagline), P(c.area_full), cityLabel(c.city, L), areaLabel(c.area, L)]
+          .concat(P(c.tags)).concat(c.procedures.map((p) => P(p.name))).join(" ").toLowerCase();
+        return hay.indexOf(q) >= 0;
+      });
+    }
+    if (state.sort === "rating") list.sort((a, b) => b.rating - a.rating);
+    if (state.sort === "review") list.sort((a, b) => b.reviews - a.reviews);
+    if (state.sort === "near") list.sort((a, b) => a.dist - b.dist);
+    return list;
+  }
+
+  function render() {
+    const L = I18N.getLang();
+    sortLabels();
+    const list = filtered();
+    $("#cnt").textContent = list.length;
+    $("#cntLabel").textContent = I18N.t("results");
+    $("#list").innerHTML = list.length ? list.map((c) => {
+      const from = c.procedures.map((p) => p.price).filter((v) => typeof v === "number").sort((a, b) => a - b)[0];
+      return '<a class="lcard" href="./clinic.html?id=' + c.id + '">' +
+        '<div class="ph"><img src="' + c.img + '" alt="" loading="lazy" /></div>' +
+        '<div class="bd">' +
+        '<div class="top"><h3>' + P(c.name) + '</h3><span class="star">★ ' + c.rating.toFixed(1) + " <small>(" + c.reviews.toLocaleString() + ")</small></span></div>" +
+        '<div class="loc">' + P(c.area_full) + "</div>" +
+        '<p class="tagline">' + P(c.tagline) + "</p>" +
+        '<div class="foot">' +
+        '<span class="badge cat-' + c.cat + '">' + catLabel(c.cat, L) + "</span>" +
+        (state.near || state.sort === "near" ? '<span class="badge dist">📍 ' + c.dist.toFixed(1) + "km</span>" : "") +
+        '<span class="badge dist">' + (from ? fmtPrice(from, L) + " " + I18N.t("price_from") : I18N.t("consult_free")) + "</span>" +
+        '<span class="cta btn btn-primary btn-sm">' + I18N.t("book") + "</span>" +
+        "</div></div></a>";
+    }).join("") : '<div style="padding:60px 0;text-align:center;color:var(--ink-3);font-weight:700">' + I18N.t("no_result") + "</div>";
+    pins();
+  }
+
+  function pins() {
+    const map = $("#bigMap");
+    map.querySelectorAll(".pin,.me-dot").forEach((p) => p.remove());
+    if (state.near) {
+      const me = document.createElement("div");
+      me.className = "me-dot"; me.style.left = "44%"; me.style.top = "50%";
+      map.appendChild(me);
+    }
+    CLINICS.filter((c) => c.city === state.mapCity).forEach((c) => {
+      const el = document.createElement("a");
+      el.className = "pin"; el.href = "./clinic.html?id=" + c.id;
+      el.style.left = c.pin.x + "%"; el.style.top = c.pin.y + "%";
+      el.innerHTML = '<span class="tip">' + P(c.name) + " ★" + c.rating.toFixed(1) + " · " + c.dist.toFixed(1) + 'km</span><span class="dot"><span>' + (c.cat === "dental" ? "🦷" : "✚") + "</span></span>";
+      map.appendChild(el);
+    });
+  }
+
+  /* 필터 배선 */
+  $$("#filterbar [data-cat]").forEach((b) => b.addEventListener("click", () => { state.cat = b.dataset.cat; sync(); render(); }));
+  $$("#filterbar [data-city]").forEach((b) => b.addEventListener("click", () => { state.city = b.dataset.city; if (state.city) { state.mapCity = state.city; syncMapCity(); } sync(); render(); }));
+  $$(".map-city [data-mapcity]").forEach((b) => b.addEventListener("click", () => { state.mapCity = b.dataset.mapcity; syncMapCity(); pins(); }));
+  $("#sortSel").addEventListener("change", (e) => { state.sort = e.target.value; render(); });
+  $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim(); render(); });
+  $("#nearBtn").addEventListener("click", () => {
+    state.near = true; state.sort = "near";
+    const L = I18N.getLang();
+    APP.toast(
+      { ko: "현재 위치 확인됨 (데모)", ja: "現在地を確認しました(デモ)", en: "Location detected (demo)" }[L],
+      { ko: "강남역 기준 · 가까운순 정렬", ja: "江南駅基準・近い順に並び替え", en: "Sorted by distance from Gangnam Stn" }[L], "📍");
+    render();
+  });
+
+  function sync() {
+    $$("#filterbar [data-cat]").forEach((b) => b.classList.toggle("on", b.dataset.cat === state.cat));
+    $$("#filterbar [data-city]").forEach((b) => b.classList.toggle("on", b.dataset.city === state.city));
+  }
+  function syncMapCity() {
+    $$(".map-city [data-mapcity]").forEach((b) => b.classList.toggle("on", b.dataset.mapcity === state.mapCity));
+  }
+
+  sync(); render();
+  document.addEventListener("langchange", render);
+})();
+</script>
+</body>
+</html>

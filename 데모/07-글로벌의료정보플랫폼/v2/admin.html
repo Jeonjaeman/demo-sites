@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>관리자 콘솔 — MIYO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="stylesheet" href="./assets/style.css" />
+</head>
+<body class="admin">
+<div class="adm-layout">
+
+  <!-- 사이드바 -->
+  <aside class="adm-side">
+    <a class="logo" href="./index.html">MI<em>YO</em><small>ADMIN CONSOLE</small></a>
+    <div class="role-pick">
+      <label>권한 전환 (데모)</label>
+      <select id="roleSel">
+        <option value="super">총관리자 (Super Admin)</option>
+        <option value="mid">중간관리자 (Operator)</option>
+        <option value="partner">파트너 — 하늘 성형외과</option>
+      </select>
+    </div>
+    <nav class="adm-nav" id="admNav">
+      <a href="#" data-view="dash" class="on">📊 대시보드</a>
+      <a href="#" data-view="book">🗓️ 예약 관리</a>
+      <a href="#" data-view="consult">💬 상담 내역</a>
+      <div class="grp" data-roles="super,mid">운영</div>
+      <a href="#" data-view="approve" data-roles="super,mid">✅ 승인 대기</a>
+      <a href="#" data-view="report" data-roles="super,mid">🚩 리뷰·신고 관리</a>
+      <a href="#" data-view="member" data-roles="super">👥 회원 관리</a>
+      <div class="grp" data-roles="partner">내 병원</div>
+      <a href="#" data-view="myedit" data-roles="partner">✏️ 정보 수정 요청</a>
+      <div class="grp">정산</div>
+      <a href="#" data-view="settle">💰 정산 대시보드</a>
+    </nav>
+    <p style="font-size:10.5px;opacity:.45;margin-top:26px;padding:0 12px;line-height:1.7">
+      권한별로 메뉴·수정·승인·정산 열람 범위가 분리됩니다.<br>파트너는 자사 데이터만 조회 가능합니다.
+    </p>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="adm-main">
+    <div class="adm-top">
+      <h1 id="viewTitle">대시보드</h1>
+      <span class="who" id="whoBadge"></span>
+      <div style="position:relative;margin-left:auto">
+        <button class="bell" id="bellBtn">🔔<span class="n" id="bellN">3</span></button>
+        <div class="notif-panel" id="notifPanel"></div>
+      </div>
+    </div>
+    <div id="viewRoot"></div>
+  </main>
+</div>
+
+<script src="./assets/i18n.js"></script>
+<script src="./assets/data.js"></script>
+<script src="./assets/app.js"></script>
+<script>
+(function () {
+  const { CLINICS, clinicById } = window.MIYO;
+  const $ = APP.$, $$ = APP.$$;
+  const KO = (o) => (o && typeof o === "object" ? o.ko : o);
+  const fmt = (n) => n.toLocaleString("ko-KR") + "원";
+
+  /* ================= 상태 ================= */
+  let role = "super";           // super | mid | partner
+  const MY_CLINIC = "haneul";   // 파트너 데모 계정 소속
+  let view = "dash";
+
+  const ROLE_LABEL = { super: "총관리자 · 김운영", mid: "중간관리자 · 박매니저", partner: "파트너 · 하늘 성형외과" };
+
+  /* ---- 권한 매트릭스 ---- */
+  const CAN = {
+    approve: { super: true, mid: true, partner: false },     // 콘텐츠 승인
+    settleConfirm: { super: true, mid: false, partner: false }, // 정산 확정
+    memberBlock: { super: true, mid: false, partner: false },
+    statusChange: { super: true, mid: true, partner: true },  // 예약 상태 변경(파트너는 자사만)
+  };
+
+  /* ---- 시드 데이터 (데모) ---- */
+  const SEED_BOOKINGS = [
+    { id: "R2596", clinic: "haneul", clinicName: "하늘 성형외과", user: "sato_yuki", phone: "+81-90-1234-****", date: "2026-7-9", slot: "11:00", channel: "LINE", lang: "ja", status: "wait", created: "2026-07-06 21:40", memo: "쌍꺼풀 상담 희망 (일본어)", history: [
+      { at: "2026-07-06 21:40", by: "system", note: "예약 신청 접수 — 병원·운영팀 실시간 알림 발송" },
+      { at: "2026-07-06 21:41", by: "운영팀", note: "일본어 상담 배정 대기 — 통역 코디네이터 매칭 중" }] },
+    { id: "R2595", clinic: "puredent", clinicName: "청담 퓨어 치과", user: "김하늘", phone: "010-22**-****", date: "2026-7-8", slot: "14:00", channel: "KakaoTalk", lang: "ko", status: "ok", created: "2026-07-06 18:02", memo: "투명교정 상담", history: [
+      { at: "2026-07-06 18:02", by: "system", note: "예약 신청 접수" },
+      { at: "2026-07-06 18:20", by: "병원(퓨어치과)", note: "예약 확정 — 구강 스캔 준비" },
+      { at: "2026-07-06 18:21", by: "system", note: "사용자에게 확정 알림 발송 (카카오톡)" }] },
+    { id: "R2594", clinic: "mizu", clinicName: "미즈 클리닉 긴자", user: "이지은", phone: "010-93**-****", date: "2026-7-7", slot: "15:00", channel: "전화", lang: "ko", status: "done", created: "2026-07-05 10:11", memo: "울쎄라 300샷", history: [
+      { at: "2026-07-05 10:11", by: "system", note: "전화 상담 접수 — 상담원 기록" },
+      { at: "2026-07-05 10:30", by: "병원(미즈)", note: "예약 확정" },
+      { at: "2026-07-07 16:00", by: "병원(미즈)", note: "방문 완료 — 사후관리 안내 발송" }] },
+    { id: "R2593", clinic: "haneul", clinicName: "하늘 성형외과", user: "tanaka_m", phone: "+81-80-55**-****", date: "2026-7-10", slot: "10:00", channel: "web", lang: "ja", status: "cancel", created: "2026-07-04 09:15", memo: "코 재수술 상담", history: [
+      { at: "2026-07-04 09:15", by: "system", note: "예약 신청 접수" },
+      { at: "2026-07-05 08:00", by: "사용자", note: "일정 변경 요청 → 취소" }] },
+  ];
+
+  const APPROVALS = [
+    { id: "A-311", clinic: "haneul", type: "가격 수정", detail: "자연유착 쌍꺼풀 150만 → 165만", requested: "2026-07-06", status: "wait" },
+    { id: "A-310", clinic: "whitebell", type: "이미지 교체", detail: "대표 이미지 3장 교체 (시술실)", requested: "2026-07-06", status: "wait" },
+    { id: "A-309", clinic: "sakura", type: "상세페이지 수정", detail: "임플란트 보증 기간 문구 변경", requested: "2026-07-05", status: "wait" },
+    { id: "A-308", clinic: "blossom", type: "운영 정보", detail: "토요일 진료시간 15시 → 17시", requested: "2026-07-04", status: "ok" },
+  ];
+
+  const REPORTS = [
+    { id: "RP-88", clinic: "whitebell", target: "리뷰 #4412", reason: "경쟁사 비방 의심", reporter: "병원", date: "2026-07-06", status: "review" },
+    { id: "RP-87", clinic: "haneul", target: "리뷰 #4398", reason: "허위 시술 후기 의심", reporter: "이용자", date: "2026-07-05", status: "review" },
+    { id: "RP-86", clinic: "mizu", target: "리뷰 #4371", reason: "욕설 포함", reporter: "이용자", date: "2026-07-03", status: "done", action: "차단 완료" },
+    { id: "RP-85", clinic: "puredent", target: "결제 #P-2201", reason: "예약금 환불 요청", reporter: "이용자", date: "2026-07-02", status: "done", action: "환불 완료" },
+  ];
+
+  const MEMBERS = [
+    { id: "U-10021", name: "sato_yuki", region: "JP · 도쿄", joined: "2026-06-28", bookings: 2, status: "정상" },
+    { id: "U-10018", name: "김하늘", region: "KR · 서울", joined: "2026-06-25", bookings: 3, status: "정상" },
+    { id: "U-10007", name: "spam_bot99", region: "-", joined: "2026-06-20", bookings: 0, status: "차단" },
+    { id: "U-09992", name: "tanaka_m", region: "JP · 오사카", joined: "2026-06-12", bookings: 1, status: "정상" },
+  ];
+
+  /* 정산 계산 (실연동 아님 — 항목별 자동 계산 데모) */
+  const FEE_RATE = 0.10, AD_FLAT = { haneul: 500000, mizu: 300000, puredent: 400000, whitebell: 200000, sakura: 300000, blossom: 350000 };
+  const PROC_AVG = { haneul: 1800000, mizu: 520000, puredent: 1400000, whitebell: 430000, sakura: 900000, blossom: 610000 };
+  const DONE_CNT = { haneul: 21, mizu: 34, puredent: 18, whitebell: 26, sakura: 22, blossom: 29 };
+  function settleOf(cid) {
+    const gross = DONE_CNT[cid] * PROC_AVG[cid];
+    const fee = Math.round(gross * FEE_RATE);
+    const ad = AD_FLAT[cid];
+    const pg = Math.round(gross * 0.015);
+    const payout = gross - fee - ad - pg;
+    return { gross, fee, ad, pg, payout, cnt: DONE_CNT[cid] };
+  }
+
+  function allBookings() {
+    const mine = APP.getBookings().map((b) => Object.assign({}, b, { history: (b.history || []).map((h) => ({ at: h.at, by: h.by, note: KO(h.note) })) }));
+    return mine.concat(SEED_BOOKINGS);
+  }
+  function scoped(list, key) { return role === "partner" ? list.filter((x) => x[key || "clinic"] === MY_CLINIC) : list; }
+
+  /* ================= 알림 ================= */
+  const NOTIFS = [
+    { ic: "🗓️", t: "신규 예약 — 하늘 성형외과", s: "sato_yuki · 7/9 11:00 · LINE", roles: "super,mid,partner" },
+    { ic: "🚩", t: "신규 신고 접수", s: "리뷰 #4412 · 경쟁사 비방 의심", roles: "super,mid" },
+    { ic: "✏️", t: "파트너 수정 요청 3건 대기", s: "가격·이미지·상세페이지", roles: "super,mid" },
+    { ic: "💰", t: "6월 정산 내역 확정", s: "지급 예정일 7/15", roles: "super,partner" },
+  ];
+  function bell() {
+    const items = NOTIFS.filter((n) => n.roles.indexOf(role) >= 0);
+    $("#bellN").textContent = items.length;
+    $("#notifPanel").innerHTML = items.map((n) =>
+      '<div class="ni"><span class="ic">' + n.ic + "</span><div><b>" + n.t + "</b><small>" + n.s + "</small></div></div>").join("") ||
+      '<div class="ni">새 알림이 없습니다</div>';
+  }
+  $("#bellBtn").addEventListener("click", (e) => { e.stopPropagation(); $("#notifPanel").classList.toggle("show"); });
+  document.addEventListener("click", () => $("#notifPanel").classList.remove("show"));
+
+  /* 실시간 알림 시뮬레이션 (벨/푸시/대시보드 알림 데모) */
+  setTimeout(() => {
+    APP.toast("🔔 실시간 알림 — 신규 상담 접수", "미즈 클리닉 긴자 · 물광주사 문의 (KakaoTalk)", "📡");
+    $("#bellN").textContent = Number($("#bellN").textContent) + 1;
+  }, 6000);
+
+  /* ================= 뷰 ================= */
+  const TITLES = { dash: "대시보드", book: "예약 관리", consult: "상담 내역", approve: "승인 대기", report: "리뷰·신고 관리", member: "회원 관리", myedit: "정보 수정 요청", settle: "정산 대시보드" };
+
+  function stBadge(s) {
+    const m = { wait: "예약대기", ok: "예약확정", done: "방문완료", cancel: "취소", review: "검토중" };
+    return '<span class="st ' + s + '">' + (m[s] || s) + "</span>";
+  }
+
+  /* ---- 대시보드 ---- */
+  function vDash() {
+    const bs = scoped(allBookings());
+    const wait = bs.filter((b) => b.status === "wait").length;
+    const kpi = role === "partner"
+      ? [["이번 달 예약", bs.length + "건", "+18% 전월비", "up"], ["대기중 예약", wait + "건", "즉시 확인 필요", "dn"], ["평균 평점", "4.9", "+0.1", "up"], ["7월 예상 정산", fmt(settleOf(MY_CLINIC).payout), "7/15 지급", "up"]]
+      : [["이번 달 총 예약", "382건", "+24% 전월비", "up"], ["신규 상담", "126건", "+11%", "up"], ["승인 대기", "3건", "파트너 수정 요청", "dn"], ["7월 플랫폼 수수료", fmt(Object.keys(DONE_CNT).reduce((a, c) => a + settleOf(c).fee, 0)), "자동 계산", "up"]];
+    const months = [["2월", 46], ["3월", 58], ["4월", 65], ["5월", 74], ["6월", 88], ["7월", 100]];
+    return '<div class="kpis">' + kpi.map((k) => '<div class="kpi"><div class="lb">' + k[0] + "</div><b>" + k[1] + '</b><div class="dl ' + k[3] + '">' + k[2] + "</div></div>").join("") + "</div>" +
+      '<div class="split2"><div class="panel"><h3>월별 예약 추이</h3><p class="psub">' + (role === "partner" ? "하늘 성형외과" : "플랫폼 전체") + " · 최근 6개월</p>" +
+      '<div class="bar-chart">' + months.map((m, i) => '<div class="bar' + (i < 5 ? " mut" : "") + '"><b>' + Math.round(m[1] * (role === "partner" ? 0.28 : 3.8)) + '</b><i style="height:' + m[1] + '%"></i><span>' + m[0] + "</span></div>").join("") + "</div></div>" +
+      '<div class="panel"><h3>최근 예약</h3><p class="psub">실시간 접수 순</p><table class="adm"><thead><tr><th>번호</th><th>병원</th><th>고객</th><th>일시</th><th>상태</th></tr></thead><tbody>' +
+      bs.slice(0, 5).map((b) => "<tr><td>" + b.id + "</td><td>" + b.clinicName + "</td><td>" + b.user + "</td><td>" + b.date + " " + b.slot + "</td><td>" + stBadge(b.status) + "</td></tr>").join("") +
+      "</tbody></table></div></div>";
+  }
+
+  /* ---- 예약 관리 ---- */
+  function vBook() {
+    const bs = scoped(allBookings());
+    return '<div class="panel"><h3>예약 접수 내역</h3><p class="psub">' +
+      (role === "partner" ? "자사(하늘 성형외과) 예약만 표시됩니다 — 권한 분리" : "전체 파트너 예약 통합 조회") +
+      ' · 상태 변경 시 사용자에게 자동 알림</p>' +
+      '<table class="adm"><thead><tr><th>번호</th><th>병원</th><th>고객</th><th>희망 일시</th><th>채널</th><th>언어</th><th>상태</th><th>처리</th></tr></thead><tbody>' +
+      bs.map((b) => "<tr><td><b>" + b.id + "</b></td><td>" + b.clinicName + "</td><td>" + b.user + "<br><small style='color:var(--ink-3)'>" + (b.phone || "-") + "</small></td><td>" + b.date + " " + b.slot + "</td><td>" + (b.channel || "web") + "</td><td>" + (b.lang || "ko").toUpperCase() + "</td><td>" + stBadge(b.status) + "</td>" +
+        '<td style="white-space:nowrap">' +
+        (b.status === "wait" ? '<button class="mini ok" data-bok="' + b.id + '">확정</button> <button class="mini bad" data-bcancel="' + b.id + '">거절</button>' :
+         b.status === "ok" ? '<button class="mini" data-bdone="' + b.id + '">방문완료</button>' : "-") +
+        "</td></tr>").join("") + "</tbody></table></div>";
+  }
+
+  /* ---- 상담 내역 ---- */
+  function vConsult() {
+    const bs = scoped(allBookings());
+    return '<div class="panel"><h3>상담·예약 이력 타임라인</h3><p class="psub">병원·운영팀 공동 열람 — 상담 내용, 이력, 담당자 처리 현황 · 보존 기간: 관계 법령 기준 <b>5년</b></p>' +
+      bs.map((b) =>
+        '<div style="border:1px solid var(--line-soft);border-radius:14px;padding:18px 20px;margin-bottom:14px">' +
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><b>' + b.id + "</b> · " + b.clinicName + " · " + b.user + " " + stBadge(b.status) +
+        '<small style="margin-left:auto;color:var(--ink-3)">접수 ' + b.created + "</small></div>" +
+        (b.memo ? '<p style="font-size:13px;background:var(--bg);border-radius:10px;padding:10px 14px;margin-bottom:12px">💬 상담 내용: ' + b.memo + "</p>" : "") +
+        '<div class="timeline">' + (b.history || []).map((h) => '<div class="tl-item"><b>' + h.note + "</b><small>" + h.at + " · 처리: " + h.by + "</small></div>").join("") + "</div></div>").join("") + "</div>";
+  }
+
+  /* ---- 승인 대기 ---- */
+  function vApprove() {
+    return '<div class="panel"><h3>파트너 수정 요청 — 승인 워크플로</h3><p class="psub">파트너사가 요청한 정보·이미지·가격·상세페이지 수정은 <b>운영 승인 후에만</b> 사용자 화면에 반영됩니다.</p>' +
+      '<table class="adm"><thead><tr><th>번호</th><th>병원</th><th>유형</th><th>내용</th><th>요청일</th><th>상태</th><th>처리</th></tr></thead><tbody>' +
+      APPROVALS.map((a) => "<tr><td><b>" + a.id + "</b></td><td>" + KO(clinicById(a.clinic).name) + "</td><td>" + a.type + "</td><td>" + a.detail + "</td><td>" + a.requested + "</td><td>" + stBadge(a.status === "wait" ? "wait" : "ok") + "</td>" +
+        "<td>" + (a.status === "wait" ? '<button class="mini ok" data-aok="' + a.id + '">승인</button> <button class="mini bad" data-ano="' + a.id + '">반려</button>' : "반영 완료") + "</td></tr>").join("") +
+      "</tbody></table></div>";
+  }
+
+  /* ---- 리뷰·신고 ---- */
+  function vReport() {
+    return '<div class="panel"><h3>신고 · 차단 · 환불 처리</h3><p class="psub">악성 리뷰 차단, 광고성 리뷰 라벨링, 예약금 환불 요청을 처리합니다. 리뷰는 병원 제공/이용자 인증 2종으로 구분 게시됩니다.</p>' +
+      '<table class="adm"><thead><tr><th>번호</th><th>병원</th><th>대상</th><th>사유</th><th>신고자</th><th>일자</th><th>상태</th><th>처리</th></tr></thead><tbody>' +
+      REPORTS.map((r) => "<tr><td><b>" + r.id + "</b></td><td>" + KO(clinicById(r.clinic).name) + "</td><td>" + r.target + "</td><td>" + r.reason + "</td><td>" + r.reporter + "</td><td>" + r.date + "</td><td>" + stBadge(r.status) + "</td>" +
+        "<td>" + (r.status === "review" ? '<button class="mini bad" data-rblock="' + r.id + '">차단</button> <button class="mini" data-rkeep="' + r.id + '">유지</button>' : (r.action || "-")) + "</td></tr>").join("") +
+      "</tbody></table></div>";
+  }
+
+  /* ---- 회원 관리 (총관리자 전용) ---- */
+  function vMember() {
+    return '<div class="panel"><h3>회원 조회 · 차단</h3><p class="psub">총관리자 전용 메뉴 — 중간관리자·파트너에게는 노출되지 않습니다.</p>' +
+      '<table class="adm"><thead><tr><th>ID</th><th>이름</th><th>지역</th><th>가입일</th><th>예약</th><th>상태</th><th>처리</th></tr></thead><tbody>' +
+      MEMBERS.map((m) => "<tr><td>" + m.id + "</td><td><b>" + m.name + "</b></td><td>" + m.region + "</td><td>" + m.joined + "</td><td>" + m.bookings + "건</td><td>" +
+        '<span class="st ' + (m.status === "차단" ? "cancel" : "ok") + '">' + m.status + "</span></td>" +
+        "<td>" + (m.status === "차단" ? '<button class="mini" data-munblock="' + m.id + '">해제</button>' : '<button class="mini bad" data-mblock="' + m.id + '">차단</button>') + "</td></tr>").join("") +
+      "</tbody></table></div>";
+  }
+
+  /* ---- 파트너: 수정 요청 ---- */
+  function vMyEdit() {
+    const mine = APPROVALS.filter((a) => a.clinic === MY_CLINIC);
+    return '<div class="split2"><div class="panel"><h3>새 수정 요청</h3><p class="psub">요청 즉시 반영되지 않으며, 운영팀 승인 후 게시됩니다.</p>' +
+      '<div class="field"><label>유형</label><select id="editType"><option>가격 수정</option><option>이미지 교체</option><option>상세페이지 수정</option><option>후기 관리</option><option>운영 정보 변경</option></select></div>' +
+      '<div class="field"><label>내용</label><textarea id="editDetail" rows="3" placeholder="예) 자연유착 쌍꺼풀 가격 150만원 → 165만원"></textarea></div>' +
+      '<button class="btn btn-primary" id="editSubmit" style="margin-top:14px">승인 요청 보내기</button></div>' +
+      '<div class="panel"><h3>내 요청 현황</h3><p class="psub">하늘 성형외과 계정 — 자사 요청만 표시</p>' +
+      '<table class="adm"><thead><tr><th>번호</th><th>유형</th><th>내용</th><th>상태</th></tr></thead><tbody id="myEditRows">' +
+      mine.map((a) => "<tr><td>" + a.id + "</td><td>" + a.type + "</td><td>" + a.detail + "</td><td>" + stBadge(a.status === "wait" ? "wait" : "ok") + "</td></tr>").join("") +
+      "</tbody></table></div></div>";
+  }
+
+  /* ---- 정산 ---- */
+  function vSettle() {
+    const ids = role === "partner" ? [MY_CLINIC] : Object.keys(DONE_CNT);
+    const sum = ids.reduce((acc, c) => { const s = settleOf(c); acc.gross += s.gross; acc.fee += s.fee; acc.ad += s.ad; acc.pg += s.pg; acc.payout += s.payout; return acc; }, { gross: 0, fee: 0, ad: 0, pg: 0, payout: 0 });
+    const canConfirm = CAN.settleConfirm[role];
+    return '<div class="panel"><h3>2026년 7월 정산 (자동 계산)</h3><p class="psub">실제 PG 연동이 아닌 계산식 기반 데모 — 시술 완료 건수 × 평균 시술가 기준 · ' +
+      (role === "mid" ? "중간관리자는 <b>열람만</b> 가능합니다 (확정 권한 없음)" : role === "partner" ? "자사 정산만 표시됩니다" : "총관리자: 전체 파트너 정산 확정 가능") + "</p>" +
+      '<table class="adm"><thead><tr><th>병원</th><th>완료 건수</th><th>시술 매출(추정)</th><th>플랫폼 수수료 10%</th><th>광고비</th><th>PG 수수료 1.5%</th><th>지급 예정액</th></tr></thead><tbody>' +
+      ids.map((c) => { const s = settleOf(c); return "<tr><td><b>" + KO(clinicById(c).name) + "</b></td><td>" + s.cnt + "건</td><td>" + fmt(s.gross) + "</td><td style='color:var(--orange-deep)'>-" + fmt(s.fee) + "</td><td>-" + fmt(s.ad) + "</td><td>-" + fmt(s.pg) + "</td><td><b>" + fmt(s.payout) + "</b></td></tr>"; }).join("") +
+      "</tbody></table>" +
+      '<div style="max-width:420px;margin-top:22px">' +
+      '<div class="settle-row"><span>시술 매출 합계</span><b>' + fmt(sum.gross) + "</b></div>" +
+      '<div class="settle-row"><span>플랫폼 수수료 (10%)</span><b>-' + fmt(sum.fee) + "</b></div>" +
+      '<div class="settle-row"><span>광고비</span><b>-' + fmt(sum.ad) + "</b></div>" +
+      '<div class="settle-row"><span>PG 수수료 (1.5%)</span><b>-' + fmt(sum.pg) + "</b></div>" +
+      '<div class="settle-row total"><span>' + (role === "partner" ? "지급 예정액" : "파트너 지급 총액") + "</span><b>" + fmt(sum.payout) + "</b></div></div>" +
+      '<button class="btn ' + (canConfirm ? "btn-primary" : "btn-ghost") + '" id="settleBtn" style="margin-top:18px" ' + (canConfirm ? "" : "disabled") + ">" +
+      (canConfirm ? "정산 확정 (7/15 지급)" : role === "mid" ? "🔒 확정 권한 없음 — 총관리자 전용" : "지급 예정: 7/15") + "</button></div>";
+  }
+
+  /* ================= 렌더/배선 ================= */
+  const VIEWS = { dash: vDash, book: vBook, consult: vConsult, approve: vApprove, report: vReport, member: vMember, myedit: vMyEdit, settle: vSettle };
+
+  function render() {
+    $("#viewTitle").textContent = TITLES[view];
+    $("#whoBadge").textContent = ROLE_LABEL[role];
+    $("#viewRoot").innerHTML = VIEWS[view]();
+    bell();
+    wireActions();
+  }
+
+  function wireActions() {
+    $$("[data-bok]").forEach((b) => b.addEventListener("click", () => { APP.updateBooking(b.dataset.bok, { status: "ok" }); APP.toast("예약 확정 — 사용자에게 알림 발송", b.dataset.bok, "✅"); render(); }));
+    $$("[data-bcancel]").forEach((b) => b.addEventListener("click", () => { APP.updateBooking(b.dataset.bcancel, { status: "cancel" }); APP.toast("예약 거절 처리", b.dataset.bcancel, "❌"); render(); }));
+    $$("[data-bdone]").forEach((b) => b.addEventListener("click", () => { APP.updateBooking(b.dataset.bdone, { status: "done" }); APP.toast("방문 완료 처리 — 후기 요청 발송", b.dataset.bdone, "🎉"); render(); }));
+    $$("[data-aok]").forEach((b) => b.addEventListener("click", () => { const a = APPROVALS.find((x) => x.id === b.dataset.aok); a.status = "ok"; APP.toast("승인 완료 — 사용자 화면에 반영됨", a.detail, "✅"); render(); }));
+    $$("[data-ano]").forEach((b) => b.addEventListener("click", () => { const i = APPROVALS.findIndex((x) => x.id === b.dataset.ano); APPROVALS.splice(i, 1); APP.toast("반려 처리 — 파트너에게 사유 회신", "", "↩️"); render(); }));
+    $$("[data-rblock]").forEach((b) => b.addEventListener("click", () => { const r = REPORTS.find((x) => x.id === b.dataset.rblock); r.status = "done"; r.action = "차단 완료"; APP.toast("리뷰 차단 완료", r.target, "🚫"); render(); }));
+    $$("[data-rkeep]").forEach((b) => b.addEventListener("click", () => { const r = REPORTS.find((x) => x.id === b.dataset.rkeep); r.status = "done"; r.action = "게시 유지"; APP.toast("검토 완료 — 게시 유지", r.target, "👌"); render(); }));
+    $$("[data-mblock]").forEach((b) => b.addEventListener("click", () => { const m = MEMBERS.find((x) => x.id === b.dataset.mblock); m.status = "차단"; APP.toast("회원 차단 완료", m.name, "🚫"); render(); }));
+    $$("[data-munblock]").forEach((b) => b.addEventListener("click", () => { const m = MEMBERS.find((x) => x.id === b.dataset.munblock); m.status = "정상"; APP.toast("차단 해제", m.name, "🔓"); render(); }));
+    const es = $("#editSubmit");
+    if (es) es.addEventListener("click", () => {
+      const d = $("#editDetail").value.trim();
+      if (!d) { APP.toast("내용을 입력해주세요", "", "✏️"); return; }
+      const na = { id: "A-" + (312 + APPROVALS.length), clinic: MY_CLINIC, type: $("#editType").value, detail: d, requested: "2026-07-07", status: "wait" };
+      APPROVALS.unshift(na);
+      APP.toast("승인 요청 전송됨", "운영팀 검토 후 반영됩니다 (즉시 반영 없음)", "📨");
+      render();
+    });
+    const sb = $("#settleBtn");
+    if (sb && !sb.disabled && CAN.settleConfirm[role]) sb.addEventListener("click", () => APP.toast("정산 확정 — 7/15 지급 예정", "파트너 대시보드에 반영됨", "💰"));
+  }
+
+  /* 사이드바 권한 필터 */
+  function navSync() {
+    $$("#admNav [data-roles]").forEach((el) => {
+      el.classList.toggle("hidden", el.dataset.roles.split(",").indexOf(role) < 0);
+      if (el.classList.contains("hidden")) el.style.display = "none"; else el.style.display = "";
+    });
+    $$("#admNav a").forEach((a) => a.classList.toggle("on", a.dataset.view === view));
+  }
+  $$("#admNav a").forEach((a) => a.addEventListener("click", (e) => {
+    e.preventDefault();
+    view = a.dataset.view;
+    navSync(); render();
+  }));
+  $("#roleSel").addEventListener("change", (e) => {
+    role = e.target.value;
+    const allowed = { super: null, mid: ["member"], partner: ["approve", "report", "member"] }[role];
+    if (allowed && allowed.indexOf(view) >= 0) view = "dash";
+    if (role !== "partner" && view === "myedit") view = "approve";
+    APP.toast("권한 전환: " + ROLE_LABEL[role], "메뉴·데이터 접근 범위가 변경되었습니다", "🔐");
+    navSync(); render();
+  });
+
+  navSync(); render();
+})();
+</script>
+</body>
+</html>
