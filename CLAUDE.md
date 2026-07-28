@@ -139,10 +139,14 @@ const hex = v => { c.fillStyle = '#fff'; c.fillRect(0,0,1,1); c.fillStyle = v; c
 > | 순서 | 매칭 축 | 소스 |
 > |---|---|---|
 > | ① | 같은 성격의 **수상작** (랜딩↔랜딩, 대시보드↔데이터 제품) | Awwwards · CSSDA · FWA · GDWEB |
-> | ② | **화면 유형** (대시보드·로그인·상세·요금제·404·빈 상태) | Refero |
-> | ③ | **업종·카테고리** (식품·금융·패션·의료·SaaS·이커머스) | DBCUT(국내) · Lapa Ninja |
-> | ④ | **섹션·부분** (히어로·가격표·푸터·OG 이미지·모션) | Land-book |
-> | ⑤ | 그래도 없으면 **최신 SOTD 아무거나** | 이식 가능한 값(이징·자간·여백)만 가져옵니다 |
+> | ② | **화면 유형·패턴** (로그인·온보딩·검색·장바구니·주문·마이페이지·빈 상태·404) | Refero · **WWiT**(국내 앱 18패턴) |
+> | ③ | **업종·카테고리** (식품·금융·패션·의료·부동산·배달·모빌리티·SaaS) | DBCUT(국내) · WWiT · Lapa Ninja |
+> | ④ | **섹션·컴포넌트** (히어로·가격표·푸터·입력창·탭·바텀시트·팝업·차트) | Land-book(섹션) · **WWiT**(컴포넌트) |
+> | ⑤ | **그래픽·모션 톤** (무드·질감·전환 감각) | **Cosmos** |
+> | ⑥ | 그래도 없으면 **최신 SOTD 아무거나** | 이식 가능한 값(이징·자간·여백)만 가져옵니다 |
+>
+> 업종이 안 맞아도 ②·④는 **어떤 프로젝트에도 반드시 존재합니다.** 로그인 없는 서비스,
+> 빈 상태 없는 목록, 입력창 없는 폼은 없습니다. 여기서 막히는 경우는 없습니다.
 >
 > **어떤 경우에도 아래 4축은 비우지 않습니다.** 이것이 B의 최소 산출물입니다.
 >
@@ -168,11 +172,22 @@ const hex = v => { c.fillStyle = '#fff'; c.fillRect(0,0,1,1); c.fillStyle = v; c
 
 | 사이트 | 매칭 축 |
 |---|---|
+| [WWiT](https://wwit.design/) | ★ **국내 앱·서비스 UI 아카이브.** 3축 분류가 폴백과 정확히 맞습니다<br>업종 `/tag/` life·finance·commerce·realestate·delivery·entertainment·mobility<br>**패턴** `/pattern/` splash·signin·signup·onboarding·home·search·notification·select·loading·success·cart·order·list·review·password·t&c·mypage·setting (18종)<br>**컴포넌트** `/component/` input·tab·bottomsheet·popup·chart<br>수록: 알라미·리볼트·mmm·네이버페이·뤼튼·삼쩜삼·치지직·헤이딜러 등 |
 | [Refero](https://refero.design/) | **화면 유형별** — Dashboard·Login·Paywall·Product Details·Catalog·404·Careers 등 |
 | [DBCUT 디비컷](https://www.dbcut.com/) | **국내 업종별** 9,800여 건 — 식품·금융·패션·의료·기계·인터넷 등 전 업종 |
 | [Lapa Ninja](https://www.lapa.ninja/) | **카테고리별 랜딩** 7,400여 건 — SaaS·이커머스·AI·앱·포트폴리오. 풀페이지 스크린샷 제공 |
 | [Land-book](https://land-book.com/) | **섹션 단위** 탐색 — Sections·Mobile·Motion·OG Images·Headlines 뷰 |
 | [One Page Love](https://onepagelove.com/) | 랜딩 페이지 특화 — 모객·전환형 프로젝트 |
+
+*무드·그래픽 (★ 실측 대상이 아닙니다)*
+
+| 사이트 | 용도 |
+|---|---|
+| [Cosmos](https://www.cosmos.so/explore/motion) | 이미지·영상 큐레이션. `/explore/` motion · ui-ux · graphic-design · typography · branding · art · technology 등<br>**라이브 사이트가 아니라 이미지·영상이라 `getComputedStyle` 실측이 불가능합니다.**<br>여기서 가져오는 것은 수치가 아니라 **그래픽 소스 방향과 모션 톤**입니다 —<br>아이콘·일러스트 스타일, 질감, 전환 감각. 4축 중 「그래픽 소스」를 채울 때 씁니다 |
+
+> **실측(수치) 소스와 무드(방향) 소스를 섞어 적지 않습니다.**
+> 분석 문서에 Cosmos를 적을 때는 `무드 참고 — 실측값 없음`을 함께 표기하고,
+> 색·타이포·이징 **수치는 반드시 라이브 사이트에서 뽑습니다.**
 
 *접근 주의*
 
@@ -197,8 +212,10 @@ const hex = v => { c.fillStyle = '#fff'; c.fillRect(0,0,1,1); c.fillStyle = v; c
 - 만들 사이트와 **성격이 비슷한 수상작**을 우선합니다 (랜딩↔랜딩, 대시보드↔데이터 제품)
 - 업종은 달라도 됩니다. **완성도의 기준선**을 가져오는 것이 목적입니다
 - 수상 연도가 최근일수록 좋습니다 (트렌드 반영)
-- **국내향 서비스면 GDWEB·DBCUT을 최소 1곳 섞습니다.** 해외 수상작만 보면 국내 이용자에게
+- **국내향 서비스면 GDWEB·DBCUT·WWiT을 최소 1곳 섞습니다.** 해외 수상작만 보면 국내 이용자에게
   낯선 정보 밀도가 나옵니다
+- **모바일 앱 성격이면 WWiT을 필수로 넣습니다.** 국내 앱의 온보딩·바텀시트·마이페이지 관행은
+  해외 갤러리에서 안 나옵니다
 
 **가져오는 것 (색보다 이것들)**
 
