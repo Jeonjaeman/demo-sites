@@ -88,7 +88,7 @@
           '<div class="logbox" id="liveLog" style="height:210px"></div>' +
           '<p class="small muted" style="margin-top:10px">' +
             '대상은 <b>CORS가 열려 있는 공개 API</b>(업비트 <code>market/all</code> · 빗썸 <code>ticker/ALL_KRW</code> · 빗썸 <code>assetsstatus/ALL</code>)입니다. ' +
-            '공지 엔드포인트는 브라우저 차단이라 여기서 못 씁니다 — 감지 <b>로직</b>은 납품 코드와 동일합니다.<br>공개 API의 CORS 허용은 <b>요청 도메인마다 다릅니다</b>. 막힌 소스는 “브라우저 차단”으로 표시하고 폴링에서 빼며, 그건 서버 detector.py 몫입니다.</p>' +
+            '공지 엔드포인트는 브라우저 차단이라 여기서 못 씁니다 — 감지 <b>로직</b>은 납품 코드와 동일합니다.<br>공개 API는 CORS가 열려 있어도 <b>Origin 단위 요청 제한</b>이 걸립니다(업비트: 분당 약 6회). 한도를 넘겨 실패가 이어지는 소스는 “요청 제한(429)”으로 표시하고 폴링에서 빼며, 그건 서버 detector.py 몫입니다.</p>' +
         '</div></section>' +
 
       /* ── ② 서버 공지 감지 로그 (재생) ─────────────────────── */
@@ -120,17 +120,44 @@
       /* ── CORS 근거 ────────────────────────────────────────── */
       '<section class="card reveal" style="margin-bottom:16px"><div class="card-h">' +
         '<h3>왜 공지는 서버에서 돌려야 하나 — CORS 실측 (' + ZL.CORS.testedAt + ')</h3></div><div class="card-b">' +
-        '<p class="muted small" style="margin-bottom:12px">공지 엔드포인트는 브라우저 교차 출처 요청을 <b>어느 도메인에서도</b> 허용하지 않습니다. 공개 시세 API는 열려 있지만 <b>요청 도메인에 따라 갈립니다</b> — 업비트는 localhost에서는 되고 github.io에서는 막힙니다(실측). 위 라이브 콘솔은 이 판정을 시작할 때 직접 해서, 열린 소스만 폴링하고 막힌 소스는 “브라우저 차단”으로 표시합니다.</p>' +
-        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>거래소</th><th>종류</th><th>엔드포인트</th><th>응답</th><th>ACAO</th><th>브라우저</th></tr></thead><tbody>' +
+        '<p class="muted small" style="margin-bottom:12px">' +
+          'Origin 헤더만 바꿔 가며 응답 헤더를 직접 확인했습니다(<code>' + ZL.CORS.origins.join('</code> · <code>') + '</code>). ' +
+          '<b>공지 엔드포인트는 어느 도메인에서도 403</b>입니다 — 도메인을 옮겨도 달라지지 않습니다. ' +
+          '공개 시세 API는 CORS가 전면 허용(<code>*</code>)이지만 <b>Origin 단위 요청 제한</b>에 걸립니다(아래 표).</p>' +
+        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>거래소</th><th>종류</th><th>엔드포인트</th><th>응답</th><th>ACAO</th><th>요청 제한</th><th>브라우저</th></tr></thead><tbody>' +
         ZL.CORS.rows.map(function (r) {
           return '<tr><td class="name" style="color:' + (r.ex === 'UPBIT' ? '#7db1ff' : '#ffb865') + '">' + ZL.EX_LABEL[r.ex] + '</td>' +
             '<td class="small">' + r.kind + '</td><td class="mono small">' + r.url + '</td>' +
-            '<td><span class="badge ' + (r.status.indexOf('403') >= 0 ? 'b-bad' : 'b-ok') + ' small">' + r.status + '</span></td>' +
+            '<td><span class="badge ' + (r.status.indexOf('403') >= 0 ? 'b-bad' : r.status.indexOf('429') >= 0 ? 'b-warn' : 'b-ok') + ' small">' + r.status + '</span></td>' +
             '<td><span class="badge ' + (r.acao === '없음' ? 'b-bad' : 'b-ok') + ' small">' + r.acao + '</span></td>' +
-            '<td><span class="badge ' + (r.ok ? 'b-ok' : 'b-bad') + ' small">' + r.browser + '</span></td></tr>';
+            '<td class="small mono">' + r.limit + '</td>' +
+            '<td><span class="badge ' + (r.ok ? 'b-ok' : r.browser === '제한' ? 'b-warn' : 'b-bad') + ' small">' + r.browser + '</span></td></tr>' +
+            '<tr><td colspan="7" class="tiny faint" style="padding-top:0;border-top:0">↳ ' + r.note + '</td></tr>';
         }).join('') +
         '</tbody></table></div>' +
         '<div class="warn-box" style="margin-top:12px">공지 엔드포인트 브라우저 <code>fetch()</code> 실측: <b>' + esc(ZL.CORS.browserFetch) + '</b> → 실시간 공지 폴링은 detector.py(서버)가 담당합니다. 공고의 “발주사 서버에서 운영”과 같은 전제입니다.</div>' +
+      '</div></section>' +
+
+      /* ── 업비트 요청 제한 실측 ────────────────────────────── */
+      '<section class="card reveal" style="margin-bottom:16px"><div class="card-h">' +
+        '<h3>업비트 요청 제한 — 헤더로 확인한 실측</h3>' +
+        '<span class="small muted">' + esc(ZL.RATE_LIMIT.note) + '</span></div><div class="card-b">' +
+        '<p class="muted small" style="margin-bottom:10px">공고 비기능 요구의 “거래소 요청 제한을 넘지 않는 폴링 주기”는 추정이 아니라 <b>응답 헤더로 확인됩니다</b>.</p>' +
+        '<pre class="mono" style="margin:0 0 12px;padding:11px 13px;background:#080b12;border:1px solid var(--line);border-radius:10px;font-size:12px;color:#9fe8c8;overflow:auto">' +
+          esc(ZL.RATE_LIMIT.header) + '</pre>' +
+        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>폴링 주기</th><th class="right">분당 요청</th><th class="right">성공</th><th class="right">성공률</th><th>판정</th></tr></thead><tbody>' +
+        ZL.RATE_LIMIT.rows.map(function (r) {
+          var pct = Math.round(r.ok / r.n * 100);
+          return '<tr><td class="mono">' + r.interval + '초</td>' +
+            '<td class="right mono">' + Math.round(60 / r.interval) + '회</td>' +
+            '<td class="right mono">' + r.ok + '/' + r.n + '</td>' +
+            '<td class="right mono">' + pct + '%</td>' +
+            '<td><span class="badge ' + (pct === 100 ? 'b-ok' : pct >= 50 ? 'b-warn' : 'b-bad') + ' small">' +
+              (pct === 100 ? '안정' : pct >= 50 ? '절반 차단' : '대부분 차단') + '</span></td></tr>';
+        }).join('') +
+        '</tbody></table></div>' +
+        '<div class="warn-box" style="margin-top:12px">' + ZL.RATE_LIMIT.conclusion + '</div>' +
+        '<div class="note-box" style="margin-top:10px">' + ZL.RATE_LIMIT.server + '</div>' +
       '</div></section>' +
 
       /* ── 검증 항목 ────────────────────────────────────────── */
@@ -204,13 +231,16 @@
   function renderStat(rows) {
     var box = $('#liveStat'); if (!box) return;
     box.innerHTML = rows.map(function (s) {
-      var badge = s.blocked ? ' <span class="badge b-warn small">브라우저 차단</span>'
+      var badge = s.blocked ? ' <span class="badge b-warn small">요청 제한(429)</span>'
                 : s.down ? ' <span class="badge b-bad small">장애</span>'
                 : ' <span class="badge b-ok small">정상</span>';
       var body = s.blocked
         ? '<div class="stat-v mono" style="font-size:15px;color:var(--warn)">서버 담당</div>' +
-          '<div class="stat-d small muted">이 도메인에서는 공개 API 폴링이 되지 않습니다' + (typeof s.blockRate === 'number' && s.blockRate > 0 ? ' (성공률 ' + Math.round(s.blockRate * 100) + '%)' : '') + '. ' +
-          '공지 감지와 같은 이유로 <b>detector.py(서버)</b>가 폴링합니다 — 아래 재생 로그 참고.</div>'
+          '<div class="stat-d small muted">1초 폴링이 이 API의 <b>Origin 단위 한도(분당 약 6회)</b>를 넘어 429가 돌아옵니다' +
+          (typeof s.blockTries === 'number'
+            ? ' (이 세션 성공 ' + Math.round((s.blockRate || 0) * s.blockTries) + '/' + s.blockTries + '회)'
+            : '') + '. ' +
+          '429 응답에는 ACAO 헤더가 없어 브라우저에는 CORS 오류로 보입니다. <b>detector.py(서버)</b>는 Origin 헤더를 보내지 않아 영향받지 않습니다.</div>'
         : '<div class="stat-v mono">' + (s.periodMs ? (s.periodMs / 1000).toFixed(3) + 's' : '—') + '</div>' +
           '<div class="stat-d small muted">실측 주기 · 응답 ' + (s.lastMs || 0) + 'ms · ' +
           s.cycles + '회 폴링(성공 ' + s.ok + ' / 실패 ' + s.fail + ') · 추적 ' + s.tracking + '건</div>';

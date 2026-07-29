@@ -53,20 +53,49 @@
       'USER_AGENT        = "' + c.userAgent + '"\n';
   }
 
-  /* ---------- CORS 실측 (2026-07-29) ---------- */
+  /* ---------- CORS · 요청제한 실측 (2026-07-29) ----------
+     Origin 헤더만 바꿔 가며 응답 헤더를 직접 확인했습니다.
+     공지 엔드포인트는 어느 도메인이든 403이고, 공개 API는 CORS는 열려 있으나
+     Origin 단위 요청 제한(Limit-By-Origin)에 걸립니다. */
   var CORS = {
     testedAt: '2026-07-29',
-    browserFetch: 'TypeError: Failed to fetch — 공지 엔드포인트는 양쪽 모두 브라우저 직접 호출 차단',
+    browserFetch: 'TypeError: Failed to fetch',
+    origins: ['https://tengtengsoft.kr', 'https://jeonjaeman.github.io', 'http://localhost:8084'],
     rows: [
       { ex: 'UPBIT', kind: '공지', url: 'api-manager.upbit.com/api/v1/announcements',
-        status: '403 Forbidden', acao: '없음', browser: '차단', ok: false },
+        status: '403 Forbidden', acao: '없음', limit: '—',
+        browser: '차단', ok: false,
+        note: 'Origin 헤더가 붙으면 도메인과 무관하게 403. 3개 도메인에서 동일' },
       { ex: 'BITHUMB', kind: '공지', url: 'feed-api.bithumb.com/v1/notices',
-        status: '200 OK', acao: '없음', browser: '차단', ok: false },
+        status: '200 OK', acao: '없음', limit: '—',
+        browser: '차단', ok: false,
+        note: '응답은 오지만 ACAO 헤더가 없어 브라우저가 본문을 읽지 못함' },
       { ex: 'UPBIT', kind: '공개 시세', url: 'api.upbit.com/v1/market/all',
-        status: '200 OK', acao: '요청 도메인에 따라 다름', browser: 'localhost 100% / github.io 12회 중 1회', ok: false },
+        status: '200 / 429', acao: '*', limit: 'Limit-By-Origin: Yes',
+        browser: '제한', ok: false,
+        note: 'CORS는 전면 허용(*). 대신 Origin 단위 분당 약 6회 제한 → 1초 폴링은 429' },
       { ex: 'BITHUMB', kind: '공개 시세', url: 'api.bithumb.com/public/ticker/ALL_KRW',
-        status: '200 OK', acao: '있음', browser: '허용', ok: true }
+        status: '200 OK', acao: '*', limit: '체감 없음',
+        browser: '허용', ok: true,
+        note: '1초 주기로 수십 회 폴링해도 실패 0 (아래 라이브 콘솔이 그 증거)' }
     ]
+  };
+
+  /* ---------- 업비트 Origin 단위 요청 제한 실측 ---------- */
+  var RATE_LIMIT = {
+    header: 'Remaining-Req: group=origin; min=6; sec=0   ·   Limit-By-Origin: Yes',
+    note: '주기마다 다른 Origin 을 써서 카운터를 분리한 뒤 6회씩 요청',
+    rows: [
+      { interval: 1,  ok: 1, n: 6 },
+      { interval: 3,  ok: 2, n: 6 },
+      { interval: 6,  ok: 3, n: 6 },
+      { interval: 12, ok: 6, n: 6 }
+    ],
+    conclusion: '분당 약 6회(주기 10초 남짓)가 한계. 도메인을 바꿔도 카운터만 새로 ' +
+                '시작될 뿐 1초 폴링은 동일하게 막힙니다. 429 응답에는 ACAO 헤더가 ' +
+                '빠져 있어 브라우저에는 CORS 오류(Failed to fetch)로 보입니다.',
+    server: 'urllib(파이썬)은 Origin 헤더를 보내지 않아 group=origin 버킷에 들어가지 ' +
+            '않습니다. 1초 주기 20주기 실행에서 실패 0회 — 서버 폴링은 영향 없습니다.'
   };
 
   /* ---------- 실제 측정 응답 지연 ---------- */
@@ -287,13 +316,16 @@
         if (hardBlock || unreliable) {
           st.blocked = true;
           st.blockRate = rate;
+          st.blockTries = tries;
           st.stopped = true;
           if (st.timer) { clearTimeout(st.timer); st.timer = null; }
+          /* 브라우저는 429 의 상태 코드를 읽지 못합니다 — 429 응답에 ACAO 헤더가
+             없어 fetch 가 CORS 오류로 거부하기 때문입니다. 실제 상태 코드는
+             서버에서 Origin 헤더를 바꿔 가며 확인했습니다(위 요청제한 표). */
           self.onLog({ ex: st.src.name, kind: 'blocked',
-            text: self._stamp() + ' [' + st.src.name + '] 이 도메인(' + location.host + ')에서는 ' +
-                  (hardBlock ? '브라우저가 차단합니다'
-                             : '성공률 ' + Math.round(rate * 100) + '% (' + st.ok + '/' + tries + ') — 사실상 폴링 불가') +
-                  ' → 서버 detector.py 담당으로 넘깁니다' });
+            text: self._stamp() + ' [' + st.src.name + '] 요청 제한에 걸렸습니다 — 성공 ' +
+                  st.ok + '/' + tries + '회. 1초 폴링은 이 API의 Origin 단위 한도(분당 약 6회)를 ' +
+                  '넘습니다 → 서버 detector.py 담당으로 넘깁니다' });
           return;
         }
         var wait = Math.min((self.opts.backoffBaseMs || 500) * Math.pow(2, st.failStreak - 1),
@@ -351,7 +383,8 @@
         ex: st.src.name, label: st.src.label, what: st.src.what,
         cycles: st.cycles, ok: st.ok, fail: st.fail, skipped: st.skipped,
         lastMs: st.lastMs, periodMs: Math.round(avg), worstMs: Math.round(worst),
-        tracking: st.seen.size, down: st.failStreak > 0, blocked: !!st.blocked, blockRate: st.blockRate
+        tracking: st.seen.size, down: st.failStreak > 0, blocked: !!st.blocked,
+        blockRate: st.blockRate, blockTries: st.blockTries
       };
     });
   };
@@ -386,7 +419,7 @@
     EX_LABEL: EX_LABEL,
     defaultConfig: defaultConfig, loadConfig: loadConfig, saveConfig: saveConfig,
     resetConfig: resetConfig, configPy: configPy,
-    CORS: CORS, OBSERVED_LATENCY: OBSERVED_LATENCY, MEASURED: MEASURED,
+    CORS: CORS, RATE_LIMIT: RATE_LIMIT, OBSERVED_LATENCY: OBSERVED_LATENCY, MEASURED: MEASURED,
     SERVER_LOG_DETECT: SERVER_LOG_DETECT, SERVER_LOG_FAULT: SERVER_LOG_FAULT,
     logOffsets: logOffsets,
     PROVEN: PROVEN, tradeoff: tradeoff, pad: pad,
