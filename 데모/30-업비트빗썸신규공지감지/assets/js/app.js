@@ -80,7 +80,7 @@
   function viewConsole() {
     app.innerHTML =
       '<div class="between reveal" style="margin-bottom:14px;flex-wrap:wrap;gap:12px">' +
-        '<div><h2 style="font-size:22px">실시간 감지 콘솔</h2><p class="muted small">업비트·빗썸 공지를 폴링해 신규 등록을 1초 이내에 감지합니다. 아래는 그 로직을 브라우저에서 그대로 돌리는 시뮬레이터입니다.</p></div>' +
+        '<div><h2 style="font-size:22px">실시간 감지 콘솔</h2><p class="muted small">업비트·빗썸 공지를 폴링해 신규 등록을 1초 이내에 감지합니다. 이 콘솔은 그 감지 로직(폴링·중복제거·백오프)을 브라우저에서 <b>실제로 실행</b>합니다 — 공지는 데모용 예시이며, 실거래소 감지는 납품 파이썬 코드(detector.py)가 수행합니다.</p></div>' +
         '<div class="center"><button class="btn" id="runBtn"></button><button class="btn sm" id="clearBtn">초기화</button></div>' +
       '</div>' +
       '<div class="kpis reveal" id="kpis" style="margin-bottom:14px"></div>' +
@@ -118,7 +118,7 @@
         '<input type="range" id="pollRange" min="300" max="3000" step="100" value="' + c.pollMs + '" /></div>' +
       '<div id="budgetHint" class="small" style="margin:-6px 0 14px"></div>' +
       '<label class="between" style="margin-bottom:12px"><span style="font-weight:700">중복 제거 <span class="small muted">(공지 id 기준)</span></span><span class="switch"><input type="checkbox" id="dedupTg"' + (c.dedup ? ' checked' : '') + '/><span class="track"></span></span></label>' +
-      '<label class="between" style="margin-bottom:14px"><span style="font-weight:700">공지 자동 발생 <span class="small muted">(시뮬)</span></span><span class="switch"><input type="checkbox" id="autoTg"' + (auto ? ' checked' : '') + '/><span class="track"></span></span></label>' +
+      '<label class="between" style="margin-bottom:14px"><span style="font-weight:700">공지 자동 발생 <span class="small muted">(데모)</span></span><span class="switch"><input type="checkbox" id="autoTg"' + (auto ? ' checked' : '') + '/><span class="track"></span></span></label>' +
       '<div class="divider"></div>' +
       '<div class="small muted" style="margin-bottom:8px">신규 공지 강제 발생</div>' +
       '<div class="wrap-g" style="margin-bottom:6px"><button class="btn sm" data-emit="UPBIT">＋ 업비트 공지</button><button class="btn sm" data-emit="BITHUMB">＋ 빗썸 공지</button></div>';

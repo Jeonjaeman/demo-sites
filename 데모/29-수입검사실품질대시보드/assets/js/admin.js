@@ -51,7 +51,7 @@
     var stale = r.stale || r.status === '실패';
     app.innerHTML =
       '<div class="between" style="margin-bottom:14px"><div><h2 style="font-size:22px">자동 새로고침 · 소스</h2><p class="muted small">온프렘 게이트웨이가 3개 소스를 스케줄에 따라 통합합니다.</p></div>' +
-        '<div class="center"><button class="btn" id="failBtn">⚠ 실패 시뮬레이션</button><button class="btn pri" id="runBtn">▶ 지금 새로고침</button></div></div>' +
+        '<div class="center"><button class="btn" id="failBtn">⚠ 새로고침 실패 재현</button><button class="btn pri" id="runBtn">▶ 지금 새로고침</button></div></div>' +
       '<div class="banner ' + (stale ? 'bad' : 'ok') + '" style="margin-bottom:14px">' + (stale ? '🔴 마지막 새로고침 실패 — 대시보드는 이전 데이터(' + QW.fmtDT(r.lastAt) + ')를 유지 중입니다. 재실행이 필요합니다.' : '🟢 정상 — 마지막 새로고침 ' + QW.fmtDT(r.lastAt) + ' · 스케줄 ' + r.schedule) + '</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1.1fr;gap:14px" class="dash-grid">' +
         '<div class="card"><div class="card-h"><h3>소스 연결 상태</h3></div><div class="card-b">' +
