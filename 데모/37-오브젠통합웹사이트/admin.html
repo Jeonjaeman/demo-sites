@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23F6F3EC'/%3E%3Cpath d='M16 20c10 0 8 12 16 12s6-12 16-12' fill='none' stroke='%239F1B68' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 44c10 0 8-12 16-12s6 12 16 12' fill='none' stroke='%231E3B8A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>OBZEN Integrated — Admin Demo (B안)</title>
+  <link rel="stylesheet" href="assets/css/confluence.css">
+  <script defer src="assets/js/admin.js"></script>
+</head>
+<body class="admin-body">
+  <a class="skip-link" href="#adminMain">관리 콘텐츠로 바로가기</a>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="admin-brand">obzen <small>CMS DEMO · B안</small></div>
+      <nav class="admin-nav" aria-label="관리 메뉴">
+        <button class="is-active" type="button" data-admin-view="content"><span>01</span>콘텐츠 관리</button>
+        <button type="button" disabled title="제안 범위 미리보기"><span>02</span>문의 관리 · preview</button>
+        <button type="button" disabled title="제안 범위 미리보기"><span>03</span>검색 관리 · preview</button>
+        <button type="button" disabled title="제안 범위 미리보기"><span>04</span>사이트 설정 · preview</button>
+      </nav>
+      <a class="admin-back" href="index.html">← 공개 사이트로 돌아가기</a>
+    </aside>
+    <main class="admin-main" id="adminMain">
+      <div class="admin-topbar">
+        <p>제안용 관리자 화면 · 데이터는 이 브라우저에만 저장됩니다.</p>
+        <div class="admin-user"><i>AD</i><span>Demo Admin</span></div>
+      </div>
+      <div class="admin-title-row">
+        <div><p class="eyebrow">Content operations</p><h1 data-admin-title>콘텐츠 관리</h1><p data-admin-description>공지, IR, 보도자료를 한 화면에서 관리합니다.</p></div>
+        <button class="button button-primary admin-add" type="button">새 콘텐츠 등록</button>
+      </div>
+      <section class="admin-content" data-admin-content aria-live="polite">
+        <div class="admin-stats">
+          <article class="admin-stat"><span>전체 콘텐츠</span><strong data-stat-total>00</strong><small>브라우저 데모</small></article>
+          <article class="admin-stat"><span>게시 중</span><strong data-stat-published>00</strong><small>public</small></article>
+          <article class="admin-stat"><span>임시 저장</span><strong data-stat-draft>00</strong><small>draft</small></article>
+          <article class="admin-stat"><span>오늘 수정</span><strong data-stat-today>00</strong><small>today</small></article>
+        </div>
+        <div class="admin-table-wrap">
+          <div class="admin-toolbar">
+            <input type="search" placeholder="제목 검색" aria-label="콘텐츠 제목 검색" data-admin-search>
+            <select aria-label="콘텐츠 유형 필터" data-admin-filter>
+              <option value="all">전체 유형</option><option value="공지">공지</option><option value="IR">IR</option><option value="보도자료">보도자료</option>
+            </select>
+            <button class="button button-compact button-ghost admin-reset" type="button">초기화</button>
+          </div>
+          <table class="admin-table">
+            <thead><tr><th>유형</th><th>상태</th><th>제목</th><th>수정일</th><th>관리</th></tr></thead>
+            <tbody data-admin-rows></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="admin-panel" aria-labelledby="editorTitle">
+    <div class="admin-panel-head"><span class="mono">CONTENT EDITOR</span><button class="icon-button admin-panel-close" type="button" aria-label="편집기 닫기">×</button></div>
+    <h2 id="editorTitle">콘텐츠 편집</h2>
+    <form data-editor-form>
+      <input type="hidden" name="id">
+      <label class="field"><span>콘텐츠 유형</span><select name="type" required><option>공지</option><option>IR</option><option>보도자료</option></select></label>
+      <label class="field"><span>제목</span><input name="title" required minlength="3"></label>
+      <label class="field"><span>요약</span><textarea name="summary" rows="5" required minlength="10"></textarea></label>
+      <label class="check"><input name="published" type="checkbox"><span>공개 사이트에 게시</span></label>
+      <div class="admin-panel-actions">
+        <button class="button button-primary" type="submit">변경사항 저장</button>
+        <button class="button button-ghost admin-panel-cancel" type="button">취소</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="admin-toast" role="status" aria-live="polite"></div>
+</body>
+</html>

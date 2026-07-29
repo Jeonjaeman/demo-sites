@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="ko" data-lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="오브젠·잘레시아 통합 기업 홈페이지 구축 제안 데모">
+  <meta name="theme-color" content="#081321">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23081321'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%2322b8a7' stroke-width='7'/%3E%3C/svg%3E">
+  <title>OBZEN Integrated — 데이터에서 행동까지</title>
+  <link rel="stylesheet" href="assets/css/signal-loom.css">
+  <script defer src="assets/js/signal-data.js"></script>
+  <script defer src="assets/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문 바로가기</a>
+  <div class="demo-ribbon">
+    <span>제안용 인터랙티브 데모</span>
+    <span>실제 수치·문서·연락처가 아닌 가상 데이터가 포함되어 있습니다.</span>
+  </div>
+
+  <header class="site-header" data-header>
+    <a class="brand" href="#top" aria-label="OBZEN Integrated 홈">
+      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true">
+        <path d="M6 12h12l8 10-8 10H6l8-10-8-10Z"/>
+        <path d="M38 12H26l-8 10 8 10h12l-8-10 8-10Z"/>
+      </svg>
+      <span>obzen<small>integrated</small></span>
+    </a>
+    <nav class="desktop-nav" aria-label="주요 메뉴">
+      <a href="#company">회사소개</a>
+      <a href="#platform">통합 플랫폼</a>
+      <a href="#industries">산업별 적용</a>
+      <a href="#trust">신뢰와 거버넌스</a>
+      <a href="#ir">홍보·IR</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-button search-open" type="button" aria-label="통합검색 열기">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      </button>
+      <button class="lang-button" type="button" aria-label="첫 화면 핵심 문구 영문 미리보기" title="첫 화면 핵심 문구만 전환합니다"><span>KR</span><span>EN·preview</span></button>
+      <a class="button button-compact button-primary desktop-cta" href="#contact">프로젝트 문의</a>
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="메뉴 열기">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <dialog class="mobile-menu" id="mobileMenu" aria-label="모바일 메뉴">
+    <div class="mobile-menu-head">
+      <span class="brand-word">obzen integrated</span>
+      <button class="icon-button menu-close" type="button" aria-label="메뉴 닫기">×</button>
+    </div>
+    <nav aria-label="모바일 주요 메뉴">
+      <a href="#company"><span>01</span>회사소개</a>
+      <a href="#platform"><span>02</span>통합 플랫폼</a>
+      <a href="#industries"><span>03</span>산업별 적용</a>
+      <a href="#trust"><span>04</span>신뢰와 거버넌스</a>
+      <a href="#ir"><span>05</span>홍보·IR</a>
+      <a href="#contact"><span>06</span>문의하기</a>
+    </nav>
+  </dialog>
+
+  <dialog class="search-dialog" aria-labelledby="searchTitle">
+    <div class="search-shell">
+      <div class="search-top">
+        <div>
+          <p class="eyebrow">Integrated search</p>
+          <h2 id="searchTitle">무엇을 찾고 계신가요?</h2>
+        </div>
+        <button class="icon-button search-close" type="button" aria-label="통합검색 닫기">×</button>
+      </div>
+      <label class="search-field">
+        <span class="sr-only">검색어</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+        <input type="search" autocomplete="off" placeholder="제품, IR, 회사 정보를 검색해 보세요" data-search-input>
+        <kbd>/</kbd>
+      </label>
+      <p class="search-summary" aria-live="polite">추천 검색어: CDXP+, 생성형 AI, 합병, IR</p>
+      <div class="search-results" data-search-results></div>
+    </div>
+  </dialog>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="hero-grid shell">
+        <div class="hero-copy">
+          <p class="eyebrow reveal">OBZEN × ZALESIA · ONE INTELLIGENCE</p>
+          <h1 class="reveal">
+            <span data-ko="데이터에서" data-en="From data">데이터에서</span>
+            <span class="hero-accent" data-ko="행동까지." data-en="to action.">행동까지.</span>
+          </h1>
+          <p class="hero-lead reveal" data-ko="고객 데이터와 경영 데이터를 연결해, 다음 행동이 보이는 기업을 만듭니다." data-en="We connect customer and enterprise data so the next best action becomes clear.">
+            고객 데이터와 경영 데이터를 연결해,<br>다음 행동이 보이는 기업을 만듭니다.
+          </p>
+          <div class="hero-actions reveal">
+            <a class="button button-primary" href="#platform">통합 역량 살펴보기</a>
+            <button class="button button-secondary hero-play" type="button" aria-pressed="false">
+              <span class="play-dot" aria-hidden="true"></span> 90초 비전 보기
+            </button>
+          </div>
+        </div>
+        <div class="hero-system reveal" aria-label="고객 데이터와 경영 데이터가 통합 AI 실행으로 연결되는 구조">
+          <div class="system-caption"><span>LIVE SYSTEM MAP</span><span>MERGER 2026</span></div>
+          <svg class="flow-lines" viewBox="0 0 760 540" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="wineFlow" x1="0" x2="1"><stop stop-color="#9F1B68"/><stop offset="1" stop-color="#22B8A7"/></linearGradient>
+              <linearGradient id="navyFlow" x1="0" x2="1"><stop stop-color="#4361B0"/><stop offset="1" stop-color="#22B8A7"/></linearGradient>
+            </defs>
+            <path class="flow flow-wine" d="M42 126 C250 126 265 270 380 270 S520 270 718 180"/>
+            <path class="flow flow-navy" d="M42 412 C250 412 265 270 380 270 S520 270 718 360"/>
+            <path class="flow-pulse" d="M380 270 C520 270 565 190 718 180"/>
+          </svg>
+          <div class="map-node map-node-a"><span>Customer</span><strong>접점 데이터</strong><small>CRM · 캠페인 · 채널</small></div>
+          <div class="map-node map-node-b"><span>Enterprise</span><strong>경영 데이터</strong><small>ERP · BI · 리포트</small></div>
+          <div class="map-core"><span>ONE</span><strong>Intelligence</strong><small>통합 · 분석 · 거버넌스</small></div>
+          <div class="map-node map-node-c"><span>AI Action</span><strong>다음 행동</strong><small>예측 · 의사결정 · 실행</small></div>
+          <div class="map-node map-node-d"><span>Management</span><strong>경영 인사이트</strong><small>성과 · 리스크 · 전략</small></div>
+          <div class="map-status"><i></i> 모든 레이어 정상 연결</div>
+        </div>
+      </div>
+      <div class="hero-foot shell">
+        <p>SCROLL TO CONNECT</p>
+        <div class="hero-proof"><span>CRM</span><span>DATA</span><span>BI</span><span>AI</span><span>GOVERNANCE</span></div>
+      </div>
+    </section>
+
+    <section class="merger-story section" id="company">
+      <div class="shell">
+        <div class="section-kicker"><span>01</span><p>THE NEW OBZEN</p></div>
+        <div class="editorial-grid">
+          <div>
+            <p class="eyebrow dark">One company, wider intelligence</p>
+            <h2>두 개의 전문성,<br>하나의 운영 체계.</h2>
+          </div>
+          <div class="story-copy">
+            <p>오브젠의 고객 데이터·마케팅 실행 역량과 잘레시아의 데이터 엔지니어링·BI 역량을 하나의 경험으로 정리합니다.</p>
+            <p>새 홈페이지는 합병 사실을 알리는 데서 멈추지 않고, 고객이 자신의 업무가 어디서 연결되는지 이해하도록 설계합니다.</p>
+            <a class="text-link" href="#platform">통합 구조 확인하기 <span aria-hidden="true">↘</span></a>
+          </div>
+        </div>
+        <div class="merge-panels">
+          <article class="merge-panel panel-wine">
+            <span class="mono">OBZEN / CUSTOMER</span>
+            <h3>고객을 이해하고<br>정교하게 실행합니다.</h3>
+            <ul><li>Customer Data Platform</li><li>AI Marketing</li><li>Campaign Orchestration</li></ul>
+          </article>
+          <div class="merge-symbol" aria-hidden="true"><span></span><strong>＋</strong><span></span></div>
+          <article class="merge-panel panel-navy">
+            <span class="mono">ZALESIA / ENTERPRISE</span>
+            <h3>기업 데이터를 연결하고<br>의사결정을 돕습니다.</h3>
+            <ul><li>Data Engineering</li><li>Business Intelligence</li><li>Management Analytics</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="platform section" id="platform">
+      <div class="shell">
+        <div class="section-kicker light"><span>02</span><p>UNIFIED PLATFORM</p></div>
+        <div class="section-head inverse">
+          <h2>데이터의 전 과정을<br>하나의 흐름으로.</h2>
+          <p>제품을 따로 설명하지 않습니다. 데이터가 들어와서, 정리되고, 분석되고, 실제 업무로 이어지는 순서로 보여줍니다.</p>
+        </div>
+        <div class="platform-tabs" role="tablist" aria-label="통합 플랫폼 단계">
+          <button id="platform-collect" class="platform-tab is-active" role="tab" aria-selected="true" aria-controls="platform-panel" tabindex="0" data-platform="collect"><span>01</span>수집·연결</button>
+          <button id="platform-unify" class="platform-tab" role="tab" aria-selected="false" aria-controls="platform-panel" tabindex="-1" data-platform="unify"><span>02</span>통합·관리</button>
+          <button id="platform-analyze" class="platform-tab" role="tab" aria-selected="false" aria-controls="platform-panel" tabindex="-1" data-platform="analyze"><span>03</span>분석·예측</button>
+          <button id="platform-activate" class="platform-tab" role="tab" aria-selected="false" aria-controls="platform-panel" tabindex="-1" data-platform="activate"><span>04</span>실행·개선</button>
+        </div>
+        <div id="platform-panel" class="platform-stage" role="tabpanel" aria-labelledby="platform-collect" data-platform-stage aria-live="polite">
+          <div class="stage-copy">
+            <p class="eyebrow" data-stage-label>CONNECT</p>
+            <h3 data-stage-title>흩어진 데이터를<br>안전하게 연결합니다.</h3>
+            <p data-stage-description>고객 접점, 업무 시스템, 외부 채널을 표준화된 파이프라인으로 연결합니다.</p>
+            <ul data-stage-points><li>실시간·배치 데이터 연계</li><li>표준 커넥터와 품질 규칙</li><li>권한 기반 접근 제어</li></ul>
+          </div>
+          <div class="stage-visual" aria-hidden="true">
+            <div class="visual-toolbar"><i></i><i></i><i></i><span>OBZEN CONTROL LAYER</span></div>
+            <div class="pipeline">
+              <div class="pipeline-source"><b>CRM</b><b>ERP</b><b>WEB</b><b>DB</b></div>
+              <div class="pipeline-lane"><span></span><span></span><span></span><span></span></div>
+              <div class="pipeline-core"><i></i><strong data-stage-core>CONNECT</strong><small>controlled data flow</small></div>
+              <div class="pipeline-output"><span>01</span><span>02</span><span>03</span></div>
+            </div>
+            <div class="visual-log"><span>12:42:08</span><p data-stage-log>4개의 데이터 소스가 정상 연결되었습니다.</p><i>LIVE</i></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="industries section" id="industries">
+      <div class="shell">
+        <div class="section-kicker"><span>03</span><p>INDUSTRY SCENARIOS</p></div>
+        <div class="section-head">
+          <h2>산업의 언어로<br>설명하는 AI.</h2>
+          <p>산업을 선택하면 데이터 원천, 적용 업무, 기대 결과가 같은 화면에서 바뀝니다.</p>
+        </div>
+        <div class="industry-layout">
+          <div class="industry-list" role="tablist" aria-label="산업 선택">
+            <button id="industry-finance" class="industry-tab is-active" role="tab" aria-selected="true" aria-controls="industry-panel" tabindex="0" data-industry="finance"><span>01</span><strong>금융</strong><small>고객 여정과 리스크의 동시 최적화</small></button>
+            <button id="industry-retail" class="industry-tab" role="tab" aria-selected="false" aria-controls="industry-panel" tabindex="-1" data-industry="retail"><span>02</span><strong>유통</strong><small>수요와 개인화를 하나의 흐름으로</small></button>
+            <button id="industry-manufacturing" class="industry-tab" role="tab" aria-selected="false" aria-controls="industry-panel" tabindex="-1" data-industry="manufacturing"><span>03</span><strong>제조</strong><small>현장 데이터에서 예측 의사결정까지</small></button>
+            <button id="industry-public" class="industry-tab" role="tab" aria-selected="false" aria-controls="industry-panel" tabindex="-1" data-industry="public"><span>04</span><strong>공공</strong><small>근거 기반 정책과 대민 서비스</small></button>
+          </div>
+          <article id="industry-panel" class="industry-detail" role="tabpanel" aria-labelledby="industry-finance" data-industry-detail aria-live="polite">
+            <div class="industry-top">
+              <span class="mono" data-industry-code>FIN / 01</span>
+              <span class="status-pill"><i></i> Scenario ready</span>
+            </div>
+            <h3 data-industry-title>고객의 다음 행동과<br>리스크를 함께 봅니다.</h3>
+            <div class="scenario-flow">
+              <div><span>DATA</span><strong data-industry-data>거래 · 상담 · 채널</strong></div>
+              <i aria-hidden="true">→</i>
+              <div><span>INTELLIGENCE</span><strong data-industry-ai>이탈 · 관심 · 이상징후</strong></div>
+              <i aria-hidden="true">→</i>
+              <div><span>ACTION</span><strong data-industry-action>최적 제안 · 선제 대응</strong></div>
+            </div>
+            <p class="sample-note">※ 본 시나리오는 제안용 가상 예시이며 실제 고객 성과를 나타내지 않습니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust section" id="trust">
+      <div class="shell trust-shell">
+        <div class="trust-main">
+          <div class="section-kicker light"><span>04</span><p>TRUST BY DESIGN</p></div>
+          <p class="eyebrow">Governed intelligence</p>
+          <h2>AI가 움직일수록,<br>통제는 더 분명하게.</h2>
+          <p>데이터 접근부터 모델 실행, 결과 활용까지 누가 무엇을 했는지 설명할 수 있는 구조를 제안합니다.</p>
+          <button class="button button-light trust-explain" type="button" aria-expanded="false" aria-controls="trustDetails">거버넌스 구조 펼쳐보기</button>
+        </div>
+        <div class="trust-orbit" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="shield-core"><span>CONTROL</span><strong>Policy<br>Engine</strong><small>audit enabled</small></div>
+          <span class="orbit-label label-a">Access</span><span class="orbit-label label-b">Privacy</span>
+          <span class="orbit-label label-c">Audit</span><span class="orbit-label label-d">Quality</span>
+        </div>
+      </div>
+      <div class="trust-details shell" id="trustDetails" hidden>
+        <article><span>01</span><h3>접근 통제</h3><p>역할과 업무 목적에 맞는 최소 권한 원칙을 적용합니다.</p></article>
+        <article><span>02</span><h3>처리 이력</h3><p>데이터·모델·의사결정 흐름을 추적 가능한 기록으로 남깁니다.</p></article>
+        <article><span>03</span><h3>배포 선택권</h3><p>조직 보안 정책에 맞춘 온프레미스·클라우드 구성을 검토합니다.</p></article>
+      </div>
+    </section>
+
+    <section class="ir section" id="ir">
+      <div class="shell">
+        <div class="section-kicker"><span>05</span><p>NEWSROOM & IR</p></div>
+        <div class="ir-head">
+          <h2>필요한 정보에<br>빠르게 닿도록.</h2>
+          <div class="ir-controls" role="group" aria-label="자료 필터">
+            <button class="filter-chip is-active" type="button" data-filter="all">전체</button>
+            <button class="filter-chip" type="button" data-filter="notice">공지</button>
+            <button class="filter-chip" type="button" data-filter="ir">IR</button>
+            <button class="filter-chip" type="button" data-filter="news">보도자료</button>
+          </div>
+        </div>
+        <div class="ir-list" data-ir-list></div>
+        <p class="sample-note">※ 목록의 날짜·제목·첨부파일은 기능 시연을 위한 가상 데이터입니다.</p>
+      </div>
+    </section>
+
+    <section class="contact section" id="contact">
+      <div class="shell contact-grid">
+        <div>
+          <p class="eyebrow">Start the conversation</p>
+          <h2>복잡한 데이터 문제,<br>연결부터 함께 보겠습니다.</h2>
+          <p>문의 유형과 공통 연락 항목을 남겨 주세요. 데모에서는 입력 내용이 외부로 전송되지 않습니다.</p>
+          <div class="contact-cues"><span>사업·제품 문의</span><span>파트너십</span><span>IR 문의</span></div>
+        </div>
+        <form class="contact-form" novalidate data-contact-form>
+          <div class="form-status" role="alert" tabindex="-1" hidden></div>
+          <label class="field"><span>문의 유형 <b>*</b></span>
+            <select name="type" required>
+              <option value="">선택해 주세요</option><option>사업·제품 문의</option><option>파트너십</option><option>IR 문의</option>
+            </select>
+          </label>
+          <div class="field-row">
+            <label class="field"><span>이름 <b>*</b></span><input name="name" autocomplete="name" required></label>
+            <label class="field"><span>회사명 <b>*</b></span><input name="company" autocomplete="organization" required></label>
+          </div>
+          <label class="field"><span>회사 이메일 <b>*</b></span><input name="email" type="email" autocomplete="email" placeholder="name@company.com" required></label>
+          <label class="field"><span>문의 내용 <b>*</b></span><textarea name="message" rows="5" minlength="10" placeholder="현재 해결하고 싶은 데이터·AI 과제를 알려주세요." required></textarea></label>
+          <label class="check"><input name="consent" type="checkbox" required><span>개인정보 수집·이용 안내를 확인했으며 이에 동의합니다. <button type="button" class="privacy-open">내용 보기</button></span></label>
+          <button class="button button-primary form-submit" type="submit">문의 내용 확인하기 <span aria-hidden="true">↗</span></button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><span class="footer-brand">obzen</span><p>Data to action, responsibly.</p></div>
+      <div><strong>Explore</strong><a href="#company">회사소개</a><a href="#platform">통합 플랫폼</a><a href="#ir">홍보·IR</a></div>
+      <div><strong>Demo</strong><a href="showcase.html">디자인 프리미티브</a><a href="admin.html">관리자 데모</a><button class="footer-search search-open" type="button">통합검색</button></div>
+      <div><strong>Notice</strong><p>본 사이트는 제안 검토를 위한 비공식 데모이며 오브젠 공식 홈페이지가 아닙니다.</p></div>
+    </div>
+    <div class="shell footer-bottom"><span>© 2026 Proposal Demo</span><a href="#top">맨 위로 ↑</a></div>
+  </footer>
+
+  <dialog class="privacy-dialog" aria-labelledby="privacyTitle">
+    <div class="privacy-card">
+      <button class="icon-button privacy-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">Demo privacy notice</p>
+      <h2 id="privacyTitle">개인정보 수집·이용 안내</h2>
+      <p>이 화면은 기능 시연용입니다. 입력한 정보는 서버로 전송되거나 저장되지 않으며, 제출 시 브라우저 화면에서만 확인 메시지를 표시합니다.</p>
+      <button class="button button-primary privacy-confirm" type="button">확인했습니다</button>
+    </div>
+  </dialog>
+
+  <dialog class="vision-overlay" aria-labelledby="visionTitle">
+    <button class="vision-close" type="button" aria-label="비전 영상 닫기">×</button>
+    <div class="vision-story">
+      <p class="mono">00:00 — 01:30 · INTERACTIVE STORY</p>
+      <div class="vision-frame"><span>Customer Intelligence</span><i></i><span>Enterprise Intelligence</span></div>
+      <h2 id="visionTitle">두 개의 데이터가<br>하나의 행동이 되는 순간.</h2>
+      <p>실제 영상 대신 합병 후 브랜드 내러티브의 모션 방향을 시연합니다.</p>
+    </div>
+  </dialog>
+</body>
+</html>
