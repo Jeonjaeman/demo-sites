@@ -169,65 +169,85 @@
 `# -*- coding: utf-8 -*-
 """
 업비트·빗썸 신규 공지 감지 스크립트 (무중단 폴링)
-- 외부 라이브러리 최소화(표준 라이브러리 urllib만 사용)
-- 폴링 주기/재시도/백오프는 config.py 로 분리(코드 수정 없이 조정)
+- 외부 라이브러리 없음: Python 3.7+ 표준 라이브러리(urllib)만 사용
+- 폴링 주기/타임아웃/재시도/백오프는 config.py 로 분리(코드 수정 없이 조정)
 - 공지 식별자(id) 기준 중복 제거, 한 거래소 장애가 다른 거래소 감지를 막지 않음
+- 실제 엔드포인트(2026-07 실행 확인). 전체 실행본은 python/detector.py 참고.
 """
-import json, time, urllib.request, urllib.error
-from config import POLL_INTERVAL_SEC, REQUEST_TIMEOUT, BACKOFF_BASE, BACKOFF_MAX
+import sys, json, time, urllib.request
+from datetime import datetime
+from config import (POLL_INTERVAL_SEC, REQUEST_TIMEOUT, BACKOFF_BASE,
+                    BACKOFF_MAX, DEDUP_BY_ID, USER_AGENT, MAX_ITEMS)
 
-UPBIT_URL   = "https://api-manager.upbit.com/api/v1/announcements?per_page=20&page=1"
-BITHUMB_URL = "https://api.bithumb.com/v1/notices?count=20"
+try:  # Windows 콘솔(cp949)에서도 한글 출력이 깨지지 않도록
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
+# ---- 거래소 정의: 엔드포인트 + 응답 정규화(스키마 변경 시 여기만 수정) ----
+def _extract_upbit(p):    # {"data":{"notices":[{"id":..,"title":..,"first_listed_at":..}]}}
+    return [(str(n.get("id")), (n.get("title") or "").strip(), n.get("first_listed_at",""))
+            for n in (p or {}).get("data", {}).get("notices", [])]
+
+def _extract_bithumb(p):  # [{"title":..,"pc_url":".../notice/1654265","published_at":..}]
+    rows = []
+    for n in (p or []):    # 고유 id 필드가 없어 pc_url 끝의 공지 번호를 식별자로 사용
+        url = n.get("pc_url") or ""
+        nid = url.rstrip("/").split("/")[-1] if url else str(n.get("title"))
+        rows.append((str(nid), (n.get("title") or "").strip(), n.get("published_at","")))
+    return rows
+
+EXCHANGES = [
+    {"name": "UPBIT",   "extract": _extract_upbit,
+     "url": f"https://api-manager.upbit.com/api/v1/announcements?os=web&page=1&per_page={MAX_ITEMS}&category=all"},
+    {"name": "BITHUMB", "extract": _extract_bithumb,
+     "url": f"https://feed-api.bithumb.com/v1/notices?count={MAX_ITEMS}"},
+]
 
 def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "notice-detector/1.0"})
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "application/json"})
     with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT) as r:
         return json.loads(r.read().decode("utf-8"))
 
-def extract(exchange, payload):
-    """거래소별 응답을 (id, title) 목록으로 정규화. 스키마 변경 시 이 함수만 수정."""
-    items = payload.get("data", payload) if isinstance(payload, dict) else payload
-    out = []
-    for it in items:
-        nid = str(it.get("id") or it.get("seq") or it.get("title"))
-        out.append((nid, it.get("title", "").strip()))
-    return out
-
 class ExchangeState:
-    def __init__(self, name, url):
-        self.name, self.url = name, url
+    def __init__(self, e):
+        self.name, self.url, self.extract = e["name"], e["url"], e["extract"]
         self.seen = set()          # 이미 처리한 공지 id
         self.fail_streak = 0
-        self.next_ok_at = 0.0      # 백오프 종료 시각
+        self.next_ok_at = 0.0      # 백오프 종료 시각(monotonic)
+        self.baseline = False
 
-def poll(state):
-    now = time.monotonic()
-    if now < state.next_ok_at:     # 백오프 중이면 이번 주기 건너뜀
+def poll(st):
+    mono = time.monotonic()
+    if mono < st.next_ok_at:       # 백오프 중이면 이번 주기 건너뜀
         return
     try:
-        rows = extract(state.name, fetch(state.url))
+        rows = st.extract(fetch(st.url))
     except Exception as e:         # 네트워크 오류·응답 실패 → 종료하지 않고 백오프
-        state.fail_streak += 1
-        wait = min(BACKOFF_BASE * (2 ** (state.fail_streak - 1)), BACKOFF_MAX)
-        state.next_ok_at = now + wait
-        print(f"[{state.name}] 요청 실패({state.fail_streak}): {e} → {wait:.1f}s 후 재시도")
+        st.fail_streak += 1
+        wait = min(BACKOFF_BASE * (2 ** (st.fail_streak - 1)), BACKOFF_MAX)
+        st.next_ok_at = mono + wait
+        print(f"[{st.name}] 요청 실패({st.fail_streak}): {e} → {wait:.1f}s 후 재시도", flush=True)
         return
-    if state.fail_streak:
-        print(f"[{state.name}] 응답 복구")
-        state.fail_streak = 0
-    is_first = not state.seen      # 최초 1회는 기존 공지를 출력하지 않고 기준선만 저장
-    for nid, title in rows:
-        if nid in state.seen:
+    if st.fail_streak:
+        print(f"[{st.name}] 응답 복구", flush=True); st.fail_streak = 0
+    if not st.baseline:            # 최초 1회는 기존 공지를 기준선으로만 저장
+        st.seen.update(nid for nid, _t, _a in rows); st.baseline = True
+        print(f"[{st.name}] 기준선 확보 — 기존 {len(rows)}건. 이후 신규만 출력", flush=True); return
+    for nid, title, at in rows:
+        if DEDUP_BY_ID and nid in st.seen:
             continue
-        state.seen.add(nid)
-        if not is_first:
-            print(f"[{state.name}] 신규 공지: {title}")
+        st.seen.add(nid)
+        print(f"[{st.name}] 신규 공지 (id={nid}): {title} · 등록 {at}", flush=True)
 
 def main():
-    states = [ExchangeState("UPBIT", UPBIT_URL), ExchangeState("BITHUMB", BITHUMB_URL)]
+    states = [ExchangeState(e) for e in EXCHANGES]
     while True:                    # 무중단 루프
         for s in states:
-            poll(s)                # 한 거래소 예외가 다른 거래소를 막지 않음
+            try:
+                poll(s)            # 한 거래소 예외가 다른 거래소를 막지 않음
+            except Exception as e:
+                print(f"[{s.name}] 격리된 예외: {e}", flush=True)
         time.sleep(POLL_INTERVAL_SEC)
 
 if __name__ == "__main__":
@@ -236,13 +256,16 @@ if __name__ == "__main__":
 
   var CONFIG_SRC =
 `# config.py — 코드 수정 없이 조정 가능한 설정값
-POLL_INTERVAL_SEC = 0.8   # 폴링 주기(초). 이용약관 요청 제한을 넘지 않도록 설정
+POLL_INTERVAL_SEC = 1.0   # 폴링 주기(초). 이용약관 요청 제한을 넘지 않도록 설정
 REQUEST_TIMEOUT   = 3     # 요청 타임아웃(초)
-BACKOFF_BASE      = 0.5   # 실패 시 백오프 기준(초)
-BACKOFF_MAX       = 8     # 백오프 상한(초)
+BACKOFF_BASE      = 0.5   # 실패 시 백오프 기준(초): wait = BASE * 2^(실패횟수-1)
+BACKOFF_MAX       = 8.0   # 백오프 상한(초)
+DEDUP_BY_ID       = True  # 공지 식별자(id) 기준 중복 제거
+MAX_ITEMS         = 20    # 조회 건수(거래소당)
+USER_AGENT        = "Mozilla/5.0 (notice-detector/1.0)"  # 기본 UA는 차단될 수 있어 지정
 `;
 
-  var REQ_SRC = `# requirements.txt\n# 외부 라이브러리 없음 — Python 3.8+ 표준 라이브러리(urllib)만 사용\n`;
+  var REQ_SRC = `# requirements.txt\n# 외부 라이브러리 없음 — Python 3.7+ 표준 라이브러리(urllib)만 사용\n# 별도 설치 없이 바로 실행:  python detector.py\n`;
 
   global.ZL = {
     EXCHANGES: EXCHANGES, EX_LABEL: EX_LABEL,

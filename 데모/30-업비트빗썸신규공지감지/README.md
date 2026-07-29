@@ -5,7 +5,25 @@
 - 공개 URL(별칭): `https://jeonjaeman.github.io/demo-sites/zerolag/`
 - 납품물·검수: `https://jeonjaeman.github.io/demo-sites/zerolag/admin/`
 - 로컬: `python -m http.server 8085 --directory 데모/30-업비트빗썸신규공지감지`
-- ⚠️ 코인 티커·공지는 전부 **가상(시뮬레이션)**입니다. 실제 상장 정보가 아닙니다.
+- ⚠️ 웹 콘솔의 코인 티커·공지는 **가상(시뮬레이션)**입니다.
+
+## ★ 실행 가능한 납품물 (python/)
+
+실제 납품물은 [`python/detector.py`](python/detector.py)입니다. **실제 업비트·빗썸 공지 엔드포인트에서 신규 공지를 감지**하며, 2026-07 기준 실행으로 검증했습니다. Python 3.7+ 표준 라이브러리만 사용 — 별도 설치 없이 바로 실행됩니다.
+
+```bash
+cd python
+python detector.py                # 무중단 실시간 감지
+python detector.py --cycles 3     # 3주기만 돌고 종료(확인용)
+python detector.py --demo-new 2   # 최신 2건을 신규로 취급해 감지 경로 시연
+python detector.py --break UPBIT  # 한 거래소 장애 시 다른 거래소 감지 지속 확인
+```
+
+- 업비트: `api-manager.upbit.com/api/v1/announcements` (data.notices[], id 기준)
+- 빗썸: `feed-api.bithumb.com/v1/notices` (배열, pc_url의 공지번호를 id로)
+- 실행 로그·엔드포인트·제약은 [`python/README.md`](python/README.md) 참고.
+
+> 웹 감지 콘솔(index.html)은 이 로직을 브라우저에서 재현한 **시연용**이고, 실제 감지는 위 파이썬 스크립트가 수행합니다.
 
 ## 화면
 
