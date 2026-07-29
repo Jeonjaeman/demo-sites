@@ -34,8 +34,15 @@
     function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / dur); var e = 1 - Math.pow(1 - p, 3); node.textContent = fmt(to * e); if (p < 1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
   }
-  var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }); }, { threshold: .1 });
-  function wireReveal(root) { (root || document).querySelectorAll('.reveal:not(.in)').forEach(function (n, i) { n.style.transitionDelay = (i % 8 * 45) + 'ms'; io.observe(n); }); }
+  var io = null, revealTimer = null;
+  try { io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } }); }, { threshold: .1 }); } catch (e) { io = null; }
+  function wireReveal(root) {
+    var scope = root || document;
+    scope.querySelectorAll('.reveal:not(.in)').forEach(function (n, i) { n.style.transitionDelay = (i % 8 * 45) + 'ms'; if (io) io.observe(n); });
+    // 안전장치: IO가 어떤 이유로든(백그라운드 탭·미지원 등) 안 뜨면 콘텐츠가 영구히 숨지 않도록 강제 표시.
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(function () { scope.querySelectorAll('.reveal:not(.in)').forEach(function (n) { n.classList.add('in'); }); }, 450);
+  }
   function animBars(root) { (root || document).querySelectorAll('.barcell .fill,.w-bar .f').forEach(function (f) { var w = f.getAttribute('data-w'); setTimeout(function () { f.style.width = w; }, 60); }); }
 
   /* ---------- 세션(권한) ---------- */
