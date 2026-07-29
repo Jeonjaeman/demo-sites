@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ALLEND 관리자 · 접근성 검증 대시보드 (데모)</title>
+<meta name="description" content="ALLEND 관리자 — 재고 실연동, 대여내역 CSV, KS X 9211 접근성 검증 진단, 명도대비 계산기, HW/디자인/SW 책임 분계표. 모든 데이터는 가상." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<style>
+  :root{ --fs-base:15px; }                 /* 관리자는 표준 밀도 */
+  body{ background:var(--surface); }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 20px 60px; }
+
+  .adhead{ display:flex; align-items:center; gap:14px; padding:18px 0; border-bottom:2px solid var(--line); position:sticky; top:0; background:var(--surface); z-index:20; }
+  .adhead .logo{ width:40px; height:40px; border-radius:11px; background:var(--brand); color:var(--brand-ink);
+    display:grid; place-items:center; font-family:'Montserrat',sans-serif; font-weight:900; }
+  .adhead h1{ font-size:19px; letter-spacing:-.01em; }
+  .adhead small{ display:block; color:var(--ink-2); font-weight:600; font-size:12px; }
+  .adhead .sp{ margin-left:auto; display:flex; gap:8px; }
+  .adhead .btn{ --h:40px; font-size:13px; padding:0 14px; }
+
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
+  .kpi{ padding:16px; }
+  .kpi .kl{ font-size:12px; color:var(--ink-2); font-weight:700; }
+  .kpi .kv{ font-size:30px; font-weight:900; letter-spacing:-.02em; margin-top:6px; }
+  .kpi .ks{ font-size:12px; color:var(--ink-2); margin-top:2px; }
+  .kpi .kv.ok{ color:var(--ok); } .kpi .kv.bad{ color:var(--danger); } .kpi .kv.warn{ color:var(--warn); }
+
+  .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+  .panel{ padding:18px; display:flex; flex-direction:column; gap:14px; }
+  .panel.span2{ grid-column:1/-1; }
+  .panel h2{ font-size:16px; display:flex; align-items:center; gap:8px; }
+  .panel h2 .tag{ font-size:11px; font-weight:800; padding:3px 9px; border-radius:999px; background:var(--brand-weak); color:var(--brand); }
+  .panel .desc{ font-size:12.5px; color:var(--ink-2); margin-top:-6px; line-height:1.55; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th,td{ text-align:left; padding:9px 8px; border-bottom:1px solid var(--line); }
+  th{ font-size:11.5px; color:var(--ink-2); text-transform:uppercase; letter-spacing:.03em; }
+  td.r,th.r{ text-align:right; } td.c,th.c{ text-align:center; }
+  .tblwrap{ overflow-x:auto; }
+
+  .invbar{ display:flex; flex-direction:column; gap:9px; }
+  .invrow{ display:grid; grid-template-columns:130px 1fr 60px; align-items:center; gap:10px; font-size:13px; }
+  .invrow .bar{ height:12px; border-radius:6px; background:var(--surface-2); overflow:hidden; }
+  .invrow .bar i{ display:block; height:100%; background:var(--brand); width:0; transition:width .8s var(--ease); }
+  .invrow .bar.low i{ background:var(--warn); }
+  .invrow .bar.out i{ background:var(--danger); }
+  .invrow .n{ text-align:right; font-weight:800; font-variant-numeric:tabular-nums; }
+
+  /* 검증 진단 */
+  .scentoggle{ display:flex; gap:8px; }
+  .scentoggle button{ flex:1; padding:11px 8px; border-radius:12px; border:2px solid var(--line); background:var(--bg);
+    color:var(--ink); font-weight:700; font-size:13px; cursor:pointer; text-align:left; transition:.2s var(--ease); }
+  .scentoggle button b{ display:block; font-size:13.5px; }
+  .scentoggle button small{ color:var(--ink-2); }
+  .scentoggle button[aria-pressed="true"]{ border-color:var(--brand); background:var(--brand-weak); }
+  .diag{ display:grid; grid-template-columns:1fr 150px; gap:16px; align-items:start; }
+  .diag .rows{ display:flex; flex-direction:column; }
+  .drow{ display:grid; grid-template-columns:1fr auto; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .drow .dk{ font-weight:700; } .drow .dneed{ color:var(--ink-2); font-size:11.5px; }
+  .drow .dgot{ font-size:12px; color:var(--ink-2); }
+  .drow .verdict{ font-weight:800; font-size:12px; padding:3px 10px; border-radius:999px; white-space:nowrap; align-self:center; }
+  .verdict.pass{ background:color-mix(in srgb,var(--ok) 15%,transparent); color:var(--ok); }
+  .verdict.fail{ background:color-mix(in srgb,var(--danger) 15%,transparent); color:var(--danger); }
+  .verdict.info{ background:var(--surface-2); color:var(--ink-2); }
+  .who{ font-size:10.5px; font-weight:800; padding:2px 7px; border-radius:6px; margin-left:6px; }
+  .who.dsn{ background:#e5defb; color:#4a2a9c; }
+  .who.sw{ background:#d6ecff; color:#0b4a8a; }
+  .who.hw{ background:#fde8d0; color:#8a4b00; }
+  [data-hc="1"] .who{ background:transparent; border:1px solid currentColor; color:var(--ink); }
+  .gauge{ text-align:center; }
+  .gauge canvas{ width:150px; height:150px; }
+  .gauge .gl{ font-size:12px; color:var(--ink-2); margin-top:4px; }
+  .verdict-note{ padding:12px 14px; border-radius:12px; font-size:13px; line-height:1.6; }
+  .verdict-note.bad{ background:color-mix(in srgb,var(--danger) 10%,transparent); border:2px solid color-mix(in srgb,var(--danger) 35%,transparent); }
+  .verdict-note.ok{ background:color-mix(in srgb,var(--ok) 10%,transparent); border:2px solid color-mix(in srgb,var(--ok) 35%,transparent); }
+
+  /* 명도대비 계산기 */
+  .cc{ display:flex; flex-direction:column; gap:12px; }
+  .cc .inputs{ display:flex; gap:12px; flex-wrap:wrap; }
+  .cc .fld{ display:flex; flex-direction:column; gap:5px; flex:1; min-width:120px; }
+  .cc .fld label{ font-size:12px; font-weight:700; color:var(--ink-2); }
+  .cc .fld .row{ display:flex; gap:8px; align-items:center; }
+  .cc input[type=color]{ width:40px; height:40px; border:2px solid var(--line); border-radius:10px; background:none; cursor:pointer; padding:2px; }
+  .cc input[type=text]{ flex:1; height:40px; border:2px solid var(--line); border-radius:10px; padding:0 12px;
+    font-family:ui-monospace,monospace; font-size:14px; background:var(--bg); color:var(--ink); }
+  .cc .preview{ padding:16px; border-radius:12px; text-align:center; font-weight:800; font-size:18px; border:2px solid var(--line); }
+  .cc .ratio{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .cc .ratio b{ font-size:34px; font-weight:900; letter-spacing:-.02em; }
+
+  /* 책임 분계 */
+  .resp{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .respcol{ border:2px solid var(--line); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; }
+  .respcol h3{ font-size:13px; display:flex; align-items:center; gap:6px; }
+  .respcol .owner{ font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; }
+  .respcol ul{ margin:0; padding-left:16px; font-size:12.5px; line-height:1.6; color:var(--ink-2); }
+  .respcol.supplied{ background:color-mix(in srgb,var(--warn) 7%,transparent); }
+
+  .hwlist{ display:flex; flex-direction:column; gap:10px; }
+  .hwitem{ display:flex; align-items:center; gap:10px; font-size:13px; padding:10px 12px; border:2px solid var(--line); border-radius:12px; }
+  .hwitem .dot{ flex:0 0 auto; }
+  .hwitem .hx{ margin-left:auto; font-size:11.5px; font-weight:700; }
+  .hwitem .hx.warn{ color:var(--warn); } .hwitem .hx.ok{ color:var(--ok); }
+
+  .log{ display:flex; flex-direction:column; gap:6px; max-height:230px; overflow-y:auto; font-size:12.5px; }
+  .logrow{ display:flex; gap:8px; padding:6px 8px; border-radius:8px; background:var(--surface); }
+  .logrow .lt{ color:var(--ink-2); font-variant-numeric:tabular-nums; }
+  .logrow .lk{ font-weight:800; }
+  .logrow .lk.rent{ color:var(--brand); } .logrow .lk.return{ color:var(--ok); }
+
+  .demo-note{ margin-top:18px; padding:12px 14px; border-radius:10px; background:var(--surface-2);
+    font-size:12px; color:var(--ink-2); line-height:1.6; }
+
+  @media(max-width:820px){ .kpis{ grid-template-columns:repeat(2,1fr);} .grid{ grid-template-columns:1fr;} .diag{ grid-template-columns:1fr;} .resp{ grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="adhead">
+    <div class="logo">A</div>
+    <div><h1>ALLEND 관리자 콘솔<small>공유장비 대여·반납 · 접근성 검증</small></h1></div>
+    <div class="sp">
+      <a class="btn ghost" href="./index.html">← 키오스크</a>
+      <button class="btn ghost" id="btnReset">데모 초기화</button>
+    </div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <!-- 접근성 검증 진단 (핵심) -->
+    <section class="panel card span2">
+      <h2>KS X 9211 접근성 검증 진단 <span class="tag">핵심</span></h2>
+      <p class="desc">공고는 “<b>화면 디자인은 클라이언트가 완성해 지급</b>, 개발사는 그 디자인대로 구현”을 전제합니다.
+        그러나 무인정보단말기 정보접근성 검증기준(10원칙·47지표)의 상당수는 <b>디자인 단계에서 이미 결정</b>됩니다.
+        아래에서 지급 디자인을 바꿔가며 <b>실제 판정</b>을 확인하세요. 명도대비는 실시간 계산값입니다.</p>
+      <div class="scentoggle" id="scen"></div>
+      <div class="diag">
+        <div class="rows" id="diagRows"></div>
+        <div class="gauge">
+          <canvas id="gauge" width="300" height="300" aria-label="검증 통과율 게이지"></canvas>
+          <div class="gl" id="gaugeLabel"></div>
+        </div>
+      </div>
+      <div class="verdict-note" id="verdictNote"></div>
+    </section>
+
+    <!-- 명도대비 계산기 -->
+    <section class="panel card">
+      <h2>명도대비 계산기 <span class="tag">실계산</span></h2>
+      <p class="desc">전경·배경 색을 넣으면 WCAG/KS X 9211 대비비를 계산합니다. 작은 글자 4.5:1, 큰 글자(12mm 초과) 3:1 이상이어야 합니다.</p>
+      <div class="cc">
+        <div class="inputs">
+          <div class="fld"><label>전경(글자)</label><div class="row"><input type="color" id="ccFg" value="#14161a"><input type="text" id="ccFgHex" value="#14161a"></div></div>
+          <div class="fld"><label>배경</label><div class="row"><input type="color" id="ccBg" value="#ffffff"><input type="text" id="ccBgHex" value="#ffffff"></div></div>
+        </div>
+        <div class="preview" id="ccPrev">가나다 ABC 12mm</div>
+        <div class="ratio"><b id="ccRatio">—</b>
+          <span><span class="chip" id="ccSmall">본문 4.5:1</span> <span class="chip" id="ccLarge">큰글자 3:1</span></span></div>
+      </div>
+    </section>
+
+    <!-- 재고 현황 -->
+    <section class="panel card">
+      <h2>재고 현황 <span class="tag">키오스크 실연동</span></h2>
+      <p class="desc">키오스크에서 대여·반납하면(다른 탭) 이 값이 실시간으로 바뀝니다.</p>
+      <div class="invbar" id="inv"></div>
+    </section>
+
+    <!-- 책임 분계표 -->
+    <section class="panel card span2">
+      <h2>접근성 항목 책임 분계 <span class="tag">SW 단독 통과 불가</span></h2>
+      <p class="desc">검증 지표를 담당 주체별로 나눴습니다. <b>디자인·하드웨어는 지급품(개발사 통제 밖)</b>이라,
+        SW를 완벽히 만들어도 지급물이 기준 미달이면 전체 검증에서 탈락합니다. 착수 전 이 경계를 계약에 명시해야 합니다.</p>
+      <div class="resp" id="resp"></div>
+    </section>
+
+    <!-- 대여 내역 -->
+    <section class="panel card">
+      <h2>대여·반납 내역</h2>
+      <div class="tblwrap"><table id="rentTbl"><thead><tr>
+        <th>대여번호</th><th>장비</th><th class="c">기간</th><th class="r">결제</th><th class="c">상태</th><th>일시</th>
+      </tr></thead><tbody></tbody></table></div>
+      <button class="btn ghost" id="btnCsv" style="--h:40px;font-size:13px;align-self:flex-start">CSV 내려받기 (엑셀·UTF-8 BOM)</button>
+    </section>
+
+    <!-- 하드웨어 신호 상태 -->
+    <section class="panel card">
+      <h2>하드웨어 신호 연동 <span class="tag">지급 규격 확인</span></h2>
+      <p class="desc">결제·프린터·물리버튼·음성은 모두 “신호 수신·전달”이라 <b>지급 HW의 프로토콜 규격서</b>가 있어야 착수됩니다.</p>
+      <div class="hwlist" id="hwlist"></div>
+    </section>
+
+    <!-- 로그 -->
+    <section class="panel card span2">
+      <h2>실시간 로그</h2>
+      <div class="log" id="log"></div>
+    </section>
+  </div>
+
+  <div class="demo-note">
+    ⚠ 데모 안내 — 모든 장비·대여·카드번호·기관은 <b>가상</b>입니다. 접근성 판정은 무인정보단말기 정보접근성 검증기준(10원칙·47지표)·KS&nbsp;X&nbsp;9211:2022를
+    근거로 대표 지표를 계산한 것이며, 실제 검증서 발급은 지정 시험기관의 현장 평가가 필요합니다.
+  </div>
+</div>
+
+<script src="./assets/js/core.js"></script>
+<script src="./assets/js/admin.js"></script>
+</body>
+</html>

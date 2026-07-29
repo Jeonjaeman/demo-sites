@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>ALLEND 올렌드 — 배리어프리 장비 대여·반납 키오스크 (데모)</title>
+<meta name="description" content="공공기관 장비 대여·반납 배리어프리 키오스크 데모 — 음성안내(TTS)·물리버튼 조작·고대비·저시력 확대가 실제로 동작하고, KS X 9211 접근성 검증을 화면으로 실증합니다. 모든 데이터는 가상." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<style>
+  /* ---------- 스테이지(데스크톱=키오스크 프레임 / 모바일=풀스크린) ---------- */
+  body{ background:#0c1017;
+    background-image:radial-gradient(60% 40% at 50% -10%,rgba(11,87,199,.18),transparent 60%);
+    min-height:100vh; }
+  .stage{ min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:22px 16px; gap:14px; }
+  .stage-head{ color:#aeb8c8; text-align:center; max-width:520px; }
+  .stage-head b{ color:#fff; }
+  .stage-head .en{ font-weight:900; letter-spacing:.12em; color:#fff; }
+  .stage-head .demo-tag{ display:inline-block; margin-top:6px; font-size:12px; color:#8ea0bb;
+    border:1px solid rgba(255,255,255,.16); padding:4px 12px; border-radius:999px; }
+
+  /* 키오스크 하드웨어 프레임 */
+  .kiosk{ width:min(94vw,468px); height:min(84vh,880px);
+    background:var(--bg); border-radius:26px; overflow:hidden; position:relative;
+    box-shadow:0 40px 90px -30px rgba(0,0,0,.85), 0 0 0 12px #1b2230, 0 0 0 13px #2b3648;
+    display:flex; flex-direction:column; }
+  .kiosk__bezel-cam{ position:absolute; top:9px; left:50%; transform:translateX(-50%);
+    width:8px; height:8px; border-radius:50%; background:#33405a; z-index:40; }
+
+  /* 상단 접근성 툴바 */
+  .a11ybar{ flex:0 0 auto; display:flex; gap:6px; padding:12px 12px 10px; background:var(--surface);
+    border-bottom:2px solid var(--line); align-items:stretch; }
+  .a11ybar .brand{ display:flex; flex-direction:column; justify-content:center; margin-right:auto; padding-left:4px; }
+  .a11ybar .brand b{ font-family:'Montserrat',Pretendard,sans-serif; font-weight:900; font-size:calc(1rem * var(--fs-scale)); letter-spacing:.02em; color:var(--brand); }
+  [data-hc="1"] .a11ybar .brand b{ color:var(--brand); }
+  .a11ybar .brand small{ font-size:10px; letter-spacing:.02em; }
+  .a11btn{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+    min-width:52px; padding:6px 6px; border:2px solid var(--line); border-radius:12px; background:var(--bg);
+    color:var(--ink); cursor:pointer; font-family:inherit; font-weight:700; line-height:1;
+    transition:background .2s var(--ease), border-color .2s; }
+  .a11btn .ic{ font-size:19px; }
+  .a11btn .lb{ font-size:10px; }
+  .a11btn[aria-pressed="true"]{ background:var(--brand); color:var(--brand-ink); border-color:var(--brand); }
+  .a11btn:hover{ border-color:var(--brand); }
+
+  /* 화면 영역(스크롤) + 화면낮춤 정렬 */
+  .screen-wrap{ flex:1 1 auto; overflow-y:auto; overflow-x:hidden; position:relative;
+    display:flex; flex-direction:column; -webkit-overflow-scrolling:touch; }
+  .screen-wrap.lower{ justify-content:flex-end; }   /* 휠체어 화면낮춤 */
+  .screen{ padding:22px 20px 24px; display:flex; flex-direction:column; gap:16px;
+    animation:sfade .34s var(--ease); }
+  @keyframes sfade{ from{ opacity:0; transform:translateX(14px);} to{ opacity:1; transform:none;} }
+  @media (prefers-reduced-motion:reduce){ .screen{ animation:none; } }
+
+  /* 하단 상태바 + 타임아웃 */
+  .statusbar{ flex:0 0 auto; display:flex; align-items:center; gap:10px; padding:9px 14px;
+    background:var(--surface); border-top:2px solid var(--line); font-size:calc(.78rem * var(--fs-scale)); color:var(--ink-2); }
+  .statusbar .hw{ display:flex; gap:6px; align-items:center; }
+  .dot{ width:9px; height:9px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 3px color-mix(in srgb,var(--ok) 25%,transparent); }
+  .dot.off{ background:var(--danger); box-shadow:none; }
+  .timeout{ margin-left:auto; display:none; align-items:center; gap:8px; font-weight:700; color:var(--warn); }
+  .timeout.on{ display:flex; }
+  .timeout .ext{ font-size:calc(.78rem * var(--fs-scale)); padding:4px 10px; min-height:0; --h:auto; }
+
+  /* 물리버튼 오버레이 */
+  .padbar{ display:none; flex:0 0 auto; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px 12px 12px;
+    background:#11151c; border-top:2px solid #2b3648; }
+  [data-kbd="1"] .padbar{ display:grid; }
+  .padbtn{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding:12px 4px; border-radius:14px; border:2px solid #3a465c; cursor:pointer;
+    background:#1c2331; color:#eaf0fb; font-family:inherit; font-weight:800; }
+  .padbtn .pic{ font-size:22px; }
+  .padbtn .pl{ font-size:12px; }
+  .padbtn:active{ background:#0b57c7; }
+
+  /* ---------- 화면 내부 공통 컴포넌트 ---------- */
+  .home-hero{ text-align:center; padding-top:10px; }
+  .home-hero .khi{ font-size:44px; }
+  .bigchoice{ display:flex; flex-direction:column; gap:14px; margin-top:6px; }
+  .choice{ display:flex; align-items:center; gap:16px; text-align:left; padding:22px 22px; }
+  .choice .cic{ font-size:38px; width:56px; text-align:center; }
+  .choice .ct{ display:flex; flex-direction:column; gap:3px; }
+  .choice .ct b{ font-size:calc(1.35rem * var(--fs-scale)); }
+  .choice .ct span{ font-size:calc(.92rem * var(--fs-scale)); color:var(--brand-ink); opacity:.9; }
+  .choice.primary .ct span{ color:var(--brand-ink); }
+  .choice:not(.primary) .ct span{ color:var(--ink-2); }
+
+  .banner{ display:flex; gap:10px; align-items:flex-start; padding:14px 16px; border-radius:12px;
+    background:var(--brand-weak); border:2px solid color-mix(in srgb,var(--brand) 30%,transparent);
+    font-size:calc(.88rem * var(--fs-scale)); }
+  .banner .bic{ font-size:20px; }
+
+  .screen-title{ display:flex; align-items:baseline; gap:10px; }
+  .screen-title .step{ font-size:calc(.8rem * var(--fs-scale)); color:var(--ink-2); font-weight:700; }
+  .backrow{ display:flex; }
+
+  .cats{ display:flex; gap:8px; }
+  .cat{ flex:1; padding:12px 6px; border-radius:12px; border:2px solid var(--line); background:var(--bg);
+    color:var(--ink); font-weight:800; font-size:calc(.95rem * var(--fs-scale)); cursor:pointer; }
+  .cat[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+
+  .eqlist{ display:flex; flex-direction:column; gap:12px; }
+  .eq{ display:flex; align-items:center; gap:14px; padding:16px; text-align:left; width:100%; }
+  .eq .eic{ font-size:32px; width:48px; text-align:center; }
+  .eq .einfo{ flex:1; display:flex; flex-direction:column; gap:3px; }
+  .eq .einfo b{ font-size:calc(1.12rem * var(--fs-scale)); }
+  .eq .einfo .enote{ font-size:calc(.8rem * var(--fs-scale)); color:var(--ink-2); }
+  .eq .estock{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .eq .estock .num{ font-weight:800; font-size:calc(1rem * var(--fs-scale)); }
+  .eq.sold{ opacity:.5; }
+  .stockbar{ width:70px; height:8px; border-radius:5px; background:var(--surface-2); overflow:hidden; }
+  .stockbar i{ display:block; height:100%; background:var(--ok); width:0; transition:width .6s var(--ease); }
+  .stockbar.low i{ background:var(--warn); }
+
+  .dayopts{ display:flex; gap:10px; }
+  .dayopt{ flex:1; padding:18px 6px; border-radius:14px; border:2px solid var(--line); background:var(--bg);
+    color:var(--ink); cursor:pointer; text-align:center; }
+  .dayopt[aria-selected="true"]{ border-color:var(--brand); background:var(--brand-weak); }
+  .dayopt b{ display:block; font-size:calc(1.4rem * var(--fs-scale)); }
+  .dayopt span{ font-size:calc(.82rem * var(--fs-scale)); color:var(--ink-2); }
+
+  .summary{ padding:18px; border-radius:14px; background:var(--surface); border:2px solid var(--line);
+    display:flex; flex-direction:column; gap:10px; }
+  .srow{ display:flex; justify-content:space-between; font-size:calc(1rem * var(--fs-scale)); }
+  .srow.total{ border-top:2px dashed var(--line); padding-top:10px; font-weight:800; font-size:calc(1.2rem * var(--fs-scale)); }
+
+  /* 결제 화면 */
+  .pay-visual{ text-align:center; padding:20px 0; }
+  .terminal{ width:140px; height:150px; margin:0 auto; border-radius:16px; background:var(--surface-2);
+    border:2px solid var(--line); position:relative; display:grid; place-items:center; }
+  .terminal .slot{ position:absolute; bottom:22px; left:20px; right:20px; height:8px; border-radius:4px; background:var(--ink); }
+  .terminal .card{ position:absolute; bottom:14px; left:50%; width:96px; height:60px; border-radius:8px;
+    background:linear-gradient(135deg,#0b57c7,#3a80e6); transform:translateX(-50%) translateY(60px);
+    transition:transform .7s var(--ease); box-shadow:0 8px 18px -8px rgba(0,0,0,.5); }
+  .terminal.inserting .card{ transform:translateX(-50%) translateY(2px); }
+  .terminal .scr{ font-size:26px; }
+  .maskline{ text-align:center; font-family:ui-monospace,monospace; font-size:calc(1.15rem * var(--fs-scale));
+    letter-spacing:.08em; margin-top:6px; }
+  .paynote{ text-align:center; font-size:calc(.82rem * var(--fs-scale)); color:var(--ink-2); }
+
+  /* 완료·영수증 */
+  .done-hero{ text-align:center; padding:14px 0; }
+  .done-hero .dic{ font-size:56px; }
+  .receipt{ background:var(--bg); border:2px dashed var(--line); border-radius:12px; padding:18px;
+    font-family:ui-monospace,"Menlo",monospace; font-size:calc(.88rem * var(--fs-scale)); }
+  .receipt .rc{ display:flex; justify-content:space-between; padding:3px 0; }
+  .receipt hr{ border:none; border-top:1px dashed var(--line); margin:8px 0; }
+  .bignum{ text-align:center; font-size:calc(2rem * var(--fs-scale)); font-weight:900; letter-spacing:.04em; color:var(--brand); }
+
+  /* 온스크린 키패드(반납 인증) — 전화기 배열(5번 돌기 개념) */
+  .keypad{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .key{ padding:18px 0; border-radius:14px; border:2px solid var(--line); background:var(--bg); color:var(--ink);
+    font-size:calc(1.5rem * var(--fs-scale)); font-weight:800; cursor:pointer; position:relative; }
+  .key.k5::after{ content:""; position:absolute; bottom:9px; left:50%; transform:translateX(-50%);
+    width:8px; height:8px; border-radius:50%; background:var(--ink); }  /* 촉각 기준점 */
+  .keydisp{ text-align:center; font-family:ui-monospace,monospace; font-size:calc(1.8rem * var(--fs-scale));
+    letter-spacing:.14em; padding:12px; border-radius:12px; background:var(--surface); border:2px solid var(--line); min-height:1.4em; }
+
+  .rtn{ display:flex; align-items:center; gap:12px; padding:14px 16px; text-align:left; width:100%; }
+  .rtn .rtic{ font-size:26px; }
+  .rtn .rtinfo{ flex:1; }
+  .rtn .rtinfo b{ font-size:calc(1.05rem * var(--fs-scale)); }
+  .rtn .rtinfo small{ display:block; }
+
+  .empty{ text-align:center; color:var(--ink-2); padding:30px 10px; }
+  .empty .eic{ font-size:40px; }
+
+  @media (max-width:520px){
+    .stage{ padding:0; }
+    .stage-head{ display:none; }
+    .kiosk{ width:100vw; height:100dvh; border-radius:0; box-shadow:none; }
+    .kiosk__bezel-cam{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="stage-head">
+    <div><span class="en">ALLEND</span> 올렌드 · 배리어프리 장비 대여·반납 키오스크</div>
+    <div class="demo-tag">데모 · 모든 데이터는 가상 · 음성/물리버튼/고대비 실제 동작</div>
+  </div>
+
+  <div class="kiosk" id="kiosk" role="application" aria-label="ALLEND 장비 대여 반납 키오스크">
+    <span class="kiosk__bezel-cam"></span>
+
+    <!-- 접근성 툴바 -->
+    <div class="a11ybar" role="toolbar" aria-label="접근성 도구">
+      <span class="brand"><b>ALLEND</b><small>공유장비 대여·반납</small></span>
+      <button class="a11btn" id="tgVoice" aria-pressed="false" aria-label="음성 안내 켜기">
+        <span class="ic">🔊</span><span class="lb">음성</span></button>
+      <button class="a11btn" id="tgHC" aria-pressed="false" aria-label="고대비 화면 켜기">
+        <span class="ic">◐</span><span class="lb">고대비</span></button>
+      <button class="a11btn" id="tgZoom" aria-pressed="false" aria-label="글자 크게">
+        <span class="ic">🔍</span><span class="lb">글자</span></button>
+      <button class="a11btn" id="tgLower" aria-pressed="false" aria-label="화면 낮춤 휠체어 모드">
+        <span class="ic">♿</span><span class="lb">낮춤</span></button>
+      <button class="a11btn" id="tgKbd" aria-pressed="false" aria-label="물리 버튼 조작 모드">
+        <span class="ic">⌨</span><span class="lb">버튼</span></button>
+    </div>
+
+    <!-- 화면 -->
+    <div class="screen-wrap" id="screenWrap">
+      <div class="screen" id="screen" aria-live="polite"></div>
+    </div>
+
+    <!-- 상태바 -->
+    <div class="statusbar">
+      <span class="hw"><span class="dot" id="hwCard"></span>카드단말</span>
+      <span class="hw"><span class="dot" id="hwPrn"></span>프린터</span>
+      <span class="hw"><span class="dot" id="hwVoice"></span>음성</span>
+      <span class="timeout" id="timeout">
+        <span id="toTxt">남은시간 30초</span>
+        <button class="btn ghost ext" id="toExt">시간 연장</button>
+      </span>
+    </div>
+
+    <!-- 물리버튼 오버레이 -->
+    <div class="padbar" role="group" aria-label="물리 조작 버튼">
+      <button class="padbtn" data-pad="prev"><span class="pic">◀</span><span class="pl">이전</span></button>
+      <button class="padbtn" data-pad="next"><span class="pic">▶</span><span class="pl">다음</span></button>
+      <button class="padbtn" data-pad="select"><span class="pic">●</span><span class="pl">선택</span></button>
+      <button class="padbtn" data-pad="cancel"><span class="pic">✕</span><span class="pl">취소</span></button>
+    </div>
+  </div>
+
+  <div class="stage-head" style="max-width:468px">
+    <div class="demo-tag" style="cursor:default">관리자·접근성 검증 화면 → <a href="./admin.html" style="color:#8ea0bb;text-decoration:underline">admin.html</a></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap" aria-live="assertive"></div>
+
+<script src="./assets/js/core.js"></script>
+<script src="./assets/js/kiosk.js"></script>
+</body>
+</html>

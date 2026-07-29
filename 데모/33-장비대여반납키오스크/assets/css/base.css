@@ -1,0 +1,141 @@
+/* ============================================================
+   ALLEND 올렌드 — base.css  (사용자·관리자 공유 토큰/컴포넌트)
+   ------------------------------------------------------------
+   레퍼런스 실측(2026-07 브라우저 실측):
+   · 도메인 ① 무인정보단말기UI플랫폼 kioskui.or.kr — 본문 17px·잉크 #1d1d1d·헤딩 w700·radius 6px
+   · 도메인 ② 서울자전거 따릉이(무인대여시스템) — 본문 16px Noto Sans KR·radius 12px
+   · 도메인 ③ 정부24 gov.kr — 본문 17px Pretendard GOV·잉크 #1e2124·radius 12px·CTA pad 8/16
+     → 공통 문법: 큰 본문(16~17px)·near-black 고대비 잉크·단순 정보위계·radius 6~12px
+   · 디자인 ① Obys Agency (Awwwards SOTD 2026.07.28 배지 확인) — 헤드라인 자간 −0.030em·LH 1.0·
+             본문 19.5px·흑백 극단 고대비(#000/#fff)·이징 cubic-bezier(.19,1,.22,1) expo-out
+   · 디자인 ② Linear (디자인시스템 명성) — h1 자간 −0.022em·w510·다크 고대비 #08090a/#f7f8f8
+     → 이식: 큰 헤드라인 대비·자간 −0.02~−0.03em(em 환산)·타이트 LH·expo-out 이징·흑백 고대비
+   ★ 접근성 키오스크라 파격 모션은 버리고 '고대비·큰 타이포·절제된 전환'만 이식(모션 강도=최소~약)
+   ============================================================ */
+
+:root{
+  /* 색 — 기본(밝은 고대비). 본문 잉크 대비 ≥ 12:1 */
+  --bg:#ffffff;
+  --surface:#f3f6fa;
+  --surface-2:#e9eef4;
+  --ink:#14161a;
+  --ink-2:#454b55;
+  --line:#d3d9e1;
+  --brand:#0b57c7;        /* white 텍스트와 5.6:1 */
+  --brand-ink:#ffffff;
+  --brand-weak:#e7f0fd;
+  --ok:#0f7a3d;
+  --warn:#9a5b00;
+  --danger:#c0231f;
+  --focus:#0b57c7;
+
+  --radius:14px;
+  --radius-btn:12px;
+  --ease:cubic-bezier(.19,1,.22,1);   /* Obys expo-out */
+  --ease2:cubic-bezier(.16,1,.3,1);
+  --dur:.32s;
+
+  --fs-scale:1;           /* 저시력 확대 단계에서 갱신 */
+  --fs-base:20px;
+}
+
+/* 고대비 모드 — 흑배경/노랑 액센트(저시력 표준 배색) */
+[data-hc="1"]{
+  --bg:#000000;
+  --surface:#0b0b0b;
+  --surface-2:#151515;
+  --ink:#ffffff;
+  --ink-2:#e9e9e9;
+  --line:#ffffff;
+  --brand:#ffdd00;
+  --brand-ink:#000000;
+  --brand-weak:#1c1a00;
+  --ok:#4ade80;
+  --warn:#fbbf24;
+  --danger:#ff6b66;
+  --focus:#ffdd00;
+}
+
+/* 저시력 확대 3단계 */
+[data-zoom="1"]{ --fs-scale:1.15; }
+[data-zoom="2"]{ --fs-scale:1.35; }
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; }
+body{
+  font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:var(--fs-base);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  word-break:keep-all;
+}
+
+/* 초점 표시 — 접근성 필수. 굵고 뚜렷하게 */
+:focus-visible{ outline:4px solid var(--focus); outline-offset:3px; border-radius:6px; }
+[data-kbd="1"] .kfocus-on{ outline:5px solid var(--focus); outline-offset:4px; border-radius:12px;
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--focus) 30%,transparent); }
+
+/* 타이포 스케일 (× 확대배율) */
+h1,h2,h3{ margin:0; line-height:1.1; letter-spacing:-.02em; font-weight:800; }
+.display{ font-size:calc(2.4rem * var(--fs-scale)); letter-spacing:-.03em; }
+.title{   font-size:calc(1.7rem * var(--fs-scale)); }
+.lead{    font-size:calc(1.25rem * var(--fs-scale)); color:var(--ink-2); }
+.rem{ font-size:calc(1rem * var(--fs-scale)); }
+small,.small{ font-size:calc(.82rem * var(--fs-scale)); color:var(--ink-2); }
+
+/* 버튼 — 큰 터치 타깃(≥64px), 뚜렷한 상태 */
+.btn{
+  --h:64px;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:var(--h); padding:0 26px;
+  font-family:inherit; font-size:calc(1.15rem * var(--fs-scale)); font-weight:700;
+  color:var(--ink); background:var(--surface);
+  border:2px solid var(--line); border-radius:var(--radius-btn);
+  cursor:pointer; text-decoration:none; text-align:center;
+  transition:transform .14s var(--ease), background var(--dur) var(--ease), border-color var(--dur), box-shadow var(--dur);
+}
+.btn:hover{ background:var(--surface-2); }
+.btn:active{ transform:scale(.98); }
+.btn.primary{ background:var(--brand); color:var(--brand-ink); border-color:var(--brand); }
+.btn.primary:hover{ filter:brightness(.95); background:var(--brand); }
+.btn.big{ --h:96px; font-size:calc(1.5rem * var(--fs-scale)); padding:0 34px; border-radius:16px; }
+.btn.block{ width:100%; }
+.btn.ghost{ background:transparent; }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+/* 카드 */
+.card{
+  background:var(--bg); border:2px solid var(--line); border-radius:var(--radius);
+  transition:border-color var(--dur) var(--ease), transform .18s var(--ease), box-shadow var(--dur);
+}
+
+/* 뱃지·칩 */
+.chip{ display:inline-flex; align-items:center; gap:6px; font-size:calc(.82rem * var(--fs-scale));
+  font-weight:700; padding:5px 12px; border-radius:999px; border:2px solid var(--line); }
+.chip.ok{ color:var(--ok); border-color:currentColor; }
+.chip.warn{ color:var(--warn); border-color:currentColor; }
+.chip.bad{ color:var(--danger); border-color:currentColor; }
+.chip.free{ color:var(--ok); border-color:currentColor; }
+
+/* 스크롤 리빌 — 절제(짧고 조용하게). reduce-motion 존중 */
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .5s var(--ease), transform .5s var(--ease); }
+.reveal.in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce){
+  .reveal{ opacity:1 !important; transform:none !important; transition:none !important; }
+  *{ scroll-behavior:auto !important; }
+}
+
+/* 접근성 유틸 */
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* 공통 토스트 */
+.toast-wrap{ position:fixed; left:50%; bottom:28px; transform:translateX(-50%); z-index:9999;
+  display:flex; flex-direction:column; gap:10px; align-items:center; pointer-events:none; }
+.toast{ background:var(--ink); color:var(--bg); padding:14px 22px; border-radius:12px;
+  font-weight:700; font-size:calc(1rem * var(--fs-scale)); box-shadow:0 18px 40px -18px rgba(0,0,0,.6);
+  opacity:0; transform:translateY(10px); transition:opacity .3s var(--ease), transform .3s var(--ease); }
+.toast.in{ opacity:1; transform:none; }
+[data-hc="1"] .toast{ border:2px solid var(--brand); }
