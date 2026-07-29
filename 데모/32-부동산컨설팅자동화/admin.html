@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUTOCAST — 착수 전 검토 (한계점·대안)</title>
+<meta name="description" content="공고가 요구한 기술적 구현 한계점과 대안 — 노코드 경계선·HeyGen 비용·표시광고 컴플라이언스·운영 방식·2차 견적">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23191428'/%3E%3Cpath d='M11 10l10 6-10 6z' fill='%23F96E49'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="./assets/css/style.css?v=1">
+</head>
+<body>
+
+<header class="hd">
+  <div class="brand"><span class="mk" style="background:#191428;border:1px solid var(--line-2)">▶</span>
+    <span>AUTOCAST<small>착수 전 검토</small></span></div>
+  <nav>
+    <a href="./index.html">파이프라인</a>
+    <a href="./admin.html" class="on">착수 전 검토</a>
+  </nav>
+  <div class="sp"></div>
+  <a class="btn sm" href="./index.html">파이프라인 →</a>
+</header>
+
+<div class="wrap">
+
+  <section class="hero rv" style="padding-bottom:8px">
+    <h1>기술적 <span style="color:var(--accent)">한계점</span>과 대안</h1>
+    <p>공고 계약 특이사항 — <b>"반드시 본 프로젝트의 기술적 구현 범위에 대한 명확한 한계점과 대안을
+       포함한 견적을 제출"</b>. 그 답을 문서가 아니라 <b>계산되는 화면</b>으로 정리했습니다.</p>
+    <div class="tags">
+      <span class="bd acc">실측 2026-07</span>
+      <span class="bd mute">가상 데이터</span>
+    </div>
+  </section>
+
+  <!-- ① 기술 경계선 -->
+  <section class="sec rv" id="boundary">
+    <div class="card">
+      <div class="card-h"><h3>① 기술 경계선 — 무엇이 노코드로 되고 무엇이 커스텀인가</h3></div>
+      <div class="card-b">
+        <p class="muted small" style="margin-bottom:12px">공고가 "커스텀 개발 최소화, 노코드/로우코드 적재적소 배합"을 요구했습니다.
+          요구사항별로 노코드로 커버되는 것과 개발 공수가 드는 것을 나눴습니다.</p>
+        <div class="tw"><table class="t" id="tblBoundary">
+          <thead><tr><th class="l">요구사항</th><th>구현 방식</th><th>공수</th><th class="l">비고</th></tr></thead>
+          <tbody></tbody></table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② HeyGen 비용 현실 -->
+  <section class="sec rv" id="heygen">
+    <div class="card">
+      <div class="card-h"><h3>② HeyGen 비용 현실 — 무료 크레딧 폐지</h3>
+        <span class="sub">2026-02부터 pay-as-you-go</span></div>
+      <div class="card-b">
+        <p class="muted small" style="margin-bottom:12px">
+          "AI 툴로 저렴하게"라는 기대와 달리, HeyGen은 2026년 2월부터 무료 API 크레딧을 없앴습니다.
+          아바타 등급별 초당 단가와 웹 플랜을 정리했습니다. 실시간 계산은
+          <a href="./index.html#cost" style="color:var(--accent)">대시보드 비용 계산기</a>에 있습니다.</p>
+        <div class="grid2" style="align-items:start">
+          <div>
+            <div class="small faint" style="margin-bottom:8px">API 초당 과금 (아바타 등급별)</div>
+            <div class="tw"><table class="t" id="tblTier">
+              <thead><tr><th class="l">등급</th><th>$/초</th><th>45초 영상</th><th>월 22개</th></tr></thead>
+              <tbody></tbody></table></div>
+          </div>
+          <div>
+            <div class="small faint" style="margin-bottom:8px">웹 플랜 (월정액 · 참고)</div>
+            <div class="tw"><table class="t" id="tblPlan">
+              <thead><tr><th class="l">플랜</th><th>$/월</th><th class="l">크레딧</th></tr></thead>
+              <tbody></tbody></table></div>
+            <div class="note" style="margin-top:12px" id="creditRule"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ 컴플라이언스 -->
+  <section class="sec rv" id="compliance">
+    <div class="card">
+      <div class="card-h"><h3>③ 표시·광고 컴플라이언스 — AI 자동 발행의 법적 함정</h3>
+        <span class="sub">공인중개사법 §18의2</span></div>
+      <div class="card-b">
+        <p class="muted small" style="margin-bottom:12px">
+          AI가 만든 부동산 콘텐츠를 자동 발행하면 규제 대상입니다. 명시사항 누락(최대 100만원),
+          과장·단정 표현(최대 500만원). 전체 콘텐츠를 실제로 검사한 결과입니다.</p>
+        <div class="grid3" id="compCards"></div>
+        <div class="tw" style="margin-top:14px"><table class="t" id="tblComp">
+          <thead><tr><th class="l">콘텐츠</th><th class="l">발견된 위반</th><th>과태료 위험</th><th>상태</th></tr></thead>
+          <tbody></tbody></table></div>
+        <div class="warnbox" style="margin-top:12px">
+          명시사항 5종: 중개사무소 명칭·소재지·연락처·등록번호·개업공인중개사 성명.
+          이 검사를 통과한 콘텐츠만 발행 단계로 넘어가도록 파이프라인에 게이트를 걸었습니다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ 운영 방식 -->
+  <section class="sec rv" id="ops">
+    <div class="card">
+      <div class="card-h"><h3>④ 운영 방식 — n8n/Hermes 클라우드 vs 셀프호스팅</h3></div>
+      <div class="card-b">
+        <div class="tw"><table class="t">
+          <thead><tr><th class="l">항목</th><th class="l">클라우드(관리형)</th><th class="l">셀프호스팅</th></tr></thead>
+          <tbody>
+            <tr><td class="l">초기 구축</td><td class="l">즉시 · 계정만</td><td class="l">서버·도커 세팅 필요</td></tr>
+            <tr><td class="l">월 비용</td><td class="l">구독료(워크플로우 규모별)</td><td class="l">서버 실비(월 1~5만)</td></tr>
+            <tr><td class="l">업데이트·보안</td><td class="l">자동(n8n 담당)</td><td class="l">발주사가 직접</td></tr>
+            <tr><td class="l">장애 대응</td><td class="l">공식 지원</td><td class="l">자체 모니터링</td></tr>
+            <tr><td class="l">비개발자 인수</td><td class="l">쉬움</td><td class="l">DevOps 지식 필요</td></tr>
+          </tbody></table></div>
+        <div class="note" style="margin-top:12px">
+          <b>1차 MVP는 관리형(n8n Cloud)으로 빠르게 띄우는 것</b>을 제안합니다. 물량이 늘고 비용이
+          커지면 셀프호스팅으로 옮기는 순서입니다. 처음부터 셀프호스팅하면 서버 운영이 프로젝트에
+          얹혀 1차 완성이 늦어집니다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ 2차 고도화 견적 -->
+  <section class="sec rv" id="phase2">
+    <div class="card">
+      <div class="card-h"><h3>⑤ 2차 고도화 견적 (공고 요구)</h3>
+        <span class="sub">일 50,000원 기준</span></div>
+      <div class="card-b">
+        <div class="tw"><table class="t" id="tblPhase2">
+          <thead><tr><th class="l">항목</th><th>공수</th><th>금액</th><th class="l">비고</th></tr></thead>
+          <tbody></tbody><tfoot></tfoot></table></div>
+        <div class="note" style="margin-top:12px">2차는 별도 진행입니다. 1차에서 <b>데이터베이스를 2차 연동
+          가능하도록 구조화</b>해 두는 것이 공고 2-6의 요구이고, 그 대비를 1차 설계에 포함합니다.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑥ 검토 항목 -->
+  <section class="sec rv" id="risk">
+    <div class="card">
+      <div class="card-h"><h3>⑥ 착수 전 검토 항목</h3>
+        <div class="wrap-g" id="riskFilter">
+          <button class="chip" data-lv="all" aria-pressed="true">전체</button>
+          <button class="chip" data-lv="high" aria-pressed="false">그대로 만들면 터짐</button>
+          <button class="chip" data-lv="mid" aria-pressed="false">운영 중 문제</button>
+          <button class="chip" data-lv="low" aria-pressed="false">확인 필요</button>
+        </div></div>
+      <div class="card-b" id="riskBody"></div>
+    </div>
+  </section>
+
+  <footer class="ft">
+    <b style="color:var(--ink-2)">AUTOCAST 오토캐스트</b> — 제안용 데모. 데이터는 전부 가상입니다.
+    <a href="./index.html">파이프라인으로</a> · <a href="./분석/기획_설계.md">기획·설계</a>
+  </footer>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="./assets/js/data.js?v=1"></script>
+<script src="./assets/js/admin.js?v=1"></script>
+</body>
+</html>
