@@ -52,10 +52,19 @@
   }
 
   /* 스크롤 리빌 */
-  var io = new IntersectionObserver(function (ents) {
-    ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
-  }, { threshold: 0.12 });
-  function wireReveal(root) { (root || document).querySelectorAll('.reveal:not(.in)').forEach(function (n, i) { n.style.transitionDelay = (i % 6 * 55) + 'ms'; io.observe(n); }); }
+  var io = null, revealTimer = null;
+  try {
+    io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: 0.12 });
+  } catch (e) { io = null; }
+  function wireReveal(root) {
+    var scope = root || document;
+    scope.querySelectorAll('.reveal:not(.in)').forEach(function (n, i) { n.style.transitionDelay = (i % 6 * 55) + 'ms'; if (io) io.observe(n); });
+    // 안전장치: IO 미발화 시에도 콘텐츠가 영구히 숨지 않도록 강제 표시(빈 화면 방지).
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(function () { scope.querySelectorAll('.reveal:not(.in)').forEach(function (n) { n.classList.add('in'); }); }, 450);
+  }
 
   /* ---------- 세션 ---------- */
   function me() { return db.session.memberId ? db.members.find(function (m) { return m.id === db.session.memberId; }) : null; }

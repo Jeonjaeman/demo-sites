@@ -48,7 +48,10 @@
     document.querySelectorAll('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#/' + name); });
     window.scrollTo(0, 0);
     (routes[name] || viewDash)();
+    revealAll();
   }
+  // 관리자 화면은 리빌 관찰자를 두지 않으므로, 렌더 후 reveal 요소 표시 보장(빈 화면 방지).
+  function revealAll() { setTimeout(function () { app.querySelectorAll('.reveal:not(.in)').forEach(function (n) { n.classList.add('in'); }); }, 30); }
   window.addEventListener('hashchange', router);
   $('#resetBtn').onclick = function () {
     var mo = modal('샘플 데이터 초기화', '<p class="muted">모든 회원·견적·주문을 초기 샘플 상태로 되돌립니다. 계속할까요?</p>', '<button class="btn" id="rc">취소</button><button class="btn danger" id="rok">초기화</button>');
