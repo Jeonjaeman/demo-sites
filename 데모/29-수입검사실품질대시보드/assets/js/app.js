@@ -168,7 +168,7 @@
     rankBars($('#devBars'), c.byDevice.map(function (x) { return { name: x.name, n: x.n }; }));
     // 추이
     drawTrend($('#trend'), c);
-    animBars(app);
+    wireReveal(app); animBars(app); // 프리셋·필터 재렌더는 router를 안 거치므로 여기서 리빌 보장(빈 화면 방지)
   }
 
   function renderKPIs(host, c, prev) {
@@ -247,6 +247,7 @@
     var tPrev = QW.monthlyTrend(recs, { supplierId: filter.supplierId, deviceId: filter.deviceId, stage: filter.stage }, ops.settings, mPrev);
     lineCompare($('#cmpRate'), mThis.map(function (x) { return x.slice(5) + '월'; }), tThis.map(function (x) { return x.defectRate * 100; }), tPrev.map(function (x) { return x.defectRate * 100; }), '%');
     barsCompare($('#cmpCost'), mThis.map(function (x) { return x.slice(5) + '월'; }), tThis.map(function (x) { return x.failCost; }));
+    wireReveal(app); animBars(app); // 재렌더 시 리빌 보장(빈 화면 방지)
   }
 
   /* =====================================================================
