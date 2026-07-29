@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GREENDESK 그린데스크 · 교사 전용 견적·주문 B2B</title>
+<meta name="description" content="친환경 업사이클 교구 교사 전용 B2B — 회원 승인, 견적 자동 계산, 견적서 PDF 발행, 주문·예약 관리. 제안용 데모(가상 데이터)." />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+<link rel="stylesheet" href="./assets/css/style.css" />
+<!-- 견적서 PDF 생성용(CDN). 로드 실패 시 인쇄(브라우저 PDF)로 폴백. -->
+<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap inner">
+    <a class="brand" href="#/home">
+      <span class="mark">G</span>
+      <span>GREENDESK<small>교사 전용 B2B</small></span>
+    </a>
+    <nav class="nav" id="nav">
+      <a href="#/home">안내</a>
+      <a href="#/calc">견적 계산</a>
+      <a href="#/order">주문·예약</a>
+      <a href="#/mypage">마이페이지</a>
+      <a href="#/downloads">다운로드</a>
+    </nav>
+    <div class="right-area" id="authArea"></div>
+  </div>
+</header>
+
+<main id="app" class="wrap" style="padding-top:26px;padding-bottom:80px"></main>
+
+<!-- 오프스크린 견적서 렌더 스테이지(PDF 캡처용) -->
+<div id="docStage" style="position:fixed;left:-9999px;top:0;width:794px;background:#fff"></div>
+
+<div id="toasts"></div>
+<div id="modalRoot"></div>
+<a class="demo-tag" href="./admin.html" target="_blank" rel="noopener">● 제안용 데모 · 관리자 화면 열기 ↗</a>
+
+<script src="./assets/js/data.js"></script>
+<script src="./assets/js/app.js"></script>
+</body>
+</html>
