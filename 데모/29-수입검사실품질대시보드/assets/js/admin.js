@@ -129,7 +129,7 @@
     return '<label class="switch"><input type="checkbox" data-tg="' + key + '"' + (ops.settings[key] ? ' checked' : '') + ' /><span class="track"></span></label>';
   }
   function wireToggles(rerender) {
-    app.querySelectorAll('[data-tg]').forEach(function (t) { t.onchange = function () { ops.settings[t.getAttribute('data-tg')] = t.checked; save(); toast('규칙이 저장되어 대시보드에 반영됩니다.'); rerender(); }; });
+    app.querySelectorAll('[data-tg]').forEach(function (t) { t.onchange = function () { ops.settings[t.getAttribute('data-tg')] = t.checked; save(); toast('규칙이 저장되어 대시보드에 반영됩니다.'); rerender(); revealAll(); }; });
   }
   function stat(label, val, tone) {
     return '<div class="card pad" style="flex:1;min-width:150px;box-shadow:none"><div class="small muted">' + label + '</div><div style="font-size:19px;font-weight:800;margin-top:4px;color:var(--' + (tone === 'bad' ? 'bad' : tone === 'ok' ? 'ok' : 'info') + ')">' + val + '</div></div>';
