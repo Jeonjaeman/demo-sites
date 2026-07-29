@@ -304,7 +304,8 @@ const hex = v => { c.fillStyle = '#fff'; c.fillRect(0,0,1,1); c.fillStyle = v; c
 │  ├─ 01-운송포탈/ … 27-마케팅성과자동집계/
 │  ├─ _별도레포/               개별 레포로 관리(gitignore)
 │  ├─ _미구축/                 공고문만 있음(gitignore)
-│  └─ _미커밋/                 포털은 가리키나 미배포(gitignore)
+│  ├─ _미커밋/                 포털은 가리키나 커밋 안 됨(gitignore)
+│  └─ _미배포/                 완성했으나 배포 안 하기로 한 건(gitignore)
 ├─ 포트폴리오/                 작업 산출물(gitignore · 배포 대상 아님)
 └─ <영문별칭>/                 ASCII 별칭 — 루트 유지. 지원서에 쓰는 공개 URL
 ```
