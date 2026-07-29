@@ -108,14 +108,18 @@
       '<div class="field"><label>장치·설비</label><select class="sel" id="fDev"><option value="all">전체 장치</option>' + QW.DEVICES.map(function (d) { return '<option value="' + d.id + '"' + (filter.deviceId === d.id ? ' selected' : '') + '>' + d.name + '</option>'; }).join('') + '</select></div>' +
       '<div class="field"><label>검사 단계</label><select class="sel" id="fStage"><option value="all">전체</option><option value="수입"' + (filter.stage === '수입' ? ' selected' : '') + '>수입검사</option><option value="공정"' + (filter.stage === '공정' ? ' selected' : '') + '>공정·완성</option></select></div>' +
       '<div class="grow"></div>' +
+      (filterDirty() ? '<button class="btn" id="resetFilter">↺ 필터 초기화</button>' : '') +
       '<button class="btn" id="wallBtn">🖥 대형 모니터 표출</button>' +
       '</div></div>';
   }
+  function filterDirty() { return filter.preset !== 'ytd' || filter.supplierId !== 'all' || filter.deviceId !== 'all' || filter.stage !== 'all'; }
+  function resetFilter() { filter.preset = 'ytd'; filter.from = YEAR + '-01-01'; filter.to = TODAY; filter.supplierId = 'all'; filter.deviceId = 'all'; filter.stage = 'all'; }
   function wireFilter(rerender) {
     app.querySelectorAll('#preseg button').forEach(function (b) { b.onclick = function () { var p = presets().find(function (x) { return x.k === b.getAttribute('data-p'); }); filter.preset = p.k; filter.from = p.from; filter.to = p.to; rerender(); }; });
     var s = $('#fSup'); if (s) s.onchange = function () { filter.supplierId = this.value; rerender(); };
     var d = $('#fDev'); if (d) d.onchange = function () { filter.deviceId = this.value; rerender(); };
     var st = $('#fStage'); if (st) st.onchange = function () { filter.stage = this.value; rerender(); };
+    var rb = $('#resetFilter'); if (rb) rb.onclick = function () { resetFilter(); toast('필터를 초기화했습니다.'); rerender(); };
     var w = $('#wallBtn'); if (w) w.onclick = openWall;
   }
 
