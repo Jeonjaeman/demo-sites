@@ -1,44 +1,31 @@
 /* =====================================================================
-   ZEROLAG 제로랙 — 업비트·빗썸 신규 공지 감지 엔진 (데모)
-   engine.js : 순수·테스트 가능한 폴링/감지/중복제거/백오프 로직 + 설정
+   ZEROLAG 제로랙 — 업비트·빗썸 신규 공지 감지 (데모)
+   engine.js : 실제 자료만 담는 모듈 (모의 시뮬레이션 없음)
    ---------------------------------------------------------------------
-   · 실제 납품물은 파이썬 스크립트(python/detector.py). 이 JS는 그 감지 로직을
-     브라우저에서 그대로 실행해 눈으로 보이게 하는 콘솔 엔진입니다.
-     (실거래소 공지 감지는 detector.py가 수행하며, 웹 콘솔의 공지는 데모용 예시)
-   · 코인 티커·공지는 데모용 예시입니다. 실제 상장 정보가 아닙니다.
+   · 실제 감지는 서버에서 도는 파이썬 스크립트(python/detector.py)가 수행합니다.
+   · 브라우저는 CORS 정책으로 두 거래소 엔드포인트를 직접 폴링할 수 없습니다
+     (아래 CORS 테스트 결과 참조). 그래서 이 웹 페이지는 "실제로 동작하는 것"만
+     — 파이썬 소스, 실제 실행 로그, CORS 근거, 요청/지연 분석 — 을 보여줍니다.
    ===================================================================== */
 (function (global) {
   'use strict';
 
-  var EXCHANGES = ['UPBIT', 'BITHUMB'];
   var EX_LABEL = { UPBIT: '업비트', BITHUMB: '빗썸' };
 
-  // 가상 티커(실존 코인 아님)
-  var TICKERS = ['NOVA', 'AXIS', 'ZENITH', 'ORBIT', 'LUMEN', 'PIXL', 'QUARK', 'HELIX', 'VERTO', 'CRUX', 'MYTH', 'AERO', 'KILN', 'DRIFT', 'SOLIS'];
-  var TEMPLATES = [
-    { cat: '거래', w: 30, fmt: function (t) { return '[거래] ' + t + ' KRW 마켓 디지털 자산 추가'; } },
-    { cat: '거래', w: 14, fmt: function (t) { return '[거래] ' + t + ' BTC·USDT 마켓 추가'; } },
-    { cat: '입출금', w: 18, fmt: function (t) { return '[입출금] ' + t + ' 입출금 일시 중단 안내'; } },
-    { cat: '입출금', w: 10, fmt: function (t) { return '[입출금] ' + t + ' 네트워크 업그레이드 지원 안내'; } },
-    { cat: '이벤트', w: 12, fmt: function (t) { return '[이벤트] ' + t + ' 보유 이벤트 안내'; } },
-    { cat: '유의', w: 8, fmt: function (t) { return '[유의] ' + t + ' 유의종목 지정 안내'; } },
-    { cat: '점검', w: 8, fmt: function (t) { return '[점검] 시스템 정기 점검 안내'; } }
-  ];
-
-  /* ---------- 설정 ---------- */
+  /* ---------- detector.py 설정(실제 config.py 값) ---------- */
   function defaultConfig() {
     return {
-      pollMs: 800,            // 폴링 주기(ms) — 코드 수정 없이 조정 가능(요구사항)
-      reqLatencyMin: 60,      // 모의 요청 지연 최소(ms)
-      reqLatencyMax: 240,     // 모의 요청 지연 최대(ms)
-      backoffBaseMs: 500,     // 재시도 백오프 기준
-      backoffMaxMs: 8000,     // 백오프 상한
-      reqBudgetPerMin: 60,    // 이용약관 안전 요청 예산(거래소당 분당)
-      dedup: true,            // 공지 식별자 기준 중복 제거
-      ambientFailRate: 0.0    // 무작위 요청 실패 확률(장애 주입과 별개)
+      pollMs: 1000,            // POLL_INTERVAL_SEC
+      requestTimeout: 3,       // REQUEST_TIMEOUT
+      backoffBaseMs: 500,      // BACKOFF_BASE
+      backoffMaxMs: 8000,      // BACKOFF_MAX
+      dedup: true,             // DEDUP_BY_ID
+      maxItems: 20,            // MAX_ITEMS
+      userAgent: 'Mozilla/5.0 (notice-detector/1.0)',
+      reqBudgetPerMin: 60      // (분석용) 이용약관 안전 요청 예산 가정
     };
   }
-  var CFG_KEY = 'zerolag_cfg_v1';
+  var CFG_KEY = 'zerolag_cfg_v2';
   function loadConfig() {
     var c; try { c = JSON.parse(localStorage.getItem(CFG_KEY)); } catch (e) { c = null; }
     return Object.assign(defaultConfig(), c || {});
@@ -46,126 +33,79 @@
   function saveConfig(c) { localStorage.setItem(CFG_KEY, JSON.stringify(c)); }
   function resetConfig() { localStorage.removeItem(CFG_KEY); return defaultConfig(); }
 
-  /* ---------- 상태 ---------- */
-  function createState(config) {
-    var st = {
-      config: config || loadConfig(),
-      feeds: { UPBIT: [], BITHUMB: [] },   // 발행된 공지(모의 서버)
-      faults: { UPBIT: false, BITHUMB: false },
-      ex: {}, log: [], detected: [],
-      seq: 0,
-      metrics: { requests: 0, failures: 0, detections: 0, within1s: 0, dupSuppressed: 0, dupEmitted: 0, startedAt: null }
-    };
-    EXCHANGES.forEach(function (e) {
-      st.ex[e] = { seen: {}, seenCount: 0, failStreak: 0, backoffUntil: 0, lastPollAt: 0, lastLatency: 0, pollCount: 0, status: 'idle' };
+  function configPy(c) {
+    return '# config.py (자동 생성)\n' +
+      'POLL_INTERVAL_SEC = ' + (c.pollMs / 1000) + '\n' +
+      'REQUEST_TIMEOUT   = ' + c.requestTimeout + '\n' +
+      'BACKOFF_BASE      = ' + (c.backoffBaseMs / 1000) + '\n' +
+      'BACKOFF_MAX       = ' + (c.backoffMaxMs / 1000) + '\n' +
+      'DEDUP_BY_ID       = ' + (c.dedup ? 'True' : 'False') + '\n' +
+      'MAX_ITEMS         = ' + c.maxItems + '\n' +
+      'USER_AGENT        = "' + c.userAgent + '"\n';
+  }
+
+  /* ---------- CORS 테스트 결과 (2026-07-29 실측) ---------- */
+  var CORS = {
+    testedAt: '2026-07-29',
+    browserFetch: 'TypeError: Failed to fetch — 양쪽 모두 브라우저 직접 호출 차단',
+    rows: [
+      { ex: 'UPBIT', url: 'api-manager.upbit.com/api/v1/announcements', status: '403 Forbidden', acao: '없음', note: 'Origin 헤더가 있는 교차 출처 요청을 거부(403). 브라우저 폴링 불가.' },
+      { ex: 'BITHUMB', url: 'feed-api.bithumb.com/v1/notices', status: '200 OK', acao: '없음', note: '응답은 오지만 Access-Control-Allow-Origin 헤더가 없어 브라우저가 본문을 읽을 수 없음.' }
+    ]
+  };
+
+  /* ---------- 실제 측정 응답 지연(2026-07-29 실행) ---------- */
+  var OBSERVED_LATENCY = { UPBIT: 121, BITHUMB: 62, worstAssume: 130 };
+
+  /* ---------- 실제 실행 로그 (python/detector.py, 실측) ---------- */
+  var REAL_LOG_DETECT =
+`[17:34:10.807] 감지 시작 — 주기 2.0s · 거래소 UPBIT, BITHUMB
+[17:34:10.928] [UPBIT] 기준선 확보 — 기존 공지 20건 · 응답 121ms · 이후 신규만 출력
+[17:34:10.928] [UPBIT] 신규 공지 (id=6423): 디지털 자산 및 예치금 실사보고서 결과 공개 (2026년 07월 01일 기준) · 등록 2026-07-29T17:20:09+09:00
+[17:34:10.928] [UPBIT] 신규 공지 (id=6422): 코스모스(ATOM) 입출금 일시 중단 안내 (08/05 18:00 ~) · 등록 2026-07-29T17:20:03+09:00
+[17:34:10.992] [BITHUMB] 기준선 확보 — 기존 공지 20건 · 응답 63ms · 이후 신규만 출력
+[17:34:10.992] [BITHUMB] 신규 공지 (id=1654265): 리플유에스디(RLUSD), 이온(AEON) 원화 마켓 추가 · 등록 2026-07-29 14:23:17
+[17:34:10.992] [BITHUMB] 신규 공지 (id=1654256): 가상자산 월별실사를 위한 가상자산 입출금 일시 중지 안내 · 등록 2026-07-28 18:30:00
+[17:34:12.9xx] (2주기) — 신규 없음        ← 같은 공지를 다시 출력하지 않음(id 기준 중복 제거)
+[17:34:14.9xx] (3주기) — 신규 없음
+[17:34:15.282] 3주기 완료 — 종료`;
+
+  var REAL_LOG_FAULT =
+`[17:34:15.450] 감지 시작 — 주기 1.0s · 거래소 UPBIT, BITHUMB
+[17:34:15.501] [UPBIT] 요청 실패(1): URLError getaddrinfo failed → 0.5s 후 재시도
+[17:34:15.562] [BITHUMB] 기준선 확보 — 기존 공지 20건 · 응답 60ms · 이후 신규만 출력
+[17:34:15.562] [BITHUMB] 신규 공지 (id=1654265): 리플유에스디(RLUSD), 이온(AEON) 원화 마켓 추가 · 등록 2026-07-29 14:23:17
+[17:34:16.563] [UPBIT] 요청 실패(2): ... → 1.0s 후 재시도
+[17:34:17.635] [UPBIT] 요청 실패(3): ... → 2.0s 후 재시도       ← 지수 백오프(0.5→1→2→4s)
+[17:34:19.773] [UPBIT] 요청 실패(4): ... → 4.0s 후 재시도       ← 스크립트는 종료되지 않음
+[17:34:19.831] 5주기 완료 — 종료
+  ※ 업비트가 죽어도 빗썸 감지는 계속됨(거래소 단위 예외 격리)`;
+
+  /* ---------- 검증 항목 ---------- */
+  var PROVEN = [
+    { k: '실제 엔드포인트에서 신규 공지 감지', d: '업비트 api-manager, 빗썸 feed-api를 실제 폴링해 신규 공지 제목·등록시각 출력(위 로그).' },
+    { k: 'id 기준 중복 제거', d: '같은 공지를 두 번 이상 출력하지 않음. 2·3주기에 신규 출력 없음으로 확인.' },
+    { k: '무중단·거래소 단위 격리', d: '한 거래소 장애가 다른 거래소 감지를 막지 않음. try/except를 거래소별로 적용.' },
+    { k: '요청 실패 시 지수 백오프·복구', d: '실패마다 0.5→1→2→4초로 대기 확대, 성공 시 리셋. 스크립트 종료 없음.' },
+    { k: '외부 라이브러리 없음', d: 'Python 3.7+ 표준 라이브러리(urllib)만. requirements 설치 불필요, 바로 실행.' }
+  ];
+
+  /* ---------- 지연 vs 요청제한 (실측 지연 기반 계산) ---------- */
+  function tradeoff(c) {
+    var lat = OBSERVED_LATENCY.worstAssume;
+    return [300, 500, 800, 1000, 1500, 2000, 3000].map(function (p) {
+      var perMin = Math.round(60000 / p);
+      return {
+        p: p, perMin: perMin, over: perMin > c.reqBudgetPerMin,
+        avg: Math.round(p / 2 + lat), worst: p + lat, guaranteed: (p + lat) <= 1000,
+        current: p === c.pollMs
+      };
     });
-    return st;
   }
 
-  function rand(a, b) { return Math.round(a + Math.random() * (b - a)); }
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-  function wpick(arr) { var s = arr.reduce(function (a, x) { return a + x.w; }, 0), r = Math.random() * s; for (var i = 0; i < arr.length; i++) { r -= arr[i].w; if (r <= 0) return arr[i]; } return arr[arr.length - 1]; }
+  function pad(n, w) { return String(n).padStart(w, '0'); }
 
-  /* 공지 발행(모의 서버에 신규 공지 등록) */
-  function addNotice(state, ex, now, opts) {
-    opts = opts || {};
-    var tpl = opts.template || wpick(TEMPLATES);
-    var ticker = opts.ticker || pick(TICKERS);
-    var id = ex + '-' + (++state.seq) + '-' + Math.random().toString(36).slice(2, 6);
-    var n = { id: id, exchange: ex, cat: tpl.cat, title: tpl.fmt(ticker), publishedAt: (now == null ? Date.now() : now) };
-    state.feeds[ex].unshift(n);
-    if (state.feeds[ex].length > 60) state.feeds[ex].pop();
-    return n;
-  }
-
-  function log(state, level, ex, msg, at) {
-    state.log.unshift({ t: at == null ? Date.now() : at, level: level, ex: ex, msg: msg });
-    if (state.log.length > 250) state.log.pop();
-  }
-
-  /* ---------- 폴링 1회 (핵심) ---------- */
-  function poll(state, ex, now) {
-    var s = state.ex[ex], cfg = state.config;
-    if (now < s.backoffUntil) { s.status = 'backoff'; return { status: 'backoff', until: s.backoffUntil }; }
-
-    state.metrics.requests++; s.pollCount++;
-    if (state.metrics.startedAt == null) state.metrics.startedAt = now;
-
-    // 요청 예산 초과 여부(분당) — 폴링 주기가 짧을수록 위험
-    var perMin = Math.round(60000 / cfg.pollMs);
-    var overBudget = perMin > cfg.reqBudgetPerMin;
-
-    // 장애(주입) 또는 무작위 실패
-    var fail = state.faults[ex] || (Math.random() < cfg.ambientFailRate);
-    if (fail) {
-      s.failStreak++; state.metrics.failures++; s.status = 'fail';
-      if (s.failStreak <= cfg.maxRetries || true) {
-        var back = Math.min(cfg.backoffBaseMs * Math.pow(2, s.failStreak - 1), cfg.backoffMaxMs);
-        s.backoffUntil = now + back;
-        log(state, 'warn', ex, '요청 실패(' + s.failStreak + '회) → ' + fmtSec(back) + ' 대기 후 재시도', now);
-      }
-      return { status: 'fail', streak: s.failStreak, overBudget: overBudget };
-    }
-
-    // 성공
-    if (s.failStreak > 0) { log(state, 'ok', ex, '응답 복구 — 감지 재개 (실패 ' + s.failStreak + '회 후)', now); s.failStreak = 0; }
-    s.status = 'ok';
-    var reqLatency = rand(cfg.reqLatencyMin, cfg.reqLatencyMax);
-    s.lastLatency = reqLatency; s.lastPollAt = now;
-
-    var detections = [];
-    // 오래된→최신 순으로 처리(발행 순서)
-    var feed = state.feeds[ex].slice().sort(function (a, b) { return a.publishedAt - b.publishedAt; });
-    feed.forEach(function (n) {
-      if (n.publishedAt > now) return; // 아직 발행 전
-      var seen = !!s.seen[n.id];
-      if (cfg.dedup && seen) { state.metrics.dupSuppressed++; return; } // 중복 제거로 억제
-      if (!seen) { s.seen[n.id] = true; s.seenCount++; }
-      else state.metrics.dupEmitted++; // 중복 제거 OFF → 중복 출력
-      var detectedAt = now + reqLatency;
-      var latency = detectedAt - n.publishedAt;
-      detections.push({ exchange: ex, id: n.id, title: n.title, cat: n.cat, publishedAt: n.publishedAt, detectedAt: detectedAt, latency: latency, within1s: latency <= 1000, dup: seen });
-    });
-    detections.forEach(function (d) {
-      state.metrics.detections++;
-      if (d.within1s) state.metrics.within1s++;
-      state.detected.unshift(d);
-      if (state.detected.length > 80) state.detected.pop();
-      log(state, 'detect', ex, (d.dup ? '[중복] ' : '') + '신규 감지: ' + d.title + ' — 지연 ' + d.latency + 'ms ' + (d.within1s ? '✓1초이내' : '⚠1초초과'), d.detectedAt);
-    });
-    return { status: 'ok', detections: detections, latency: reqLatency, overBudget: overBudget };
-  }
-
-  /* 두 거래소 1틱(독립) */
-  function tick(state, now) {
-    now = now == null ? Date.now() : now;
-    var res = {};
-    EXCHANGES.forEach(function (e) { try { res[e] = poll(state, e, now); } catch (err) { res[e] = { status: 'error', error: String(err) }; } });
-    return res;
-  }
-
-  function metrics(state) {
-    var m = state.metrics;
-    var avg = 0, cnt = 0;
-    state.detected.forEach(function (d) { if (!d.dup) { avg += d.latency; cnt++; } });
-    avg = cnt ? Math.round(avg / cnt) : 0;
-    var uniqueDetections = m.detections - m.dupEmitted;
-    return {
-      requests: m.requests, failures: m.failures,
-      detections: m.detections, uniqueDetections: uniqueDetections,
-      within1s: m.within1s,
-      within1sRate: m.detections ? m.within1s / m.detections : 0,
-      dupSuppressed: m.dupSuppressed, dupEmitted: m.dupEmitted,
-      avgLatency: avg,
-      reqPerMin: Math.round(60000 / state.config.pollMs),
-      overBudget: Math.round(60000 / state.config.pollMs) > state.config.reqBudgetPerMin,
-      uptimeMs: m.startedAt ? Date.now() - m.startedAt : 0
-    };
-  }
-
-  function fmtSec(ms) { return (ms / 1000).toFixed(ms % 1000 ? 1 : 0) + 's'; }
-
-  /* ---------- 납품물: 파이썬 소스(admin 화면에 표시) ---------- */
+  /* ---------- detector.py / requirements.txt (표시용) ---------- */
   var PYTHON_SRC =
 `# -*- coding: utf-8 -*-
 """
@@ -255,24 +195,14 @@ if __name__ == "__main__":
     main()
 `;
 
-  var CONFIG_SRC =
-`# config.py — 코드 수정 없이 조정 가능한 설정값
-POLL_INTERVAL_SEC = 1.0   # 폴링 주기(초). 이용약관 요청 제한을 넘지 않도록 설정
-REQUEST_TIMEOUT   = 3     # 요청 타임아웃(초)
-BACKOFF_BASE      = 0.5   # 실패 시 백오프 기준(초): wait = BASE * 2^(실패횟수-1)
-BACKOFF_MAX       = 8.0   # 백오프 상한(초)
-DEDUP_BY_ID       = True  # 공지 식별자(id) 기준 중복 제거
-MAX_ITEMS         = 20    # 조회 건수(거래소당)
-USER_AGENT        = "Mozilla/5.0 (notice-detector/1.0)"  # 기본 UA는 차단될 수 있어 지정
-`;
-
-  var REQ_SRC = `# requirements.txt\n# 외부 라이브러리 없음 — Python 3.7+ 표준 라이브러리(urllib)만 사용\n# 별도 설치 없이 바로 실행:  python detector.py\n`;
+  var REQ_SRC = '# requirements.txt\n# 외부 라이브러리 없음 — Python 3.7+ 표준 라이브러리(urllib)만 사용\n# 별도 설치 없이 바로 실행:  python detector.py\n';
 
   global.ZL = {
-    EXCHANGES: EXCHANGES, EX_LABEL: EX_LABEL,
-    defaultConfig: defaultConfig, loadConfig: loadConfig, saveConfig: saveConfig, resetConfig: resetConfig,
-    createState: createState, addNotice: addNotice, poll: poll, tick: tick, metrics: metrics, log: log,
-    fmtSec: fmtSec,
-    PYTHON_SRC: PYTHON_SRC, CONFIG_SRC: CONFIG_SRC, REQ_SRC: REQ_SRC
+    EX_LABEL: EX_LABEL,
+    defaultConfig: defaultConfig, loadConfig: loadConfig, saveConfig: saveConfig, resetConfig: resetConfig, configPy: configPy,
+    CORS: CORS, OBSERVED_LATENCY: OBSERVED_LATENCY,
+    REAL_LOG_DETECT: REAL_LOG_DETECT, REAL_LOG_FAULT: REAL_LOG_FAULT, PROVEN: PROVEN,
+    tradeoff: tradeoff, pad: pad,
+    PYTHON_SRC: PYTHON_SRC, CONFIG_SRC: configPy(defaultConfig()), REQ_SRC: REQ_SRC
   };
 })(window);

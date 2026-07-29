@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ZEROLAG 제로랙 · 업비트·빗썸 신규 공지 감지 콘솔</title>
-<meta name="description" content="업비트·빗썸 신규 공지를 1초 이내 감지하는 파이썬 스크립트 — 감지 로직을 브라우저에서 실행하는 실시간 콘솔. 폴링·중복제거·장애복구·요청제한을 눈으로 확인. 실제 감지는 납품 파이썬 코드가 수행. 제안용 데모." />
+<title>ZEROLAG 제로랙 · 업비트·빗썸 신규 공지 감지 (파이썬)</title>
+<meta name="description" content="업비트·빗썸 신규 공지를 1초 이내 감지하는 파이썬 스크립트. 실제 거래소 엔드포인트를 폴링한 실행 로그·소스·CORS 근거·요청/지연 분석. 브라우저는 CORS로 직접 폴링 불가하여 감지는 서버 파이썬(detector.py)이 수행. 제안용 데모." />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
 <link rel="stylesheet" href="./assets/css/style.css" />
@@ -13,16 +13,15 @@
 
 <header class="topbar">
   <div class="wrap inner">
-    <a class="brand" href="#/console">
+    <a class="brand" href="#/proof">
       <span class="mark">Z</span>
-      <span>ZEROLAG<small>신규 공지 감지 콘솔</small></span>
+      <span>ZEROLAG<small>신규 공지 감지 · 파이썬</small></span>
     </a>
     <nav class="nav" id="nav">
-      <a href="#/console">감지 콘솔</a>
-      <a href="#/trade-off">지연 vs 요청제한</a>
+      <a href="#/proof">실행 증거</a>
     </nav>
     <div class="right-area">
-      <a class="btn sm" href="./admin.html" target="_blank" rel="noopener">납품물·검수 ↗</a>
+      <a class="btn sm" href="./admin.html" target="_blank" rel="noopener">소스·설정·검수 ↗</a>
     </div>
   </div>
 </header>
@@ -30,9 +29,9 @@
 <main id="app" class="wrap" style="padding-top:20px;padding-bottom:72px"></main>
 
 <div id="toasts"></div>
-<span class="demo-tag">● 제안용 데모 · 감지 로직 실행 · 공지는 데모용 예시(가상 티커)</span>
+<span class="demo-tag">● 제안용 데모 · 실제 detector.py 실행 증거</span>
 
-<script src="./assets/js/engine.js?v=3"></script>
-<script src="./assets/js/app.js?v=3"></script>
+<script src="./assets/js/engine.js?v=4"></script>
+<script src="./assets/js/app.js?v=4"></script>
 </body>
 </html>
