@@ -1,9 +1,9 @@
 # ZEROLAG 제로랙 — 업비트·빗썸 신규 공지 감지 (파이썬)
 
-업비트·빗썸 신규 공지를 **1초 이내 감지**하는 파이썬 스크립트. 실제 감지는 서버에서 도는 **`python/detector.py`**가 수행합니다. 이 웹 페이지는 그 스크립트의 **실제 실행 로그·소스·CORS 근거·요청/지연 분석**만 보여줍니다(모의 시뮬레이션 없음).
+업비트·빗썸 신규 공지를 **1초 이내 감지**하는 파이썬 스크립트. 실제 감지는 서버에서 도는 **`python/detector.py`**가 수행합니다. 데모 페이지는 **감지 엔진을 브라우저에서 실제로 돌려** 보여주고(주기·응답시간·성공률 실측), 공지 감지는 서버 실행 로그를 원래 간격으로 재생합니다. **소스 본문은 계약 시 공개**합니다.
 
 - 공개 URL(별칭): `https://jeonjaeman.github.io/demo-sites/zerolag/`
-- 소스·설정·검수: `https://jeonjaeman.github.io/demo-sites/zerolag/admin/`
+- 납품물 구성·검수: `https://jeonjaeman.github.io/demo-sites/zerolag/admin/` (소스 본문 잠금)
 - 로컬: `python -m http.server 8085 --directory 데모/30-업비트빗썸신규공지감지`
 
 > **브라우저는 두 거래소 엔드포인트를 직접 폴링할 수 없습니다.** CORS 정책상 업비트는 교차 출처 요청을 403으로 거부하고, 빗썸은 `Access-Control-Allow-Origin` 헤더가 없어 응답을 읽지 못합니다(2026-07 실측). 그래서 실시간 감지는 **서버에서 파이썬으로** 돌립니다 — 공고의 "파이썬 스크립트를 발주사 서버에서 운영"과 정확히 일치합니다.
@@ -15,7 +15,8 @@
 ```bash
 cd python
 python detector.py                # 무중단 실시간 감지(운영)
-python detector.py --cycles 3     # 3주기만 돌고 종료(확인용)
+python detector.py --cycles 3     # 거래소별 3주기만 돌고 종료(확인용)
+python detector.py --hang UPBIT   # 응답 없음 장애 주입(격리 확인)
 python detector.py --demo-new 2   # 최신 2건을 신규로 취급해 감지 경로 확인(실데이터)
 python detector.py --break UPBIT  # 한 거래소 접속 불가 시 다른 거래소 감지 지속 확인
 ```
@@ -29,7 +30,7 @@ python detector.py --break UPBIT  # 한 거래소 접속 불가 시 다른 거�
 | 구분 | 화면 |
 |---|---|
 | 실행 증거 (`index.html`) | 실제 실행 로그(신규 감지·중복 제거 / 장애 격리·백오프) · 검증 항목 · CORS 테스트 결과 · 지연 vs 요청제한 분석 |
-| 소스·설정·검수 (`admin.html`) | 파이썬 소스 뷰어(detector.py·config.py·requirements.txt) · 설정(config.py 생성) · 수용 기준 검수표 |
+| 납품물·검수 (`admin.html`) | 납품물 구성(파일·분량·설계 판단) · 설정(config.py 생성) · 수용 기준 검수표 · **소스 본문은 계약 시 공개** |
 
 ## ⚠️ 착수 전 확인 항목
 
@@ -37,7 +38,9 @@ python detector.py --break UPBIT  # 한 거래소 접속 불가 시 다른 거�
 
 ## 핵심 설계 (리서치 함정 → 실제 구현)
 
-- **"1초 이내" vs 폴링 주기** → 지연=주기+응답지연(실측 ~130ms). 트레이드오프 표로 시각화, 적응형 폴링 제안
+- **폴링 주기가 설정값을 넘김** → `sleep(주기)`를 요청 뒤에 두면 주기=주기+응답지연. 실측 1.118초 → **마감시각 기준으로 고쳐 1.002초**
+- **한 거래소가 멈추면 다른 거래소가 밀림** → 순차 폴링 시 4.05초. **거래소별 독립 스레드로 1.000초 유지**
+- **"1초 이내" vs 요청 제한** → 지연=주기+응답지연(실측 ~130ms). 트레이드오프 표로 시각화, 적응형 폴링 제안
 - **요청 제한/차단** → 분당 요청 예산 가드
 - **id 기준 중복 제거** → seen-set(id). 실행 로그 2·3주기 무출력으로 확인
 - **무중단·거래소 격리** → 거래소별 예외 격리·지수 백오프(0.5→1→2→4s)·자동 복구
@@ -51,7 +54,7 @@ python detector.py --break UPBIT  # 한 거래소 접속 불가 시 다른 거�
 ## 기술 구성
 
 - 정적 HTML/CSS/**바닐라 JS**, 빌드 없음. Pretendard(CDN). 외부 라이브러리 없음.
-- 실제 납품물인 **파이썬 소스**는 `python/`에 실행 가능한 형태로 있고, admin 화면에도 그대로 표시.
-- 웹 페이지에는 **가짜로 돌아가는 모의 감지 루프가 없습니다** — 실제 실행 로그·CORS 실측·소스·계산된 분석만.
+- 실제 납품물인 **파이썬 소스**는 `python/`에 실행 가능한 형태로 있습니다. 데모 화면에서는 **잠금** 처리(계약 시 공개).
+- 웹 페이지의 라이브 콘솔은 **실제 네트워크 요청**입니다 — 공개 API(업비트 `market/all`·빗썸 `ticker/ALL_KRW`)를 마감시각 기준 1초 주기로 폴링하며, detector.py와 같은 감지 로직(중복제거·백오프·독립 타이머)을 씁니다. 공지 엔드포인트는 CORS 차단이라 서버 몫입니다.
 - 설정은 `localStorage`로 config.py 미리보기에 반영. reveal은 **IntersectionObserver 폴백(450ms)** + 재렌더 wireReveal로 빈 화면 방지.
-- 파일: `assets/js/engine.js`(파이썬 소스·실행 로그·CORS 자료) · `app.js`(실행 증거) · `admin.js`(소스·설정·검수) · `assets/css/style.css`
+- 파일: `assets/js/engine.js`(라이브 감지 엔진·실행 로그·CORS 실측) · `app.js`(실행 증거) · `admin.js`(납품물·설정·검수) · `assets/css/style.css`

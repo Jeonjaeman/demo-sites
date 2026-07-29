@@ -26,9 +26,10 @@
     revealTimer = setTimeout(function () { app.querySelectorAll('.reveal:not(.in)').forEach(function (n) { n.classList.add('in'); }); }, 450);
   }
 
-  var routes = { code: viewCode, config: viewConfig, spec: viewSpec };
+  var routes = { deliverables: viewDeliverables, code: viewDeliverables, config: viewConfig, spec: viewSpec };
   function router() {
-    var name = (location.hash.replace(/^#\//, '') || 'code').split('/')[0];
+    var name = (location.hash.replace(/^#\//, '') || 'deliverables').split('/')[0];
+    if (name === 'code') name = 'deliverables';
     document.querySelectorAll('#nav a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#/' + name); });
     window.scrollTo(0, 0);
     (routes[name] || viewCode)();
@@ -37,28 +38,52 @@
   window.addEventListener('hashchange', router);
 
   /* =====================================================================
-     파이썬 소스
+     납품물 구성 — 소스 본문은 계약 후 전달(잠금)
      ===================================================================== */
-  var activeFile = 'detector.py';
-  var FILES = {
-    'detector.py': function () { return ZL.PYTHON_SRC; },
-    'config.py': function () { return ZL.CONFIG_SRC; },
-    'requirements.txt': function () { return ZL.REQ_SRC; }
-  };
-  function viewCode() {
+  function viewDeliverables() {
+    var M = ZL.MEASURED;
     app.innerHTML =
-      '<div class="reveal" style="margin-bottom:14px"><h2 style="font-size:22px">파이썬 소스 (납품물)</h2>' +
-      '<p class="muted small">실제 납품물은 아래 파이썬 스크립트입니다. <a href="./index.html" style="color:var(--accent)">실행 증거</a> 페이지의 실행 로그가 이 코드의 실제 출력입니다. 외부 라이브러리 없이 표준 라이브러리(urllib)만 사용합니다.</p></div>' +
-      '<div class="between reveal" style="margin-bottom:10px"><div class="filetab" id="filetab">' +
-        Object.keys(FILES).map(function (f) { return '<button data-f="' + f + '"' + (f === activeFile ? ' class="on"' : '') + '>' + f + '</button>'; }).join('') +
-      '</div><button class="btn sm" id="copyBtn">복사</button></div>' +
-      '<div class="code reveal"><pre id="codePre">' + esc(FILES[activeFile]()) + '</pre></div>';
-    app.querySelectorAll('#filetab button').forEach(function (b) { b.onclick = function () { activeFile = b.getAttribute('data-f'); viewCode(); }; });
-    $('#copyBtn').onclick = function () {
-      var txt = FILES[activeFile]();
-      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { toast(activeFile + ' 복사됨'); }, function () { toast('복사 실패 — 직접 선택하세요', 'warn'); });
-      else toast('이 브라우저는 자동 복사를 지원하지 않습니다', 'warn');
-    };
+      '<div class="reveal" style="margin-bottom:14px"><h2 style="font-size:22px">🔒 납품물 구성</h2>' +
+      '<p class="muted small">파일 구성·분량·설계 판단은 아래에 모두 공개돼 있습니다. ' +
+      '<b>소스 본문만 계약 후 전달</b>드립니다. 동작은 ' +
+      '<a href="./index.html" style="color:var(--accent)">실행 증거</a> 페이지에서 지금 바로 확인하실 수 있습니다 — ' +
+      '라이브 감지 엔진이 실제로 돌고 있습니다.</p></div>' +
+
+      '<div class="card reveal" style="margin-bottom:14px"><div class="card-h"><h3>파일 구성</h3>' +
+        '<span class="small muted">python/ · 총 ' +
+        ZL.DELIVERABLES.reduce(function (a, d) { return a + d.lines; }, 0) + '줄</span></div><div class="card-b">' +
+        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>파일</th><th class="right">줄 수</th><th>내용</th></tr></thead><tbody>' +
+        ZL.DELIVERABLES.map(function (d) {
+          return '<tr><td class="mono">' + d.f + '</td><td class="right mono">' + d.lines + '</td>' +
+                 '<td class="small muted">' + d.d + '</td></tr>';
+        }).join('') + '</tbody></table></div>' +
+      '</div></div>' +
+
+      '<div class="card reveal" style="margin-bottom:14px"><div class="card-h"><h3>설계 판단 — 공고 수용기준을 맞추기 위해 고친 두 가지</h3></div><div class="card-b">' +
+        '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>항목</th><th class="right">고치기 전</th><th class="right">납품본</th></tr></thead><tbody>' +
+        '<tr><td>정상 상태 폴링 주기<div class="small muted">설정 1.0초</div></td>' +
+          '<td class="right mono" style="color:var(--bad)">' + M.before.period.toFixed(3) + 's</td>' +
+          '<td class="right mono" style="color:var(--ok)">' + M.after.period.toFixed(3) + 's</td></tr>' +
+        '<tr><td>한 거래소 타임아웃 시 다른 거래소 주기</td>' +
+          '<td class="right mono" style="color:var(--bad)">' + M.before.isolatedPeriod.toFixed(3) + 's</td>' +
+          '<td class="right mono" style="color:var(--ok)">' + M.after.isolatedPeriod.toFixed(3) + 's</td></tr>' +
+        '</tbody></table></div>' +
+        '<div class="note-box" style="margin-top:12px"><b>①</b> <code>sleep(주기)</code>를 요청 뒤에 붙이면 실제 주기 = 주기 + 응답지연이 되어 1초를 넘깁니다 → <b>마감 시각 기준 대기</b>로 변경. ' +
+        '<b>②</b> 두 거래소를 순차로 돌면 한쪽 타임아웃(3초)을 다른 쪽이 그대로 기다립니다 → <b>거래소별 독립 스레드</b>로 분리.</div>' +
+        '<p class="tiny faint" style="margin-top:10px">' + esc(M.sample) + '</p>' +
+      '</div></div>' +
+
+      '<div class="card reveal"><div class="card-b" style="text-align:center;padding:26px 18px">' +
+        '<div style="font-size:34px;margin-bottom:8px">🔒</div>' +
+        '<b style="font-size:15px">소스 본문은 계약 시 공개됩니다</b>' +
+        '<p class="muted small" style="max-width:520px;margin:8px auto 0">' +
+          '지금 공개된 것: 실제 동작(라이브 엔진) · 실행 로그 · 실측 수치 · 설계 판단 · 파일 구성.<br>' +
+          '계약과 동시에 <code>detector.py</code> 전문과 저장소 접근 권한을 드립니다.</p>' +
+        '<button class="btn pri" id="btnLocked" style="margin-top:16px;opacity:.55;cursor:not-allowed">🔒 전체 소스 보기 — 계약 시 활성화</button>' +
+      '</div></div>';
+
+    var b = $('#btnLocked');
+    if (b) b.onclick = function () { toast('소스 본문은 계약 후 전달드립니다', 'warn'); };
   }
 
   /* =====================================================================
@@ -102,10 +127,16 @@
     var pre = $('#cfgPre'); if (!pre) return;
     pre.textContent = ZL.configPy(c);
     var calc = $('#cfgCalc'); if (calc) {
-      var perMin = Math.round(60000 / c.pollMs);
-      var over = perMin > c.reqBudgetPerMin;
+      var perEx = Math.round(60000 / c.pollMs);
+      var perMin = perEx * 2;                       // 거래소 2곳
+      var over = perEx > c.reqBudgetPerMin;
       var worst = c.pollMs + ZL.OBSERVED_LATENCY.worstAssume;
-      calc.innerHTML = '이 설정의 분당 요청 <b>' + perMin + '회</b> (' + (over ? '<span style="color:var(--bad)">예산 초과·차단 위험</span>' : '<span style="color:var(--ok)">예산 이내</span>') + ') · 최악 감지 지연 <b>~' + worst + 'ms</b> (' + (worst <= 1000 ? '1초 이내 보장' : '1초 초과 가능') + ', 실측 응답 ~' + ZL.OBSERVED_LATENCY.worstAssume + 'ms 기준)';
+      calc.innerHTML = '이 설정의 분당 요청 <b>거래소당 ' + perEx + '회 · 합계 ' + perMin + '회</b> (' +
+        (over ? '<span style="color:var(--bad)">예산 초과·차단 위험</span>' : '<span style="color:var(--ok)">예산 이내</span>') +
+        ') · 최악 감지 지연 <b>~' + worst + 'ms</b> (' + (worst <= 1000 ? '1초 이내 보장' : '1초 초과 가능') +
+        ', 실측 응답 ~' + ZL.OBSERVED_LATENCY.worstAssume + 'ms 기준)<br>' +
+        '<span class="tiny faint">주기는 마감시각 기준이라 응답 지연이 주기에 얹히지 않습니다(실측 ' +
+        ZL.MEASURED.after.period.toFixed(3) + '초).</span>';
     }
   }
 
@@ -116,10 +147,18 @@
     var c = ZL.loadConfig();
     // 데모에서 실제로 검증한 결과(엔진 로직 기반) 요약
     var specs = [
-      { k: '폴링 1초 이하 유지 시 신규 공지 1초 이내 제목 출력', how: '실행 로그에서 신규 공지 감지 시 제목·등록시각 출력 확인. 최악 지연은 주기+응답지연(실측 ~' + ZL.OBSERVED_LATENCY.worstAssume + 'ms).', ok: true },
-      { k: '동일 공지가 두 번 이상 출력되지 않음', how: '공지 id 기준 seen-set으로 중복 제거. 실행 로그의 2·3주기에 신규 출력 없음으로 확인.', ok: true },
-      { k: '네트워크 오류·응답 실패에도 종료되지 않고 다음 주기 복구', how: '요청 실패 → 지수 백오프(0.5→1→2→4s) 후 재시도. 예외는 거래소 단위로 격리.', ok: true },
-      { k: '한 거래소가 응답하지 않아도 다른 거래소 감지 계속', how: '거래소별 상태·백오프 독립. 업비트 장애 시에도 빗썸 감지 지속(실행 로그 ②).', ok: true }
+      { k: '폴링 주기 1초 이하 유지 시 신규 공지 1초 이내 제목 출력',
+        how: '마감시각 기준 대기라 응답 지연이 주기에 얹히지 않습니다. 20주기/10주기 차이로 측정한 정상 상태 주기 ' +
+             ZL.MEASURED.after.period.toFixed(3) + '초(고치기 전 ' + ZL.MEASURED.before.period.toFixed(3) +
+             '초). 최악 지연 = 주기 + 응답지연(실측 ~' + ZL.OBSERVED_LATENCY.worstAssume + 'ms).', ok: true },
+      { k: '동일 공지가 두 번 이상 출력되지 않음',
+        how: '공지 id 기준 seen-set으로 중복 제거(상한 5,000건으로 무중단 실행 시 메모리 증가 방지). 실행 로그의 2·3주기에 신규 출력 없음.', ok: true },
+      { k: '네트워크 오류·응답 실패에도 종료되지 않고 다음 주기 복구',
+        how: '요청 실패 → 지수 백오프(0.5→1→2→4s) 후 재시도, 성공 시 리셋. 예외는 거래소 단위로 격리.', ok: true },
+      { k: '한 거래소가 응답하지 않아도 다른 거래소 감지 계속',
+        how: '거래소마다 독립 스레드. 업비트를 타임아웃까지 매달리게 두고 측정한 빗썸 폴링 간격 ' +
+             ZL.MEASURED.after.isolatedPeriod.toFixed(3) + '초(최대 1.010초). 순차 폴링이던 초안에서는 ' +
+             ZL.MEASURED.before.isolatedPeriod.toFixed(2) + '초로 밀렸습니다.', ok: true }
     ];
     app.innerHTML =
       '<div class="reveal" style="margin-bottom:14px"><h2 style="font-size:22px">수용 기준 검수</h2>' +
