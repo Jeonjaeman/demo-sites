@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>한상 — 가족 소통·웰니스 앱 데모</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+</head>
+<body>
+<div class="stage-wrap">
+  <aside class="side-panel">
+    <a class="side-back" href="index.html">← 데모 소개로</a>
+    <h1>한상 <span>HANSANG</span></h1>
+    <p class="side-tag">하루 한 번, 우리 가족 한 상</p>
+    <p class="side-desc">성인 자녀와 부모를 하루 한 번의 공동 미션으로 잇는 가족 소통·웰니스 앱 데모.<br>RFP의 <b>24개 화면 전부</b>를 인터랙티브로 구현했습니다.</p>
+    <div class="side-flow">
+      <b>추천 시연 순서</b>
+      <ol>
+        <li>온보딩 5화면 (카카오 로그인 → PASS → 가족 합류)</li>
+        <li>홈에서 <b>오늘의 미션</b> → 사진 인증 → 재료 획득</li>
+        <li>레시피 도감에서 <b>삼계탕 잠금 해제</b></li>
+        <li>건강 탭 — 걸음 수 · 에이슬립 수면 리포트</li>
+        <li>랭킹 · 피드 · 설정(연동 관리) 확인</li>
+      </ol>
+    </div>
+    <button class="side-map-btn" onclick="HS.toggleMap()">🗺 24개 화면 인덱스</button>
+    <button class="side-reset" onclick="HS.resetDemo()">데모 초기화</button>
+  </aside>
+
+  <div class="phone">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+      <div class="statusbar"><span id="sb-time">9:41</span><span class="sb-icons">📶 🔋</span></div>
+      <div id="screen-root" class="screen-root"></div>
+      <nav id="tabbar" class="tabbar hidden">
+        <button data-tab="home"><i>🏠</i><span>홈</span></button>
+        <button data-tab="recipes"><i>🍲</i><span>레시피</span></button>
+        <button data-tab="feed"><i>📷</i><span>피드</span></button>
+        <button data-tab="steps"><i>💚</i><span>건강</span></button>
+        <button data-tab="rankFamily"><i>🏆</i><span>랭킹</span></button>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<div id="screen-map" class="screen-map hidden">
+  <div class="map-inner">
+    <div class="map-head"><b>화면 인덱스 — RFP 24개 화면</b><button onclick="HS.toggleMap()">✕</button></div>
+    <div id="map-list"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

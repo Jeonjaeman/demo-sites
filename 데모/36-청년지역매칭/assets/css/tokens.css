@@ -1,0 +1,91 @@
+/* ============================================================
+   OUTBOUNDER — Design Tokens
+   넥스트로컬(팔레트·타이포 문법) × 언더독스(토큰 구조·CTA) 합성
+   ============================================================ */
+@font-face {
+  font-family: 'GMarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansLight.woff') format('woff');
+  font-weight: 300; font-display: swap;
+}
+@font-face {
+  font-family: 'GMarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansMedium.woff') format('woff');
+  font-weight: 500; font-display: swap;
+}
+@font-face {
+  font-family: 'GMarketSans';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2001@1.1/GmarketSansBold.woff') format('woff');
+  font-weight: 700; font-display: swap;
+}
+
+:root {
+  /* ---- Brand palette ---- */
+  --ob-green: #00b670;          /* primary — 지역·성장·임팩트 */
+  --ob-green-deep: #0e8c5a;
+  --ob-green-dark: #086b45;
+  --ob-orange: #f05519;         /* CTA — 청년 에너지 (hover/pressed 포함) */
+  --ob-orange-hover: #d8482c;
+  --ob-orange-pressed: #b23b24;
+  --ob-blue: #00b9ef;           /* 정보·프로그램 */
+  --ob-yellow: #fe9c00;         /* 마감임박·주의 */
+  --ob-purple: #724598;         /* 콘텐츠·스토리 */
+  --ob-red: #e5484d;            /* 불합격·오류 */
+
+  /* ---- Pastel tints ---- */
+  --ob-green-w: #eff9f5;
+  --ob-blue-w: #eef8ff;
+  --ob-yellow-w: #fffce4;
+  --ob-purple-w: #fbf6ff;
+  --ob-pink-w: #fff4f7;
+  --ob-orange-w: #fef5f1;
+
+  /* ---- Gray scale (넥스트로컬 g00~g09) ---- */
+  --g00: #f8f8f8; --g01: #eeeeee; --g02: #e2e2e2; --g03: #cbcbcb;
+  --g04: #afafaf; --g05: #757575; --g06: #545454; --g07: #333333;
+  --g08: #1f1f1f; --g09: #141414;
+  --ink: var(--g08);
+  --paper: #ffffff;
+
+  /* ---- Semantic status ---- */
+  --st-open: var(--ob-green);        /* 모집중 */
+  --st-closing: var(--ob-yellow);    /* 마감임박 */
+  --st-closed: #8a94a6;              /* 마감 */
+  --st-pass: var(--ob-green-deep);   /* 합격 */
+  --st-fail: var(--ob-red);          /* 불합격 */
+  --st-review: var(--ob-blue);       /* 심사중 */
+
+  /* ---- Typography ---- */
+  --font-display: 'GMarketSans', 'Pretendard Variable', Pretendard, -apple-system, 'Malgun Gothic', sans-serif;
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --fs-h1: clamp(40px, 5.2vw, 58px);
+  --fs-h2: clamp(30px, 3.8vw, 44px);
+  --fs-h3: clamp(24px, 3.2vw, 38px);
+  --fs-h4: clamp(21px, 2.6vw, 32px);
+  --fs-h5: clamp(18px, 2.2vw, 26px);
+  --fs-h6: clamp(16px, 1.8vw, 20px);
+  --fs-body: 16px;
+  --fs-small: 14px;
+  --fs-label: 13px;
+
+  /* ---- Spacing scale (언더독스 margin-padding 체계) ---- */
+  --sp-1: 4px;  --sp-2: 8px;   --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px;  --sp-7: 32px; --sp-8: 40px;
+  --sp-9: 48px; --sp-10: 64px; --sp-11: 80px; --sp-12: 96px;
+  --sp-13: 120px; --sp-14: 136px;
+
+  /* ---- Radius / Shadow ---- */
+  --rad-s: 8px; --rad-m: 12px; --rad-l: 16px; --rad-xl: 24px; --rad-pill: 999px;
+  --shadow-card: 0 2px 8px rgba(20, 20, 20, 0.05);
+  --shadow-lift: 0 8px 24px rgba(149, 157, 165, 0.2);   /* 넥스트로컬 hover 실측값 */
+  --shadow-modal: 0 24px 64px rgba(20, 20, 20, 0.24);
+
+  /* ---- Layout ---- */
+  --container: 1200px;
+  --container-wide: 1400px;
+  --header-h: 68px;
+
+  /* ---- Motion ---- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 0.25s;
+  --dur-base: 0.5s;
+}

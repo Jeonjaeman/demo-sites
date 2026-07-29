@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한상 — 가족 소통·웰니스 앱 데모 | 제안용</title>
+<meta name="description" content="성인 자녀와 부모를 하루 한 번의 공동 미션으로 잇는 가족 소통·웰니스 앱 — RFP 24개 화면 인터랙티브 데모">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
+<style>
+:root{--brand:#FF7A3D;--deep:#E85F1E;--soft:#FFE8DB;--cream:#FFF8F2;--ink:#2B2118;--sub:#8A7A6D;--line:#F0E4D9;--green:#5CB661}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+/* hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#FFF3E8,#FFE3D0)}
+.hero .wrap{display:flex;align-items:center;gap:48px;padding:72px 24px 64px;flex-wrap:wrap}
+.hero .tx{flex:1;min-width:300px}
+.badge{display:inline-flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:12.5px;font-weight:700;color:var(--deep)}
+.hero h1{font-size:clamp(30px,4.6vw,46px);letter-spacing:-1.2px;line-height:1.25;margin-top:18px;font-weight:900}
+.hero h1 b{color:var(--deep)}
+.hero p.lead{margin-top:16px;font-size:16px;color:#6b5c4e;max-width:460px}
+.cta-row{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:15px 26px;border-radius:14px;font-weight:800;font-size:15.5px;text-decoration:none;transition:.15s;border:0;cursor:pointer}
+.btn.pri{background:var(--brand);color:#fff;box-shadow:0 10px 24px rgba(232,95,30,.3)}
+.btn.pri:hover{transform:translateY(-2px)}
+.btn.gho{background:#fff;border:1.5px solid var(--line)}
+.hero .im{flex:1;min-width:280px;max-width:460px}
+.hero .im img{width:100%;border-radius:24px;box-shadow:0 24px 60px rgba(90,50,15,.25)}
+.meta-strip{background:var(--ink);color:#F5EADF;font-size:13.5px}
+.meta-strip .wrap{display:flex;gap:28px;padding:14px 24px;flex-wrap:wrap;justify-content:center}
+.meta-strip b{color:#FFB673}
+/* sections */
+section{padding:64px 0}
+.sec-h{text-align:center;margin-bottom:36px}
+.sec-h small{color:var(--deep);font-weight:800;letter-spacing:2px;font-size:12px}
+.sec-h h2{font-size:clamp(24px,3.4vw,32px);letter-spacing:-.8px;margin-top:8px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{background:#fff;border-radius:20px;padding:26px;border:1px solid #FBF3EC;box-shadow:0 6px 22px rgba(80,50,20,.06)}
+.card .ic{font-size:28px}
+.card h3{font-size:17px;margin-top:12px;letter-spacing:-.3px}
+.card p{font-size:14px;color:var(--sub);margin-top:8px}
+.card ul{margin:10px 0 0 18px;font-size:13.5px;color:#5d5148;display:grid;gap:6px}
+/* loop */
+.loop{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.loop .st{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 20px;text-align:center;width:170px;box-shadow:0 6px 18px rgba(80,50,20,.06)}
+.loop .st .e{font-size:30px}
+.loop .st b{display:block;font-size:14.5px;margin-top:8px}
+.loop .st small{font-size:12px;color:var(--sub)}
+.loop .ar{font-size:20px;color:#D9C6B4;font-weight:900}
+/* screens table */
+.scr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.scr{background:#fff;border-radius:16px;padding:18px;border:1px solid #FBF3EC}
+.scr b{font-size:14.5px;color:var(--deep)}
+.scr span{display:block;font-size:12.5px;color:var(--sub);margin-top:6px;line-height:1.7}
+/* gap list */
+.gap-item{display:flex;gap:14px;background:#fff;border-radius:16px;padding:18px 20px;border:1px solid #FBF3EC;margin-bottom:12px}
+.gap-item .no{width:32px;height:32px;border-radius:10px;background:var(--soft);color:var(--deep);font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gap-item b{font-size:14.5px}
+.gap-item p{font-size:13px;color:var(--sub);margin-top:4px}
+/* ref table */
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;font-size:13.5px}
+th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:#FBF3EA;font-size:12.5px;color:#7c6a58}
+td b{color:var(--deep)}
+/* footer */
+footer{background:var(--ink);color:#B7A796;padding:36px 0;font-size:13px;text-align:center}
+footer a{color:#FFB673}
+.docs-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.docs-row a{background:#fff;border:1px solid var(--line);border-radius:99px;padding:9px 18px;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink)}
+.docs-row a:hover{border-color:var(--brand);color:var(--deep)}
+@media(max-width:640px){.hero .wrap{padding-top:48px}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="tx">
+      <span class="badge">🍲 가족 소통·웰니스 앱 · React Native 제안 데모</span>
+      <h1>하루 한 번의 미션이<br><b>가족의 한 상</b>이 됩니다</h1>
+      <p class="lead">성인 자녀와 부모 세대를 하루 한 번의 공동 미션으로 연결하고, 미션으로 모은 재료가 <b>우리 가족의 레시피</b>로 완성되는 서비스 — RFP의 24개 화면 전부를 만져볼 수 있는 데모로 구현했습니다.</p>
+      <div class="cta-row">
+        <a class="btn pri" href="app.html">📱 앱 데모 실행하기</a>
+        <a class="btn gho" href="#screens">24개 화면 구성 보기</a>
+      </div>
+    </div>
+    <div class="im"><img src="assets/img/hero_family.webp" alt="가족이 함께 요리하는 모습"></div>
+  </div>
+</div>
+
+<div class="meta-strip"><div class="wrap">
+  <span>화면 <b>24개 전체 구현</b></span><span>온보딩 <b>5</b> · 홈/미션 <b>6</b> · 레시피 <b>3</b> · 피드 <b>1</b> · 건강 <b>2</b> · 랭킹 <b>2</b> · 설정 <b>5</b></span><span>비주얼 <b>힉스필드 AI 생성</b></span>
+</div></div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-h"><small>CORE LOOP</small><h2>서비스의 심장 — 미션에서 한 상까지</h2></div>
+    <div class="loop">
+      <div class="st"><span class="e">☀️</span><b>오늘의 공동 미션</b><small>걷기 · 식사 인증 · 안부</small></div>
+      <span class="ar">→</span>
+      <div class="st"><span class="e">👨‍👩‍👧</span><b>가족 전원 달성</b><small>미완료 가족 콕 찌르기</small></div>
+      <span class="ar">→</span>
+      <div class="st"><span class="e">🧄</span><b>재료 획득</b><small>5개 모으면</small></div>
+      <span class="ar">→</span>
+      <div class="st"><span class="e">🍲</span><b>레시피 해제</b><small>주말, 진짜 한 상으로</small></div>
+    </div>
+    <p style="text-align:center;margin-top:22px;font-size:14px;color:var(--sub)">발주처가 식품·헬스케어 기업인 만큼, 해제된 레시피의 <b style="color:var(--ink)">"재료 장보기 담기"</b>가 자연스러운 커머스 연결 지점이 됩니다.</p>
+  </div>
+</section>
+
+<section style="background:#fff">
+  <div class="wrap">
+    <div class="sec-h"><small>NEEDS</small><h2>의뢰 문서에서 읽은 니즈</h2></div>
+    <div class="grid3">
+      <div class="card"><span class="ic">🎯</span><h3>검증된 기획을 "완성도 있게"</h3><p>웹 MVP·IA·와이어프레임 확정 상태. 우선순위 1위가 <b>산출물 완성도</b> — 창의적 재해석보다 정확한 구현과 협업 인터페이스를 원합니다.</p></div>
+      <div class="card"><span class="ic">🔌</span><h3>외부 연동 6종이 실질 난이도</h3><p>카카오 로그인 · PASS · HealthKit/Health Connect · 에이슬립 수면 SDK · 핑거푸시 · 딥링크. 네이티브 브릿지 직접 작성 요구가 명시되어 있습니다.</p></div>
+      <div class="card"><span class="ic">🚀</span><h3>10월 출시 역산 일정</h3><p>8월 초 착수 → 9월 말 심사 제출 → 10월 정식 출시. 스토어 <b>반려 대응·재제출까지</b> 수급사 책임 — 심사 리스크 관리가 곧 일정 관리입니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-h"><small>PLUS ALPHA</small><h2>의뢰자가 놓친 부분 — 제안에 담은 6가지</h2></div>
+    <div style="max-width:760px;margin:0 auto">
+      <div class="gap-item"><span class="no">1</span><div><b>Sign in with Apple 병행 제공</b><p>카카오 로그인만 제공 시 App Store 심사(4.8) 반려 사유 — RFP에 누락된 항목을 온보딩 화면에 선반영했습니다.</p></div></div>
+      <div class="gap-item"><span class="no">2</span><div><b>디자인 비의존 선행 트랙</b><p>디자인 산출물(7월 말) 지연 시에도 API 연동 레이어·네이티브 브릿지·내비게이션 골격을 1~2주차에 먼저 진행하는 일정 설계.</p></div></div>
+      <div class="gap-item"><span class="no">3</span><div><b>시니어 UX 원칙</b><p>부모 세대가 핵심 사용자인데 접근성 요구가 없음 — 큰 글씨, 48dp 터치 타깃, 자녀 주도 온보딩(초대 링크 탭 → 로그인 끝)을 설계에 포함.</p></div></div>
+      <div class="gap-item"><span class="no">4</span><div><b>콕 찌르기(넛지) + 스트릭</b><p>"전원 달성" 모델은 1명만 빠져도 실패 — 미완료 가족 응원 푸시와 연속 달성 스트릭으로 이탈을 방어합니다. (데모에서 체험 가능)</p></div></div>
+      <div class="gap-item"><span class="no">5</span><div><b>심사 리스크 사전 체크리스트</b><p>건강 데이터+마이크+사진 권한이 몰린 앱은 반려 단골 — 권한 목적 문구, 계정 삭제 기능(5.1.1(v)), 심사용 데모 계정을 9월 중순 점검 항목화.</p></div></div>
+      <div class="gap-item"><span class="no">6</span><div><b>푸시 어댑터 추상화</b><p>RFP 명시 "푸시 솔루션 변경 가능성" 대응 — 핑거푸시를 어댑터 패턴으로 감싸 교체 비용을 최소화합니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fff" id="screens">
+  <div class="wrap">
+    <div class="sec-h"><small>SCREENS</small><h2>RFP 24개 화면, 전부 데모에 있습니다</h2></div>
+    <div class="scr-grid">
+      <div class="scr"><b>온보딩 · 5화면</b><span>스플래시/소개 → 카카오·Apple 로그인 → PASS 본인인증 → 가족 그룹 생성/합류(초대코드·카톡 공유) → 권한 안내</span></div>
+      <div class="scr"><b>홈·미션 · 6화면</b><span>홈(미션 카드·가족 달성 링) → 미션 상세 → 사진 인증(카메라) → 가족 달성 현황(콕 찌르기) → 재료 획득 연출 → 미션 기록 캘린더</span></div>
+      <div class="scr"><b>레시피 · 3화면</b><span>레시피 도감(잠금/해제 그리드) → 해제 레시피 상세(장보기 담기) → 잠금 레시피(재료 수집 진행)</span></div>
+      <div class="scr"><b>피드 · 1화면</b><span>가족 전용 인증샷 타임라인 + 이모지 리액션</span></div>
+      <div class="scr"><b>건강 · 2화면</b><span>걸음 수(HealthKit/삼성헬스 링 게이지·가족 비교) → 수면 리포트(에이슬립 점수·단계·주간 추이)</span></div>
+      <div class="scr"><b>랭킹 · 2화면</b><span>우리 가족 주간 랭킹(MVP) → 전체 가족 스트릭 랭킹(익명 별명)</span></div>
+      <div class="scr"><b>설정 · 5화면</b><span>설정 홈 → 가족 관리(초대) → 알림 설정(푸시 토큰) → 연동 관리(헬스·수면·카카오) → 계정·약관(계정 삭제)</span></div>
+      <div class="scr" style="background:var(--soft);border-color:#F5C7A8"><b>💡 데모 팁</b><span>앱 데모 좌측 패널의 <b>"24개 화면 인덱스"</b> 버튼으로 어떤 화면이든 바로 이동할 수 있습니다.</span></div>
+    </div>
+    <div style="text-align:center;margin-top:30px"><a class="btn pri" href="app.html">📱 앱 데모 실행하기</a></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-h"><small>REFERENCES</small><h2>레퍼런스 분석 — 검증된 패턴만 조립했습니다</h2></div>
+    <div style="overflow-x:auto"><table>
+      <tr><th>레퍼런스</th><th>가져온 것</th><th>데모 반영</th></tr>
+      <tr><td><b>썸원 SumOne</b><br><small>1,000만 커플·가족</small></td><td>둘 다 답해야 완성되는 상호 의존 루프, 리마인드 넛지, 보상 수집</td><td>가족 전원 달성 링 · 콕 찌르기 · 재료 수집</td></tr>
+      <tr><td><b>챌린저스</b></td><td>사진 인증 미션 UX (가이드 → 촬영 → 제출 → 피드)</td><td>카메라 인증 플로우 · 피드 인증샷</td></tr>
+      <tr><td><b>캐시워크</b></td><td>즉각적 걸음 수 피드백, 브랜드 챌린지 확장성</td><td>걸음 링 게이지 · 가족 걸음 비교</td></tr>
+      <tr><td><b>에이슬립 A-sleep</b></td><td>수면 점수·단계·주간 추이 리포트 스키마 (RFP 지정 SDK)</td><td>수면 리포트 화면 그대로 구성</td></tr>
+      <tr><td><b>FamilyAlbum</b></td><td>가족 전용 폐쇄형 피드의 톤앤매너</td><td>"우리 가족만 보는 공간" 피드</td></tr>
+    </table></div>
+    <div class="docs-row">
+      <a href="니즈분석.md">📄 니즈·갭 분석 전문</a>
+      <a href="레퍼런스.md">📄 레퍼런스 분석 전문</a>
+      <a href="요구사항체크리스트.md">📄 요구사항 대조표</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><b style="color:#fff">한상 HANSANG</b> — 위시캣 의뢰 제안용 데모 · 실제 서비스가 아닙니다</p>
+    <p style="margin-top:6px">비주얼 에셋은 힉스필드(Higgsfield) AI로 생성 · <a href="app.html">앱 데모 바로가기</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아웃바운더 관리자 콘솔 (데모)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='14' y='14' width='72' height='72' rx='16' fill='%23141414'/><circle cx='40' cy='50' r='16' fill='%2300b670'/><circle cx='64' cy='50' r='10' fill='%23f05519'/></svg>">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="admin-body">
+<a class="skip-link" href="#view">본문 바로가기</a>
+
+<div class="admin-layout" id="admin-layout">
+  <aside class="admin-side" id="admin-side">
+    <a class="brand" href="../index.html">
+      <svg class="bi" width="26" height="26" viewBox="0 0 100 100" aria-hidden="true"><circle cx="38" cy="50" r="26" fill="#00b670"/><circle cx="68" cy="50" r="16" fill="#f05519"/></svg>
+      <span>아웃바운더<small>ADMIN CONSOLE</small></span>
+    </a>
+    <nav aria-label="관리 메뉴">
+      <a href="#/dashboard" data-nav="dashboard"><span class="ico">📊</span>성과 대시보드</a>
+      <a href="#/programs" data-nav="programs"><span class="ico">🗂️</span>프로그램·공고</a>
+      <a href="#/applicants" data-nav="applicants"><span class="ico">📋</span>지원자 관리</a>
+      <a href="#/members" data-nav="members"><span class="ico">👥</span>청년 인재</a>
+      <a href="#/content" data-nav="content"><span class="ico">✍️</span>콘텐츠</a>
+      <a href="#/report" data-nav="report"><span class="ico">📑</span>파트너 리포트</a>
+    </nav>
+    <div class="foot">
+      <div style="margin-bottom:8px"><span class="badge demo">DEMO</span></div>
+      비커넥트랩 운영 콘솔 (제안용 데모)<br>
+      <button onclick="OB.honestyPanel()" style="text-decoration:underline;color:rgba(255,255,255,0.55);margin-top:6px">데모 안내 · 초기화</button>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <div id="view" tabindex="-1"><!-- 라우터 아웃렛 --></div>
+  </main>
+</div>
+
+<script src="../assets/js/seed.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/router.js"></script>
+<script src="../assets/js/views/admin.views.js"></script>
+<script src="../assets/js/admin.js"></script>
+</body>
+</html>

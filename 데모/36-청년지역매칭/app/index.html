@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아웃바운더 — 청년 서비스 (데모)</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='38' cy='50' r='26' fill='%2300b670'/><circle cx='68' cy='50' r='16' fill='%23f05519'/></svg>">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/landing.css">
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+<a class="skip-link" href="#view">본문 바로가기</a>
+
+<header class="shell-header">
+  <div class="container inner">
+    <a class="brand" href="../index.html" aria-label="아웃바운더 데모 홈으로">
+      <svg class="bi" viewBox="0 0 100 100" aria-hidden="true"><circle cx="38" cy="50" r="26" fill="#00b670"/><circle cx="68" cy="50" r="16" fill="#f05519"/></svg>
+      <span>아웃바운더<small>OUTBOUNDER</small></span>
+    </a>
+    <nav class="shell-nav" aria-label="서비스 메뉴">
+      <a href="#/jobs" data-nav="jobs">공고 탐색</a>
+      <a href="#/stories" data-nav="stories">스토리</a>
+      <a href="#/about" data-nav="about">소개</a>
+      <a href="#/mypage" data-nav="mypage">마이페이지</a>
+    </nav>
+    <div class="shell-user" id="user-zone"><!-- JS 렌더 --></div>
+  </div>
+</header>
+
+<main class="view-wrap">
+  <div class="container" id="view" tabindex="-1"><!-- 라우터 아웃렛 --></div>
+</main>
+
+<footer class="shell-footer">
+  <div class="container inner">
+    <span>© 2026 OUTBOUNDER — 제안용 데모 · 데이터는 브라우저에만 저장됩니다</span>
+    <span style="display:flex;gap:16px">
+      <button onclick="OB.honestyPanel()" style="text-decoration:underline;text-underline-offset:3px">데모 안내</button>
+      <a href="../admin/index.html" style="text-decoration:underline;text-underline-offset:3px">관리자 데모</a>
+    </span>
+  </div>
+</footer>
+
+<script src="../assets/js/seed.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/router.js"></script>
+<script src="../assets/js/views/app.views.js"></script>
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

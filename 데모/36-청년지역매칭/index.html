@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아웃바운더 — 도시 청년과 지역을 잇는 로컬 일경험 플랫폼 (데모)</title>
+<meta name="description" content="청년-지역 매칭 플랫폼 아웃바운더 제안용 데모. 공고 탐색부터 지원, 선발, 성과관리까지 원스톱으로.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='38' cy='50' r='26' fill='%2300b670'/><circle cx='68' cy='50' r='16' fill='%23f05519'/></svg>">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/landing.css">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+
+<!-- 상단 모집 배너 : 넥스트로컬 패턴 -->
+<div class="top-banner">
+  <span>2026 하반기 로컬 일경험 크루 모집</span>
+  <span class="dday" id="banner-dday">D-12</span>
+  <a href="app/index.html#/jobs">공고 보기</a>
+</div>
+
+<header class="site-header">
+  <div class="container inner">
+    <a class="brand" href="index.html" aria-label="아웃바운더 홈">
+      <svg class="bi" viewBox="0 0 100 100" aria-hidden="true"><circle cx="38" cy="50" r="26" fill="#00b670"/><circle cx="68" cy="50" r="16" fill="#f05519"/></svg>
+      <span>아웃바운더<small>OUTBOUNDER</small></span>
+    </a>
+    <nav class="gnb" aria-label="주요 메뉴">
+      <a href="#about">소개</a>
+      <a href="#journey">여정</a>
+      <a href="#regions">지역</a>
+      <a href="#jobs">공고</a>
+      <a href="#stories">스토리</a>
+    </nav>
+    <div class="header-cta">
+      <button class="btn ghost sm" onclick="OB.honestyPanel()"><span class="badge demo" style="padding:3px 8px">DEMO</span>&nbsp;안내</button>
+      <a class="btn primary sm" href="app/index.html#/jobs">지원하기</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ① 풀스크린 히어로 : 언더독스 패턴 (EN 디스플레이 + 스크롤 스냅) -->
+<section class="hero" id="hero">
+  <div class="container inner hero-grid">
+    <div>
+      <div class="en-display all-in">Local Work Experience Platform</div>
+      <h1 class="all-in d1">도시를 벗어난 곳에서,<br><span class="hl">커리어의 다음 장</span>을<br>발견하다</h1>
+      <p class="lede all-in d2">아웃바운더는 도시 청년이 지역의 <b>진짜 프로젝트</b>에 참여하며
+        다음 커리어와 삶의 가능성을 발견하는 로컬 일경험 플랫폼입니다.
+        탐색부터 지원, 선발, 활동, 그 이후의 연결까지 — 한 곳에서.</p>
+      <div class="cta-row all-in d3">
+        <a class="btn primary lg" href="app/index.html#/jobs">모집 중인 공고 탐색</a>
+        <a class="btn ghost lg" href="#journey">아웃바운더 여정 보기</a>
+      </div>
+    </div>
+    <div class="hero-visual all-in d2">
+      <div class="ph"><img src="assets/img/hero.webp" alt="바닷가 지역 마을에서 프로젝트를 진행하는 청년들" width="1024" height="576"></div>
+      <div class="chip c1"><span class="n" id="chip-jobs">10</span> 개 공고 모집중</div>
+      <div class="chip c2"><span class="n">96%</span> 참여 만족도</div>
+    </div>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">Scroll</div>
+</section>
+
+<!-- ② 카운트업 임팩트 통계 : 언더독스 패턴 (수치는 store 파생) -->
+<section class="impact-band" aria-label="아웃바운더 누적 임팩트">
+  <div class="container grid" id="impact-grid">
+    <!-- JS 렌더 -->
+  </div>
+</section>
+
+<!-- ③ WHY : 문제의식 -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-head all-in">
+      <span class="ob-label green">Why Outbounder</span>
+      <h2>일경험은 많지만,<br>'남는 경험'은 드뭅니다</h2>
+      <p>견학형 프로그램이 아닌, 지역의 실제 문제를 함께 푸는 프로젝트를 설계합니다.
+        참여의 결과가 청년의 포트폴리오이자 지역의 자산이 되도록.</p>
+    </div>
+    <div class="why-grid">
+      <div class="card why-card hover-lift all-in">
+        <div class="ico" aria-hidden="true">🎯</div>
+        <h6>진짜 문제를 다룹니다</h6>
+        <p>지역·기업·기관이 실제로 풀어야 하는 과업만 공고로 올라옵니다. 브랜딩, 콘텐츠, 리서치, 운영 — 실무 그 자체.</p>
+      </div>
+      <div class="card why-card hover-lift all-in d1">
+        <div class="ico" aria-hidden="true">🧭</div>
+        <h6>결과물이 남습니다</h6>
+        <p>프로젝트마다 산출물이 정의되어 있습니다. 참여가 끝나면 포트폴리오가 한 편 완성됩니다.</p>
+      </div>
+      <div class="card why-card hover-lift all-in d2">
+        <div class="ico" aria-hidden="true">🔗</div>
+        <h6>관계가 이어집니다</h6>
+        <p>활동 종료 후에도 재참여·취업·창업으로 이어지는 후속 연결을 추적하고 지원합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ④ 여정 카드 스택 : 언더독스 스크롤 고정 패턴 -->
+<section class="journey section" id="journey">
+  <div class="container">
+    <div class="section-head all-in">
+      <span class="ob-label orange">The Journey</span>
+      <h2>탐색에서 다음 연결까지,<br>하나의 여정으로</h2>
+    </div>
+  </div>
+  <div class="stack-zone" id="stack-zone">
+    <div class="stack-sticky">
+      <div class="container">
+        <div class="stack-cards" id="stack-cards">
+          <article class="stack-card" data-i="0">
+            <div class="no">01</div>
+            <div>
+              <h4>탐색 — 나에게 맞는 지역과 프로젝트</h4>
+              <p>지역·분야·기간으로 공고를 탐색하고, 온보딩에서 만든 역량 프로필 기반의 <b>매칭 적합도</b>를 확인합니다.</p>
+              <div class="tagrow"><span>지역 다이어그램</span><span>매칭 적합도 %</span><span>D-day 배지</span></div>
+            </div>
+          </article>
+          <article class="stack-card" data-i="1">
+            <div class="no">02</div>
+            <div>
+              <h4>지원 — 프로필이 곧 지원서</h4>
+              <p>한 번 만든 프로필이 지원서에 자동으로 채워집니다. 다단계 폼과 인라인 검증으로 실수 없이, 5분 안에 제출.</p>
+              <div class="tagrow"><span>프로필 자동 연동</span><span>파일 첨부</span><span>접수번호 발급</span></div>
+            </div>
+          </article>
+          <article class="stack-card" data-i="2">
+            <div class="no">03</div>
+            <div>
+              <h4>참여 — 지역에서의 진짜 실무</h4>
+              <p>선발 결과와 활동 일정을 마이페이지 <b>여정 타임라인</b>에서 확인합니다. 활동이 끝나면 만족도를 남깁니다.</p>
+              <div class="tagrow"><span>합격 알림</span><span>여정 타임라인</span><span>만족도 조사</span></div>
+            </div>
+          </article>
+          <article class="stack-card" data-i="3">
+            <div class="no">04</div>
+            <div>
+              <h4>연결 — 경험이 커리어가 되는 순간</h4>
+              <p>참여 이후의 취업·창업·재참여를 추적합니다. 지역과 청년, 양쪽 모두에게 남는 성과로.</p>
+              <div class="tagrow"><span>후속연결 추적</span><span>성과 리포트</span><span>재참여 우대</span></div>
+            </div>
+          </article>
+        </div>
+        <div class="stack-progress" id="stack-progress" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑤ 지역 도트맵 + 칩 -->
+<section class="section region-sec" id="regions">
+  <div class="container region-grid">
+    <div class="all-in" id="dotmap-slot" aria-hidden="false"></div>
+    <div>
+      <div class="section-head all-in" style="margin-bottom:8px">
+        <span class="ob-label blue">Regions</span>
+        <h2>지금, 청년을 기다리는<br><span id="region-count">10</span>개의 지역</h2>
+        <p>핀을 누르거나 지역 버튼을 선택하면 해당 지역의 모집 공고로 이동합니다.</p>
+      </div>
+      <div class="region-chips all-in d1" id="region-chips" role="group" aria-label="지역별 공고 필터"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑥ 모집중 공고 미리보기 (store 실데이터) -->
+<section class="section" id="jobs" style="background:var(--g00)">
+  <div class="container">
+    <div class="section-head all-in" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;max-width:none">
+      <div>
+        <span class="ob-label green">Open Calls</span>
+        <h2>모집 중인 공고</h2>
+      </div>
+      <a class="btn dark" href="app/index.html#/jobs">전체 공고 보기</a>
+    </div>
+    <div class="job-cards" id="jobs-preview"><!-- JS 렌더 --></div>
+  </div>
+</section>
+
+<!-- ⑦ 스토리 -->
+<section class="section" id="stories">
+  <div class="container">
+    <div class="section-head all-in" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;max-width:none">
+      <div>
+        <span class="ob-label purple">Stories</span>
+        <h2>지역에서 온 이야기</h2>
+      </div>
+      <a class="btn ghost" href="app/index.html#/stories">스토리 전체 보기</a>
+    </div>
+    <div class="story-cards" id="stories-preview"><!-- JS 렌더 --></div>
+  </div>
+</section>
+
+<!-- ⑧ 파트너 마퀴 : 넥스트로컬 패턴 -->
+<section class="partner-band" aria-label="함께하는 지역 파트너">
+  <div class="container center" style="margin-bottom:28px">
+    <span class="ob-label green" style="margin:0">Partners</span>
+    <h5 style="margin-top:8px">전국 <span id="partner-count">12</span>곳의 지역 파트너와 함께합니다</h5>
+  </div>
+  <div class="marquee"><div class="track" id="partner-track"><!-- JS 렌더 --></div></div>
+</section>
+
+<!-- ⑨ 선발 일정 : 넥스트로컬 SCHEDULE 패턴 -->
+<section class="section">
+  <div class="container">
+    <div class="section-head all-in">
+      <span class="ob-label orange">Schedule</span>
+      <h2>선발은 이렇게 진행됩니다</h2>
+    </div>
+    <div class="sched-grid">
+      <div class="card sched-card hover-lift all-in"><h6>서류 접수</h6><p>공고별 마감일까지 온라인 지원. 프로필 자동 연동으로 5분이면 충분합니다.</p></div>
+      <div class="card sched-card hover-lift all-in d1"><h6>서류 발표</h6><p>마감 후 4일 이내 개별 안내. 마이페이지에서 실시간 상태 확인.</p></div>
+      <div class="card sched-card hover-lift all-in d2"><h6>온라인 인터뷰</h6><p>지역 파트너와의 30분 화상 인터뷰로 상호 기대치를 맞춥니다.</p></div>
+      <div class="card sched-card hover-lift all-in d3"><h6>최종 선발·매칭</h6><p>합격 확정 후 전담 코디네이터가 온보딩을 돕습니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑩ 듀얼 진입 분기 (데모 특성) -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="section-head all-in center" style="margin-inline:auto">
+      <span class="ob-label green">Demo Entry</span>
+      <h2>두 개의 화면을 모두 경험해 보세요</h2>
+      <p>이 데모는 청년용 서비스와 관리자 콘솔이 실제로 연결되어 있습니다.
+        청년 화면에서 지원하면, 관리자 화면의 지원자 목록에 나타납니다.</p>
+    </div>
+    <div class="dual-entry">
+      <a class="entry-card youth all-in" href="app/index.html">
+        <span class="who">For Youth</span>
+        <h4>청년으로 둘러보기</h4>
+        <p>공고 탐색 → 매칭 적합도 확인 → 지원서 제출 → 마이페이지에서 합격 확인까지. 실제 이용 흐름 그대로.</p>
+        <span class="go">청년 서비스 입장</span>
+        <span class="deco" aria-hidden="true"></span>
+      </a>
+      <a class="entry-card admin all-in d1" href="admin/index.html">
+        <span class="who">For Partners · Admin</span>
+        <h4>관리자 데모 보기</h4>
+        <p>성과 대시보드, 프로그램·공고 관리, 지원자 심사, 콘텐츠 발행, 파트너 리포트까지. 운영의 모든 것.</p>
+        <span class="go">관리자 콘솔 입장</span>
+        <span class="deco" aria-hidden="true"></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ⑪ 블랙 CTA : 언더독스 패턴 -->
+<section class="cta-banner">
+  <div class="container inner">
+    <span class="ob-label white all-in">Ready to Outbound?</span>
+    <h2 class="all-in d1">당신의 다음 장은,<br>도시 바깥에 있을지도 모릅니다</h2>
+    <p class="all-in d2">지금 모집 중인 지역 프로젝트를 확인해 보세요.</p>
+    <div class="all-in d3"><a class="btn primary lg" href="app/index.html#/jobs">공고 탐색 시작하기</a></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container inner">
+    <div>
+      <div class="brand" style="margin-bottom:8px">
+        <svg class="bi" width="22" height="22" viewBox="0 0 100 100" aria-hidden="true"><circle cx="38" cy="50" r="26" fill="#00b670"/><circle cx="68" cy="50" r="16" fill="#f05519"/></svg>
+        <span>아웃바운더</span>
+      </div>
+      <p>© 2026 OUTBOUNDER (제안용 데모) — 본 사이트의 데이터·인물·기관명은 시연을 위해 구성된 가상의 콘텐츠입니다.</p>
+    </div>
+    <div class="footer-links">
+      <button class="footer-a" onclick="OB.honestyPanel()" style="text-decoration:underline;text-underline-offset:3px">데모 안내</button>
+      <a href="app/index.html">청년 서비스</a>
+      <a href="admin/index.html">관리자</a>
+      <a href="../index.html">데모 포털</a>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/seed.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/components.js"></script>
+<script src="assets/js/landing.js"></script>
+</body>
+</html>
