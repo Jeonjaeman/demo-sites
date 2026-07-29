@@ -244,38 +244,53 @@
     elScreen.appendChild(titleBlock('대여 1/3', '어떤 장비를 빌릴까요?'));
 
     var cats = h('div', 'cats reveal');
+    var list = h('div', 'eqlist');
+
+    /* 목록만 제자리 갱신(전체 화면 재렌더 없음) */
+    function paintList() {
+      list.innerHTML = '';
+      S.equip.filter(function (e) { return e.cat === flow.cat; }).forEach(function (e) {
+        var sold = e.avail <= 0;
+        var b = h('button', 'eq card reveal ' + (sold ? 'sold' : 'kfocus'));
+        b.disabled = sold;
+        b.setAttribute('aria-label', e.name + ', ' + (sold ? '대여 불가, 재고 없음' : (money(e.fee) + ', 남은 수량 ' + e.avail + '개')));
+        var low = e.avail <= Math.max(1, Math.round(e.total * 0.25));
+        b.innerHTML =
+          '<span class="eic">' + e.icon + '</span>' +
+          '<span class="einfo"><b>' + e.name + '</b>' +
+            '<span class="enote">' + e.note + ' · ' +
+            (e.fee ? A.won(e.fee) + '/일' : '<span style="color:var(--ok);font-weight:700">무료 대여</span>') +
+            (e.barrierFree ? ' · ♿배리어프리' : '') + '</span></span>' +
+          '<span class="estock"><span class="num">' + (sold ? '품절' : e.avail + '/' + e.total) + '</span>' +
+            '<span class="stockbar' + (low ? ' low' : '') + '"><i data-w="' + Math.round(e.avail / e.total * 100) + '"></i></span></span>';
+        if (!sold) b.onclick = function () { flow.equipId = e.id; go('rentDays'); };
+        list.appendChild(b);
+      });
+      /* 목록 항목만 부드럽게 등장 + 재고바 성장 */
+      list.querySelectorAll('.reveal').forEach(function (it, i) { setTimeout(function () { it.classList.add('in'); }, 30 + i * 40); });
+      setTimeout(function () { list.querySelectorAll('.stockbar i').forEach(function (i) { i.style.width = i.getAttribute('data-w') + '%'; }); }, 80);
+      collectFocus();
+    }
+
     A.CATS.forEach(function (c) {
       var b = h('button', 'cat kfocus', A.CAT_LABEL[c]);
       b.setAttribute('role', 'tab');
       b.setAttribute('aria-selected', c === flow.cat);
       b.setAttribute('aria-label', A.CAT_LABEL[c] + ' 분류');
-      b.onclick = function () { flow.cat = c; go('rentList'); };
+      b.onclick = function () {
+        if (flow.cat === c) return;
+        flow.cat = c;
+        cats.querySelectorAll('.cat').forEach(function (x, i) { x.setAttribute('aria-selected', A.CATS[i] === flow.cat); });
+        paintList();
+        if (voiceOn) announce(A.CAT_LABEL[c] + ' 분류, 장비 ' + list.querySelectorAll('.eq.kfocus').length + '개');
+        resetTimeout();
+      };
       cats.appendChild(b);
     });
     elScreen.appendChild(cats);
-
-    var list = h('div', 'eqlist');
-    S.equip.filter(function (e) { return e.cat === flow.cat; }).forEach(function (e) {
-      var sold = e.avail <= 0;
-      var b = h('button', 'eq card reveal ' + (sold ? 'sold' : 'kfocus'));
-      b.disabled = sold;
-      b.setAttribute('aria-label', e.name + ', ' + (sold ? '대여 불가, 재고 없음' : (money(e.fee) + ', 남은 수량 ' + e.avail + '개')));
-      var low = e.avail <= Math.max(1, Math.round(e.total * 0.25));
-      b.innerHTML =
-        '<span class="eic">' + e.icon + '</span>' +
-        '<span class="einfo"><b>' + e.name + '</b>' +
-          '<span class="enote">' + e.note + ' · ' +
-          (e.fee ? A.won(e.fee) + '/일' : '<span style="color:var(--ok);font-weight:700">무료 대여</span>') +
-          (e.barrierFree ? ' · ♿배리어프리' : '') + '</span></span>' +
-        '<span class="estock"><span class="num">' + (sold ? '품절' : e.avail + '/' + e.total) + '</span>' +
-          '<span class="stockbar' + (low ? ' low' : '') + '"><i data-w="' + Math.round(e.avail / e.total * 100) + '"></i></span></span>';
-      if (!sold) b.onclick = function () { flow.equipId = e.id; go('rentDays'); };
-      list.appendChild(b);
-    });
     elScreen.appendChild(list);
     elScreen.appendChild(backBtn('처음으로'));
-    /* 재고바 성장 */
-    setTimeout(function () { elScreen.querySelectorAll('.stockbar i').forEach(function (i) { i.style.width = i.getAttribute('data-w') + '%'; }); }, 80);
+    paintList();
   };
 
   /* 대여 - 기간 선택 */
@@ -289,22 +304,28 @@
     elScreen.appendChild(head);
 
     var opts = h('div', 'dayopts reveal');
+    var sum = h('div', 'summary reveal');
+
+    /* 기간 선택 시 요약만 제자리 갱신(전체 재렌더 없음) */
+    function paintDays() {
+      opts.querySelectorAll('.dayopt').forEach(function (o, i) { o.setAttribute('aria-selected', [1, 3, 7][i] === flow.days); });
+      sum.innerHTML =
+        '<div class="srow"><span>장비</span><span>' + e.name + '</span></div>' +
+        '<div class="srow"><span>기간</span><span>' + flow.days + '일</span></div>' +
+        '<div class="srow total"><span>결제 금액</span><span>' + (e.fee ? A.won(e.fee * flow.days) : '무료(보증금 없음)') + '</span></div>';
+    }
+
     [1, 3, 7].forEach(function (d) {
       var o = h('button', 'dayopt kfocus');
       o.setAttribute('aria-selected', flow.days === d);
       o.setAttribute('aria-label', d + '일 대여, ' + (e.fee ? A.won(e.fee * d) : '무료'));
       o.innerHTML = '<b>' + d + '일</b><span>' + (e.fee ? A.won(e.fee * d) : '무료') + '</span>';
-      o.onclick = function () { flow.days = d; go('rentDays'); };
+      o.onclick = function () { flow.days = d; paintDays(); if (voiceOn) announce(d + '일 선택, ' + (e.fee ? A.won(e.fee * d) : '무료')); resetTimeout(); };
       opts.appendChild(o);
     });
     elScreen.appendChild(opts);
-
-    var sum = h('div', 'summary reveal');
-    sum.innerHTML =
-      '<div class="srow"><span>장비</span><span>' + e.name + '</span></div>' +
-      '<div class="srow"><span>기간</span><span>' + flow.days + '일</span></div>' +
-      '<div class="srow total"><span>결제 금액</span><span>' + (e.fee ? A.won(e.fee * flow.days) : '무료(보증금 없음)') + '</span></div>';
     elScreen.appendChild(sum);
+    paintDays();
 
     var next = h('button', 'btn primary block big kfocus reveal', e.fee ? '결제하고 대여' : '대여 확정');
     next.setAttribute('aria-label', e.fee ? '결제하고 대여하기' : '무료로 대여 확정하기');
@@ -394,8 +415,10 @@
         if (k === '⌫') flow.keypad = flow.keypad.slice(0, -1);
         else if (k === '확인') { return tryReturnByNo('R' + flow.keypad); }
         else if (flow.keypad.length < 4) flow.keypad += k;
+        /* 표시부만 제자리 갱신(전체 재렌더·재낭독·포커스 리셋 없음) */
+        disp.innerHTML = flow.keypad ? ('R' + flow.keypad) : '<span style="color:var(--ink-2)">R____</span>';
         if (voiceOn && k !== '확인') announce(k === '⌫' ? '지움' : k);
-        go('returnAuth');
+        resetTimeout();
       };
       pad.appendChild(b);
     });
