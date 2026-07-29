@@ -63,7 +63,7 @@
         '<h1 style="font-size:clamp(26px,4.4vw,40px);letter-spacing:-.03em;line-height:1.15;margin:14px 0 12px">' +
           '업비트·빗썸 신규 공지를<br><span style="color:var(--accent)">1초 안에</span> 잡는 감지 스크립트</h1>' +
         '<p class="muted" style="max-width:700px;font-size:15px">' +
-          '아래 콘솔은 <b>실제로 두 거래소를 폴링하고 있습니다.</b> 주기·응답시간·성공률은 전부 실측값입니다. ' +
+          '아래 콘솔은 <b>실제 네트워크 요청을 보내고 있습니다.</b> 주기·응답시간·성공률은 전부 실측값입니다. ' +
           '공지 엔드포인트는 브라우저에서 읽을 수 없어(CORS·아래 표) <b>공지 감지는 서버의 <code style="color:var(--accent)">detector.py</code></b>가 맡고, ' +
           '그 실제 실행 출력을 원래 간격 그대로 재생합니다.</p>' +
         '<div class="center" style="gap:10px;margin-top:18px;flex-wrap:wrap">' +
@@ -82,13 +82,13 @@
           '<div class="center" style="gap:8px;margin:12px 0;flex-wrap:wrap">' +
             '<button class="btn sm" id="btnLiveToggle">일시정지</button>' +
             '<button class="btn sm" id="btnDemoNew">신규 등록 감지 시연</button>' +
-            '<button class="btn sm" id="btnBreak">업비트 장애 주입</button>' +
+            '<button class="btn sm" id="btnBreak">장애 주입</button>' +
             '<span class="small muted" id="liveHint">신규 항목이 나타나면 즉시 잡아 출력합니다</span>' +
           '</div>' +
           '<div class="logbox" id="liveLog" style="height:210px"></div>' +
           '<p class="small muted" style="margin-top:10px">' +
-            '대상은 <b>CORS가 열려 있는 공개 API</b>(업비트 <code>market/all</code> · 빗썸 <code>ticker/ALL_KRW</code>)입니다. ' +
-            '공지 엔드포인트는 브라우저 차단이라 여기서 못 씁니다 — 감지 <b>로직</b>은 납품 코드와 동일합니다.</p>' +
+            '대상은 <b>CORS가 열려 있는 공개 API</b>(업비트 <code>market/all</code> · 빗썸 <code>ticker/ALL_KRW</code> · 빗썸 <code>assetsstatus/ALL</code>)입니다. ' +
+            '공지 엔드포인트는 브라우저 차단이라 여기서 못 씁니다 — 감지 <b>로직</b>은 납품 코드와 동일합니다.<br>공개 API의 CORS 허용은 <b>요청 도메인마다 다릅니다</b>. 막힌 소스는 “브라우저 차단”으로 표시하고 폴링에서 빼며, 그건 서버 detector.py 몫입니다.</p>' +
         '</div></section>' +
 
       /* ── ② 서버 공지 감지 로그 (재생) ─────────────────────── */
@@ -120,7 +120,7 @@
       /* ── CORS 근거 ────────────────────────────────────────── */
       '<section class="card reveal" style="margin-bottom:16px"><div class="card-h">' +
         '<h3>왜 공지는 서버에서 돌려야 하나 — CORS 실측 (' + ZL.CORS.testedAt + ')</h3></div><div class="card-b">' +
-        '<p class="muted small" style="margin-bottom:12px">공지 엔드포인트는 브라우저 교차 출처 요청을 허용하지 않습니다. 반면 <b>공개 시세 API는 허용</b>돼서, 위 라이브 콘솔이 그걸로 실제 폴링을 돌립니다.</p>' +
+        '<p class="muted small" style="margin-bottom:12px">공지 엔드포인트는 브라우저 교차 출처 요청을 <b>어느 도메인에서도</b> 허용하지 않습니다. 공개 시세 API는 열려 있지만 <b>요청 도메인에 따라 갈립니다</b> — 업비트는 localhost에서는 되고 github.io에서는 막힙니다(실측). 위 라이브 콘솔은 이 판정을 시작할 때 직접 해서, 열린 소스만 폴링하고 막힌 소스는 “브라우저 차단”으로 표시합니다.</p>' +
         '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>거래소</th><th>종류</th><th>엔드포인트</th><th>응답</th><th>ACAO</th><th>브라우저</th></tr></thead><tbody>' +
         ZL.CORS.rows.map(function (r) {
           return '<tr><td class="name" style="color:' + (r.ex === 'UPBIT' ? '#7db1ff' : '#ffb865') + '">' + ZL.EX_LABEL[r.ex] + '</td>' +
@@ -189,6 +189,7 @@
   function logLine(box, o) {
     var color = o.kind === 'new' ? 'var(--ok)' :
                 o.kind === 'fail' ? 'var(--bad)' :
+                o.kind === 'blocked' ? 'var(--warn)' :
                 o.kind === 'base' ? '#9fb4d4' : '#cdd6e6';
     var el = document.createElement('div');
     el.style.cssText = 'font-family:var(--mono);font-size:12px;line-height:1.75;color:' + color +
@@ -203,13 +204,19 @@
   function renderStat(rows) {
     var box = $('#liveStat'); if (!box) return;
     box.innerHTML = rows.map(function (s) {
-      return '<div class="stat">' +
-        '<div class="stat-k">' + s.label + ' <span class="small muted">' + s.what + '</span>' +
-          (s.down ? ' <span class="badge b-bad small">장애</span>' : ' <span class="badge b-ok small">정상</span>') + '</div>' +
-        '<div class="stat-v mono">' + (s.periodMs ? (s.periodMs / 1000).toFixed(3) + 's' : '—') + '</div>' +
-        '<div class="stat-d small muted">실측 주기 · 응답 ' + (s.lastMs || 0) + 'ms · ' +
-          s.cycles + '회 폴링(성공 ' + s.ok + ' / 실패 ' + s.fail + ') · 추적 ' + s.tracking + '건</div>' +
-      '</div>';
+      var badge = s.blocked ? ' <span class="badge b-warn small">브라우저 차단</span>'
+                : s.down ? ' <span class="badge b-bad small">장애</span>'
+                : ' <span class="badge b-ok small">정상</span>';
+      var body = s.blocked
+        ? '<div class="stat-v mono" style="font-size:15px;color:var(--warn)">서버 담당</div>' +
+          '<div class="stat-d small muted">이 도메인에서 공개 API가 CORS로 막힙니다. ' +
+          '공지 감지와 마찬가지로 <b>detector.py(서버)</b>가 폴링합니다 — 아래 재생 로그 참고.</div>'
+        : '<div class="stat-v mono">' + (s.periodMs ? (s.periodMs / 1000).toFixed(3) + 's' : '—') + '</div>' +
+          '<div class="stat-d small muted">실측 주기 · 응답 ' + (s.lastMs || 0) + 'ms · ' +
+          s.cycles + '회 폴링(성공 ' + s.ok + ' / 실패 ' + s.fail + ') · 추적 ' + s.tracking + '건</div>';
+      return '<div class="stat"' + (s.blocked ? ' style="opacity:.72"' : '') + '>' +
+        '<div class="stat-k">' + s.label + ' <span class="small muted">' + s.what + '</span>' + badge + '</div>' +
+        body + '</div>';
     }).join('');
   }
 
@@ -244,15 +251,25 @@
       toast('실제 응답의 id ' + n + '건을 신규 취급 — 감지 경로 시연');
     });
 
-    var broken = false;
+    /* 장애 주입 대상은 '이 도메인에서 실제로 돌고 있는' 소스 중 첫 번째로 잡는다.
+       업비트가 CORS로 막힌 환경에서는 그쪽에 주입해도 보여줄 게 없기 때문. */
+    var broken = false, target = null, targetLabel = '';
     $('#btnBreak').addEventListener('click', function () {
+      if (!target) {
+        var alive = live.states.filter(function (st) { return !st.blocked && st.ok > 0; });
+        var other = alive.length > 1 ? alive[1] : null;
+        if (!alive.length) { toast('폴링 중인 소스가 없습니다'); return; }
+        target = alive[0];
+        targetLabel = target.src.label + ' ' + target.src.what;
+        if (!other) { toast('비교할 다른 소스가 없어 격리 효과가 안 보일 수 있습니다'); }
+      }
       broken = !broken;
-      live.breakExchange('UPBIT', broken);
-      this.textContent = broken ? '업비트 복구' : '업비트 장애 주입';
+      live.breakExchange(target.src.name, broken);
+      this.textContent = broken ? targetLabel + ' 복구' : '장애 주입';
       $('#liveHint').textContent = broken
-        ? '업비트를 접속 불가로 바꿨습니다 — 빗썸 주기가 유지되는지 보세요'
+        ? targetLabel + '를 접속 불가로 바꿨습니다 — 다른 소스의 주기가 유지되는지 보세요'
         : '신규 항목이 나타나면 즉시 잡아 출력합니다';
-      toast(broken ? '업비트 장애 주입 — 빗썸은 계속 돕니다' : '업비트 복구');
+      toast(broken ? targetLabel + ' 장애 주입 — 나머지는 계속 돕니다' : targetLabel + ' 복구');
     });
 
     [$('#btnSrcLocked'), $('#btnSrcLocked2')].forEach(function (b) {

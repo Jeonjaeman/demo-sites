@@ -17,7 +17,7 @@
 (function (global) {
   'use strict';
 
-  var EX_LABEL = { UPBIT: '업비트', BITHUMB: '빗썸' };
+  var EX_LABEL = { UPBIT: '업비트', BITHUMB: '빗썸', BITHUMB2: '빗썸' };
 
   /* ---------- detector.py 설정(실제 config.py 값) ---------- */
   function defaultConfig() {
@@ -63,7 +63,7 @@
       { ex: 'BITHUMB', kind: '공지', url: 'feed-api.bithumb.com/v1/notices',
         status: '200 OK', acao: '없음', browser: '차단', ok: false },
       { ex: 'UPBIT', kind: '공개 시세', url: 'api.upbit.com/v1/market/all',
-        status: '200 OK', acao: '있음', browser: '허용', ok: true },
+        status: '200 OK', acao: '요청 도메인에 따라 다름', browser: 'localhost 허용 / github.io 차단', ok: false },
       { ex: 'BITHUMB', kind: '공개 시세', url: 'api.bithumb.com/public/ticker/ALL_KRW',
         status: '200 OK', acao: '있음', browser: '허용', ok: true }
     ]
@@ -149,6 +149,10 @@
        · 실패 시 지수 백오프, 성공 시 리셋
      대상은 CORS가 열려 있는 공개 API입니다(공지 엔드포인트는 차단 — 위 표).
      ===================================================================== */
+  /* ★ 공개 API의 CORS 허용은 '요청을 보내는 도메인'에 따라 다릅니다.
+       업비트 공개 API는 localhost 에서는 열리지만 github.io 에서는 거부됩니다(실측).
+       그래서 시작할 때 실제로 찔러 보고, 막힌 곳은 '브라우저 차단'으로 표시한 뒤
+       폴링 대상에서 뺍니다 — 무한 재시도로 화면이 빨개지지 않도록. */
   var LIVE_SOURCES = [
     {
       name: 'UPBIT', label: '업비트',
@@ -170,6 +174,19 @@
         var d = (j || {}).data || {};
         return Object.keys(d).filter(function (k) { return k !== 'date'; }).map(function (k) {
           return { id: 'KRW-' + k, title: k + ' (KRW-' + k + ')' };
+        });
+      }
+    },
+    {
+      name: 'BITHUMB2', label: '빗썸', what: '입출금 상태',
+      url: 'https://api.bithumb.com/public/assetsstatus/ALL',
+      extract: function (j) {
+        var d = (j || {}).data || {};
+        return Object.keys(d).map(function (k) {
+          var v = d[k] || {};
+          return { id: k + ':' + v.deposit_status + v.withdrawal_status,
+                   title: k + ' 입금' + (v.deposit_status ? '정상' : '중단') +
+                          ' · 출금' + (v.withdrawal_status ? '정상' : '중단') };
         });
       }
     }
@@ -254,12 +271,26 @@
       .catch(function (e) {
         st.fail++;
         st.failStreak++;
+        var msg = (e && e.message ? e.message : String(e));
+        var fast = (self._now() - t0) < 200;
+
+        /* 한 번도 성공한 적 없이 즉시 실패가 이어지면 = 이 도메인에서 CORS 차단.
+           재시도해도 열리지 않으므로 폴링 대상에서 빼고 사유를 밝힌다. */
+        if (!st.ok && fast && /Failed to fetch|NetworkError|load failed/i.test(msg) && st.failStreak >= 2) {
+          st.blocked = true;
+          st.stopped = true;
+          if (st.timer) { clearTimeout(st.timer); st.timer = null; }
+          self.onLog({ ex: st.src.name, kind: 'blocked',
+            text: self._stamp() + ' [' + st.src.name + '] 이 도메인(' + location.host +
+                  ')에서 브라우저 차단 — 서버 detector.py가 담당합니다' });
+          return;
+        }
         var wait = Math.min((self.opts.backoffBaseMs || 500) * Math.pow(2, st.failStreak - 1),
                             self.opts.backoffMaxMs || 8000);
         st.nextOkAt = self._now() + wait;
         self.onLog({ ex: st.src.name, kind: 'fail',
           text: self._stamp() + ' [' + st.src.name + '] 요청 실패(' + st.failStreak + '): ' +
-                (e && e.message ? e.message : e) + ' → ' + (wait / 1000).toFixed(1) + 's 후 재시도' });
+                msg + ' → ' + (wait / 1000).toFixed(1) + 's 후 재시도' });
       })
       .then(function () { self.onStat(self.stats()); });
   };
@@ -309,7 +340,7 @@
         ex: st.src.name, label: st.src.label, what: st.src.what,
         cycles: st.cycles, ok: st.ok, fail: st.fail, skipped: st.skipped,
         lastMs: st.lastMs, periodMs: Math.round(avg), worstMs: Math.round(worst),
-        tracking: st.seen.size, down: st.failStreak > 0
+        tracking: st.seen.size, down: st.failStreak > 0, blocked: !!st.blocked
       };
     });
   };
