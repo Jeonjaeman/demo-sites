@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YEODAM 여담 — 프롬프트 테스트 · 검토 리포트 (데모)</title>
+<meta name="description" content="YEODAM 관리자 — AI 프롬프트 테스트 환경, 여주 팩트 DB·사실 검증기, 소요시간·비용 시뮬레이터, 아동 안전 가드레일, 저작권 대응 생성이력. 모든 데이터는 가상." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<link rel="stylesheet" href="./assets/css/base.css" />
+<style>
+  body{ background:var(--surface); }
+  .wrap{ max-width:1060px; margin:0 auto; padding:0 20px 70px; }
+  .adhead{ display:flex; align-items:center; gap:14px; padding:18px 0; border-bottom:1.5px solid var(--line);
+    position:sticky; top:0; background:var(--surface); z-index:20; flex-wrap:wrap; }
+  .adhead .logo{ width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg,var(--brand),var(--gold));
+    color:#fff; display:grid; place-items:center; font-weight:900; }
+  .adhead h1{ font-size:18px; } .adhead small{ display:block; color:var(--ink-2); font-size:12px; font-weight:600; }
+  .adhead .sp{ margin-left:auto; display:flex; gap:8px; }
+  .nav{ display:flex; gap:6px; flex-wrap:wrap; padding:14px 0; position:sticky; top:60px; background:var(--surface); z-index:19; }
+  .nav a{ font-size:13px; font-weight:700; padding:8px 14px; border-radius:999px; border:1.5px solid var(--line);
+    background:var(--bg); color:var(--ink-2); text-decoration:none; }
+  .nav a.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  section.panel{ margin-top:16px; scroll-margin-top:120px; }
+  .panel > .card{ padding:20px; }
+  .p-h{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+  .p-h h2{ font-size:17px; } .p-h .tag{ margin-left:auto; }
+  .p-desc{ font-size:13px; color:var(--ink-2); line-height:1.6; margin-bottom:14px; }
+
+  textarea.inp{ width:100%; min-height:78px; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px;
+    font-family:inherit; font-size:14px; line-height:1.6; resize:vertical; background:var(--bg); color:var(--ink); }
+  textarea.inp:focus{ border-color:var(--brand); outline:none; }
+  .plabel{ font-size:12.5px; font-weight:800; color:var(--ink-2); margin:12px 0 6px; }
+  .mono{ font-family:ui-monospace,"SFMono-Regular",Menlo,monospace; }
+
+  .preview-out{ margin-top:14px; padding:16px; border-radius:12px; background:var(--paper); color:var(--paper-ink);
+    border:1.5px solid var(--line); font-size:14px; line-height:1.8; white-space:pre-wrap; }
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th,td{ text-align:left; padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{ font-size:11.5px; color:var(--ink-2); text-transform:uppercase; letter-spacing:.03em; }
+  td.c,th.c{ text-align:center; } td.r,th.r{ text-align:right; }
+  .tblwrap{ overflow-x:auto; }
+
+  .factgrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .factcol h4{ font-size:13px; margin-bottom:8px; } .factcol .tags{ display:flex; flex-wrap:wrap; gap:6px; }
+  .ftag{ font-size:12px; font-weight:700; padding:4px 10px; border-radius:999px; background:var(--surface-2); }
+  .ftag.person{ background:var(--brand-weak); color:var(--brand); }
+
+  .issue{ display:flex; gap:8px; align-items:flex-start; padding:8px 0; border-top:1px solid var(--line); font-size:13px; }
+  .issue .it{ font-size:11px; font-weight:800; padding:2px 8px; border-radius:6px; background:var(--danger); color:#fff; white-space:nowrap; }
+
+  .bars{ display:flex; flex-direction:column; gap:8px; }
+  .bar-row{ display:grid; grid-template-columns:140px 1fr 90px; gap:10px; align-items:center; font-size:13px; }
+  .bar{ height:16px; border-radius:8px; background:var(--surface-2); overflow:hidden; }
+  .bar i{ display:block; height:100%; background:var(--jade); width:0; transition:width .6s var(--ease); }
+  .bar.img i{ background:var(--brand); }
+  .slider{ width:100%; }
+  .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:12px 0; }
+  .kpi{ padding:14px; border-radius:12px; background:var(--surface); border:1.5px solid var(--line); }
+  .kpi .kl{ font-size:12px; color:var(--ink-2); font-weight:700; } .kpi .kv{ font-size:24px; font-weight:900; margin-top:4px; }
+
+  .wordchips{ display:flex; flex-wrap:wrap; gap:7px; margin:10px 0; }
+  .wchip{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; padding:5px 12px; border-radius:999px;
+    background:var(--surface-2); }
+  .wchip button{ border:none; background:none; cursor:pointer; color:var(--danger); font-weight:900; font-size:14px; line-height:1; }
+
+  .consist{ display:grid; grid-template-columns:1fr 3fr; gap:14px; align-items:center; }
+  .consist .refimg{ border-radius:14px; overflow:hidden; border:2px solid var(--jade); }
+  .consist .refimg img{ width:100%; display:block; }
+  .scenes{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .scenes .s{ border-radius:12px; overflow:hidden; border:1.5px solid var(--line); }
+  .scenes .s img{ width:100%; aspect-ratio:3/4; object-fit:cover; display:block; }
+  .scenes .s .cap{ font-size:11px; text-align:center; padding:5px; color:var(--ink-2); font-weight:700; }
+
+  .demo-note{ margin-top:18px; padding:12px 14px; border-radius:10px; background:var(--surface-2); font-size:12px; color:var(--ink-2); line-height:1.6; }
+  @media(max-width:800px){ .factgrid{ grid-template-columns:1fr;} .kpis{ grid-template-columns:1fr;} .consist{ grid-template-columns:1fr;} .scenes{ grid-template-columns:repeat(2,1fr);} .bar-row{ grid-template-columns:100px 1fr 70px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="adhead">
+    <div class="logo">여</div>
+    <div><h1>YEODAM 프롬프트 · 검토 콘솔<small>여주 AI 역사동화 파이프라인 PoC</small></h1></div>
+    <div class="sp"><a class="btn ghost sm" href="./index.html">← 파이프라인</a></div>
+  </header>
+
+  <nav class="nav" id="nav">
+    <a href="#prompt" class="on">프롬프트 테스트</a>
+    <a href="#fact">여주 팩트·사실검증</a>
+    <a href="#cost">소요시간·비용</a>
+    <a href="#guard">아동 가드레일</a>
+    <a href="#log">생성이력·저작권</a>
+    <a href="#consist">캐릭터 일관성</a>
+  </nav>
+
+  <!-- 프롬프트 테스트 환경 -->
+  <section class="panel" id="prompt">
+    <div class="card">
+      <div class="p-h"><h2>AI 프롬프트 테스트 환경</h2><span class="chip brand tag">2-4 요구</span></div>
+      <p class="p-desc">프롤로그·동화·삽화 생성 프롬프트를 수정하고, 변경에 따른 생성 결과를 바로 테스트합니다.
+        <b>{name}</b>·<b>{spots}</b> 변수는 실행 시 치환됩니다. (PoC 하네스 — 실서비스에서는 이 프롬프트가 OpenAI로 전달됩니다.)</p>
+      <div class="row"><label class="plabel" style="margin:0">테스트 이름</label>
+        <input class="inp mono" id="tName" value="하늘" style="width:120px;height:38px" />
+        <button class="btn pri sm" id="pTest">▶ 테스트 실행</button>
+        <button class="btn ghost sm" id="pReset">기본값</button></div>
+      <div class="plabel">초대장·프롤로그 프롬프트</div>
+      <textarea class="inp" id="pmInvite"></textarea>
+      <div class="plabel">역사동화 프롬프트</div>
+      <textarea class="inp" id="pmStory"></textarea>
+      <div class="plabel">삽화 프롬프트</div>
+      <textarea class="inp" id="pmImage"></textarea>
+      <div class="preview-out" id="pOut">테스트 실행을 누르면 현재 프롬프트·변수로 생성한 샘플이 여기 표시됩니다.</div>
+    </div>
+  </section>
+
+  <!-- 여주 팩트 DB + 사실검증 -->
+  <section class="panel" id="fact">
+    <div class="card">
+      <div class="p-h"><h2>여주 팩트 DB · 사실 검증기</h2><span class="chip tag">환각 방지</span></div>
+      <p class="p-desc">승인된 여주 역사 사실 목록입니다. 생성문에 이 목록에 없는 연도·인물이 있거나, 활동 세기가 크게 다른
+        인물이 함께 등장하면 <b>환각</b>으로 보고 차단합니다. 아래에 문장을 넣어 직접 검사해 보세요.</p>
+      <div class="factgrid" id="factGrid"></div>
+      <div class="plabel" style="margin-top:16px">문장 검사기</div>
+      <textarea class="inp" id="fcInput">세종대왕이 명성황후에게 도자기를 선물하며 1123년에 이 절을 지었다고 말했어요.</textarea>
+      <div class="row" style="margin-top:8px"><button class="btn pri sm" id="fcRun">🏛 사실 검증 실행</button></div>
+      <div id="fcOut" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- 소요시간·비용 -->
+  <section class="panel" id="cost">
+    <div class="card">
+      <div class="p-h"><h2>단계별 소요시간 · 비용 시뮬레이터</h2><span class="chip tag">3-1 성능</span></div>
+      <p class="p-desc">공고 요구인 단계별 소요 시간 계측입니다. <b>삽화 생성이 병목</b>이라 페이지 수가 늘수록
+        시간·비용이 급증합니다. 슬라이더로 페이지 수를 바꿔 보세요.</p>
+      <div class="row"><label class="plabel" style="margin:0">동화 페이지 수</label>
+        <input type="range" class="slider" id="pgSlider" min="1" max="12" value="4" style="flex:1;max-width:320px" />
+        <b id="pgVal" class="mono">4쪽</b></div>
+      <div class="kpis" id="costKpis"></div>
+      <div class="bars" id="costBars"></div>
+    </div>
+  </section>
+
+  <!-- 가드레일 -->
+  <section class="panel" id="guard">
+    <div class="card">
+      <div class="p-h"><h2>아동 안전 가드레일</h2><span class="chip tag">3-2 보안</span></div>
+      <p class="p-desc">아동 부적절 표현 사전입니다. 생성 텍스트를 이 목록과 대조해 걸러냅니다. 항목을 추가·삭제하고 아래에서 테스트하세요.</p>
+      <div class="wordchips" id="wordChips"></div>
+      <div class="row"><input class="inp mono" id="newWord" placeholder="차단어 추가" style="height:38px;max-width:180px" />
+        <button class="btn sm" id="addWord">＋ 추가</button></div>
+      <div class="plabel" style="margin-top:14px">가드레일 테스트</div>
+      <textarea class="inp" id="grInput">용감한 아이가 무서운 귀신과 칼을 들고 싸움을 벌였어요.</textarea>
+      <div class="row" style="margin-top:8px"><button class="btn pri sm" id="grRun">🛡 가드레일 검사</button></div>
+      <div id="grOut" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- 생성이력 저작권 -->
+  <section class="panel" id="log">
+    <div class="card">
+      <div class="p-h"><h2>생성 이력 · 저작권 대응</h2><span class="chip brand tag">핵심</span></div>
+      <p class="p-desc">AI 단독 생성물은 저작권이 성립하지 않을 수 있고, 정부지원 산출물은 귀속 규정을 따릅니다.
+        문체부 「생성형 AI 저작권 안내서」는 <b>인간의 창작적 개입·생성 과정 기록</b>을 등록·분쟁의 근거로 봅니다.
+        파이프라인 실행마다 프롬프트·모델·시각·검수 결과를 남깁니다.</p>
+      <div class="row" style="margin-bottom:10px"><button class="btn ghost sm" id="csvBtn">CSV 내려받기</button>
+        <button class="btn ghost sm" id="clearLog">이력 지우기</button></div>
+      <div class="tblwrap"><table id="logTbl"><thead><tr>
+        <th>시각</th><th>주인공</th><th>텍스트 모델</th><th>삽화 모델</th><th class="c">사실검증</th><th>인간 개입(검수)</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- 캐릭터 일관성 -->
+  <section class="panel" id="consist">
+    <div class="card">
+      <div class="p-h"><h2>삽화 캐릭터 일관성</h2><span class="chip tag">기술 함정 대응</span></div>
+      <p class="p-desc">AI 삽화의 최대 난점은 <b>페이지마다 주인공 얼굴이 바뀌는 것</b>입니다.
+        기준 캐릭터 시트를 <b>레퍼런스</b>로 고정하고 모든 장면을 그 참조로 생성해 동일 인물을 유지했습니다(아래는 실제 생성 에셋).</p>
+      <div class="consist">
+        <div><div class="refimg"><img src="./assets/img/char.jpg" alt="주인공 레퍼런스" /></div>
+          <div style="text-align:center;font-size:12px;font-weight:700;color:var(--jade);margin-top:6px">기준 캐릭터(레퍼런스)</div></div>
+        <div class="scenes">
+          <div class="s"><img src="./assets/img/cover.jpg" alt="표지"><div class="cap">여강 저녁</div></div>
+          <div class="s"><img src="./assets/img/p1.jpg" alt="영릉"><div class="cap">영릉</div></div>
+          <div class="s"><img src="./assets/img/p3.jpg" alt="도자기"><div class="cap">여주 도자기</div></div>
+          <div class="s"><img src="./assets/img/p4.jpg" alt="명성황후 생가"><div class="cap">명성황후 생가</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="demo-note">⚠ 데모 안내 — 모든 텍스트·삽화·이력은 <b>가상 예시</b>입니다. 삽화는 사전 생성된 AI 에셋이며,
+    실서비스에서는 OpenAI·이미지 생성 API가 승인된 여주 원천 콘텐츠로 실시간 생성합니다. 법적 판단은 참고용입니다.</div>
+</div>
+
+<div class="toast-wrap" id="toastWrap" aria-live="assertive"></div>
+<script src="./assets/js/core.js"></script>
+<script src="./assets/js/admin.js"></script>
+</body>
+</html>
