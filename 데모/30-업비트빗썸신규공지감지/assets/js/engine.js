@@ -63,7 +63,7 @@
       { ex: 'BITHUMB', kind: '공지', url: 'feed-api.bithumb.com/v1/notices',
         status: '200 OK', acao: '없음', browser: '차단', ok: false },
       { ex: 'UPBIT', kind: '공개 시세', url: 'api.upbit.com/v1/market/all',
-        status: '200 OK', acao: '요청 도메인에 따라 다름', browser: 'localhost 허용 / github.io 차단', ok: false },
+        status: '200 OK', acao: '요청 도메인에 따라 다름', browser: 'localhost 100% / github.io 12회 중 1회', ok: false },
       { ex: 'BITHUMB', kind: '공개 시세', url: 'api.bithumb.com/public/ticker/ALL_KRW',
         status: '200 OK', acao: '있음', browser: '허용', ok: true }
     ]
@@ -273,16 +273,27 @@
         st.failStreak++;
         var msg = (e && e.message ? e.message : String(e));
         var fast = (self._now() - t0) < 200;
+        var corsish = /Failed to fetch|NetworkError|load failed/i.test(msg);
+        var tries = st.ok + st.fail;
+        var rate = tries ? st.ok / tries : 0;
 
-        /* 한 번도 성공한 적 없이 즉시 실패가 이어지면 = 이 도메인에서 CORS 차단.
-           재시도해도 열리지 않으므로 폴링 대상에서 빼고 사유를 밝힌다. */
-        if (!st.ok && fast && /Failed to fetch|NetworkError|load failed/i.test(msg) && st.failStreak >= 2) {
+        /* 이 도메인에서 쓸 수 없는 소스는 폴링을 접고 사유를 밝힌다.
+           ① 하드 차단  : 한 번도 성공 못 하고 즉시 실패가 2회 이상
+           ② 사실상 불가 : 8회 이상 시도했는데 성공률이 1/3 미만
+                          (업비트 공개 API는 github.io 에서 12회 중 1회만 성공 — 실측)
+           무한 재시도로 화면이 빨개지는 것보다, 왜 서버가 필요한지 보여주는 게 낫다. */
+        var hardBlock = (st.ok === 0 && fast && corsish && st.failStreak >= 2);
+        var unreliable = (tries >= 8 && rate < 0.34);
+        if (hardBlock || unreliable) {
           st.blocked = true;
+          st.blockRate = rate;
           st.stopped = true;
           if (st.timer) { clearTimeout(st.timer); st.timer = null; }
           self.onLog({ ex: st.src.name, kind: 'blocked',
-            text: self._stamp() + ' [' + st.src.name + '] 이 도메인(' + location.host +
-                  ')에서 브라우저 차단 — 서버 detector.py가 담당합니다' });
+            text: self._stamp() + ' [' + st.src.name + '] 이 도메인(' + location.host + ')에서는 ' +
+                  (hardBlock ? '브라우저가 차단합니다'
+                             : '성공률 ' + Math.round(rate * 100) + '% (' + st.ok + '/' + tries + ') — 사실상 폴링 불가') +
+                  ' → 서버 detector.py 담당으로 넘깁니다' });
           return;
         }
         var wait = Math.min((self.opts.backoffBaseMs || 500) * Math.pow(2, st.failStreak - 1),
@@ -340,7 +351,7 @@
         ex: st.src.name, label: st.src.label, what: st.src.what,
         cycles: st.cycles, ok: st.ok, fail: st.fail, skipped: st.skipped,
         lastMs: st.lastMs, periodMs: Math.round(avg), worstMs: Math.round(worst),
-        tracking: st.seen.size, down: st.failStreak > 0, blocked: !!st.blocked
+        tracking: st.seen.size, down: st.failStreak > 0, blocked: !!st.blocked, blockRate: st.blockRate
       };
     });
   };

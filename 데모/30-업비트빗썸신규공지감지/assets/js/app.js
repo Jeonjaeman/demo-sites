@@ -209,8 +209,8 @@
                 : ' <span class="badge b-ok small">정상</span>';
       var body = s.blocked
         ? '<div class="stat-v mono" style="font-size:15px;color:var(--warn)">서버 담당</div>' +
-          '<div class="stat-d small muted">이 도메인에서 공개 API가 CORS로 막힙니다. ' +
-          '공지 감지와 마찬가지로 <b>detector.py(서버)</b>가 폴링합니다 — 아래 재생 로그 참고.</div>'
+          '<div class="stat-d small muted">이 도메인에서는 공개 API 폴링이 되지 않습니다' + (typeof s.blockRate === 'number' && s.blockRate > 0 ? ' (성공률 ' + Math.round(s.blockRate * 100) + '%)' : '') + '. ' +
+          '공지 감지와 같은 이유로 <b>detector.py(서버)</b>가 폴링합니다 — 아래 재생 로그 참고.</div>'
         : '<div class="stat-v mono">' + (s.periodMs ? (s.periodMs / 1000).toFixed(3) + 's' : '—') + '</div>' +
           '<div class="stat-d small muted">실측 주기 · 응답 ' + (s.lastMs || 0) + 'ms · ' +
           s.cycles + '회 폴링(성공 ' + s.ok + ' / 실패 ' + s.fail + ') · 추적 ' + s.tracking + '건</div>';
