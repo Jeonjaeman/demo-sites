@@ -48,7 +48,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body {
   margin: 0; font-family: var(--font); background: var(--bg); color: var(--ink);
@@ -279,6 +279,47 @@ img, svg { display: block; max-width: 100%; }
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
 .reveal.is-visible { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } .live-dot i { animation: none; } }
+
+/* ==========================================================================
+   지침 섹션 — 100vw 풀블리드 · 마우스 반응 카드 · 텍스트 애니메이션 (애플·삼성 벤치마크)
+   ========================================================================== */
+.wide { width: 100vw; margin-left: calc(50% - 50vw); }
+.mask { display: block; overflow: hidden; }
+.mask > span { display: block; transform: translateY(108%); transition: transform .95s cubic-bezier(.16,1,.3,1); }
+.mask.is-visible > span { transform: none; }
+.mask.d1 > span { transition-delay: .08s; }
+.words .w { display: inline-block; overflow: hidden; vertical-align: top; }
+.words .w > i { display: inline-block; font-style: inherit; transform: translateY(110%); transition: transform .8s cubic-bezier(.16,1,.3,1); }
+.words.is-visible .w > i { transform: none; }
+@media (prefers-reduced-motion: reduce) { .mask > span, .words .w > i { transform: none; transition: none; } }
+
+/* ② 풀블리드 이미지 statement */
+.statement { position: relative; min-height: 78vh; display: flex; align-items: center; overflow: hidden; color: #fff; background: var(--ink); }
+.statement-bg { position: absolute; inset: -14% 0; z-index: 0; }
+.statement-bg img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.statement-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,16,30,.86), rgba(8,16,30,.5) 52%, rgba(8,16,30,.2)); }
+.statement-in { position: relative; z-index: 2; padding-block: clamp(84px, 13vh, 176px); }
+.statement .st-eye { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #9DC0FF; display: block; margin-bottom: 20px; }
+.statement h2 { font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.12; letter-spacing: -.03em; max-width: 20ch; }
+.statement p { margin-top: 24px; max-width: 46ch; font-size: clamp(1rem, 1.5vw, 1.18rem); line-height: 1.75; color: #ccd8ea; }
+
+/* ① 마우스 반응 카드 (안전장치) */
+.apps { background: var(--bg2); }
+.apps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 22px); padding-inline: clamp(12px, 1.6vw, 24px); perspective: 1200px; }
+.app-card { position: relative; aspect-ratio: 4/5; border-radius: var(--radius-lg); overflow: hidden; background: var(--ink); transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .5s var(--ease); transform-style: preserve-3d; }
+.app-card.tilting { transition: transform .08s linear; }
+.app-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform .6s var(--ease); }
+.app-card:hover img { transform: scale(1.13); }
+.app-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(8,16,30,.95) 4%, rgba(8,16,30,.18) 56%, transparent); z-index: 1; }
+.app-spot { position: absolute; inset: 0; z-index: 2; background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.22), transparent 62%); opacity: 0; transition: opacity .3s var(--ease); mix-blend-mode: soft-light; pointer-events: none; }
+.app-card:hover .app-spot { opacity: 1; }
+.app-body { position: absolute; inset: auto 0 0 0; z-index: 3; padding: clamp(20px, 2vw, 28px); color: #fff; transform: translateZ(40px); }
+.app-body .n { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: #7BE0C4; }
+.app-body h3 { font-size: clamp(1.2rem, 1.7vw, 1.5rem); margin: 8px 0 6px; }
+.app-body p { font-size: 13px; color: #d7e0ee; line-height: 1.6; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .35s var(--ease), max-height .35s var(--ease); }
+.app-card:hover .app-body p { opacity: 1; max-height: 84px; }
+.section-kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+@media (max-width: 760px) { .apps-grid { grid-template-columns: 1fr; } }
 
 /* ==========================================================================
    관리자 (admin.html)
