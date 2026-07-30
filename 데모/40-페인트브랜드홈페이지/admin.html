@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2300393c'/%3E%3Ccircle cx='32' cy='30' r='13' fill='none' stroke='%23ff4e1c' stroke-width='6'/%3E%3Cpath d='M32 43v10' stroke='%23f0eedf' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>관리자 — HUELAB 휴랩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+  <link rel="stylesheet" href="assets/css/huelab.css">
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/admin.js"></script>
+</head>
+<body class="admin-body">
+  <a class="skip-link" href="#adminMain">관리 콘텐츠로 바로가기</a>
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <div class="admin-brand" style="font-family:var(--display)">HUELAB<small>ADMIN DEMO</small></div>
+      <nav class="admin-nav" aria-label="관리 메뉴">
+        <button class="is-active" type="button" data-view="products" data-title="제품 관리" data-desc="제품 정보를 등록·수정·삭제하고 게시 상태를 관리합니다."><b>01</b>제품 관리</button>
+        <button type="button" data-view="cases" data-title="시공 사례 관리" data-desc="시공 사례를 등록·수정·삭제하고 게시 상태를 관리합니다."><b>02</b>시공 사례 관리</button>
+      </nav>
+      <a class="admin-back" href="index.html">← 공개 사이트로</a>
+    </aside>
+
+    <main class="admin-main" id="adminMain">
+      <div class="admin-top">
+        <div>
+          <h1 data-admin-title>제품 관리</h1>
+          <p data-admin-desc>제품 정보를 등록·수정·삭제하고 게시 상태를 관리합니다.</p>
+        </div>
+        <button class="row-btn" type="button" data-reset>초기값 복원</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat"><span>전체 제품</span><strong data-s-prod>0</strong></div>
+        <div class="admin-stat"><span>시공 사례</span><strong data-s-case>0</strong></div>
+        <div class="admin-stat"><span>게시 중</span><strong data-s-pub>0</strong></div>
+      </div>
+
+      <!-- 제품 -->
+      <section class="admin-view is-active" data-view-panel="products">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>제품 목록</h2><button class="btn btn-primary btn-sm" type="button" data-add="product">+ 제품 등록</button></div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr><th>코드</th><th>제품명</th><th>분류</th><th>친환경/인증</th><th>상태</th><th>관리</th></tr></thead>
+              <tbody data-prod-rows></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 시공 사례 -->
+      <section class="admin-view" data-view-panel="cases">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>시공 사례 목록</h2><button class="btn btn-primary btn-sm" type="button" data-add="case">+ 시공 사례 등록</button></div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr><th>코드</th><th>제목</th><th>유형</th><th>적용 제품</th><th>상태</th><th>관리</th></tr></thead>
+              <tbody data-case-rows></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="admin-panel" aria-labelledby="editorTitle">
+    <h2 id="editorTitle" data-editor-title>등록</h2>
+    <form data-edit-form>
+      <label class="field"><span>이름 <b style="color:var(--orange)">*</b></span><input name="name" required minlength="2"></label>
+      <div class="field-row">
+        <label class="field"><span data-f-cat-label>분류</span><input name="cat" required></label>
+        <label class="field"><span data-f-extra-label>태그</span><input name="extra"></label>
+      </div>
+      <label style="display:flex;gap:10px;align-items:center;font-size:14px;margin-bottom:20px"><input name="published" type="checkbox" style="width:18px;height:18px;accent-color:var(--teal)"><span>공개 사이트에 게시</span></label>
+      <div class="panel-actions">
+        <button class="btn btn-primary" type="submit">저장</button>
+        <button class="btn btn-ghost panel-cancel" type="button">취소</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="admin-toast" role="status" aria-live="polite"></div>
+</body>
+</html>
