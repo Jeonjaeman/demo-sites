@@ -69,7 +69,7 @@
         `<span class="hero-cat">${s.cat}</span>` +
         `<h1 class="display hero-h">${lines}</h1>` +
         `<p class="hero-sub">${s.sub}</p>` +
-        `<div style="margin-top:30px"><a class="btn btn-light" href="${ctaFor(i)}">${ctaLabel(i)}</a></div>` +
+        `<div style="margin-top:28px"><a class="btn btn-text" href="${ctaFor(i)}">${ctaLabel(i)} <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></a></div>` +
         `</div></div>`;
       frag.append(slide);
     });
