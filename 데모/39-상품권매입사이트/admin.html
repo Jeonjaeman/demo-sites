@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231B5CF6'/%3E%3Cpath d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>관리자 — PINGUARD 핀가드</title>
+  <link rel="stylesheet" href="assets/css/pinguard.css">
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/admin.js"></script>
+</head>
+<body class="admin-body">
+  <a class="skip-link" href="#adminMain">관리 콘텐츠로 바로가기</a>
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <div class="admin-brand">
+        <span class="brand-mark" style="width:28px;height:28px;border-radius:8px;background:var(--blue);display:grid;place-items:center"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/></svg></span>
+        <span>PINGUARD<small>ADMIN DEMO</small></span>
+      </div>
+      <nav class="admin-nav" aria-label="관리 메뉴">
+        <button class="is-active" type="button" data-view="orders" data-title="주문 관리" data-desc="핀 검증·본인확인·이상거래탐지 상태를 한눈에 확인합니다."><b>01</b>주문 관리</button>
+        <button type="button" data-view="remit" data-title="송금 관리" data-desc="본인확인·핀검증·이상거래탐지를 모두 통과한 주문만 송금할 수 있습니다."><b>02</b>송금 관리</button>
+        <button type="button" data-view="rates" data-title="매입률 설정" data-desc="상품권별 매입률을 조정하면 모든 주문의 지급예정액에 즉시 반영됩니다."><b>03</b>매입률 설정</button>
+        <button type="button" data-view="fds" data-title="이상거래 룰(FDS)" data-desc="자금세탁·대포통장 악용을 막기 위한 자동 판정 규칙입니다."><b>04</b>이상거래 룰</button>
+      </nav>
+      <a class="admin-back" href="index.html">← 공개 사이트로</a>
+    </aside>
+
+    <main class="admin-main" id="adminMain">
+      <div class="admin-top">
+        <div>
+          <h1 data-admin-title>주문 관리</h1>
+          <p data-admin-desc>핀 검증·본인확인·이상거래탐지 상태를 한눈에 확인합니다.</p>
+        </div>
+        <p style="color:var(--muted);font-size:12.5px">데이터는 이 브라우저에만 저장됩니다 · 가상 데이터</p>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat"><span>전체 주문</span><strong data-s-total>0</strong><small>today</small></div>
+        <div class="admin-stat"><span>송금 완료</span><strong data-s-paid>0</strong><small>paid</small></div>
+        <div class="admin-stat warn"><span>검토 대기</span><strong data-s-review>0</strong><small>KYC·핀검증</small></div>
+        <div class="admin-stat danger"><span>이상거래 보류</span><strong data-s-hold>0</strong><small>FDS hold</small></div>
+      </div>
+
+      <!-- 주문 관리 -->
+      <section class="admin-view is-active" data-view-panel="orders">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>전체 주문</h2><span class="signal review">🔒 미통과 건은 송금 버튼이 잠깁니다</span></div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr><th>주문번호</th><th>상품권</th><th>지급예정액</th><th>본인확인</th><th>핀검증</th><th>FDS</th><th>상태</th><th>송금</th></tr></thead>
+              <tbody data-orders></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 송금 관리 -->
+      <section class="admin-view" data-view-panel="remit">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>송금 가능 주문 (전 조건 통과분)</h2><span class="signal pass">본인확인 + 핀검증 + FDS 통과</span></div>
+          <div class="table-scroll">
+            <table class="admin-table">
+              <thead><tr><th>주문번호</th><th>상품권</th><th>지급예정액</th><th>본인확인</th><th>핀검증</th><th>FDS</th><th>상태</th><th>송금</th></tr></thead>
+              <tbody data-remit></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- 매입률 설정 -->
+      <section class="admin-view" data-view-panel="rates">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>상품권별 매입률</h2><button class="row-btn" type="button" data-rate-reset>초기값 복원</button></div>
+          <div class="rate-edit-grid" data-rate-edit></div>
+        </div>
+        <p class="quote-note" style="margin-top:14px">※ 매입률을 바꾸면 좌측 주문 관리·송금 관리의 지급예정액이 즉시 재계산됩니다. (localStorage 저장)</p>
+      </section>
+
+      <!-- FDS 룰 -->
+      <section class="admin-view" data-view-panel="fds">
+        <div class="admin-card">
+          <div class="admin-card-head"><h2>이상거래탐지(FDS) 자동 판정 규칙</h2></div>
+          <div class="fds-list" data-fds></div>
+        </div>
+        <p class="quote-note" style="margin-top:14px">※ 주문 목록의 FDS 열은 위 규칙으로 <b>실제 계산</b>됩니다(건수·금액 기준). ‘보류’ 건은 관리자 확인 전 자동 송금이 차단됩니다.</p>
+      </section>
+    </main>
+  </div>
+  <div class="admin-toast" role="status" aria-live="polite"></div>
+</body>
+</html>

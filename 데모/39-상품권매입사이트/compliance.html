@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="상품권 매입 공고 요구 기능별 법적 진단과 준법 대안">
+  <meta name="theme-color" content="#0C1626">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231B5CF6'/%3E%3Cpath d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <title>준법 진단 — PINGUARD 핀가드</title>
+  <link rel="stylesheet" href="assets/css/pinguard.css">
+  <script defer src="assets/js/data.js"></script>
+  <script defer src="assets/js/compliance.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#list">진단 목록으로 바로가기</a>
+  <div class="demo-ribbon">
+    <span><b>준법 진단</b></span>
+    <span>공고 요구 기능을 법적으로 진단하고 준법 대안을 제시합니다. 법률 자문이 아닌 실무 참고용입니다.</span>
+  </div>
+
+  <header class="site-header">
+    <div class="shell header-in">
+      <a class="brand" href="index.html" aria-label="PINGUARD 홈">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <span>PINGUARD<small>핀가드 · 상품권 매입</small></span>
+      </a>
+      <nav class="nav" aria-label="주요 메뉴">
+        <a href="index.html#rates">매입 시세</a>
+        <a href="index.html#apply">매입 신청</a>
+        <a href="compliance.html">준법 안내</a>
+        <a href="admin.html">관리자</a>
+      </nav>
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm" href="index.html">← 홈으로</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="shell">
+      <p class="kicker">Compliance Diagnosis</p>
+      <h1>“요구사항대로” 만들면<br>어디서 위법이 되는가</h1>
+      <p>이 공고의 요구 기능(회원가입 없이 자동 판별·자동 송금, 소액결제 상품권 현금화, 핀 자동 등록)을 하나씩 법적으로 진단했습니다. 만들 수 있느냐가 아니라, <b style="color:#fff">그대로 만들면 처벌받는 지점</b>을 먼저 봤습니다.</p>
+      <a class="back" href="index.html">← 매입 사이트로 돌아가기</a>
+    </div>
+  </section>
+
+  <main class="section" id="list">
+    <div class="shell">
+      <div class="c-summary reveal">
+        <div class="c-tile block"><span class="num" data-c-block>0</span><span class="lbl">그대로는 위법 — 재설계 필수</span></div>
+        <div class="c-tile review"><span class="num" data-c-review>0</span><span class="lbl">조건부 — 준법 장치 필요</span></div>
+        <div class="c-tile pass"><span class="num" data-c-pass>0</span><span class="lbl">준법 — 정상 취급</span></div>
+      </div>
+
+      <div class="c-filters reveal">
+        <button class="c-chip is-active" type="button" data-c-filter="all">전체</button>
+        <button class="c-chip" type="button" data-c-filter="block">그대로는 위법</button>
+        <button class="c-chip" type="button" data-c-filter="review">조건부·재설계</button>
+        <button class="c-chip" type="button" data-c-filter="pass">준법</button>
+      </div>
+
+      <div class="c-list" data-compliance-list></div>
+
+      <p class="quote-note" style="margin-top:22px">※ 본 진단은 공개된 법령·판례·업계 관행에 근거한 실무 참고용이며, 개별 사안의 최종 판단은 변호사·세무사 검토가 필요합니다. 데모 내 수치·사업자정보는 가상입니다.</p>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell">
+      <div class="footer-legal" style="margin-top:0;border-top:0">
+        <strong>PINGUARD 핀가드</strong> · 제안용 준법 진단 데모 — 실제 서비스가 아닙니다.<br>
+        상품권 매입은 사업자등록(상품권매매업)과 통신판매업 신고를 갖춘 사업자가, 본인확인·이상거래탐지를 적용해 정상 보유 상품권만 취급할 때 합법적으로 운영됩니다.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
