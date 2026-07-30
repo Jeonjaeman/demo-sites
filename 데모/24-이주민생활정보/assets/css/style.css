@@ -14,11 +14,12 @@
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   margin: 0;
   background: linear-gradient(180deg, var(--stone), #fff 38%, var(--mint));
   color: var(--ink);
+  overflow-x: clip;
 }
 a { color: inherit; text-decoration: none; }
 button, input, select, textarea { font: inherit; }
@@ -274,3 +275,46 @@ th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
   .metric-grid, .listing-facts { grid-template-columns: 1fr; }
   .btn { width: 100%; }
 }
+
+/* ============================================================
+   지침 섹션 — 100vw 풀블리드 이미지 statement · 마우스 반응 카드 · 라인 마스크 텍스트 애니
+   (애플·삼성 벤치마크 · MOST forest 팔레트)
+   ============================================================ */
+.gbleed { width: 100vw; margin-left: calc(50% - 50vw); }
+.g-reveal { opacity: 0; transform: translateY(26px); transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .8s cubic-bezier(.16,1,.3,1); }
+.g-reveal.is-visible { opacity: 1; transform: none; }
+.mask { display: block; overflow: hidden; }
+.mask > span { display: block; transform: translateY(110%); transition: transform .95s cubic-bezier(.16,1,.3,1); }
+.mask.is-visible > span { transform: none; }
+.mask.d1 > span { transition-delay: .09s; }
+@media (prefers-reduced-motion: reduce) { .g-reveal, .mask > span { opacity: 1; transform: none; transition: none; } }
+.gwrap { max-width: 1180px; margin: 0 auto; padding-inline: clamp(18px, 4vw, 44px); }
+.g-eye { font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--forest); display: block; margin-bottom: 14px; }
+
+/* ② 풀블리드 이미지 statement */
+.stmt { position: relative; min-height: 62vh; display: flex; align-items: flex-end; overflow: hidden; color: #fff; background: #052a22; }
+.stmt-bg { position: absolute; inset: -14% 0; z-index: 0; }
+.stmt-bg img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.stmt-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,32,26,.92) 2%, rgba(5,42,34,.24) 48%, rgba(5,42,34,.34)); }
+.stmt-in { position: relative; z-index: 2; padding-block: clamp(54px, 9vh, 112px); }
+.stmt .g-eye { color: #7fd7bd; }
+.stmt h2 { margin: 0; font-size: clamp(1.9rem, 4.8vw, 3.3rem); font-weight: 800; line-height: 1.14; letter-spacing: -.02em; max-width: 20ch; }
+.stmt p { margin-top: 20px; max-width: 46ch; font-size: clamp(1rem, 1.4vw, 1.14rem); line-height: 1.75; color: #dbeee6; }
+
+/* ① 마우스 반응 카드 (정착 길목) */
+.topics { padding: clamp(52px, 7vw, 96px) 0; }
+.topics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.3vw, 18px); padding-inline: clamp(12px, 1.6vw, 24px); perspective: 1200px; }
+.topic { position: relative; aspect-ratio: 4 / 5.2; border-radius: 16px; overflow: hidden; background: #052a22; transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .5s cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; }
+.topic.tilting { transition: transform .08s linear; }
+.topic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform .6s cubic-bezier(.22,.61,.36,1); }
+.topic:hover img { transform: scale(1.13); }
+.topic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,32,26,.93) 4%, rgba(5,42,34,.12) 56%, transparent); z-index: 1; }
+.topic-spot { position: absolute; inset: 0; z-index: 2; background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(127,215,189,.32), transparent 62%); opacity: 0; transition: opacity .3s; mix-blend-mode: soft-light; pointer-events: none; }
+.topic:hover .topic-spot { opacity: 1; }
+.topic-body { position: absolute; inset: auto 0 0 0; z-index: 3; padding: clamp(16px, 1.8vw, 24px); color: #fff; transform: translateZ(40px); }
+.topic-body .n { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: #7fd7bd; }
+.topic-body h3 { font-size: clamp(1.1rem, 1.5vw, 1.4rem); font-weight: 800; margin: 6px 0 6px; }
+.topic-body p { font-size: 12.5px; color: #dbeee6; line-height: 1.6; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .35s, max-height .35s; }
+.topic:hover .topic-body p { opacity: 1; max-height: 96px; }
+@media (max-width: 900px) { .topics-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 520px) { .topics-grid { grid-template-columns: 1fr; } }

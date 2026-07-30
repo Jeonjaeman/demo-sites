@@ -5,6 +5,16 @@
   var state = { lang: "ko", rent: 70, district: "", type: "", approved: false };
   var copy = {
     ko: {
+      stEyebrow: "НАДЁЖНЫЙ МОСТ · 믿을 수 있는 다리",
+      stLine1: "낯선 나라의 첫 집을",
+      stLine2: "안심하고 고르도록",
+      stBody: "승인 상태·필수 광고정보·출처·최종검토일을 한 화면에서. 판단은 정보가 투명할 때 비로소 가능합니다.",
+      topicsEyebrow: "무엇을 도와드리나요",
+      topicsTitle: "정착의 네 갈래 길목",
+      t1n: "01 / 주거", t1h: "집 구하기", t1p: "승인된 매물만, 월세·보증금·관리비까지 투명하게. 계약 전 확인할 것을 먼저 보여 드립니다.",
+      t2n: "02 / 생활·행정", t2h: "정착 행정", t2p: "전입신고·외국인등록·건강보험까지, 순서대로 밟는 생활 행정 안내.",
+      t3n: "03 / 법률·비자", t3h: "법률과 비자", t3p: "체류자격·계약 분쟁·임금 문제, 출처와 최종검토일이 붙은 정보로.",
+      t4n: "04 / 커뮤니티", t4h: "먼저 온 이웃", t4p: "같은 길을 지나온 사람들의 경험과 후기 — 판단 대신 곁을 내어주는 자리.",
       kicker: "승인 투명성을 우선하는 주거검색",
       heroTitle: "러시아어권 이주민을 위한 믿을 수 있는 생활정보 다리",
       heroBody: "매물 승인상태, 광고정보, 출처와 최종검토일을 한 화면에서 확인하고 신고까지 이어집니다.",
@@ -60,6 +70,16 @@
       submitListing: "Отправить на проверку",
       reportTitle: "Жалоба на объект",
       sendReport: "Отправить жалобу",
+      stEyebrow: "НАДЁЖНЫЙ МОСТ · надёжный мост",
+      stLine1: "Первый дом в чужой стране",
+      stLine2: "выбираем спокойно",
+      stBody: "Статус проверки, обязательная информация объявления, источник и дата проверки — на одном экране. Решение возможно, когда информация прозрачна.",
+      topicsEyebrow: "Чем мы помогаем",
+      topicsTitle: "Четыре шага обустройства",
+      t1n: "01 / Жильё", t1h: "Поиск жилья", t1p: "Только проверенные объекты — аренда, залог и коммунальные прозрачно. Сначала показываем, что стоит проверить до договора.",
+      t2n: "02 / Быт и документы", t2h: "Оформление", t2p: "Регистрация по месту жительства, учёт иностранца, медстраховка — по шагам.",
+      t3n: "03 / Право и виза", t3h: "Право и виза", t3p: "Статус пребывания, споры по договору, вопросы зарплаты — с источником и датой проверки.",
+      t4n: "04 / Сообщество", t4h: "Соседи рядом", t4p: "Опыт тех, кто прошёл этот путь раньше — не оценка, а плечо рядом.",
       brandTagline: "мост, полезная информация для жизни",
       navHousing: "Жилье", navGuide: "Справочник", navRegister: "Разместить", navAdmin: "Админ",
       filterDistrict: "Район", filterType: "Тип", filterAll: "Все",
@@ -247,4 +267,51 @@
   bindProviderForm();
   applyLanguage();
   bindMotion();
+})();
+
+/* ============================================================
+   지침 섹션: 풀블리드 이미지 statement · 마우스 반응 카드 · 텍스트 애니(라인 마스크)
+   (독립 IIFE — 기존 .reveal IO 리빌·i18n과 분리, data-split 미사용으로 언어 토글 안전)
+   ============================================================ */
+(function () {
+  var qa = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
+  var reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var parallaxEls = qa("[data-parallax]");
+  var run = function () {
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    qa(".g-reveal:not(.is-visible), .mask:not(.is-visible)").forEach(function (el) {
+      var r = el.getBoundingClientRect();
+      if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add("is-visible");
+    });
+    parallaxEls.forEach(function (el) {
+      var wrap = el.closest(".stmt-bg") || el.parentElement;
+      var r = wrap.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      var prog = (r.top + r.height / 2 - vh / 2) / vh;
+      el.style.transform = "translateY(" + (-prog * 56).toFixed(1) + "px) scale(1.16)";
+    });
+  };
+  window.addEventListener("scroll", run, { passive: true });
+  window.addEventListener("resize", run);
+  window.addEventListener("load", run);
+  run();
+
+  if (!reduceM && window.matchMedia("(hover:hover)").matches) {
+    qa(".topic").forEach(function (el) {
+      el.addEventListener("pointermove", function (e) {
+        var r = el.getBoundingClientRect();
+        var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        el.classList.add("tilting");
+        el.style.setProperty("--ry", ((px - .5) * 9) + "deg");
+        el.style.setProperty("--rx", ((.5 - py) * 9) + "deg");
+        el.style.setProperty("--mx", (px * 100) + "%");
+        el.style.setProperty("--my", (py * 100) + "%");
+      });
+      el.addEventListener("pointerleave", function () {
+        el.classList.remove("tilting");
+        el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg");
+      });
+    });
+  }
 })();
