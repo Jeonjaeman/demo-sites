@@ -41,6 +41,8 @@
   .card:hover{transform:translateY(-7px);border-color:rgba(54,197,240,.4);box-shadow:0 30px 60px -30px rgba(31,114,230,.6)}
   .card .thumb{height:148px;display:grid;place-items:center;font-family:"Montserrat";font-weight:900;font-size:30px;color:#fff;position:relative;overflow:hidden}
   .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(10,17,32,.55))}
+  .demo-no{position:absolute;z-index:2;top:12px;left:12px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;
+    color:var(--cyan);background:rgba(10,17,32,.82);font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums}
   .card .body{display:flex;flex:1;flex-direction:column;padding:22px 22px 24px}
   .card h3{margin:0 0 7px;font-size:19px;word-break:keep-all;overflow-wrap:break-word}
   .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6;min-height:42px;word-break:keep-all;overflow-wrap:break-word}
@@ -51,6 +53,7 @@
   .badge.repo{background:rgba(31,114,230,.16);color:#6fb0ff}
   .go{font-family:"Montserrat";font-weight:800;font-size:12px;letter-spacing:.08em;color:var(--cyan)}
   .card.disabled{opacity:.6;pointer-events:none}
+  .card:focus-visible,.tab:focus-visible,header.top a.gh:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
 
   .tabbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:4px 0 30px}
   .tab{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
@@ -65,6 +68,7 @@
 
   @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:600px){.grid{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
 </style>
 </head>
 <body>
@@ -81,7 +85,7 @@
     <div class="ey">DEMO SHOWCASE</div>
     <h1>산업별 <span>데모사이트</span> 모음</h1>
     <p>각 산업·업종별 제안용 데모를 한 곳에서 모아 봅니다. 새 데모는 이 레포에 폴더로 추가되고, 기존 데모는 각자 배포 주소로 연결됩니다.</p>
-    <div class="count">총 <b id="cnt">0</b>개 데모 · 클릭하면 새 탭에서 열립니다</div>
+    <div class="count">총 <b id="cnt">0</b>개 공개 데모 · 클릭하면 새 탭에서 열립니다</div>
   </section>
 
   <section class="tabbar" id="tabbar"></section>
@@ -103,16 +107,16 @@
     { name:"수입검사실 품질 대시보드 (ETL·상시표출)", en:"QWALL", cat:"admin", desc:"ERP·QMS·엑셀 3개 소스를 ETL로 통합한 품질 대시보드 · 14개 KPI·실패비용·전년 비교, 필터(기간·업체·장치) 실시간 재계산 · ERP-QMS 이중 계상을 오더 매핑 중복 제거로 실증(순 50 vs 원시 94건, 90% 부풀림) · 무인 새로고침 실패 시 stale 경고 · 대형 모니터 다크 풀스크린 상시표출 · 라이선스 비종속 웹 대안 · 대시보드/운영 콘솔 실연동", url:"./데모/29-수입검사실품질대시보드/index.html", status:"live", g:"linear-gradient(135deg,#0a1526,#1f5fd0 58%,#5b9bff)", here:true },
     { name:"교사 전용 견적·주문 B2B (승인·PDF)", en:"GREENDESK", cat:"admin", desc:"친환경 업사이클 교구 회사의 교사 전용 B2B · 고유번호증 제출→관리자 승인/문자→인원 구간별 강사비·교구 견적 자동계산(실시간 합계·부가세·할인)→직인·문서번호 찍힌 견적서 PDF 실발행(회차 보존, 재발행 2·3차)→주문·예약→진행·청구·결제 기록 · 교사/관리자 백오피스 실연동 · Toss비즈×Stripe Invoicing 참조", url:"./데모/28-견적서자동계산주문관리/index.html", status:"live", g:"linear-gradient(135deg,#0f2b1b,#1f8a4c 58%,#7bd6a0)", here:true },
     { name:"마케팅 성과 자동 집계 대시보드", en:"ADSUM", cat:"admin", desc:"메타·구글·카카오모먼트·네이버 4채널 + 스마트스토어 실매출 통합 집계 · 매출 기준 3분리(채널합산 360%↔광고기여 248%↔MER 303%)로 ROAS 부풀림 실증 · 수집 방식 토글로 전환 지연 34% 과소집계 재현 · 목표 CPA 4단계 판정(전환 0건 소재 3건·269만원 누락 증명) · 소재 이미지 URL 만료 403 재현 · LLM 페이로드 금액 마스킹 · Airbridge×TripleWhale×Funnel / Dragonfly×TRIONN 수상작 실측", url:"./데모/27-마케팅성과자동집계/index.html", status:"live", g:"linear-gradient(135deg,#08090C,#155DFC 58%,#7F22FE)", here:true },
-    { name:"여성 커뮤니티 + 콘텐츠 큐레이션", en:"HERLOOP", cat:"platform", desc:"외부 콘텐츠 수집으로 초기 데이터를 채우는 여성 전용 커뮤니티 · 노출 방식(링크만/발췌/전문) 전환 시 사용자 화면 미리보기가 실제로 바뀌고 법적 위험도 표시 · 크롤링 글은 본문 필드 자체를 두지 않아 전문 미저장을 데이터 구조로 강제 · 본인확인(성별) 게이트·긴급 신고 즉시 가림·2026.7.1 불법촬영물 이미지 확대 대응 · 화해×오늘의집×커리어리 / Framer×Notion 실측", url:"./데모/26-데이터수집여성커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#2C2C2B,#C2557A 58%,#E8A0A8)", here:true },
+    { name:"여성 커뮤니티 + 콘텐츠 큐레이션", en:"HERLOOP", cat:"platform", desc:"외부 콘텐츠 수집으로 초기 데이터를 채우는 여성 전용 커뮤니티 · 노출 방식(링크만/발췌/전문) 전환 시 사용자 화면 미리보기가 실제로 바뀌고 법적 위험도 표시 · 크롤링 글은 본문 필드 자체를 두지 않아 전문 미저장을 데이터 구조로 강제 · 본인확인(성별) 게이트·긴급 신고 즉시 가림·2026.7.1 불법촬영물 이미지 확대 대응 · 풀블리드 이미지 스테이트먼트+마우스 반응 주제 카드+텍스트 애니(애플·삼성 벤치마크) · 화해×오늘의집×커리어리 / Framer×Notion 실측", url:"./데모/26-데이터수집여성커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#2C2C2B,#C2557A 58%,#E8A0A8)", here:true },
     { name:"러시아어권 이주민 주거·생활정보", en:"MOST", cat:"platform", desc:"공인중개사·임대인 역할별 매물 등록과 관리자 승인 · 한/러 생활·법률·비자 정보 · 광고/검증 분리·등록번호/필수광고정보 점검·출처/최종검토일·신고 흐름 등 법적·운영 리스크를 실제 기능으로 구현 · 서울외국인포털×Rightmove×Daft.ie 실측 디자인 · 힉스필드 비주얼", url:"./데모/24-이주민생활정보/index.html", status:"live", g:"linear-gradient(135deg,#073F35,#0D5B4B 58%,#D85B3F)", here:true },
     { name:"광융합기업 산업지도", en:"LUMINA", cat:"platform", desc:"위치 기반 기업 탐색 프로토타입 · 줌 레벨 클러스터링(19→168 마커)·8대 분류 커스텀마커·다중필터·현재영역 재검색·2분할↔바텀시트·가상스크롤(DOM 11~15개) · 관리자 지오코딩 3단계 보정·엑셀 일괄·재무 API 커버리지 진단(중소 12.3%) · 과업지시서 100% 검수 vs 15일 충돌 범위구분 제안 · 호갱노노×Airbnb / Linear×Stripe 실측", url:"./데모/25-광융합기업지도/index.html", status:"live", g:"linear-gradient(135deg,#061B31,#533AFD 58%,#584DE4)", here:true },
     { name:"전국 순회 세미나 예약 플랫폼", en:"SEMINAR56", cat:"platform", desc:"워드프레스 기반 마케팅 세미나 모객·예약 · 56개 지역×회차 정원 자동마감·가상계좌 24h 좌석홀딩·수익계산기·알림톡(심사 반려 사례 포함)·WP관리자 UI 카피 · 페이지 복제 vs CPT 구조 시뮬레이션으로 유지보수 리스크 실증 · 패스트캠퍼스×Luma×탈잉 실측 디자인", url:"./데모/23-마케팅세미나플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#171B1F,#FC1C49 58%,#FF7A96)", here:true },
     { name:"가족 소통·웰니스 앱 (RN 24화면)", en:"HANSANG", cat:"platform", desc:"성인 자녀와 부모를 하루 1회 공동 미션으로 잇는 가족 웰니스 앱 · RFP 24개 화면 전부 폰프레임 인터랙티브 구현(온보딩·미션 인증·재료 수집→레시피 해제·에이슬립 수면 리포트·걸음 랭킹·설정) · 힉스필드 비주얼", url:"./데모/35-가족소통웰니스앱/index.html", status:"live", g:"linear-gradient(135deg,#2B2118,#E85F1E 58%,#FFB673)", here:true },
     { name:"22인치 터치 설문 키오스크 2종", en:"NEXA SURVEY", cat:"admin", desc:"행사장 설문 키오스크 2종(4문항 순차 설문·특장점 6탭+실시간 투표 결과) · 실시간 통계 대시보드 · 관리자 로그인+엑셀 다운로드 · 1920×1080 고정형 터치 UI·제스처 차단·동의 모달 · 힉스필드 비주얼", url:"./데모/17-22인치설문웹/index.html", status:"live", g:"linear-gradient(135deg,#0b1220,#22d3ee 58%,#818cf8)", here:true },
-    { name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결", url:"./forme-fit/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true },
+    { no:15, name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결 · 힉스필드 제품 비주얼", url:"./데모/15-쇼핑몰연동핏/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true },
     { name:"청년-지역 매칭 플랫폼", en:"OUTBOUNDER", cat:"platform", desc:"로컬 일경험 매칭 데모 · 청년 셸(공고탐색·매칭적합도·지원·마이페이지)+관리자 셸(성과대시보드·지원자심사·콘텐츠·파트너리포트) 실연동 폐쇄순환 · 도트맵·카운트업·카드스택 스크롤 연출 · 힉스필드 비주얼", url:"./데모/36-청년지역매칭/index.html", status:"live", g:"linear-gradient(135deg,#0e8c5a,#00b670 55%,#f05519)", here:true },
     { name:"탐정 법인·사무소 반응형 홈페이지", en:"JEONGDO", cat:"home", desc:"영상 인트로·핀 스크럽·마퀴 등 스크롤 인터랙션 중심 브랜드 홈페이지 · 업무 8분야·7단계 절차·FAQ·상담폼→관리자 접수 연동 · GSAP/Lenis 로컬 번들로 오프라인 완전 동작", url:"./데모/13-탐정법인/index.html", status:"live", g:"linear-gradient(135deg,#000C24,#123C78 58%,#C9A55C)", here:true },
-    { name:"AI 교수·학습 플랫폼 운영 전환", en:"CAMPUS AI", cat:"platform", desc:"AnythingLLM 기반 교육 플랫폼의 RAG 인용·3역할 권한·보안·재현 배포·복구·인수인계 증거를 한 번에 검수하는 위시캣 제안 데모", url:"https://campus-ai-proofbook-20260716.jeonjaeman9668.chatgpt.site", status:"live", g:"linear-gradient(135deg,#04130f,#37e3a1 58%,#0d7c63)" },
+    { no:12, name:"AI 교수·학습 플랫폼 운영 전환", en:"CAMPUS AI", cat:"platform", desc:"AnythingLLM 기반 교육 플랫폼의 RAG 인용·3역할 권한·보안·재현 배포·복구·인수인계 증거를 한 번에 검수하는 위시캣 제안 데모", url:"https://campus-ai-proofbook-20260716.jeonjaeman9668.chatgpt.site", status:"live", g:"linear-gradient(135deg,#04130f,#37e3a1 58%,#0d7c63)" },
     { name:"유아동 기질검사 자동 채점·결과지", en:"KIDTEMPO", cat:"admin", desc:"구글폼 응답 → 자동 채점(역채점·가중치·연령/성별 규준표·T점수·백분위) → 8가지 동물유형 판별 → 12페이지 결과지 PDF 자동 생성 · 실제 동작하는 채점 엔진", url:"./데모/10-유아동기질검사/index.html", status:"live", g:"linear-gradient(135deg,#2CC1AE,#12A594 55%,#0B7B70)", here:true },
     { name:"사내 직원 스케줄링·리소스 관리", en:"VOLTA", cat:"admin", desc:"현장 기술자 221명 스케줄링 백오피스 · Gantt 캘린더(드래그 배정·충돌 감지 3규칙)·가동률 대시보드·휴가 승인·장비/지역·모바일 현장뷰 · 디자인시스템·이메일템플릿", url:"./데모/11-사내직원스케쥴링/proposal.html", status:"live", g:"linear-gradient(135deg,#1b4ee0,#0e8f84)", here:true },
     { name:"전기설비 내장형 모니터링", en:"VOLTGUARD", cat:"admin", desc:"폐쇄망 전기설비 운영 콘솔 · 실시간 KPI·24시간/7일 부하 추이·상별 부하율·설비 상태·알람 · 1280×1024 산업용 화면 최적화", url:"./데모/09-전기설비내장형웹/index.html", status:"live", g:"linear-gradient(135deg,#182330,#1559cf 58%,#19a6b3)", here:true },
@@ -156,19 +160,29 @@
     : '<span class="badge soon">준비중</span>';
   const goHtml = (s)=> s==="soon" ? '' : '<span class="go">OPEN ↗</span>';
   const inCat = (d)=> activeCat==="all" || d.cat===activeCat;
+  const demoNo = (d)=>{
+    if(Number.isInteger(d.no)) return d.no;
+    const match = d.url.match(/\/데모\/(\d{2})-/);
+    return match ? Number(match[1]) : null;
+  };
 
   function renderTabs(){
     tabbar.innerHTML = CATS.map(c=>{
       const n = c.key==="all" ? DEMOS.length : DEMOS.filter(d=>d.cat===c.key).length;
-      return `<button class="tab ${c.key===activeCat?'on':''}" data-cat="${c.key}">${c.label} <span class="tc">${n}</span></button>`;
+      const selected = c.key===activeCat;
+      return `<button type="button" class="tab ${selected?'on':''}" data-cat="${c.key}" aria-pressed="${selected}">${c.label} <span class="tc">${n}</span></button>`;
     }).join("");
   }
 
-  // 카드 정렬: 홈페이지 → 플랫폼 → 대시보드, 준비중 카드는 맨 뒤
+  // 카드 정렬: 번호가 있는 데모는 원본 폴더 번호순, 외부 레거시는 카테고리순, 준비중은 맨 뒤
   const CAT_RANK = { home:0, platform:1, admin:2 };
   const catRank = (d)=> CAT_RANK[d.cat]===undefined ? 9 : CAT_RANK[d.cat];
   function renderGrid(){
     grid.innerHTML = DEMOS.filter(inCat).sort((a,b)=>{
+      const an = demoNo(a), bn = demoNo(b);
+      if(an!==null && bn!==null) return an-bn;
+      if(an!==null) return -1;
+      if(bn!==null) return 1;
       const sa = a.status==="soon"?1:0, sb = b.status==="soon"?1:0;
       if(sa!==sb) return sa-sb;
       return catRank(a)-catRank(b);
@@ -176,8 +190,10 @@
       const tag = d.status==="soon" ? "div" : "a";
       const attrs = d.status==="soon" ? 'class="card disabled"'
         : `class="card" href="${d.url}" target="_blank" rel="noopener"`;
+      const no = demoNo(d);
+      const numberHtml = no===null ? "" : `<span class="demo-no">No. ${String(no).padStart(2,"0")}</span>`;
       return `<${tag} ${attrs}>
-        <div class="thumb" style="background:${d.g}"><span style="position:relative;z-index:1">${d.en}</span></div>
+        <div class="thumb" style="background:${d.g}">${numberHtml}<span style="position:relative;z-index:1">${d.en}</span></div>
         <div class="body">
           <h3>${d.name}</h3>
           <p>${d.desc}</p>
@@ -191,6 +207,7 @@
     const b = e.target.closest("[data-cat]"); if(!b) return;
     activeCat = b.getAttribute("data-cat");
     renderTabs(); renderGrid();
+    tabbar.querySelector(`[data-cat="${activeCat}"]`)?.focus();
   });
 
   renderTabs();
