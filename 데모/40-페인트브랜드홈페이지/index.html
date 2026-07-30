@@ -9,24 +9,24 @@
   <title>HUELAB 휴랩 — Color, Engineered · 친환경 종합도료</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
   <link rel="stylesheet" href="assets/css/huelab.css">
   <script defer src="assets/js/data.js"></script>
   <script defer src="assets/js/app.js"></script>
 </head>
 <body>
-  <a class="skip-link" href="#brand">본문 바로가기</a>
-  <div class="demo-ribbon"><span><b>제안용 인터랙티브 데모</b> · 실존 브랜드·제품·색코드·시공현장이 아닌 가상 데이터입니다.</span></div>
+  <a class="skip-link" href="#manifesto">본문 바로가기</a>
+  <div class="demo-ribbon"><span><b>제안용 인터랙티브 데모</b> · 실존 브랜드·제품·색코드·시공현장이 아닌 가상 데이터이며, 히어로 영상·이미지는 실존 브랜드·로고 없이 생성했습니다.</span></div>
 
-  <header class="site-header on-hero">
+  <header class="site-header">
     <div class="shell header-in">
       <a class="brand" href="#top" aria-label="HUELAB 홈">
         <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="14" r="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M16 22v7" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/></svg>
         HUELAB
       </a>
       <nav class="nav" aria-label="주요 메뉴">
-        <a href="#brand">브랜드</a>
+        <a href="#manifesto">브랜드</a>
         <a href="#colors">컬러</a>
         <a href="#products">제품</a>
         <a href="#cases">시공 사례</a>
@@ -41,35 +41,44 @@
   </header>
 
   <main id="top">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-media">
-        <video autoplay muted loop playsinline poster="assets/img/case-hero.jpg">
-          <source src="assets/img/hero.mp4" type="video/mp4">
-        </video>
-      </div>
-      <div class="hero-in shell">
-        <p class="eyebrow hero-eyebrow reveal">Premium Eco Coating</p>
-        <h1 class="display reveal" data-delay="80">COLOR,<br>ENGINEERED.<span class="ko">색을 설계하는 친환경 종합도료</span></h1>
-        <p class="hero-lead reveal" data-delay="160">건축부터 목재·산업까지, 친환경에 바탕을 둔 도료 솔루션.<br>화면의 색이 아니라 <b>실제 공간의 색</b>으로 증명합니다.</p>
-        <div class="hero-cta reveal" data-delay="220">
-          <a class="btn btn-orange" href="#colors">컬러 인스퍼레이션</a>
-          <a class="btn btn-light" href="#products">제품 라인업</a>
+    <!-- HERO CAROUSEL -->
+    <section class="hero" aria-label="브랜드 소개 슬라이드" data-hero>
+      <div class="hero-scroll" aria-hidden="true">SCROLL <i></i></div>
+      <div class="hero-ui">
+        <div class="shell hero-ui-row">
+          <div class="hero-dots" data-hero-dots role="tablist" aria-label="슬라이드 선택"></div>
+          <div style="display:flex;align-items:center;gap:22px">
+            <div class="hero-count"><b data-hero-cur>01</b> / <span data-hero-total>04</span></div>
+            <div class="hero-arrows">
+              <button class="hero-arrow" data-hero-prev type="button" aria-label="이전 슬라이드"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <button class="hero-arrow" data-hero-next type="button" aria-label="다음 슬라이드"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="hero-scroll" aria-hidden="true">SCROLL <i></i></div>
     </section>
     <div class="hero-tags" aria-hidden="true"><div class="marquee" data-marquee></div></div>
 
-    <!-- BRAND / MISSION -->
-    <section class="section brand-section" id="brand">
+    <!-- MANIFESTO -->
+    <section class="section manifesto" id="manifesto">
       <div class="shell">
-        <div class="section-head reveal">
-          <span class="eyebrow">Our Brand</span>
-          <h2 class="h-ko">친환경에 바탕을 둔<br>종합도료 브랜드, 휴랩.</h2>
-          <p>도료는 색을 입히는 일이면서 공간의 공기를 바꾸는 일입니다. 휴랩은 저VOC·무기질 기술로 실내공기질을 지키고, 화면과 실물의 색 차이까지 정직하게 안내합니다.</p>
+        <p class="eyebrow reveal">Our Brand</p>
+        <h2 class="manifesto-lead" data-manifesto-lead style="margin-top:20px"></h2>
+        <div class="manifesto-grid">
+          <div class="manifesto-body reveal" data-manifesto-body></div>
+          <div class="reveal" data-delay="80">
+            <div style="font-family:var(--display);font-weight:700;font-size:clamp(1.1rem,1.6vw,1.4rem);letter-spacing:-.02em;margin-bottom:6px">CREATING SOLUTIONS</div>
+            <div style="color:var(--muted);font-size:14.5px">for a better, healthier space.</div>
+          </div>
         </div>
         <div class="mission-grid" data-mission></div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="section stats-band">
+      <div class="shell">
+        <p class="eyebrow reveal" style="color:#8FD6C8;margin-bottom:36px">By the Numbers</p>
         <div class="stats" data-stats></div>
       </div>
     </section>
@@ -78,10 +87,10 @@
     <section class="section color-section" id="colors">
       <div class="shell">
         <div class="color-head">
-          <div class="section-head reveal" style="margin-bottom:0">
+          <div class="section-head">
             <span class="eyebrow">Color Inspiration</span>
-            <h2 class="h-en">FIND YOUR<br>TRUE COLOR</h2>
-            <p>공간의 무드를 결정하는 색. 테마별 팔레트에서 영감을 얻고, 색코드로 정확히 지정하세요.</p>
+            <h2 class="h-en"><span class="mask"><span>FIND YOUR</span></span><span class="mask d1"><span>TRUE COLOR</span></span></h2>
+            <p class="reveal">공간의 무드를 결정하는 색. 테마별 팔레트에서 영감을 얻고, 색코드로 정확히 지정하세요.</p>
           </div>
           <button class="btn btn-light chip-request reveal" type="button">실물 컬러칩 신청</button>
         </div>
@@ -95,19 +104,19 @@
       <div class="shell">
         <div class="section-head reveal">
           <span class="eyebrow">Products</span>
-          <h2 class="h-ko">쓰임에 맞는<br>도료 라인업.</h2>
+          <h2 class="h-ko"><span class="mask"><span>쓰임에 맞는</span></span><span class="mask d1"><span>도료 라인업.</span></span></h2>
           <p>친환경 인증(환경마크·불연·방염 등)은 <b>근거가 있는 것만</b> 표시합니다. 인증 마크(✓)는 공인 시험 근거가 있는 항목입니다.</p>
         </div>
-        <div class="product-grid" data-products></div>
+        <div class="product-list" data-products></div>
       </div>
     </section>
 
     <!-- 시공 사례 -->
-    <section class="section" id="cases" style="background:var(--paper)">
+    <section class="section case-section" id="cases">
       <div class="shell">
         <div class="section-head reveal">
           <span class="eyebrow">Project Cases</span>
-          <h2 class="h-ko">공간이 증명하는<br>색과 마감.</h2>
+          <h2 class="h-ko"><span class="mask"><span>공간이 증명하는</span></span><span class="mask d1"><span>색과 마감.</span></span></h2>
           <p>자사 제품을 활용한 실제 시공 현장. 유형을 선택해 사례를 확인하세요.</p>
         </div>
         <div class="case-filters reveal">
@@ -117,16 +126,16 @@
           <button class="case-filter" type="button" data-filter="exterior">외벽</button>
         </div>
         <div class="case-grid" data-cases></div>
-        <p class="search-summary reveal" style="margin-top:16px">※ 시공 사례 이미지는 데모용으로 생성된 가상 이미지입니다.</p>
+        <p class="search-summary reveal" style="margin-top:18px">※ 시공 사례 이미지는 데모용으로 생성된 가상 이미지입니다.</p>
       </div>
     </section>
 
     <!-- CONTACT -->
-    <section class="section contact-section" id="contact">
+    <section class="section" id="contact" style="background:var(--cream)">
       <div class="shell">
         <div class="section-head reveal">
           <span class="eyebrow">Contact</span>
-          <h2 class="h-ko">대리점·견적 문의</h2>
+          <h2 class="h-ko"><span class="mask"><span>대리점·견적 문의</span></span></h2>
           <p>제품·컬러·시공 상담은 고객센터 또는 가까운 대리점으로 문의해 주세요.</p>
         </div>
         <div class="contact-grid">
@@ -146,6 +155,10 @@
 
   <footer class="site-footer">
     <div class="shell">
+      <div class="footer-cta">
+        <h2>당신의 공간에<br>어떤 색을 입힐까요?</h2>
+        <a class="btn btn-orange" href="#colors">컬러 인스퍼레이션 <svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
       <div class="footer-grid">
         <div>
           <div class="footer-brand">HUELAB</div>

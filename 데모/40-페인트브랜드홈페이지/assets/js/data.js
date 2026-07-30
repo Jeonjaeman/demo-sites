@@ -8,6 +8,34 @@ window.HUELAB = {
     lead: "건축부터 목재·산업까지, 친환경에 바탕을 둔 도료 솔루션. 화면의 색이 아니라 실제 공간의 색으로 증명합니다."
   },
 
+  /* 히어로 캐러셀 — 영상 1 + 고퀄 이미지 3 (총 4슬라이드) */
+  heroSlides: [
+    { type: "video", src: "assets/img/hero.mp4", poster: "assets/img/case-hero.jpg",
+      cat: "Premium Eco Coating",
+      lines: ["색을 설계하는", "친환경 종합도료"],
+      sub: "건축부터 목재·산업까지. 공간의 공기를 바꾸는 도료를, 휴랩이 만듭니다." },
+    { type: "img", src: "assets/img/hero-1.jpg",
+      cat: "Interior · i-Care Series",
+      lines: ["벽 하나가", "공간을 바꾼다"],
+      sub: "저VOC 수성 마감 아이케어. 아이 방에도 안심하고 칠하는 색." },
+    { type: "img", src: "assets/img/hero-2.jpg",
+      cat: "Exterior · Waterproof",
+      lines: ["시간을 견디는", "외벽의 품질"],
+      sub: "옥상·외벽·바닥까지, 계절과 세월을 버티는 방수·바닥 코팅." },
+    { type: "img", src: "assets/img/hero-3.jpg",
+      cat: "Color Inspiration",
+      lines: ["색은 곧", "브랜드가 된다"],
+      sub: "테마 팔레트와 정확한 색코드로, 원하는 무드를 그대로." }
+  ],
+
+  manifesto: {
+    lead: "도료는 색을 입히는 일이면서, <span class=\"hl\">공간의 공기를 바꾸는 일</span>입니다.",
+    body: [
+      "휴랩은 저VOC·무기질 기술로 실내공기질을 지키고, 건축·방수·목재·산업까지 하나의 기준으로 도료를 만듭니다.",
+      "그리고 화면의 색과 실물의 색이 다르다는 사실까지 정직하게 안내합니다. 색을 감성으로 고르되, 실물 컬러칩으로 약속합니다."
+    ]
+  },
+
   hashtags: ["#친환경수성", "#방수에이스", "#우드스테인", "#무기도료", "#내화방염", "#컬러컨설팅"],
 
   mission: [
