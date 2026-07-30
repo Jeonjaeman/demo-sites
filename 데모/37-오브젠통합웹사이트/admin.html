@@ -1,74 +1,90 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23F6F3EC'/%3E%3Cpath d='M16 20c10 0 8 12 16 12s6-12 16-12' fill='none' stroke='%239F1B68' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 44c10 0 8-12 16-12s6 12 16 12' fill='none' stroke='%231E3B8A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
-  <title>OBZEN Integrated — Admin Demo (B안)</title>
-  <link rel="stylesheet" href="assets/css/confluence.css">
-  <script defer src="assets/js/admin.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="OBZEN Integrated (B안) 관리자 CMS — 뉴스·IR·공지 관리 (localStorage 데모)">
+<meta name="theme-color" content="#f7f4ee">
+<title>OBZEN Integrated — 관리자 CMS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2316131d'/%3E%3Ccircle cx='26' cy='32' r='14' fill='%234b3bff'/%3E%3Ccircle cx='38' cy='32' r='14' fill='%23ff3d9a' style='mix-blend-mode:screen'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/spectrum.css?v=1">
+<style>
+  .adm-wrap{max-width:1080px;margin:0 auto;padding:28px 26px 80px}
+  .adm-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+  .adm-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+  .adm-kpi .b{background:var(--card);border:1px solid var(--line);border-radius:var(--r-s);padding:16px 18px}
+  .adm-kpi .v{font-family:var(--sans);font-weight:800;font-size:30px;letter-spacing:-.03em}
+  .adm-kpi .l{font-size:12.5px;color:var(--muted);margin-top:4px;font-weight:600}
+  .adm-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .panel-h{padding:15px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .panel-h h3{font-size:15px;font-weight:800}
+  table.at{width:100%;border-collapse:collapse;font-size:13.5px}
+  table.at th,table.at td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line2);vertical-align:top}
+  table.at th{font-size:11.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase}
+  table.at tr:hover td{background:var(--paper)}
+  @media(max-width:840px){ .adm-grid{grid-template-columns:1fr} .adm-kpi{grid-template-columns:1fr 1fr} }
+</style>
 </head>
-<body class="admin-body">
-  <a class="skip-link" href="#adminMain">관리 콘텐츠로 바로가기</a>
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
-      <div class="admin-brand">obzen <small>CMS DEMO · B안</small></div>
-      <nav class="admin-nav" aria-label="관리 메뉴">
-        <button class="is-active" type="button" data-admin-view="content"><span>01</span>콘텐츠 관리</button>
-        <button type="button" disabled title="제안 범위 미리보기"><span>02</span>문의 관리 · preview</button>
-        <button type="button" disabled title="제안 범위 미리보기"><span>03</span>검색 관리 · preview</button>
-        <button type="button" disabled title="제안 범위 미리보기"><span>04</span>사이트 설정 · preview</button>
-      </nav>
-      <a class="admin-back" href="index.html">← 공개 사이트로 돌아가기</a>
-    </aside>
-    <main class="admin-main" id="adminMain">
-      <div class="admin-topbar">
-        <p>제안용 관리자 화면 · 데이터는 이 브라우저에만 저장됩니다.</p>
-        <div class="admin-user"><i>AD</i><span>Demo Admin</span></div>
-      </div>
-      <div class="admin-title-row">
-        <div><p class="eyebrow">Content operations</p><h1 data-admin-title>콘텐츠 관리</h1><p data-admin-description>공지, IR, 보도자료를 한 화면에서 관리합니다.</p></div>
-        <button class="button button-primary admin-add" type="button">새 콘텐츠 등록</button>
-      </div>
-      <section class="admin-content" data-admin-content aria-live="polite">
-        <div class="admin-stats">
-          <article class="admin-stat"><span>전체 콘텐츠</span><strong data-stat-total>00</strong><small>브라우저 데모</small></article>
-          <article class="admin-stat"><span>게시 중</span><strong data-stat-published>00</strong><small>public</small></article>
-          <article class="admin-stat"><span>임시 저장</span><strong data-stat-draft>00</strong><small>draft</small></article>
-          <article class="admin-stat"><span>오늘 수정</span><strong data-stat-today>00</strong><small>today</small></article>
-        </div>
-        <div class="admin-table-wrap">
-          <div class="admin-toolbar">
-            <input type="search" placeholder="제목 검색" aria-label="콘텐츠 제목 검색" data-admin-search>
-            <select aria-label="콘텐츠 유형 필터" data-admin-filter>
-              <option value="all">전체 유형</option><option value="공지">공지</option><option value="IR">IR</option><option value="보도자료">보도자료</option>
-            </select>
-            <button class="button button-compact button-ghost admin-reset" type="button">초기화</button>
-          </div>
-          <table class="admin-table">
-            <thead><tr><th>유형</th><th>상태</th><th>제목</th><th>수정일</th><th>관리</th></tr></thead>
-            <tbody data-admin-rows></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+<body>
+<div class="ribbon"><span><b>관리자 CMS 데모</b></span><span>변경 내용은 이 브라우저(localStorage)에만 저장되며 공개 페이지 뉴스룸에 즉시 반영됩니다.</span></div>
+
+<header class="hdr stuck">
+  <div class="wrap in">
+    <a class="brand" href="index.html">
+      <svg class="mk" viewBox="0 0 44 44" aria-hidden="true"><circle cx="18" cy="22" r="13" fill="#4b3bff"/><circle cx="26" cy="22" r="13" fill="#ff3d9a" style="mix-blend-mode:multiply"/></svg>
+      <span>obzen<small>ADMIN CMS</small></span>
+    </a>
+    <div class="hdr-actions">
+      <a class="btn line sm" href="index.html" target="_blank" rel="noopener">공개 페이지 ↗</a>
+      <button class="btn sm" id="resetBtn" style="border:1px solid var(--line)">↺ 초기화</button>
+    </div>
+  </div>
+</header>
+
+<main class="adm-wrap">
+  <div class="adm-top">
+    <div>
+      <div class="kicker" style="margin-bottom:10px"><span class="n">CMS</span><p>NEWSROOM & IR</p></div>
+      <h1 style="font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.05">뉴스·IR·공지 관리</h1>
+      <p class="muted" style="margin-top:8px;font-size:14.5px">항목을 추가·수정·삭제하면 공개 뉴스룸에 바로 반영됩니다. 제목은 국문·영문을 함께 관리합니다.</p>
+    </div>
   </div>
 
-  <dialog class="admin-panel" aria-labelledby="editorTitle">
-    <div class="admin-panel-head"><span class="mono">CONTENT EDITOR</span><button class="icon-button admin-panel-close" type="button" aria-label="편집기 닫기">×</button></div>
-    <h2 id="editorTitle">콘텐츠 편집</h2>
-    <form data-editor-form>
-      <input type="hidden" name="id">
-      <label class="field"><span>콘텐츠 유형</span><select name="type" required><option>공지</option><option>IR</option><option>보도자료</option></select></label>
-      <label class="field"><span>제목</span><input name="title" required minlength="3"></label>
-      <label class="field"><span>요약</span><textarea name="summary" rows="5" required minlength="10"></textarea></label>
-      <label class="check"><input name="published" type="checkbox"><span>공개 사이트에 게시</span></label>
-      <div class="admin-panel-actions">
-        <button class="button button-primary" type="submit">변경사항 저장</button>
-        <button class="button button-ghost admin-panel-cancel" type="button">취소</button>
+  <div class="adm-kpi" id="kpi"></div>
+
+  <div class="adm-grid">
+    <div class="panel">
+      <div class="panel-h"><h3>자료 목록</h3><span class="muted" style="font-size:12.5px" id="cnt"></span></div>
+      <div class="tbl-wrap"><table class="at"><thead><tr><th>날짜</th><th>유형</th><th>제목(국/영)</th><th style="text-align:right">관리</th></tr></thead><tbody id="rows"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3 id="formTitle">새 자료 등록</h3><button class="btn sm ghost" id="newBtn">＋ 새로</button></div>
+      <div style="padding:18px">
+        <form id="editForm">
+          <input type="hidden" name="id">
+          <div class="field-row">
+            <label class="field"><span>날짜 <b>*</b></span><input class="inp" type="date" name="date" required></label>
+            <label class="field"><span>유형 <b>*</b></span><select class="sel" name="type"><option value="notice">공지</option><option value="ir">IR</option><option value="news">보도자료</option></select></label>
+          </div>
+          <label class="field"><span>제목 (국문) <b>*</b></span><input class="inp" name="ko" required maxlength="80"></label>
+          <label class="field"><span>제목 (영문)</span><input class="inp" name="en" maxlength="90" placeholder="비우면 국문으로 대체"></label>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn pri sm" type="submit" style="flex:1" id="saveBtn">등록</button>
+            <button class="btn sm" type="button" id="cancelBtn" style="border:1px solid var(--line)">취소</button>
+          </div>
+        </form>
       </div>
-    </form>
-  </dialog>
-  <div class="admin-toast" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</main>
+
+<div id="toasts" style="position:fixed;right:18px;bottom:18px;z-index:200;display:flex;flex-direction:column;gap:9px"></div>
+
+<script defer src="assets/js/data.js?v=2"></script>
+<script defer src="assets/js/admin.js?v=1"></script>
 </body>
 </html>

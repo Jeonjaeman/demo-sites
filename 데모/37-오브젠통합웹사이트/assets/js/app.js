@@ -1,294 +1,207 @@
-(() => {
-  const data = window.OBZEN_STORY;
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/* =====================================================================
+   OBZEN Integrated (B안 · SPECTRUM) — public app.js
+   섹션 렌더 · 다국어(KO/EN) · IR 카운터 · 뉴스 필터 · 통합검색 · 문의 · 리빌
+   ===================================================================== */
+(function () {
+  'use strict';
+  var OB = window.OB, C = OB.CONTENT;
+  var lang = 'ko';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function nl(s) { return esc(s).replace(/\n/g, '<br>'); }
 
-  /* ---------- header scroll state ---------- */
-  const header = $("[data-header]");
-  const syncHeader = () => header?.classList.toggle("is-scrolled", window.scrollY > 24);
-  window.addEventListener("scroll", syncHeader, { passive: true });
-  syncHeader();
-
-  /* ---------- scroll-driven reveal / count / draw ----------
-     IntersectionObserver 대신 getBoundingClientRect 기반으로 구현한다.
-     자동화·저사양 환경에서 IO 콜백이 프레임을 그리지 않아 지연되는 문제를 피하고,
-     사용자 브라우저에서도 동일하게 동작하며 어디서든 검증 가능하다. */
-  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-  const countUp = (el) => {
-    const target = Number(el.dataset.count);
-    if (!Number.isFinite(target)) return;
-    if (reduceMotion) { el.textContent = String(target); return; }
-    let start = null;
-    const step = (ts) => {
-      if (start === null) start = ts;
-      const p = Math.min((ts - start) / 1400, 1);
-      el.textContent = String(Math.round(easeOutCubic(p) * target));
-      if (p < 1) requestAnimationFrame(step); else el.textContent = String(target);
-    };
-    requestAnimationFrame(step);
-    setTimeout(() => { el.textContent = String(target); }, 1550); // guarantee final value even if rAF is throttled
-  };
-  const counted = new WeakSet();
-
-  const convStage = $(".conv-stage");
-  let convDrawn = false;
-  if (convStage) {
-    $$(".conv-line", convStage).forEach((p) => {
-      const len = p.getTotalLength();
-      p.style.strokeDasharray = `${len}`;
-      p.style.strokeDashoffset = `${len}`;
-    });
+  /* ---------- reveal (IO + 폴백) ---------- */
+  var io = null, revealTimer = null;
+  try { io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); onReveal(e.target); io.unobserve(e.target); } }); }, { threshold: .12 }); } catch (e) { io = null; }
+  function wireReveal() {
+    $$('.reveal:not(.in)').forEach(function (n, i) { n.style.transitionDelay = (i % 5 * 60) + 'ms'; if (io) io.observe(n); });
+    clearTimeout(revealTimer);
+    revealTimer = setTimeout(function () { $$('.reveal:not(.in)').forEach(function (n) { n.classList.add('in'); onReveal(n); }); }, 600);
   }
-  const drawConvergence = () => {
-    if (!convStage || convDrawn) return;
-    convDrawn = true;
-    $$(".conv-line", convStage).forEach((p, i) => {
-      if (!reduceMotion) p.style.transition = `stroke-dashoffset 1.5s var(--ease) ${i * 0.25 + 0.1}s`;
-      p.style.strokeDashoffset = "0"; // set directly; CSS transition animates it
-    });
-  };
-
-  const runChecks = () => {
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    $$(".reveal:not(.is-visible)").forEach((el) => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < vh * 0.9 && rect.bottom > 0) {
-        const delay = Number(el.dataset.delay || 0);
-        el.style.transitionDelay = `${Math.min(delay, 320)}ms`;
-        el.classList.add("is-visible");
-      }
-    });
-    $$("[data-count]").forEach((el) => {
-      if (counted.has(el)) return;
-      const rect = el.getBoundingClientRect();
-      if (rect.top < vh * 0.86 && rect.bottom > vh * 0.06) { counted.add(el); countUp(el); }
-    });
-    if (convStage) {
-      const rect = convStage.getBoundingClientRect();
-      if (rect.top < vh * 0.72 && rect.bottom > 0) drawConvergence();
+  function onReveal(node) {
+    if (node.id === 'stats' || node.querySelector) {
+      var scope = node.id === 'stats' ? node : node;
     }
-  };
-  // Reveal/count/draw are triggered directly (not via rAF) so they work even when
-  // the tab is backgrounded and rAF is throttled; class toggles need no paint frame.
-  window.addEventListener("scroll", runChecks, { passive: true });
-  window.addEventListener("resize", runChecks);
-  window.addEventListener("load", runChecks);
-
-  const tlHost = $("[data-timeline]");
-  if (tlHost) {
-    data.timeline.forEach((item, index) => {
-      const el = document.createElement("article");
-      el.className = "tl-item reveal" + (item.merge ? " is-merge" : "");
-      el.dataset.delay = String(Math.min(index * 60, 240));
-      const year = document.createElement("div");
-      year.className = "tl-year";
-      year.textContent = item.year;
-      const yearSub = document.createElement("small");
-      yearSub.textContent = item.merge ? "합병" : (item.year === "NEXT" ? "다음" : "");
-      if (yearSub.textContent) year.append(yearSub);
-      const body = document.createElement("div");
-      body.className = "tl-body";
-      const h3 = document.createElement("h3");
-      h3.textContent = item.title;
-      const p = document.createElement("p");
-      p.textContent = item.body;
-      const firm = document.createElement("span");
-      firm.className = `tl-firm f-${item.tag}`;
-      firm.textContent = item.tagLabel;
-      body.append(h3, p, firm);
-      el.append(year, body);
-      tlHost.append(el);
+    // 스탯 바 성장 트리거
+    $$('.stat .bar i', node.id === 'stats' ? node : document).forEach(function (bar) {
+      if (!bar.dataset.done) { bar.dataset.done = '1'; var w = bar.getAttribute('data-w'); setTimeout(function () { bar.style.width = w; }, 60); }
     });
   }
 
-  /* ---------- services accordion ---------- */
-  const accHost = $("[data-accordion]");
-  if (accHost) {
-    data.services.forEach((svc, index) => {
-      const item = document.createElement("div");
-      item.className = "acc-item" + (index === 0 ? " is-open" : "");
-      const trigger = document.createElement("button");
-      trigger.type = "button";
-      trigger.className = "acc-trigger";
-      trigger.setAttribute("aria-expanded", index === 0 ? "true" : "false");
-      trigger.innerHTML =
-        `<span class="acc-index">${svc.code}</span>` +
-        `<span class="acc-name">${svc.name}<b>${svc.kor}</b></span>` +
-        `<span class="acc-icon" aria-hidden="true"></span>`;
-      const bodyWrap = document.createElement("div");
-      bodyWrap.className = "acc-body";
-      const inner = document.createElement("div");
-      inner.className = "acc-inner";
-      const left = document.createElement("div");
-      const desc = document.createElement("p");
-      desc.textContent = svc.summary;
-      const ul = document.createElement("ul");
-      ul.className = "acc-points";
-      svc.points.forEach((pt) => { const li = document.createElement("li"); li.textContent = pt; ul.append(li); });
-      left.append(desc, ul);
-      const meta = document.createElement("div");
-      meta.className = "acc-meta";
-      meta.innerHTML = `<span>${svc.metaLabel}</span><strong>${svc.metaValue}</strong>`;
-      inner.append(left, meta);
-      const clip = document.createElement("div");
-      clip.className = "acc-clip";
-      clip.append(inner);
-      bodyWrap.append(clip);
-      item.append(trigger, bodyWrap);
-      accHost.append(item);
+  /* ---------- i18n ---------- */
+  function applyLang() {
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('data-lang', lang);
+    $$('[data-ko]').forEach(function (el) { var v = el.getAttribute('data-' + lang); if (v != null) el.textContent = v; });
+    var si = $('#sinput'); if (si) si.setAttribute('placeholder', si.getAttribute('data-' + lang + '-ph') || si.placeholder);
+    $$('.lang button').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-setlang') === lang); });
+    renderIdentity(); renderTimeline(); renderServices(); renderStats(); renderChips(); renderNews(); renderGov();
+    var note = $('#statsNote'); if (note) note.textContent = C.stats.note[lang];
+    if (searchOpen) runSearch();
+  }
 
-      trigger.addEventListener("click", () => {
-        const willOpen = !item.classList.contains("is-open");
-        $$(".acc-item", accHost).forEach((other) => {
-          other.classList.toggle("is-open", other === item && willOpen);
-          other.querySelector(".acc-trigger").setAttribute("aria-expanded", String(other === item && willOpen));
-        });
-      });
+  /* ---------- 렌더: 정체성 카드 ---------- */
+  function renderIdentity() {
+    var host = $('#idcards'); if (!host) return;
+    function card(kind, o) {
+      return '<article class="idcard ' + kind + '"><span class="tag">' + esc(o.tag[lang]) + '</span>' +
+        '<h3>' + nl(o.h[lang]) + '</h3><ul>' + o.items[lang].map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></article>';
+    }
+    host.innerHTML = card('obzen', C.obzen) + '<div class="idplus" aria-hidden="true">＋</div>' + card('zalesia', C.zalesia);
+  }
+
+  /* ---------- 렌더: 타임라인 ---------- */
+  function renderTimeline() {
+    var host = $('#timeline'); if (!host) return;
+    host.innerHTML = '<span class="spine"></span>' + C.timeline.items.map(function (i) {
+      return '<div class="tl-item' + (i.merge ? ' merge' : '') + '"><span class="yr serif">' + esc(i.y) + '</span>' +
+        '<b>' + esc(i.t[lang]) + '</b><p>' + esc(i.d[lang]) + '</p></div>';
+    }).join('');
+  }
+
+  /* ---------- 렌더: 서비스 아코디언 ---------- */
+  function renderServices() {
+    var host = $('#acc'); if (!host) return;
+    host.innerHTML = C.services.items.map(function (s, i) {
+      return '<div class="acc-item' + (i === 0 ? ' open' : '') + '" data-acc>' +
+        '<button class="acc-head" type="button" aria-expanded="' + (i === 0) + '"><span class="idx serif">' + s.idx + '</span><h3>' + esc(s.t[lang]) + '</h3><span class="chev" aria-hidden="true">＋</span></button>' +
+        '<div class="acc-body"><div class="acc-body-in"><div class="acc-inner"><p>' + esc(s.d[lang]) + '</p>' +
+        '<div class="acc-meta"><span class="was">' + esc(s.was) + '</span><span>→ ' + esc(s.now) + '</span></div></div></div></div></div>';
+    }).join('');
+    $$('#acc .acc-head').forEach(function (btn) {
+      btn.onclick = function () {
+        var item = btn.closest('.acc-item'), open = item.classList.contains('open');
+        $$('#acc .acc-item').forEach(function (it) { it.classList.remove('open'); it.querySelector('.acc-head').setAttribute('aria-expanded', 'false'); });
+        if (!open) { item.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+      };
     });
   }
 
-  /* ---------- IR filter + Blob download ---------- */
-  const irList = $("[data-ir-list]");
-  const renderIr = (filter = "all") => {
-    const items = filter === "all" ? data.ir : data.ir.filter((it) => it.type === filter);
-    irList.replaceChildren(...items.map((item) => {
-      const row = document.createElement("article");
-      row.className = "index-row";
-      const date = document.createElement("span"); date.className = "row-date mono"; date.textContent = item.date;
-      const type = document.createElement("span"); type.className = "row-type"; type.textContent = item.label;
-      const title = document.createElement("strong"); title.textContent = item.title;
-      const btn = document.createElement("button");
-      btn.className = "download-button"; btn.type = "button"; btn.textContent = "↓";
-      btn.setAttribute("aria-label", `${item.title} 데모 문서 다운로드`);
-      btn.addEventListener("click", () => {
-        const text = `[제안용 가상 문서]\n${item.title}\n발행일: ${item.date}\n\n본 파일은 오브젠 통합 홈페이지 B안 제안 데모에서 다운로드 기능을 시연하기 위한 가상 문서입니다.`;
-        const url = URL.createObjectURL(new Blob(["﻿" + text], { type: "text/plain;charset=utf-8" }));
-        const a = document.createElement("a");
-        a.href = url; a.download = `OBZEN_B_DEMO_${item.id}.txt`; a.click();
-        URL.revokeObjectURL(url);
-      });
-      row.append(date, type, title, btn);
-      return row;
-    }));
-  };
-  if (irList) {
-    renderIr();
-    $$(".filter-chip").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        $$(".filter-chip").forEach((c) => c.classList.toggle("is-active", c === chip));
-        renderIr(chip.dataset.filter);
-      });
+  /* ---------- 렌더: IR 스탯 ---------- */
+  function renderStats() {
+    var host = $('#stats'); if (!host) return;
+    host.innerHTML = C.stats.items.map(function (s, i) {
+      return '<div class="stat"><div class="v" data-num="' + s.v + '" data-pre="' + (s.pre || '') + '" data-suf="' + esc(s.suf || '') + '">' +
+        esc(s.pre || '') + s.v + '<em>' + esc(s.suf || '') + '</em></div>' +
+        '<div class="l">' + esc(s.l[lang]) + '</div><div class="bar"><i data-w="' + s.pct + '%"></i></div></div>';
+    }).join('');
+    // 카운트업 (rAF 미실행 시에도 최종값이 이미 표시됨)
+    $$('#stats .v').forEach(function (el) {
+      var to = parseInt(el.getAttribute('data-num'), 10) || 0, pre = el.getAttribute('data-pre') || '', suf = el.getAttribute('data-suf') || '', t0 = null;
+      function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1200); var e = 1 - Math.pow(1 - p, 3); el.innerHTML = pre + Math.round(to * e) + '<em>' + esc(suf) + '</em>'; if (p < 1) requestAnimationFrame(step); }
+      requestAnimationFrame(step);
     });
+    // 게이지 바 성장 — 매 렌더(언어 토글 포함)마다 적용
+    $$('#stats .bar i').forEach(function (b) { b.style.width = '0'; var w = b.getAttribute('data-w'); setTimeout(function () { b.style.width = w; }, 80); });
   }
 
-  /* ---------- mobile menu ---------- */
-  const mobileMenu = $("#mobileMenu");
-  const menuButton = $(".menu-button");
-  const closeMobileMenu = () => {
-    if (!mobileMenu?.open) return;
-    mobileMenu.close();
-    menuButton?.setAttribute("aria-expanded", "false");
-    menuButton?.focus();
-  };
-  menuButton?.addEventListener("click", () => {
-    mobileMenu.showModal();
-    menuButton.setAttribute("aria-expanded", "true");
-  });
-  $(".menu-close")?.addEventListener("click", closeMobileMenu);
-  $$("a", mobileMenu).forEach((a) => a.addEventListener("click", closeMobileMenu));
+  /* ---------- 렌더: 거버넌스 ---------- */
+  function renderGov() {
+    var host = $('#gov'); if (!host) return;
+    var icons = ['<path d="M12 3l7 4v5c0 4-3 7-7 9-4-2-7-5-7-9V7z"/>', '<path d="M4 6h16M4 12h16M4 18h10"/>', '<path d="M3 12h4l3-8 4 16 3-8h4"/>'];
+    host.innerHTML = C.governance.items.map(function (g, i) {
+      return '<div class="gov-card"><div class="ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + icons[i] + '</svg></div>' +
+        '<h3>' + esc(g.t[lang]) + '</h3><p>' + esc(g.d[lang]) + '</p></div>';
+    }).join('');
+  }
 
-  /* ---------- search dialog ---------- */
-  const searchDialog = $(".search-dialog");
-  const searchInput = $("[data-search-input]");
-  const searchResults = $("[data-search-results]");
-  const searchSummary = $(".search-summary");
-  let searchReturn = null;
-  const renderSearch = (query = "") => {
-    const q = query.trim().toLowerCase();
-    const results = q
-      ? data.search.filter((it) => `${it.category} ${it.title} ${it.meta}`.toLowerCase().includes(q))
-      : data.search.slice(0, 4);
-    searchResults.replaceChildren(...results.map((it) => {
-      const row = document.createElement("button");
-      row.type = "button"; row.className = "search-result";
-      const cat = document.createElement("span"); cat.textContent = it.category;
-      const title = document.createElement("strong"); title.textContent = it.title;
-      const meta = document.createElement("small"); meta.textContent = it.meta;
-      row.append(cat, title, meta);
-      row.addEventListener("click", () => { searchDialog.close(); $(it.target)?.scrollIntoView(); });
-      return row;
-    }));
-    searchSummary.textContent = q
-      ? `${results.length}개의 결과를 찾았습니다.`
-      : "추천 검색어: 합병, AI 의사결정, CDP, IR";
-  };
-  const openSearch = (trigger) => {
-    searchReturn = trigger;
-    searchDialog.showModal();
-    renderSearch(searchInput.value);
-    requestAnimationFrame(() => searchInput.focus());
-  };
-  $$(".search-open").forEach((b) => b.addEventListener("click", () => openSearch(b)));
-  $(".search-close")?.addEventListener("click", () => searchDialog.close());
-  searchInput?.addEventListener("input", (e) => renderSearch(e.currentTarget.value));
-  searchDialog?.addEventListener("close", () => searchReturn?.focus());
-  document.addEventListener("keydown", (e) => {
-    const t = e.target;
-    const typing = t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement;
-    if (e.key === "/" && !typing && searchDialog && !searchDialog.open) {
+  /* ---------- 뉴스룸 ---------- */
+  var newsFilter = 'all';
+  function renderChips() {
+    var host = $('#chips'); if (!host) return;
+    var types = [['all', { ko: '전체', en: 'All' }], ['notice', OB.TYPE_LABEL.notice], ['ir', OB.TYPE_LABEL.ir], ['news', OB.TYPE_LABEL.news]];
+    host.innerHTML = types.map(function (t) { return '<button class="chip' + (newsFilter === t[0] ? ' on' : '') + '" data-f="' + t[0] + '">' + esc(t[1][lang]) + '</button>'; }).join('');
+    $$('#chips .chip').forEach(function (c) { c.onclick = function () { newsFilter = c.getAttribute('data-f'); renderChips(); renderNews(); }; });
+  }
+  function renderNews() {
+    var host = $('#news'); if (!host) return;
+    var list = OB.loadNews().filter(function (n) { return newsFilter === 'all' || n.type === newsFilter; })
+      .sort(function (a, b) { return b.date < a.date ? -1 : 1; });
+    if (!list.length) { host.innerHTML = '<div class="sr-empty">' + (lang === 'ko' ? '해당 자료가 없습니다.' : 'No items.') + '</div>'; return; }
+    var bmap = { notice: 'b-notice', ir: 'b-ir', news: 'b-news' };
+    host.innerHTML = list.map(function (n) {
+      return '<div class="news-row" tabindex="0" role="button" data-news="' + n.id + '">' +
+        '<span class="date">' + esc(n.date) + '</span>' +
+        '<div><span class="badge2 ' + bmap[n.type] + '">' + esc(OB.TYPE_LABEL[n.type][lang]) + '</span> <span class="tt">' + esc(n.title[lang]) + '</span></div>' +
+        '<span class="dl">' + (lang === 'ko' ? '자료 받기 ↓' : 'Download ↓') + '</span></div>';
+    }).join('');
+    $$('#news .news-row').forEach(function (row) {
+      var open = function () { downloadNews(row.getAttribute('data-news')); };
+      row.onclick = open;
+      row.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
+    });
+  }
+  function downloadNews(id) {
+    var n = OB.loadNews().find(function (x) { return x.id === id; }); if (!n) return;
+    var body = '﻿[OBZEN Integrated · ' + OB.TYPE_LABEL[n.type][lang] + ']\n\n' + n.title[lang] + '\n' + n.date +
+      '\n\n' + (lang === 'ko' ? '※ 본 문서는 제안용 데모의 가상 자료입니다.' : '※ Placeholder demo document.') + '\n';
+    var blob = new Blob([body], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'OBZEN_' + n.id + '.txt'; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 500);
+  }
+
+  /* ---------- 통합검색 ---------- */
+  var dlg = $('.search-dialog'), searchOpen = false;
+  function openSearch() { if (!dlg) return; if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); searchOpen = true; var i = $('#sinput'); if (i) { i.value = ''; setTimeout(function () { i.focus(); }, 30); } runSearch(); }
+  function closeSearch() { if (!dlg) return; if (dlg.close) dlg.close(); else dlg.removeAttribute('open'); searchOpen = false; }
+  function runSearch() {
+    var q = ($('#sinput') && $('#sinput').value || '').trim().toLowerCase();
+    var idx = OB.searchIndex(lang);
+    var res = q ? idx.filter(function (r) { return (r.title + ' ' + r.body + ' ' + r.k).toLowerCase().indexOf(q) >= 0; }) : idx.slice(0, 6);
+    var sum = $('#ssummary'); if (sum) sum.textContent = q ? (lang === 'ko' ? '“' + q + '” 검색 결과 ' + res.length + '건' : res.length + ' results for “' + q + '”') : (lang === 'ko' ? '추천: 합병, CDXP+, 생성형 AI, IR' : 'Try: merger, CDXP+, AI, IR');
+    var host = $('#sresults'); if (!host) return;
+    if (!res.length) { host.innerHTML = '<div class="sr-empty">' + (lang === 'ko' ? '검색 결과가 없습니다.' : 'No results.') + '</div>'; return; }
+    host.innerHTML = res.slice(0, 12).map(function (r) {
+      return '<a class="sr-item" href="#' + r.sec + '" data-sec="' + r.sec + '"><span class="k">' + esc(r.k) + '</span><b>' + esc(r.title) + '</b><p>' + esc(r.body) + '</p></a>';
+    }).join('');
+    $$('#sresults .sr-item').forEach(function (a) { a.onclick = function () { closeSearch(); }; });
+  }
+
+  /* ---------- 문의 폼 ---------- */
+  function wireForm() {
+    var f = $('#cform'); if (!f) return;
+    f.addEventListener('submit', function (e) {
       e.preventDefault();
-      openSearch($(".search-open"));
-    }
-  });
+      var st = $('#fstatus');
+      if (!f.checkValidity()) { st.hidden = false; st.className = 'form-status err'; st.textContent = lang === 'ko' ? '필수 항목을 확인해 주세요.' : 'Please complete the required fields.'; f.reportValidity && f.reportValidity(); st.focus(); return; }
+      st.hidden = false; st.className = 'form-status ok';
+      var name = f.name.value || (lang === 'ko' ? '고객' : 'there');
+      st.textContent = lang === 'ko' ? name + '님, 문의가 확인되었습니다. (데모에서는 전송되지 않습니다)' : 'Thanks ' + name + ' — inquiry captured. (Not sent in this demo.)';
+      st.focus(); f.reset();
+    });
+  }
 
-  /* ---------- privacy ---------- */
-  const privacyDialog = $(".privacy-dialog");
-  let privacyReturn = null;
-  $(".privacy-open")?.addEventListener("click", (e) => { privacyReturn = e.currentTarget; privacyDialog.showModal(); });
-  $(".privacy-close")?.addEventListener("click", () => privacyDialog.close());
-  $(".privacy-confirm")?.addEventListener("click", () => privacyDialog.close());
-  privacyDialog?.addEventListener("close", () => privacyReturn?.focus());
+  /* ---------- 헤더/메뉴/키보드 ---------- */
+  function wireChrome() {
+    var hdr = $('#hdr');
+    var onScroll = function () { hdr.classList.toggle('stuck', window.scrollY > 12); };
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-  /* ---------- vision overlay ---------- */
-  const vision = $(".vision-overlay");
-  $(".hero-play")?.addEventListener("click", () => { vision.showModal(); $(".vision-close")?.focus(); });
-  $(".vision-close")?.addEventListener("click", () => vision.close());
-  vision?.addEventListener("close", () => $(".hero-play")?.focus());
+    $$('.search-open').forEach(function (b) { b.onclick = openSearch; });
+    var sc = $('.search-close'); if (sc) sc.onclick = closeSearch;
+    if (dlg) dlg.addEventListener('click', function (e) { if (e.target === dlg) closeSearch(); });
+    var si = $('#sinput'); if (si) si.addEventListener('input', runSearch);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === '/' && !/input|textarea|select/i.test((e.target.tagName || ''))) { e.preventDefault(); openSearch(); }
+      if (e.key === 'Escape') { closeSearch(); closeMenu(); }
+    });
 
-  /* ---------- contact form ---------- */
-  const form = $("[data-contact-form]");
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const status = form.querySelector(".form-status");
-    if (!form.checkValidity()) {
-      status.hidden = false;
-      status.textContent = "필수 항목과 이메일 형식을 확인해 주세요.";
-      status.style.background = "rgba(159,27,104,.1)";
-      status.style.color = "#8A1157";
-      status.style.borderColor = "rgba(159,27,104,.3)";
-      status.focus();
-      form.reportValidity();
-      return;
-    }
-    status.hidden = false;
-    status.textContent = "확인 완료: 입력 내용은 외부로 전송되지 않았습니다. 실제 구축 시 보안 API와 관리자 알림으로 연결됩니다.";
-    status.style.background = "";
-    status.style.color = "";
-    status.style.borderColor = "";
-    status.focus();
-    form.reset();
-  });
+    var mm = $('#mmenu'), mb = $('.menu-btn');
+    function openMenu() { if (mm.showModal) mm.showModal(); else mm.setAttribute('open', ''); mb.setAttribute('aria-expanded', 'true'); }
+    window.closeMenu = function () { if (mm && (mm.open || mm.hasAttribute('open'))) { mm.close ? mm.close() : mm.removeAttribute('open'); mb.setAttribute('aria-expanded', 'false'); } };
+    if (mb) mb.onclick = openMenu;
+    var mc = $('.menu-close'); if (mc) mc.onclick = window.closeMenu;
+    if (mm) { $$('#mmenu a').forEach(function (a) { a.onclick = window.closeMenu; }); mm.addEventListener('click', function (e) { if (e.target === mm) window.closeMenu(); }); }
 
-  /* ---------- language preview toggle ---------- */
-  const langButton = $(".lang-button");
-  langButton?.addEventListener("click", () => {
-    const toEnglish = document.documentElement.dataset.lang !== "en";
-    document.documentElement.dataset.lang = toEnglish ? "en" : "ko";
-    langButton.classList.toggle("is-en", toEnglish);
-    $$("[data-ko][data-en]").forEach((el) => { el.textContent = toEnglish ? el.dataset.en : el.dataset.ko; });
-  });
+    $$('.lang button').forEach(function (b) { b.onclick = function () { lang = b.getAttribute('data-setlang'); applyLang(); }; });
+  }
 
-  /* ---------- initial pass (reveal above-the-fold, prime counters/draw) ---------- */
-  runChecks();
+  /* ---------- init ---------- */
+  function init() {
+    wireChrome(); wireForm(); applyLang(); wireReveal();
+    // 리빌된 스탯 바가 늦게 그려질 수 있어 한 번 더 보장
+    setTimeout(function () { $$('.stat .bar i').forEach(function (bar) { if (bar.style.width === '' || bar.style.width === '0px') bar.style.width = bar.getAttribute('data-w'); }); }, 700);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

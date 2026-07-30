@@ -1,330 +1,209 @@
 <!doctype html>
 <html lang="ko" data-lang="ko">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="오브젠·잘레시아 통합 기업 홈페이지 구축 제안 데모 (B안 · 브랜드 내러티브)">
-  <meta name="theme-color" content="#F6F3EC">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23F6F3EC'/%3E%3Cpath d='M16 20c10 0 8 12 16 12s6-12 16-12' fill='none' stroke='%239F1B68' stroke-width='4' stroke-linecap='round'/%3E%3Cpath d='M16 44c10 0 8-12 16-12s6 12 16 12' fill='none' stroke='%231E3B8A' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
-  <title>OBZEN Integrated — 두 흐름이 하나로 (B안)</title>
-  <link rel="stylesheet" href="assets/css/confluence.css">
-  <script defer src="assets/js/story-data.js"></script>
-  <script defer src="assets/js/app.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="오브젠·잘레시아 통합 기업·IR 홈페이지 제안 데모 (B안) — 흩어진 데이터를 하나의 초점으로.">
+<meta name="theme-color" content="#f7f4ee">
+<title>OBZEN Integrated — 흩어진 데이터를 하나의 초점으로</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23f7f4ee'/%3E%3Ccircle cx='26' cy='32' r='14' fill='%234b3bff'/%3E%3Ccircle cx='38' cy='32' r='14' fill='%23ff3d9a' style='mix-blend-mode:multiply'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500;0,9..144,600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/spectrum.css?v=1">
+<script defer src="assets/js/data.js?v=2"></script>
+<script defer src="assets/js/app.js?v=2"></script>
 </head>
 <body>
-  <a class="skip-link" href="#main">본문 바로가기</a>
-  <div class="demo-ribbon">
-    <span>제안용 인터랙티브 데모 · B안</span>
-    <span>실제 수치·문서·연락처가 아닌 가상 데이터가 포함되어 있습니다.</span>
-  </div>
+<a class="skip" href="#main">본문 바로가기</a>
+<div class="ribbon"><span><b>제안용 인터랙티브 데모</b></span><span>실제 수치·문서·연락처가 아닌 가상 데이터가 포함되어 있습니다.</span></div>
 
-  <header class="site-header" data-header>
+<header class="hdr" id="hdr">
+  <div class="wrap in">
     <a class="brand" href="#top" aria-label="OBZEN Integrated 홈">
-      <svg class="brand-mark" viewBox="0 0 44 44" aria-hidden="true">
-        <path d="M8 15c11 0 9 14 14 14s3-14 14-14" fill="none" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M8 29c11 0 9-14 14-14s3 14 14 14" fill="none" stroke-width="3.4" stroke-linecap="round"/>
+      <svg class="mk" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="18" cy="22" r="13" fill="#4b3bff"/>
+        <circle cx="26" cy="22" r="13" fill="#ff3d9a" style="mix-blend-mode:multiply"/>
       </svg>
-      <span>obzen<small>integrated</small></span>
+      <span>obzen<small data-ko="통합 기업" data-en="integrated">통합 기업</small></span>
     </a>
-    <nav class="desktop-nav" aria-label="주요 메뉴">
-      <a href="#story">회사소개</a>
-      <a href="#merge">합병 스토리</a>
-      <a href="#services">통합 서비스</a>
-      <a href="#history">연혁</a>
-      <a href="#newsroom">뉴스룸·IR</a>
+    <nav class="nav" aria-label="주요 메뉴">
+      <a href="#company" data-ko="회사소개" data-en="Company">회사소개</a>
+      <a href="#history" data-ko="연혁·합병" data-en="History">연혁·합병</a>
+      <a href="#services" data-ko="서비스" data-en="Services">서비스</a>
+      <a href="#ir" data-ko="뉴스·IR" data-en="Newsroom">뉴스·IR</a>
+      <a href="#contact" data-ko="문의" data-en="Contact">문의</a>
     </nav>
-    <div class="header-actions">
-      <button class="icon-button search-open" type="button" aria-label="통합검색 열기">
+    <div class="hdr-actions">
+      <button class="icon-btn search-open" type="button" aria-label="통합검색 열기">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
       </button>
-      <button class="lang-button" type="button" aria-label="첫 화면 핵심 문구 영문 미리보기" title="첫 화면 핵심 문구만 전환합니다"><span>KR</span><span>EN·preview</span></button>
-      <a class="button button-compact button-primary desktop-cta" href="#contact">프로젝트 문의</a>
-      <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobileMenu" aria-label="메뉴 열기">
-        <span></span><span></span>
+      <div class="lang" role="group" aria-label="언어 선택">
+        <button type="button" data-setlang="ko" class="on">KO</button>
+        <button type="button" data-setlang="en">EN</button>
+      </div>
+      <a class="btn pri sm" href="#contact" data-ko="프로젝트 문의" data-en="Get in touch">프로젝트 문의</a>
+      <button class="icon-btn menu-btn" type="button" aria-label="메뉴 열기" aria-controls="mmenu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <dialog class="mobile-menu" id="mobileMenu" aria-label="모바일 메뉴">
-    <div class="mobile-menu-head">
-      <span class="brand-word">obzen integrated</span>
-      <button class="icon-button menu-close" type="button" aria-label="메뉴 닫기">×</button>
-    </div>
-    <nav aria-label="모바일 주요 메뉴">
-      <a href="#story"><span>01</span>회사소개</a>
-      <a href="#merge"><span>02</span>합병 스토리</a>
-      <a href="#services"><span>03</span>통합 서비스</a>
-      <a href="#history"><span>04</span>연혁</a>
-      <a href="#newsroom"><span>05</span>뉴스룸·IR</a>
-      <a href="#contact"><span>06</span>문의하기</a>
+<dialog class="mmenu" id="mmenu" aria-label="모바일 메뉴">
+  <div class="mmenu-in">
+    <div class="mmenu-head"><span class="brand"><span>obzen</span></span><button class="icon-btn menu-close" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <nav aria-label="모바일 메뉴">
+      <a href="#company"><span>01</span><span data-ko="회사소개" data-en="Company">회사소개</span></a>
+      <a href="#history"><span>02</span><span data-ko="연혁·합병" data-en="History">연혁·합병</span></a>
+      <a href="#services"><span>03</span><span data-ko="서비스" data-en="Services">서비스</span></a>
+      <a href="#ir"><span>04</span><span data-ko="뉴스·IR" data-en="Newsroom">뉴스·IR</span></a>
+      <a href="#contact"><span>05</span><span data-ko="문의" data-en="Contact">문의</span></a>
     </nav>
-  </dialog>
+  </div>
+</dialog>
 
-  <dialog class="search-dialog" aria-labelledby="searchTitle">
-    <div class="search-shell">
-      <div class="search-top">
-        <div>
-          <p class="eyebrow">Integrated search</p>
-          <h2 id="searchTitle">무엇을 찾고 계신가요?</h2>
+<main id="main">
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-aurora" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow reveal" data-ko="OBZEN × ZALESIA · 통합 출범 2026" data-en="OBZEN × ZALESIA · INTEGRATION 2026">OBZEN × ZALESIA · 통합 출범 2026</p>
+        <h1 class="reveal"><span data-ko="흩어진 데이터를" data-en="Scattered data,">흩어진 데이터를</span> <span class="em" data-ko="하나의 초점으로." data-en="brought into focus.">하나의 초점으로.</span></h1>
+        <p class="hero-lead reveal" data-ko="고객 데이터와 경영 데이터가 오브젠이라는 하나의 렌즈를 지나 “다음 행동”이라는 선명한 빛으로 모입니다." data-en="Customer and enterprise data pass through one lens — OBZEN — and converge into one clear beam: the next action.">고객 데이터와 경영 데이터가 오브젠이라는 하나의 렌즈를 지나 “다음 행동”이라는 선명한 빛으로 모입니다.</p>
+        <div class="hero-actions reveal">
+          <a class="btn pri" href="#company" data-ko="통합 스토리 보기" data-en="See the story">통합 스토리 보기</a>
+          <a class="btn line" href="#services" data-ko="서비스 살펴보기" data-en="Explore services">서비스 살펴보기</a>
         </div>
-        <button class="icon-button search-close" type="button" aria-label="통합검색 닫기">×</button>
+        <div class="hero-proof reveal"><span>CUSTOMER DATA</span><span>DATA ENGINEERING</span><span>BI</span><span>GENERATIVE AI</span><span>GOVERNANCE</span></div>
       </div>
-      <label class="search-field">
-        <span class="sr-only">검색어</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
-        <input type="search" autocomplete="off" placeholder="회사, 합병, 서비스, IR을 검색해 보세요" data-search-input>
-        <kbd>/</kbd>
-      </label>
-      <p class="search-summary" aria-live="polite">추천 검색어: 합병, AI 의사결정, CDP, IR</p>
-      <div class="search-results" data-search-results></div>
+      <div class="hero-visual reveal" aria-hidden="true">
+        <div class="eclipse">
+          <div class="ring"></div>
+          <div class="disc d-obzen"></div>
+          <div class="disc d-zalesia"></div>
+          <div class="core"><b>ONE<br>FOCUS</b></div>
+          <span class="tag t-a">OBZEN</span><span class="tag t-b">ZALESIA</span><span class="tag t-c" data-ko="다음 행동" data-en="Next action">다음 행동</span>
+        </div>
+        <div class="spectrum-bar"></div>
+      </div>
     </div>
-  </dialog>
+  </section>
 
-  <main id="main">
-    <!-- HERO -->
-    <section class="hero" id="top">
-      <div class="hero-grid shell">
-        <div class="hero-copy">
-          <p class="eyebrow reveal">OBZEN × ZALESIA · 2026 MERGER</p>
-          <h1 class="display reveal" data-delay="80">
-            <span data-ko="두 개의 흐름," data-en="Two streams,">두 개의 흐름,</span>
-            <span class="accent" data-ko="하나의 오브젠." data-en="one OBZEN.">하나의 오브젠.</span>
-          </h1>
-          <p class="hero-lead lead reveal" data-delay="160" data-ko="오브젠의 고객 데이터와 잘레시아의 데이터 엔지니어링이 만나, 데이터에서 다음 행동까지 이어지는 하나의 회사가 되었습니다." data-en="OBZEN's customer data meets ZALESIA's data engineering — one company that carries data through to the next action.">
-            오브젠의 고객 데이터와 잘레시아의 데이터 엔지니어링이 만나,<br>데이터에서 다음 행동까지 이어지는 하나의 회사가 되었습니다.
-          </p>
-          <div class="hero-actions reveal" data-delay="240">
-            <a class="button button-primary" href="#merge">합병 스토리 보기</a>
-            <button class="button button-secondary hero-play" type="button">
-              <span class="play-dot" aria-hidden="true"></span> 90초 비전 보기
-            </button>
-          </div>
-        </div>
-        <div class="hero-stream reveal" data-delay="200" aria-label="두 데이터 흐름이 하나로 합류하는 브랜드 이미지">
-          <svg viewBox="0 0 500 460" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="mergedGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stop-color="#9F1B68"/><stop offset=".5" stop-color="#22B8A7"/><stop offset="1" stop-color="#FF9E1B"/>
-              </linearGradient>
-            </defs>
-            <path class="stream-path stream-wine" d="M-20 90 C120 90 150 230 250 230"/>
-            <path class="stream-path stream-navy" d="M-20 370 C120 370 150 230 250 230"/>
-            <path class="stream-path stream-merged" d="M250 230 C360 230 400 230 520 230"/>
-          </svg>
-          <div class="hero-chip chip-wine"><span>OBZEN</span><strong>고객 데이터</strong></div>
-          <div class="hero-chip chip-navy"><span>ZALESIA</span><strong>경영 데이터</strong></div>
-          <div class="hero-chip chip-one"><span>ONE</span><strong>다음 행동</strong></div>
-        </div>
-      </div>
-      <div class="hero-foot shell">
-        <p>Scroll to converge</p>
-        <div class="hero-marks"><span>CUSTOMER DATA</span><span>ENGINEERING</span><span>AI</span><span>GOVERNANCE</span></div>
-      </div>
-    </section>
-
-    <!-- CH.01 두 회사 -->
-    <section class="chapter two-firms" id="story">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.01</span>
-          <span class="chapter-label">about us · 두 회사</span>
-        </div>
-        <h2 class="h2 reveal" data-delay="80" style="max-width:18ch;margin-bottom:14px;">서로 다른 강점을<br>가진 두 회사가 있었습니다.</h2>
-        <p class="lead reveal" data-delay="140" style="margin-bottom:clamp(36px,5vw,60px);">한쪽은 고객을 이해하고 실행하는 데 강했고, 다른 한쪽은 데이터를 연결하고 신뢰하게 만드는 데 강했습니다.</p>
-        <div class="firm-grid">
-          <article class="firm-card firm-a reveal">
-            <span class="firm-tag mono">OBZEN / CUSTOMER</span>
-            <h3><em>오브젠</em>—<br>고객을 실행으로.</h3>
-            <p class="firm-role">고객 데이터 · 마케팅 실행</p>
-            <p>고객 접점에서 모인 데이터를 이해하고, 캠페인과 개인화로 정교하게 실행해 온 회사입니다.</p>
-            <ul class="firm-caps">
-              <li>Customer Data Platform</li><li>AI Marketing</li><li>Campaign Orchestration</li>
-            </ul>
-          </article>
-          <article class="firm-card firm-b reveal" data-delay="100">
-            <span class="firm-tag mono">ZALESIA / ENTERPRISE</span>
-            <h3><em>잘레시아</em>—<br>데이터를 신뢰로.</h3>
-            <p class="firm-role">데이터 엔지니어링 · BI</p>
-            <p>기업 전반의 데이터를 연결하고, 분석과 경영 의사결정의 기반을 설계해 온 회사입니다.</p>
-            <ul class="firm-caps">
-              <li>Data Engineering</li><li>Business Intelligence</li><li>Management Analytics</li>
-            </ul>
-          </article>
-        </div>
-        <div class="firm-between reveal" data-delay="120">
-          <div class="plus" aria-hidden="true">＋</div>
-          <p>따로일 때는 각자의 전문성이었습니다. 함께가 되자, 고객 데이터가 경영 데이터와 이어지고, 실행이 근거를 갖게 되었습니다.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CH.02 합병의 순간 (다크 시네마) -->
-    <section class="chapter convergence" id="merge">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.02</span>
-          <span class="chapter-label">the merger · 합병의 순간</span>
-        </div>
-        <div class="conv-head reveal" data-delay="80">
-          <h2 class="h2">두 흐름이 만나<br><span class="accent">하나가 되는 순간.</span></h2>
-        </div>
-        <div class="conv-stage reveal" data-delay="120" aria-label="고객 데이터 흐름과 경영 데이터 흐름이 하나의 통합 지능으로 합류하는 구조">
-          <svg viewBox="0 0 1000 440" preserveAspectRatio="none" aria-hidden="true">
-            <path class="conv-line conv-wine" d="M100 96 C320 96 340 220 500 220"/>
-            <path class="conv-line conv-navy" d="M100 344 C320 344 340 220 500 220"/>
-            <path class="conv-line conv-merged" d="M500 220 C700 220 780 220 900 220"/>
-          </svg>
-          <div class="conv-node node-wine" style="left:10%;top:22%;"><span>OBZEN</span><strong>고객 데이터</strong></div>
-          <div class="conv-node node-navy" style="left:10%;top:78%;"><span>ZALESIA</span><strong>경영 데이터</strong></div>
-          <div class="conv-node node-one" style="left:50%;top:50%;"><span>ONE</span><strong>통합 지능</strong></div>
-          <div class="conv-node" style="left:90%;top:50%;"><span>AI ACTION</span><strong style="color:var(--orange-soft)">다음 행동</strong></div>
-        </div>
-        <div class="conv-quote reveal" data-delay="160">
-          <p>“합병은 두 회사를 더한 것이 아니라, 데이터가 끊기던 지점을 잇는 일이었습니다.”</p>
-          <cite>OBZEN Integrated · Merger Vision</cite>
-        </div>
-      </div>
-    </section>
-
-    <!-- CH.03 하나의 오브젠 + 시너지 -->
-    <section class="chapter one-obzen">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.03</span>
-          <span class="chapter-label">the new obzen · 하나의 오브젠</span>
-        </div>
-        <div class="one-grid">
-          <div class="one-statement reveal">
-            <h2 class="h2">이제 우리는<br><span class="accent">데이터에서 행동까지</span><br>하나로 봅니다.</h2>
-            <div class="one-values">
-              <div class="one-value"><b>01</b><div><strong>연결</strong><p>고객 데이터와 경영 데이터를 하나의 관점으로 잇습니다.</p></div></div>
-              <div class="one-value"><b>02</b><div><strong>신뢰</strong><p>누가 무엇을 했는지 설명할 수 있는 구조로 AI를 운영합니다.</p></div></div>
-              <div class="one-value"><b>03</b><div><strong>실행</strong><p>분석에서 멈추지 않고 실제 다음 행동으로 이어 줍니다.</p></div></div>
-            </div>
-          </div>
-          <div class="synergy reveal" data-delay="120" aria-label="통합 시너지 지표 (제안용 가상 데이터)">
-            <div class="synergy-cell"><div class="num"><span data-count="2">0</span><span class="suffix">→1</span></div><span class="cap">두 전문 조직이 하나로</span><span class="sub">오브젠 · 잘레시아 통합 법인</span></div>
-            <div class="synergy-cell"><div class="num"><span data-count="24">0</span><span class="suffix">년+</span></div><span class="cap">누적 데이터·마케팅 경험</span><span class="sub">두 회사 역량의 합</span></div>
-            <div class="synergy-cell"><div class="num"><span data-count="4">0</span><span class="suffix">단계</span></div><span class="cap">수집→통합→분석→실행</span><span class="sub">하나의 연속된 흐름</span></div>
-            <div class="synergy-cell"><div class="num"><span data-count="100">0</span><span class="suffix">%</span></div><span class="cap">설명 가능한 AI 지향</span><span class="sub">근거 추적 · 거버넌스</span></div>
-            <p class="synergy-note">※ 위 수치는 통합 방향을 설명하기 위한 제안용 가상 지표입니다.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CH.04 연혁 -->
-    <section class="chapter history" id="history">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.04</span>
-          <span class="chapter-label">history · 연혁</span>
-        </div>
-        <h2 class="h2 timeline-head reveal" data-delay="80">두 개의 길이<br>하나로 모이기까지.</h2>
-        <div class="timeline" data-timeline></div>
-        <p class="sample-note reveal">※ 연혁의 연도·내용은 통합 서사를 설명하기 위한 제안용 가상 구성입니다.</p>
-      </div>
-    </section>
-
-    <!-- CH.05 통합 서비스 (다크) -->
-    <section class="chapter services" id="services">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.05</span>
-          <span class="chapter-label">what we do · 통합 서비스</span>
-        </div>
-        <div class="services-head">
-          <h2 class="h2 reveal">제품을 나열하지 않습니다.<br>흐름으로 설명합니다.</h2>
-          <p class="reveal" data-delay="100">데이터가 들어와서, 정리되고, 분석되고, 실제 업무로 이어지는 순서 그대로. 합병 전 두 회사의 역량과 합병 후 새로 가능해진 영역을 함께 표시합니다.</p>
-        </div>
-        <div class="accordion reveal" data-delay="60" data-accordion></div>
-      </div>
-    </section>
-
-    <!-- CH.06 뉴스룸 & IR -->
-    <section class="chapter newsroom" id="newsroom">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.06</span>
-          <span class="chapter-label">newsroom & ir · 뉴스룸·IR</span>
-        </div>
-        <div class="ir-head">
-          <h2 class="h2 reveal">필요한 정보에<br>빠르게 닿도록.</h2>
-          <div class="ir-controls reveal" data-delay="80" role="group" aria-label="자료 필터">
-            <button class="filter-chip is-active" type="button" data-filter="all">전체</button>
-            <button class="filter-chip" type="button" data-filter="notice">공지</button>
-            <button class="filter-chip" type="button" data-filter="ir">IR</button>
-            <button class="filter-chip" type="button" data-filter="news">보도자료</button>
-          </div>
-        </div>
-        <div class="ir-list reveal" data-delay="60" data-ir-list></div>
-        <p class="sample-note reveal">※ 목록의 날짜·제목·첨부파일은 기능 시연을 위한 가상 데이터입니다.</p>
-      </div>
-    </section>
-
-    <!-- CH.07 문의 (다크) -->
-    <section class="chapter contact" id="contact">
-      <div class="shell">
-        <div class="chapter-head reveal">
-          <span class="chapter-num">CH.07</span>
-          <span class="chapter-label">contact · 문의</span>
-        </div>
-        <div class="contact-grid">
-          <div class="contact-intro reveal">
-            <p class="eyebrow on-dark">Start the conversation</p>
-            <h2 class="h2">복잡한 데이터 문제,<br>연결부터 함께 보겠습니다.</h2>
-            <p>문의 유형과 공통 연락 항목을 남겨 주세요. 데모에서는 입력 내용이 외부로 전송되지 않습니다.</p>
-            <div class="contact-cues"><span>사업·제품 문의</span><span>파트너십</span><span>IR 문의</span></div>
-          </div>
-          <form class="contact-form reveal" data-delay="100" novalidate data-contact-form>
-            <div class="form-status" role="alert" tabindex="-1" hidden></div>
-            <label class="field"><span>문의 유형 <b>*</b></span>
-              <select name="type" required>
-                <option value="">선택해 주세요</option><option>사업·제품 문의</option><option>파트너십</option><option>IR 문의</option>
-              </select>
-            </label>
-            <div class="field-row">
-              <label class="field"><span>이름 <b>*</b></span><input name="name" autocomplete="name" required></label>
-              <label class="field"><span>회사명 <b>*</b></span><input name="company" autocomplete="organization" required></label>
-            </div>
-            <label class="field"><span>회사 이메일 <b>*</b></span><input name="email" type="email" autocomplete="email" placeholder="name@company.com" required></label>
-            <label class="field"><span>문의 내용 <b>*</b></span><textarea name="message" rows="5" minlength="10" placeholder="현재 해결하고 싶은 데이터·AI 과제를 알려주세요." required></textarea></label>
-            <label class="check"><input name="consent" type="checkbox" required><span>개인정보 수집·이용 안내를 확인했으며 이에 동의합니다. <button type="button" class="privacy-open">내용 보기</button></span></label>
-            <button class="button button-primary form-submit" type="submit">문의 내용 확인하기 <span aria-hidden="true">↗</span></button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="shell footer-grid">
-      <div><span class="footer-brand">obzen</span><p>Two streams, one company.<br>데이터에서 다음 행동까지.</p></div>
-      <div><strong>Explore</strong><a href="#story">회사소개</a><a href="#merge">합병 스토리</a><a href="#newsroom">뉴스룸·IR</a></div>
-      <div><strong>Demo</strong><a href="showcase.html">디자인 프리미티브</a><a href="admin.html">관리자 데모</a><button class="footer-search search-open" type="button">통합검색</button></div>
-      <div><strong>Notice</strong><p>본 사이트는 제안 검토를 위한 비공식 데모(B안)이며 오브젠 공식 홈페이지가 아닙니다.</p></div>
+  <!-- COMPANY / IDENTITY -->
+  <section class="section" id="company">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">01</span><p data-ko="새로운 정체성" data-en="THE NEW OBZEN">THE NEW OBZEN</p><span class="rule"></span></div>
+      <div class="head reveal"><h2 data-ko="두 전문성이 만나 하나의 스펙트럼이 됩니다." data-en="Two disciplines meet and become one spectrum.">두 전문성이 만나 하나의 스펙트럼이 됩니다.</h2>
+        <p data-ko="오브젠의 고객 데이터·AI 마케팅 실행력과 잘레시아의 데이터 엔지니어링·경영 분석 역량을 하나의 운영 체계로 통합했습니다." data-en="OBZEN’s customer-data and AI marketing meet ZALESIA’s data engineering and analytics — unified into one operating system.">오브젠의 고객 데이터·AI 마케팅 실행력과 잘레시아의 데이터 엔지니어링·경영 분석 역량을 하나의 운영 체계로 통합했습니다.</p></div>
+      <div class="idcards reveal" id="idcards"></div>
     </div>
-    <div class="shell footer-bottom"><span>© 2026 Proposal Demo · B안 브랜드 내러티브</span><a href="#top">맨 위로 ↑</a></div>
-  </footer>
+  </section>
 
-  <dialog class="privacy-dialog" aria-labelledby="privacyTitle">
-    <div class="privacy-card">
-      <button class="icon-button privacy-close" type="button" aria-label="닫기">×</button>
-      <p class="eyebrow">Demo privacy notice</p>
-      <h2 id="privacyTitle">개인정보 수집·이용 안내</h2>
-      <p>이 화면은 기능 시연용입니다. 입력한 정보는 서버로 전송되거나 저장되지 않으며, 제출 시 브라우저 화면에서만 확인 메시지를 표시합니다.</p>
-      <button class="button button-primary privacy-confirm" type="button">확인했습니다</button>
+  <!-- HISTORY / TIMELINE -->
+  <section class="section paper2" id="history">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">02</span><p data-ko="연혁 · 합병 정보" data-en="HISTORY & MERGER">HISTORY & MERGER</p><span class="rule"></span></div>
+      <div class="head reveal"><h2 data-ko="두 갈래의 길이 하나의 초점으로." data-en="Two paths, one focal point.">두 갈래의 길이 하나의 초점으로.</h2></div>
+      <div class="timeline reveal" id="timeline"><span class="spine"></span></div>
     </div>
-  </dialog>
+  </section>
 
-  <dialog class="vision-overlay" aria-labelledby="visionTitle">
-    <button class="vision-close" type="button" aria-label="비전 영상 닫기">×</button>
-    <div class="vision-story">
-      <p class="mono">00:00 — 01:30 · INTERACTIVE STORY</p>
-      <div class="vision-frame"><span>Customer Data</span><i></i><span>Enterprise Data</span></div>
-      <h2 id="visionTitle">두 개의 데이터가<br>하나의 행동이 되는 순간.</h2>
-      <p>실제 영상 대신, 합병 후 브랜드 내러티브의 모션 방향을 시연합니다.</p>
+  <!-- SERVICES -->
+  <section class="section dark" id="services">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">03</span><p data-ko="통합 서비스" data-en="UNIFIED SERVICES">UNIFIED SERVICES</p><span class="rule"></span></div>
+      <div class="head reveal"><h2 data-ko="제품을 나열하지 않습니다. 데이터의 여정을 보여줍니다." data-en="Not a product list — the journey of your data.">제품을 나열하지 않습니다. 데이터의 여정을 보여줍니다.</h2></div>
+      <div class="acc reveal" id="acc"></div>
     </div>
-  </dialog>
+  </section>
+
+  <!-- STATS / IR SNAPSHOT -->
+  <section class="section" id="snapshot">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">04</span><p data-ko="통합 스냅샷" data-en="INTEGRATION SNAPSHOT">INTEGRATION SNAPSHOT</p><span class="rule"></span></div>
+      <div class="head reveal"><h2 data-ko="합병으로 넓어진 지능의 폭." data-en="A wider span of intelligence, together.">합병으로 넓어진 지능의 폭.</h2></div>
+      <div class="stats reveal" id="stats"></div>
+      <p class="muted reveal" style="font-size:12.5px;margin-top:18px" id="statsNote"></p>
+    </div>
+  </section>
+
+  <!-- NEWSROOM / IR -->
+  <section class="section paper2" id="ir">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">05</span><p data-ko="뉴스룸 · IR" data-en="NEWSROOM & IR">NEWSROOM & IR</p><span class="rule"></span></div>
+      <div class="head reveal" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap">
+        <h2 data-ko="필요한 정보에 빠르게 닿도록." data-en="Reach the right information, fast.">필요한 정보에 빠르게 닿도록.</h2>
+        <div class="chips" id="chips" role="group" aria-label="자료 필터"></div>
+      </div>
+      <div class="news reveal" id="news"></div>
+      <p class="muted reveal" style="font-size:12.5px;margin-top:16px" data-ko="※ 목록의 날짜·제목·첨부는 기능 시연용 가상 데이터입니다. 관리자 페이지에서 추가·수정할 수 있습니다." data-en="※ Dates, titles and files are demo data. Manage them in the admin page.">※ 목록의 날짜·제목·첨부는 기능 시연용 가상 데이터입니다. 관리자 페이지에서 추가·수정할 수 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- GOVERNANCE -->
+  <section class="section" id="trust">
+    <div class="wrap">
+      <div class="kicker reveal"><span class="n">06</span><p data-ko="신뢰와 거버넌스" data-en="TRUST & GOVERNANCE">TRUST & GOVERNANCE</p><span class="rule"></span></div>
+      <div class="head reveal"><h2 data-ko="AI가 더 움직일수록, 통제는 더 분명하게." data-en="The more AI acts, the clearer the control.">AI가 더 움직일수록, 통제는 더 분명하게.</h2></div>
+      <div class="gov reveal" id="gov"></div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section paper2" id="contact">
+    <div class="wrap contact-grid">
+      <div class="reveal">
+        <div class="kicker"><span class="n">07</span><p data-ko="문의하기" data-en="CONTACT">CONTACT</p><span class="rule"></span></div>
+        <h2 class="head" data-ko="복잡한 데이터 문제, 연결부터 함께 보겠습니다." data-en="Complex data problems — let’s start by connecting them." style="font-size:clamp(28px,4.4vw,48px);font-weight:800;letter-spacing:-.035em;line-height:1.05">복잡한 데이터 문제, 연결부터 함께 보겠습니다.</h2>
+        <p class="muted" style="margin-top:16px;max-width:44ch" data-ko="문의 유형과 연락 정보를 남겨 주세요. 데모에서는 입력 내용이 외부로 전송되지 않습니다." data-en="Leave your inquiry and contact info. Nothing is sent externally in this demo.">문의 유형과 연락 정보를 남겨 주세요. 데모에서는 입력 내용이 외부로 전송되지 않습니다.</p>
+        <div class="cues"><span data-ko="사업·제품 문의" data-en="Business & product">사업·제품 문의</span><span data-ko="파트너십" data-en="Partnership">파트너십</span><span data-ko="IR 문의" data-en="IR inquiry">IR 문의</span></div>
+      </div>
+      <form class="reveal" id="cform" novalidate>
+        <div class="form-status" id="fstatus" role="alert" tabindex="-1" hidden></div>
+        <label class="field"><span data-ko="문의 유형" data-en="Type">문의 유형</span> <b>*</b>
+          <select class="sel" name="type" required><option value="" data-ko="선택해 주세요" data-en="Select">선택해 주세요</option><option data-ko="사업·제품 문의" data-en="Business & product">사업·제품 문의</option><option data-ko="파트너십" data-en="Partnership">파트너십</option><option data-ko="IR 문의" data-en="IR inquiry">IR 문의</option></select>
+        </label>
+        <div class="field-row">
+          <label class="field"><span data-ko="이름" data-en="Name">이름</span> <b>*</b><input class="inp" name="name" autocomplete="name" required></label>
+          <label class="field"><span data-ko="회사명" data-en="Company">회사명</span> <b>*</b><input class="inp" name="company" autocomplete="organization" required></label>
+        </div>
+        <label class="field"><span data-ko="회사 이메일" data-en="Work email">회사 이메일</span> <b>*</b><input class="inp" name="email" type="email" placeholder="name@company.com" required></label>
+        <label class="field"><span data-ko="문의 내용" data-en="Message">문의 내용</span> <b>*</b><textarea class="inp" name="message" rows="4" minlength="10" required></textarea></label>
+        <label class="check"><input type="checkbox" name="consent" required><span data-ko="개인정보 수집·이용 안내를 확인했으며 동의합니다." data-en="I agree to the personal data notice.">개인정보 수집·이용 안내를 확인했으며 동의합니다.</span></label>
+        <button class="btn pri" type="submit" style="width:100%" data-ko="문의 내용 확인하기" data-en="Review my inquiry">문의 내용 확인하기</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div><span class="fb">obzen</span><p style="margin-top:10px" data-ko="흩어진 데이터를 하나의 초점으로." data-en="Scattered data, brought into focus.">흩어진 데이터를 하나의 초점으로.</p></div>
+    <div><strong>Explore</strong><a href="#company" data-ko="회사소개" data-en="Company">회사소개</a><a href="#services" data-ko="서비스" data-en="Services">서비스</a><a href="#ir" data-ko="뉴스·IR" data-en="Newsroom">뉴스·IR</a></div>
+    <div><strong>Demo</strong><a href="showcase.html" data-ko="디자인 시스템" data-en="Design system">디자인 시스템</a><a href="admin.html" data-ko="관리자 CMS" data-en="Admin CMS">관리자 CMS</a><button class="search-open" type="button" data-ko="통합검색" data-en="Search">통합검색</button></div>
+    <div><strong>Notice</strong><p data-ko="본 사이트는 제안 검토용 비공식 데모이며 오브젠 공식 홈페이지가 아닙니다." data-en="An unofficial proposal demo, not the official OBZEN website.">본 사이트는 제안 검토용 비공식 데모이며 오브젠 공식 홈페이지가 아닙니다.</p></div>
+  </div>
+  <div class="wrap foot-bottom"><span>© 2026 Proposal Demo · OBZEN Integrated (B안)</span><a href="#top" data-ko="맨 위로 ↑" data-en="Back to top ↑">맨 위로 ↑</a></div>
+</footer>
+
+<dialog class="search-dialog" aria-labelledby="stitle">
+  <div class="search-shell">
+    <div class="search-top">
+      <div><p class="eyebrow">Integrated search</p><h2 id="stitle" style="font-size:22px;font-weight:800;letter-spacing:-.02em" data-ko="무엇을 찾고 계신가요?" data-en="What are you looking for?">무엇을 찾고 계신가요?</h2></div>
+      <button class="icon-btn search-close" aria-label="닫기"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <label class="search-field"><span class="sr-only">검색어</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      <input type="search" autocomplete="off" id="sinput" placeholder="회사·서비스·IR·뉴스 검색" data-ko-ph="회사·서비스·IR·뉴스 검색" data-en-ph="Company, services, IR, news"><kbd>/</kbd>
+    </label>
+    <p class="search-summary" id="ssummary" aria-live="polite"></p>
+    <div class="search-results" id="sresults"></div>
+  </div>
+</dialog>
+
+<span class="skip" style="display:none"></span>
 </body>
 </html>
