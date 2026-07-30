@@ -95,6 +95,23 @@ window.HUELAB = {
     }
   ],
 
+  /* ① 마우스 반응 인터랙션 카드 — 적용 분야 */
+  apps: [
+    { img: "assets/img/app-residential.jpg", n: "01", title: "주거 공간", sub: "거실·침실·주방까지, 저VOC 수성으로 안심하고 마감합니다." },
+    { img: "assets/img/app-commercial.jpg", n: "02", title: "상업 공간", sub: "브랜드를 색으로. 매장·호텔·오피스의 무드를 연출합니다." },
+    { img: "assets/img/app-exterior.jpg", n: "03", title: "건축·외벽", sub: "계절과 세월을 견디는 방수·외벽 코팅." },
+    { img: "assets/img/app-industrial.jpg", n: "04", title: "산업·플랜트", sub: "설비 수명을 늘리는 고내구 중방식 코팅." }
+  ],
+
+  /* ④ 벤토 그리드 — 컬러의 세계 */
+  bento: [
+    { type: "text", title: "색은 표면이 아니라<br>경험입니다.", body: "질감·마감·빛에 따른 변화까지 설계합니다. 그래서 화면이 아니라 공간에서 증명합니다.", cls: "c-2x2" },
+    { img: "assets/img/bento-swatches.jpg", label: "팔레트", sub: "조화로운 색 조합", cls: "c-2x2" },
+    { img: "assets/img/bento-texture.jpg", label: "매트 텍스처", sub: "딥틸의 결", cls: "" },
+    { img: "assets/img/bento-roller.jpg", label: "마감의 손길", sub: "균일한 도막", cls: "" },
+    { img: "assets/img/hero-3.jpg", label: "컬러 블렌딩", sub: "색이 섞이는 순간", cls: "c-w" }
+  ],
+
   /* 제품 라인업 */
   products: [
     { num: "01", en: "Interior Water-based", name: "친환경 수성 · 아이케어", cat: "건축용", desc: "저VOC·무독성 수성 도료. 실내 마감과 어린이 공간에 적합합니다.", accent: "#00393c", badges: [{t:"환경마크",cert:true},{t:"저VOC"},{t:"HB 최우수"}] },
@@ -110,7 +127,9 @@ window.HUELAB = {
     { id:1, cat:"residential", catLabel:"주거", title:"딥틸 아파트 거실", product:"친환경 수성 · 아이케어", img:"assets/img/case-hero.jpg" },
     { id:2, cat:"residential", catLabel:"주거", title:"세이지 침실 마감", product:"친환경 수성 · 아이케어", img:"assets/img/case-bedroom.jpg" },
     { id:3, cat:"exterior", catLabel:"외벽", title:"저층 건물 외벽 도장", product:"방수·바닥 · 방수에이스", img:"assets/img/case-exterior.jpg" },
-    { id:4, cat:"commercial", catLabel:"상업", title:"테라코타 카페 인테리어", product:"무기질 도료 · 미네랄", img:"assets/img/case-cafe.jpg" }
+    { id:4, cat:"commercial", catLabel:"상업", title:"테라코타 카페 인테리어", product:"무기질 도료 · 미네랄", img:"assets/img/case-cafe.jpg" },
+    { id:5, cat:"residential", catLabel:"주거", title:"딥틸 거실 리모델링", product:"친환경 수성 · 아이케어", img:"assets/img/hero-1.jpg" },
+    { id:6, cat:"exterior", catLabel:"외벽", title:"골든아워 외벽 도장", product:"방수·바닥 · 방수에이스", img:"assets/img/hero-2.jpg" }
   ],
 
   /* 검색 인덱스 */

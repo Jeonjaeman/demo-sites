@@ -22,9 +22,30 @@
     requestAnimationFrame(step);
     setTimeout(() => { el.textContent = target; }, 1550);
   };
+  /* ⑤ split [data-split] text into animated words */
+  $$("[data-split]").forEach((el) => {
+    const words = el.textContent.trim().split(/\s+/);
+    el.innerHTML = words.map((w, i) => `<span class="w"><i style="transition-delay:${Math.min(i * 60, 500)}ms">${w}</i></span>`).join(" ");
+  });
+
+  /* parallax targets */
+  const parallaxEls = $$("[data-parallax]");
+  const applyParallax = () => {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    parallaxEls.forEach((el) => {
+      const wrap = el.closest(".statement-bg") || el.parentElement;
+      const r = wrap.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      const prog = (r.top + r.height / 2 - vh / 2) / vh; // -0.5..0.5-ish
+      el.style.transform = `translateY(${(-prog * 60).toFixed(1)}px) scale(1.16)`;
+    });
+  };
+  window.addEventListener("scroll", applyParallax, { passive: true });
+  applyParallax();
+
   const runChecks = () => {
     const vh = window.innerHeight || document.documentElement.clientHeight;
-    $$(".reveal:not(.is-visible), .mask:not(.is-visible), .img-reveal:not(.is-visible)").forEach((el) => {
+    $$(".reveal:not(.is-visible), .mask:not(.is-visible), .img-reveal:not(.is-visible), .words:not(.is-visible)").forEach((el) => {
       const r = el.getBoundingClientRect();
       if (r.top < vh * 0.9 && r.bottom > 0) { el.style.transitionDelay = Math.min(Number(el.dataset.delay || 0), 340) + "ms"; el.classList.add("is-visible"); }
     });
@@ -133,6 +154,38 @@
     return el;
   }));
 
+  /* ---------- ① 적용 분야 인터랙션 카드 (3D 틸트 + 스포트라이트) ---------- */
+  const appsHost = $("[data-apps]");
+  if (appsHost) {
+    appsHost.replaceChildren(...D.apps.map((a) => {
+      const el = document.createElement("article"); el.className = "app-card";
+      el.innerHTML = `<img src="${a.img}" alt="${a.title}"><div class="app-spot"></div>` +
+        `<div class="app-body"><span class="n">${a.n}</span><h3>${a.title}</h3><p>${a.sub}</p></div>`;
+      if (!reduce && window.matchMedia("(hover:hover)").matches) {
+        el.addEventListener("pointermove", (e) => {
+          const r = el.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+          el.classList.add("tilting");
+          el.style.setProperty("--ry", `${(px - .5) * 10}deg`);
+          el.style.setProperty("--rx", `${(.5 - py) * 10}deg`);
+          el.style.setProperty("--mx", `${px * 100}%`);
+          el.style.setProperty("--my", `${py * 100}%`);
+        });
+        el.addEventListener("pointerleave", () => { el.classList.remove("tilting"); el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg"); });
+      }
+      return el;
+    }));
+  }
+
+  /* ---------- ④ 벤토 그리드 ---------- */
+  const bentoHost = $("[data-bento]");
+  if (bentoHost) bentoHost.replaceChildren(...D.bento.map((b) => {
+    const el = document.createElement("div"); el.className = "bento-cell " + (b.cls || "");
+    if (b.type === "text") { el.classList.add("text"); el.innerHTML = `<div class="bt-lg">${b.title}</div><p>${b.body}</p>`; }
+    else el.innerHTML = `<img src="${b.img}" alt="${b.label}"><div class="b-label"><div class="bt">${b.label}</div><div class="bs">${b.sub}</div></div>`;
+    return el;
+  }));
+
   /* ---------- COLOR INSPIRATION ---------- */
   const tabsHost = $("[data-color-tabs]");
   const paletteHost = $("[data-palette]");
@@ -166,18 +219,23 @@
     return el;
   }));
 
-  /* ---------- 시공 사례 gallery + filter + lightbox ---------- */
+  /* ---------- ③ 시공 사례 풀블리드 드래그 캐러셀 + lightbox ---------- */
   const caseHost = $("[data-cases]");
   const lightbox = $(".lightbox-dialog");
+  let dragMoved = false, offset = 0;
+  const viewport = caseHost?.parentElement;
+  const stepPx = () => { const s = caseHost.querySelector(".case-slide"); const gap = parseFloat(getComputedStyle(caseHost).gap) || 20; return s ? s.offsetWidth + gap : 320; };
+  const maxOffset = () => { const cs = getComputedStyle(viewport); const pad = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0); return Math.max(0, caseHost.scrollWidth - (viewport.clientWidth - pad)); };
+  const applyTransform = () => { offset = Math.max(0, Math.min(offset, maxOffset())); caseHost.style.transform = `translateX(${-offset}px)`; };
   const renderCases = (filter = "all") => {
     const items = filter === "all" ? D.cases : D.cases.filter((c) => c.cat === filter);
     if (!items.length) { caseHost.innerHTML = `<p class="case-empty">해당 유형의 시공 사례가 없습니다.</p>`; return; }
     caseHost.replaceChildren(...items.map((c) => {
-      const el = document.createElement("article"); el.className = "case-card reveal img-reveal";
-      el.innerHTML = `<img src="${c.img}" alt="${c.title} 시공 사례">` +
-        `<div class="case-view"><svg viewBox="0 0 24 24"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div>` +
+      const el = document.createElement("article"); el.className = "case-slide";
+      el.innerHTML = `<img src="${c.img}" alt="${c.title} 시공 사례" draggable="false">` +
         `<div class="case-body"><div class="case-cat">${c.catLabel}</div><h3>${c.title}</h3><div class="case-prod">${c.product}</div></div>`;
       el.addEventListener("click", () => {
+        if (dragMoved) return;
         $(".lb-img", lightbox).src = c.img; $(".lb-img", lightbox).alt = c.title;
         $(".lb-cap h3", lightbox).textContent = c.title;
         $(".lb-cap span", lightbox).textContent = `${c.catLabel} · ${c.product}`;
@@ -185,13 +243,25 @@
       });
       return el;
     }));
-    runChecks();
+    offset = 0; requestAnimationFrame(applyTransform); setTimeout(applyTransform, 60);
   };
   if (caseHost) {
     renderCases();
     $$(".case-filter").forEach((b) => b.addEventListener("click", () => { $$(".case-filter").forEach((x) => x.classList.toggle("is-active", x === b)); renderCases(b.dataset.filter); }));
     $(".lb-close")?.addEventListener("click", () => lightbox.close());
     lightbox?.addEventListener("click", (e) => { if (e.target === lightbox) lightbox.close(); });
+    /* arrows — transform based */
+    $("[data-case-next]")?.addEventListener("click", () => { offset += stepPx(); applyTransform(); });
+    $("[data-case-prev]")?.addEventListener("click", () => { offset -= stepPx(); applyTransform(); });
+    /* drag */
+    let down = false, startX = 0, o0 = 0;
+    viewport.addEventListener("pointerdown", (e) => { down = true; dragMoved = false; startX = e.clientX; o0 = offset; caseHost.classList.add("dragging"); viewport.classList.add("dragging"); viewport.setPointerCapture?.(e.pointerId); });
+    viewport.addEventListener("pointermove", (e) => { if (!down) return; const dx = e.clientX - startX; if (Math.abs(dx) > 5) dragMoved = true; offset = o0 - dx; caseHost.style.transform = `translateX(${-Math.max(0, Math.min(offset, maxOffset()))}px)`; });
+    const endDrag = () => { if (!down) return; down = false; caseHost.classList.remove("dragging"); viewport.classList.remove("dragging"); offset = Math.round(offset / stepPx()) * stepPx(); applyTransform(); };
+    viewport.addEventListener("pointerup", endDrag);
+    viewport.addEventListener("pointercancel", endDrag);
+    viewport.addEventListener("pointerleave", endDrag);
+    window.addEventListener("resize", applyTransform);
   }
 
   /* ---------- search ---------- */

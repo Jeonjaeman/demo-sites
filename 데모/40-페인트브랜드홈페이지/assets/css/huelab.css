@@ -253,6 +253,91 @@ img,svg,video { display: block; max-width: 100%; }
 .case-empty { grid-column: 1/-1; text-align: center; color: var(--muted); padding: 40px; }
 
 /* ==========================================================================
+   신규 지침 섹션 (애플·삼성 벤치마크)
+   ========================================================================== */
+.fullbleed { width: 100vw; position: relative; left: 50%; margin-left: -50vw; }
+
+/* ⑤ word-stagger text animation */
+.words .w { display: inline-block; overflow: hidden; vertical-align: top; }
+.words .w > i { display: inline-block; font-style: inherit; transform: translateY(110%); transition: transform .8s var(--ease-out); }
+.words.is-visible .w > i { transform: none; }
+
+/* ② FULL-BLEED IMAGE STATEMENT */
+.statement { position: relative; min-height: 82vh; display: flex; align-items: center; overflow: hidden; color: #fff; background: var(--ink); }
+.statement-bg { position: absolute; inset: -14% 0 -14% 0; z-index: 0; }
+.statement-bg img { width: 100%; height: 100%; object-fit: cover; will-change: transform; }
+.statement-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6,20,21,.82) 0%, rgba(6,20,21,.5) 45%, rgba(6,20,21,.15) 100%); }
+.statement-in { position: relative; z-index: 2; padding-block: clamp(90px, 14vh, 180px); }
+.statement .eyebrow { color: #8FD6C8; display: block; margin-bottom: 22px; }
+.statement h2 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1; letter-spacing: -.03em; max-width: 18ch; }
+.statement p { margin-top: 26px; max-width: 46ch; font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.75; color: #dbe8e5; }
+
+/* ① MOUSE-REACTIVE INTERACTION CARDS */
+.apps { background: var(--cream); }
+.apps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(12px, 1.4vw, 20px); perspective: 1200px; }
+.app-card { position: relative; aspect-ratio: 4/5.2; border-radius: var(--radius-lg); overflow: hidden; background: var(--ink); transform: rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition: transform .5s var(--ease); transform-style: preserve-3d; }
+.app-card.tilting { transition: transform .08s linear; }
+.app-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform .6s var(--ease-out); }
+.app-card:hover img { transform: scale(1.14); }
+.app-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,26,28,.92) 4%, rgba(0,26,28,.15) 55%, transparent); z-index: 1; }
+.app-spot { position: absolute; inset: 0; z-index: 2; background: radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.22), transparent 62%); opacity: 0; transition: opacity .3s var(--ease); mix-blend-mode: soft-light; pointer-events: none; }
+.app-card:hover .app-spot { opacity: 1; }
+.app-body { position: absolute; inset: auto 0 0 0; z-index: 3; padding: clamp(20px, 2vw, 30px); color: #fff; transform: translateZ(40px); }
+.app-body .n { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; color: #8FD6C8; }
+.app-body h3 { font-size: clamp(1.2rem, 1.7vw, 1.55rem); margin: 8px 0 6px; letter-spacing: -.02em; }
+.app-body p { font-size: 13px; color: #cfe0dd; line-height: 1.6; opacity: 0; max-height: 0; transition: opacity .35s var(--ease), max-height .35s var(--ease); }
+.app-card:hover .app-body p { opacity: 1; max-height: 80px; }
+
+/* ④ FULL-BLEED BENTO GRID */
+.bento-section { background: var(--ink); color: #fff; overflow: hidden; }
+.bento-section .eyebrow { color: #8FD6C8; }
+.bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: clamp(150px, 15vw, 230px); gap: clamp(12px, 1.2vw, 18px); }
+.bento-cell { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: #0b2224; }
+.bento-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out); }
+.bento-cell:hover img { transform: scale(1.07); }
+.bento-cell .b-label { position: absolute; left: clamp(18px,1.6vw,26px); bottom: clamp(16px,1.4vw,22px); z-index: 2; }
+.bento-cell .b-label .bt { font-family: var(--display); font-size: clamp(1.05rem,1.5vw,1.4rem); font-weight: 700; letter-spacing: -.02em; color: #fff; }
+.bento-cell .b-label .bs { font-size: 12.5px; color: #a9cfca; margin-top: 3px; }
+.bento-cell::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,20,22,.75), transparent 55%); }
+.bento-cell.text { background: var(--teal); display: flex; flex-direction: column; justify-content: center; padding: clamp(24px,2.2vw,40px); }
+.bento-cell.text::after { display: none; }
+.bento-cell.text .bt-lg { font-family: var(--display); font-weight: 700; font-size: clamp(1.4rem,2.2vw,2rem); letter-spacing: -.025em; line-height: 1.12; }
+.bento-cell.text p { margin-top: 12px; font-size: 14px; color: #c3dbd7; line-height: 1.6; }
+.bento-cell.c-2x2 { grid-column: span 2; grid-row: span 2; }
+.bento-cell.c-w { grid-column: span 2; }
+.bento-cell.c-h { grid-row: span 2; }
+
+/* ③ FULL-BLEED DRAG CAROUSEL (cases) */
+.carousel-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px; }
+.carousel-nav { display: flex; gap: 10px; }
+.carousel-nav button { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line2); background: #fff; color: var(--ink); display: grid; place-items: center; transition: all .2s var(--ease); }
+.carousel-nav button:hover { background: var(--teal); border-color: var(--teal); color: #fff; }
+.carousel-nav button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+.case-viewport { overflow: hidden; padding: clamp(30px,4vw,48px) var(--gutter) 12px; cursor: grab; }
+.case-viewport.dragging { cursor: grabbing; }
+.case-track { display: flex; gap: clamp(14px, 1.6vw, 24px); transition: transform .55s var(--ease-out); will-change: transform; }
+.case-track.dragging { transition: none; }
+.case-slide { position: relative; flex: 0 0 clamp(270px, 32vw, 440px); aspect-ratio: 3/3.6; border-radius: var(--radius-lg); overflow: hidden; background: var(--ink); user-select: none; }
+.case-slide img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out); pointer-events: none; }
+.case-slide:hover img { transform: scale(1.05); }
+.case-slide .case-body { position: absolute; inset: auto 0 0 0; padding: clamp(20px,2vw,28px); background: linear-gradient(0deg, rgba(0,26,28,.92), rgba(0,26,28,.1) 65%, transparent); color: #fff; }
+.case-slide .case-cat { font-family: var(--display); font-size: 11.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #8FD6C8; }
+.case-slide h3 { font-size: clamp(1.15rem,1.6vw,1.4rem); margin: 8px 0 5px; }
+.case-slide .case-prod { font-size: 13px; color: #cfe0dd; }
+
+@media (max-width: 1000px) {
+  .apps-grid { grid-template-columns: repeat(2,1fr); }
+  .bento { grid-template-columns: repeat(2,1fr); grid-auto-rows: clamp(150px,32vw,220px); }
+  .bento-cell.c-2x2 { grid-column: span 2; grid-row: span 1; aspect-ratio: 16/9; }
+}
+@media (max-width: 620px) {
+  .apps-grid { grid-template-columns: 1fr 1fr; }
+  .bento { grid-template-columns: 1fr 1fr; }
+  .bento-cell.c-w, .bento-cell.c-2x2 { grid-column: span 2; }
+  .statement h2 { font-size: clamp(1.8rem,7vw,2.6rem); }
+}
+
+/* ==========================================================================
    CONTACT
    ========================================================================== */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px,3vw,52px); align-items: stretch; }

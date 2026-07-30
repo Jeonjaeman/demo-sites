@@ -74,11 +74,33 @@
       </div>
     </section>
 
+    <!-- ② FULL-BLEED IMAGE STATEMENT -->
+    <section class="statement fullbleed" aria-label="친환경 약속">
+      <div class="statement-bg"><img src="assets/img/statement-eco.jpg" alt="" data-parallax></div>
+      <div class="statement-in shell">
+        <span class="eyebrow">Eco Commitment</span>
+        <h2 class="words" data-split>칠하는 순간에도, 숨 쉬는 공간</h2>
+        <p class="reveal" data-delay="120">저VOC·무기질 기술로 실내공기질을 지킵니다. 색을 입히는 일이 공기를 해치지 않도록, 원료부터 다르게 설계합니다.</p>
+      </div>
+    </section>
+
     <!-- STATS -->
     <section class="section stats-band">
       <div class="shell">
         <p class="eyebrow reveal" style="color:#8FD6C8;margin-bottom:36px">By the Numbers</p>
         <div class="stats" data-stats></div>
+      </div>
+    </section>
+
+    <!-- ① MOUSE-REACTIVE INTERACTION CARDS -->
+    <section class="section apps" id="apps">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">Applications</span>
+          <h2 class="h-ko"><span class="mask"><span>어디에나,</span></span><span class="mask d1"><span>제대로 입힌다.</span></span></h2>
+          <p>주거부터 산업 현장까지. 공간의 조건에 맞는 도료와 마감을 제안합니다. <span style="color:var(--muted)">(카드에 마우스를 올려보세요)</span></p>
+        </div>
+        <div class="apps-grid reveal" data-apps></div>
       </div>
     </section>
 
@@ -98,6 +120,17 @@
       </div>
     </section>
 
+    <!-- ④ FULL-BLEED BENTO GRID -->
+    <section class="section bento-section">
+      <div class="shell">
+        <div class="section-head reveal">
+          <span class="eyebrow">Color Universe</span>
+          <h2 class="h-en"><span class="mask"><span>THE WORLD</span></span><span class="mask d1"><span>OF COLOR</span></span></h2>
+        </div>
+        <div class="bento reveal" data-bento></div>
+      </div>
+    </section>
+
     <!-- PRODUCTS -->
     <section class="section" id="products">
       <div class="shell">
@@ -110,23 +143,31 @@
       </div>
     </section>
 
-    <!-- 시공 사례 -->
-    <section class="section case-section" id="cases">
+    <!-- ③ FULL-BLEED DRAG CAROUSEL (시공 사례) -->
+    <section class="section case-section" id="cases" style="overflow:hidden">
       <div class="shell">
-        <div class="section-head reveal">
-          <span class="eyebrow">Project Cases</span>
-          <h2 class="h-ko"><span class="mask"><span>공간이 증명하는</span></span><span class="mask d1"><span>색과 마감.</span></span></h2>
-          <p>자사 제품을 활용한 실제 시공 현장. 유형을 선택해 사례를 확인하세요.</p>
+        <div class="carousel-head">
+          <div class="section-head reveal" style="margin-bottom:0">
+            <span class="eyebrow">Project Cases</span>
+            <h2 class="h-ko"><span class="mask"><span>공간이 증명하는</span></span><span class="mask d1"><span>색과 마감.</span></span></h2>
+            <p>자사 제품을 활용한 실제 시공 현장. 밀어서 넘겨보세요.</p>
+          </div>
+          <div class="carousel-nav reveal">
+            <button type="button" data-case-prev aria-label="이전"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button type="button" data-case-next aria-label="다음"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+          </div>
         </div>
-        <div class="case-filters reveal">
+        <div class="case-filters reveal" style="margin-top:26px">
           <button class="case-filter is-active" type="button" data-filter="all">전체</button>
           <button class="case-filter" type="button" data-filter="residential">주거</button>
           <button class="case-filter" type="button" data-filter="commercial">상업</button>
           <button class="case-filter" type="button" data-filter="exterior">외벽</button>
         </div>
-        <div class="case-grid" data-cases></div>
-        <p class="search-summary reveal" style="margin-top:18px">※ 시공 사례 이미지는 데모용으로 생성된 가상 이미지입니다.</p>
       </div>
+      <div class="fullbleed case-viewport">
+        <div class="case-track" data-cases></div>
+      </div>
+      <div class="shell"><p class="search-summary" style="margin-top:6px">※ 시공 사례 이미지는 데모용으로 생성된 가상 이미지입니다.</p></div>
     </section>
 
     <!-- CONTACT -->
