@@ -24,7 +24,7 @@
   --mono: "Space Mono","IBM Plex Mono",Consolas,ui-monospace,monospace;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; font-family: var(--sans); background: var(--white); color: var(--ink); line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 h1,h2,h3,h4 { margin: 0; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
@@ -214,7 +214,7 @@ img,svg,video { display: block; max-width: 100%; }
 /* ==========================================================================
    PRODUCTS — numbered editorial (BUSINESS AREA)
    ========================================================================== */
-.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2vw, 26px); }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 1.6vw, 22px); padding-inline: clamp(12px, 1.6vw, 24px); }
 .product-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: var(--ink); aspect-ratio: 4/3.5; }
 .product-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out); }
 .product-card:hover img { transform: scale(1.06); }
@@ -256,7 +256,8 @@ img,svg,video { display: block; max-width: 100%; }
 /* ==========================================================================
    신규 지침 섹션 (애플·삼성 벤치마크)
    ========================================================================== */
-.fullbleed { width: 100vw; position: relative; left: 50%; margin-left: -50vw; }
+/* ★ 진짜 100vw 전폭 — 화면 좌우 끝까지. 컨테이너(shell) 폭이 아니라 뷰포트 전체 폭. */
+.fullbleed, .wide { width: 100vw; margin-left: calc(50% - 50vw); }
 
 /* ⑤ word-stagger text animation */
 .words .w { display: inline-block; overflow: hidden; vertical-align: top; }
@@ -292,7 +293,7 @@ img,svg,video { display: block; max-width: 100%; }
 /* ④ FULL-BLEED BENTO GRID */
 .bento-section { background: var(--ink); color: #fff; overflow: hidden; }
 .bento-section .eyebrow { color: #8FD6C8; }
-.bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: clamp(150px, 15vw, 230px); gap: clamp(12px, 1.2vw, 18px); }
+.bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: clamp(150px, 15vw, 230px); gap: clamp(12px, 1.2vw, 18px); padding-inline: clamp(12px, 1.6vw, 24px); }
 .bento-cell { position: relative; border-radius: var(--radius-lg); overflow: hidden; background: #0b2224; }
 .bento-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease-out); }
 .bento-cell:hover img { transform: scale(1.07); }
