@@ -43,6 +43,7 @@
 
 *{ box-sizing:border-box; }
 html,body{ margin:0; }
+html,body{ overflow-x:clip; }
 body{
   font-family:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   background:var(--bg); color:var(--ink);
@@ -102,3 +103,48 @@ a{ color:inherit; }
 .toast.ok{ background:var(--ok); } .toast.warn{ background:var(--warn); } .toast.bad{ background:var(--danger); }
 
 .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+/* ============================================================
+   지침 섹션 — 100vw 풀블리드 · 마우스 반응 카드 · 텍스트 애니 (애플·삼성 벤치마크)
+   ============================================================ */
+.wide{ width:100vw; margin-left:calc(50% - 50vw); }
+.g-reveal{ opacity:0; transform:translateY(26px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+.g-reveal.is-visible{ opacity:1; transform:none; }
+.mask{ display:block; overflow:hidden; }
+.mask > span{ display:block; transform:translateY(108%); transition:transform .95s var(--ease); }
+.mask.is-visible > span{ transform:none; }
+.mask.d1 > span{ transition-delay:.08s; }
+.words .w{ display:inline-block; overflow:hidden; vertical-align:top; }
+.words .w > i{ display:inline-block; font-style:inherit; transform:translateY(110%); transition:transform .8s var(--ease); }
+.words.is-visible .w > i{ transform:none; }
+@media (prefers-reduced-motion:reduce){ .g-reveal,.mask > span,.words .w > i{ opacity:1; transform:none; transition:none; } }
+
+.gshell{ max-width:1120px; margin:0 auto; padding-inline:clamp(18px,4vw,56px); }
+.g-eye{ font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--brand); display:block; margin-bottom:16px; }
+
+/* ② 풀블리드 이미지 statement (동화 삽화) */
+.storystate{ position:relative; min-height:80vh; display:flex; align-items:flex-end; overflow:hidden; color:#fff; background:var(--paper-ink); }
+.storystate-bg{ position:absolute; inset:-14% 0; z-index:0; }
+.storystate-bg img{ width:100%; height:100%; object-fit:cover; will-change:transform; }
+.storystate-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(30,20,10,.9) 2%, rgba(30,20,10,.25) 45%, rgba(30,20,10,.35)); }
+.storystate-in{ position:relative; z-index:2; padding-block:clamp(70px,10vh,130px); }
+.storystate .g-eye{ color:#ffd9b0; }
+.storystate h2{ font-size:clamp(2rem,5.2vw,4rem); font-weight:400; line-height:1.12; letter-spacing:-.02em; max-width:18ch; }
+.storystate p{ margin-top:22px; max-width:44ch; font-size:clamp(1rem,1.5vw,1.18rem); line-height:1.75; color:#f0e6d8; }
+
+/* ① 마우스 반응 카드 (여주의 이야기들) */
+.tales{ padding:clamp(56px,8vw,110px) 0; background:var(--surface); }
+.tales-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.6vw,22px); padding-inline:clamp(12px,1.6vw,24px); perspective:1200px; }
+.tale{ position:relative; aspect-ratio:4/5; border-radius:var(--radius); overflow:hidden; background:var(--paper-ink); transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform .5s var(--ease); transform-style:preserve-3d; }
+.tale.tilting{ transition:transform .08s linear; }
+.tale img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:scale(1.06); transition:transform .6s var(--ease); }
+.tale:hover img{ transform:scale(1.13); }
+.tale::after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg, rgba(30,20,10,.92) 4%, rgba(30,20,10,.12) 56%, transparent); z-index:1; }
+.tale-spot{ position:absolute; inset:0; z-index:2; background:radial-gradient(220px circle at var(--mx,50%) var(--my,50%), rgba(255,240,220,.28), transparent 62%); opacity:0; transition:opacity .3s var(--ease); mix-blend-mode:soft-light; pointer-events:none; }
+.tale:hover .tale-spot{ opacity:1; }
+.tale-body{ position:absolute; inset:auto 0 0 0; z-index:3; padding:clamp(18px,2vw,26px); color:#fff; transform:translateZ(40px); }
+.tale-body .n{ font-size:11.5px; font-weight:800; letter-spacing:.1em; color:#ffd9b0; }
+.tale-body h3{ font-size:clamp(1.15rem,1.7vw,1.5rem); font-weight:700; margin:7px 0 6px; }
+.tale-body p{ font-size:13px; color:#efe4d6; line-height:1.6; opacity:0; max-height:0; overflow:hidden; transition:opacity .35s var(--ease), max-height .35s var(--ease); }
+.tale:hover .tale-body p{ opacity:1; max-height:84px; }
+@media (max-width:760px){ .tales-grid{ grid-template-columns:1fr; } }

@@ -245,3 +245,48 @@
     now: now, fmtDT: fmtDT
   };
 })(window);
+
+/* ============================================================
+   지침 섹션: 텍스트 애니메이션 · 패럴랙스 · 마우스 반응 틸트 · 리빌
+   ============================================================ */
+(() => {
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $$("[data-split]").forEach((el) => {
+    const words = el.textContent.trim().split(/\s+/);
+    el.innerHTML = words.map((w, i) => `<span class="w"><i style="transition-delay:${Math.min(i * 60, 500)}ms">${w}</i></span>`).join(" ");
+  });
+  const parallaxEls = $$("[data-parallax]");
+  const run = () => {
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    $$(".g-reveal:not(.is-visible), .mask:not(.is-visible), .words:not(.is-visible)").forEach((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add("is-visible");
+    });
+    parallaxEls.forEach((el) => {
+      const wrap = el.closest(".storystate-bg") || el.parentElement;
+      const r = wrap.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > vh) return;
+      const prog = (r.top + r.height / 2 - vh / 2) / vh;
+      el.style.transform = `translateY(${(-prog * 60).toFixed(1)}px) scale(1.16)`;
+    });
+  };
+  window.addEventListener("scroll", run, { passive: true });
+  window.addEventListener("resize", run);
+  window.addEventListener("load", run);
+  run();
+  if (!reduceM && window.matchMedia("(hover:hover)").matches) {
+    $$(".tale").forEach((el) => {
+      el.addEventListener("pointermove", (e) => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+        el.classList.add("tilting");
+        el.style.setProperty("--ry", `${(px - .5) * 10}deg`);
+        el.style.setProperty("--rx", `${(.5 - py) * 10}deg`);
+        el.style.setProperty("--mx", `${px * 100}%`);
+        el.style.setProperty("--my", `${py * 100}%`);
+      });
+      el.addEventListener("pointerleave", () => { el.classList.remove("tilting"); el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg"); });
+    });
+  }
+})();
