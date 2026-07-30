@@ -114,12 +114,12 @@ window.HUELAB = {
 
   /* 제품 라인업 */
   products: [
-    { num: "01", en: "Interior Water-based", name: "친환경 수성 · 아이케어", cat: "건축용", desc: "저VOC·무독성 수성 도료. 실내 마감과 어린이 공간에 적합합니다.", accent: "#00393c", badges: [{t:"환경마크",cert:true},{t:"저VOC"},{t:"HB 최우수"}] },
-    { num: "02", en: "Waterproof / Floor", name: "방수·바닥 · 방수에이스", cat: "방수/바닥용", desc: "옥상·지하주차장·바닥까지, 견고한 방수 바닥 코팅.", accent: "#1f6f72", badges: [{t:"중방식"},{t:"고내구"}] },
-    { num: "03", en: "Wood / Stain", name: "목재·스테인 · 우드스테인", cat: "목재/목공용", desc: "목재를 보호하고 결을 살리는 전문가용 스테인·오일.", accent: "#6E5844", badges: [{t:"자외선차단"},{t:"발수"}] },
-    { num: "04", en: "Inorganic", name: "무기질 도료 · 미네랄", cat: "친환경/무기", desc: "불연성과 내오염성을 갖춘 무기질 기반 친환경 도료.", accent: "#3B5A40", badges: [{t:"불연",cert:true},{t:"항곰팡이"}] },
-    { num: "05", en: "Fire Retardant", name: "내화·방염 · 파이어가드", cat: "내화/방염", desc: "화재 확산을 늦추는 내화·방염 성능의 안전 도료.", accent: "#C4623D", badges: [{t:"방염성능",cert:true},{t:"내화"}] },
-    { num: "06", en: "Industrial", name: "공업용 · 인더스트리", cat: "공업용", desc: "다양한 산업 환경에 최적화된 고내구 공업용 도료.", accent: "#3A3A38", badges: [{t:"내약품"},{t:"고광택"}] }
+    { num: "01", en: "Interior Water-based", name: "친환경 수성 · 아이케어", cat: "건축용", desc: "저VOC·무독성 수성 도료. 실내 마감과 어린이 공간에 적합합니다.", accent: "#00393c", img: "assets/img/prod-1.jpg", badges: [{t:"환경마크",cert:true},{t:"저VOC"},{t:"HB 최우수"}] },
+    { num: "02", en: "Waterproof / Floor", name: "방수·바닥 · 방수에이스", cat: "방수/바닥용", desc: "옥상·지하주차장·바닥까지, 견고한 방수 바닥 코팅.", accent: "#1f6f72", img: "assets/img/prod-2.jpg", badges: [{t:"중방식"},{t:"고내구"}] },
+    { num: "03", en: "Wood / Stain", name: "목재·스테인 · 우드스테인", cat: "목재/목공용", desc: "목재를 보호하고 결을 살리는 전문가용 스테인·오일.", accent: "#6E5844", img: "assets/img/prod-3.jpg", badges: [{t:"자외선차단"},{t:"발수"}] },
+    { num: "04", en: "Inorganic", name: "무기질 도료 · 미네랄", cat: "친환경/무기", desc: "불연성과 내오염성을 갖춘 무기질 기반 친환경 도료.", accent: "#3B5A40", img: "assets/img/prod-4.jpg", badges: [{t:"불연",cert:true},{t:"항곰팡이"}] },
+    { num: "05", en: "Fire Retardant", name: "내화·방염 · 파이어가드", cat: "내화/방염", desc: "화재 확산을 늦추는 내화·방염 성능의 안전 도료.", accent: "#C4623D", img: "assets/img/prod-5.jpg", badges: [{t:"방염성능",cert:true},{t:"내화"}] },
+    { num: "06", en: "Industrial", name: "공업용 · 인더스트리", cat: "공업용", desc: "다양한 산업 환경에 최적화된 고내구 공업용 도료.", accent: "#3A3A38", img: "assets/img/prod-6.jpg", badges: [{t:"내약품"},{t:"고광택"}] }
   ],
 
   /* 시공 사례 (이미지는 assets/img, cat: residential/commercial/exterior) */

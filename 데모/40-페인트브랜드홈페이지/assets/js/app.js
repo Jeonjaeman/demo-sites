@@ -209,13 +209,13 @@
 
   /* ---------- products (numbered editorial rows) ---------- */
   const prodHost = $("[data-products]");
-  if (prodHost) prodHost.replaceChildren(...D.products.map((p) => {
-    const el = document.createElement("article"); el.className = "product-row reveal"; el.style.setProperty("--accent", p.accent);
+  if (prodHost) prodHost.replaceChildren(...D.products.map((p, i) => {
+    const el = document.createElement("article"); el.className = "product-card reveal"; el.dataset.delay = (i % 3) * 60;
     el.innerHTML =
-      `<div class="p-num">${p.num}</div>` +
-      `<div class="p-main"><div class="p-en">${p.en}</div><h3>${p.name}</h3></div>` +
-      `<div class="p-desc">${p.desc}</div>` +
-      `<div class="p-side">` + p.badges.map((b) => `<span class="eco-badge${b.cert ? " cert" : ""}">${b.t}${b.cert ? " ✓" : ""}</span>`).join("") + `</div>`;
+      `<img src="${p.img}" alt="${p.name}">` +
+      `<span class="p-cat">${p.cat}</span>` +
+      `<div class="p-body"><div class="p-en">${p.en}</div><h3>${p.name}</h3><p>${p.desc}</p>` +
+      `<div class="p-badges">` + p.badges.map((b) => `<span class="eco-badge${b.cert ? " cert" : ""}">${b.t}${b.cert ? " ✓" : ""}</span>`).join("") + `</div></div>`;
     return el;
   }));
 
