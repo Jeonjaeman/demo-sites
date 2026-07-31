@@ -435,7 +435,7 @@ code{font-family:var(--mono);font-size:.92em;background:var(--bg);padding:1px 5p
 .g-eye{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);display:block;margin-bottom:14px}
 
 /* ② 풀블리드 이미지 statement */
-.hlstate{position:relative;min-height:64vh;display:flex;align-items:flex-end;overflow:hidden;color:#fff;background:#2a1a20}
+.hlstate{position:relative;min-height:46vh;display:flex;align-items:flex-end;overflow:hidden;color:#fff;background:#2a1a20}
 .hlstate-bg{position:absolute;inset:-14% 0;z-index:0}
 .hlstate-bg img{width:100%;height:100%;object-fit:cover;will-change:transform}
 .hlstate-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(38,20,28,.9) 2%,rgba(38,20,28,.2) 48%,rgba(38,20,28,.32))}
@@ -461,3 +461,105 @@ code{font-family:var(--mono);font-size:.92em;background:var(--bg);padding:1px 5p
 .topic:hover .topic-body p{opacity:1;max-height:80px}
 @media (max-width:900px){.topics-grid{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:520px){.topics-grid{grid-template-columns:1fr}}
+
+/* ============================================================
+   루리웹형 커뮤니티 게시판 (레퍼런스 bbs.ruliweb.com 실측 재현·능가)
+   테이블 리스트 구조·고밀도·구분/제목/글쓴이/추천/조회/날짜 · HERLOOP 로즈 절제
+   ============================================================ */
+.board-wrap{max-width:1180px;margin:0 auto;padding:26px clamp(14px,3vw,28px) 80px}
+.board-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:26px;align-items:start}
+.board-main{min-width:0}
+.board-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+#tabs.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.tab{border:1px solid var(--line);background:var(--white);color:var(--ink-2);font:inherit;font-size:13px;font-weight:600;padding:7px 13px;border-radius:var(--r-99);cursor:pointer;transition:.15s var(--ease)}
+.tab:hover{border-color:var(--brand-line);color:var(--brand)}
+.tab.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.tool-r{display:flex;align-items:center;gap:10px}
+.sortseg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r-8);overflow:hidden}
+.sortseg .so{border:0;background:var(--white);color:var(--ink-3);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;cursor:pointer}
+.sortseg .so+.so{border-left:1px solid var(--line)}
+.sortseg .so.on{background:var(--brand-soft);color:var(--brand-dark)}
+.wbtn{white-space:nowrap}
+
+/* 테이블 */
+table.board{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--line);border-radius:var(--r-12);overflow:hidden;table-layout:fixed}
+.cg-div{width:118px}.cg-auth{width:104px}.cg-rec{width:54px}.cg-view{width:62px}.cg-date{width:82px}
+.board thead th{background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700;letter-spacing:.02em;text-align:center;padding:10px 6px;border-bottom:1px solid var(--brand-line)}
+.board thead th.th-subj{text-align:left;padding-left:14px}
+.board td{border-bottom:1px solid var(--line);padding:9px 6px;font-size:13px;color:var(--ink-2);text-align:center;vertical-align:middle}
+.brow{transition:background .12s}
+.brow:hover{background:#faf7f8}
+.brow.open{background:var(--brand-soft)}
+.brow.best{background:#fff8fb}
+.c-div{overflow:hidden}
+.div{display:inline-block;max-width:100%;font-size:12px;font-weight:600;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.div-ext{color:var(--brand)}
+.c-subj{text-align:left;padding-left:14px !important;padding-right:12px !important}
+.subj{font-size:13.5px;color:var(--ink);font-weight:500;cursor:pointer;line-height:1.4}
+.subj:hover{color:var(--brand-dark);text-decoration:underline}
+.subj-notice{cursor:default;font-weight:700;color:var(--ink)}
+.subj-notice:hover{text-decoration:none}
+.rcmt{font-size:12px;color:var(--brand);font-weight:700}
+.tag-ext,.tag-best{display:inline-block;font-size:10px;font-weight:700;padding:1px 6px;border-radius:var(--r-99);vertical-align:1px;margin-left:2px}
+.tag-ext{background:var(--blue-soft);color:var(--blue)}
+.tag-best{background:var(--brand);color:#fff}
+.c-sub{display:none;font-size:11.5px;color:var(--ink-4);margin-top:3px}
+.c-auth{color:var(--ink-3);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.av-sm{display:inline-flex;width:18px;height:18px;border-radius:var(--r-99);color:#fff;font-size:10px;font-weight:700;align-items:center;justify-content:center;vertical-align:-4px;margin-right:5px}
+.c-rec{font-weight:700;color:var(--ink-2)}
+.c-rec.hot{color:var(--brand)}
+.c-view{color:var(--ink-4);font-size:12px}
+.c-date{color:var(--ink-4);font-size:12px;white-space:nowrap}
+.brow.notice{background:#fbf6f2}
+.brow.notice:hover{background:#f7efe9}
+.tag-notice{display:inline-block;font-size:11px;font-weight:700;color:var(--warn);background:var(--warn-soft);border-radius:var(--r-99);padding:2px 8px}
+.brow.notice .c-sub{display:block}
+
+/* 상세 펼침 */
+.brow-detail>td{background:var(--bg-2);padding:0 !important}
+.detail{padding:18px 18px 20px;text-align:left}
+.d-body{white-space:pre-wrap;font-size:14px;line-height:1.75;color:var(--ink);max-width:72ch}
+.d-excerpt{font-size:14px;line-height:1.7;color:var(--ink-2);max-width:72ch;margin:0}
+.outlink{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:13px;color:var(--brand-dark);background:var(--brand-soft);border:1px solid var(--brand-line);padding:8px 12px;border-radius:var(--r-8);text-decoration:none}
+.outlink .host{font-weight:700}.outlink .arw{transition:transform .15s}.outlink:hover .arw{transform:translateX(3px)}
+.d-foot{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.act{border:1px solid var(--line);background:var(--white);color:var(--ink-2);font:inherit;font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:var(--r-8);cursor:pointer;transition:.14s var(--ease)}
+.act:hover{border-color:var(--brand-line);color:var(--brand)}
+.act.on{background:var(--brand-soft);border-color:var(--brand-line);color:var(--brand-dark)}
+.act.rep:hover{border-color:#F3B0A8;color:var(--bad)}
+.empty{padding:48px 16px;text-align:center;color:var(--ink-3);font-size:14px}
+.empty .ei{display:block;font-size:30px;margin-bottom:8px}
+
+/* 사이드바 위젯 */
+.board-side{display:grid;gap:16px;position:sticky;top:74px}
+.wgt{background:var(--white);border:1px solid var(--line);border-radius:var(--r-12);padding:16px}
+.wgt-h{font-size:13px;font-weight:800;color:var(--ink);margin-bottom:12px}
+.best-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.best-list li{display:flex;align-items:center;gap:9px}
+.rk{flex:0 0 20px;height:20px;border-radius:6px;background:var(--bg);color:var(--ink-3);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.rk-hot{background:var(--brand);color:#fff}
+.bl-a{flex:1;min-width:0;font-size:12.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bl-a:hover{color:var(--brand-dark)}
+.bl-n{font-size:11px;font-weight:700;color:var(--brand)}
+.tagcloud{display:flex;flex-wrap:wrap;gap:6px}
+.tagc{border:1px solid var(--line);background:var(--white);color:var(--ink-2);font:inherit;font-size:12px;padding:5px 10px;border-radius:var(--r-99);cursor:pointer;transition:.14s var(--ease)}
+.tagc:hover{border-color:var(--brand-line);color:var(--brand);background:var(--brand-soft)}
+.guide-pts{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.guide-pts li{font-size:12px;line-height:1.6;color:var(--ink-2);padding-left:12px;position:relative}
+.guide-pts li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--brand)}
+.guide-pts b{color:var(--ink)}
+
+/* 반응형 */
+@media (max-width:900px){
+  .board-grid{grid-template-columns:1fr}
+  .board-side{position:static;grid-template-columns:1fr 1fr}
+  .guide-wgt{grid-column:1 / -1}
+}
+@media (max-width:680px){
+  .board thead th:not(.th-subj):not(:first-child){display:none}
+  .c-auth,.c-rec,.c-view,.c-date{display:none}
+  .c-sub{display:block}
+  .board-side{grid-template-columns:1fr}
+  table.board{table-layout:auto}
+  .cg-div{width:58px}
+}

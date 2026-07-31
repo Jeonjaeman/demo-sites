@@ -72,20 +72,23 @@
   </div>
 </section>
 
-<main class="main">
-  <div class="wrap">
-    <div class="banner rv">
-      🛡<div><b>허루프는 본인확인을 거친 회원만 글을 쓸 수 있습니다.</b>
-      성별·연령대만 확인하고 이름과 연락처는 저장하지 않습니다. 서로 안심하고 이야기하기 위한 최소한의 장치입니다.</div>
-    </div>
-
-    <div class="banner blue rv rv-1">
-      🔗<div><b>읽을거리는 외부 글의 제목과 짧은 발췌만 보여 드립니다.</b>
-      본문 전체를 가져오지 않고 원문 링크로 연결합니다 — 원 저작자의 권리를 지키기 위해서입니다.</div>
-    </div>
-
-    <div class="tabs" id="tabs"></div>
-    <div id="feed"></div>
+<main class="board-wrap">
+  <div class="board-grid">
+    <section class="board-main">
+      <div class="board-toolbar">
+        <div class="tabs" id="tabs"></div>
+        <div class="tool-r">
+          <div class="sortseg" id="sortSeg" role="group" aria-label="정렬">
+            <button class="so on" data-s="new">최신</button>
+            <button class="so" data-s="rec">추천</button>
+            <button class="so" data-s="view">조회</button>
+          </div>
+          <button class="btn btn-p btn-sm wbtn" id="writeBtn">✏️ 글쓰기</button>
+        </div>
+      </div>
+      <div id="feed"></div>
+    </section>
+    <aside class="board-side" id="boardSide"></aside>
   </div>
 </main>
 

@@ -8,6 +8,7 @@ const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const S = {
   cat: '전체',
   view: 'feed',        // feed | own | ext
+  sort: 'new',         // new | rec | view
   open: null,          // 펼친 글 id
   gate: null,          // 게이트 종류
   gateStep: 1,
@@ -54,52 +55,109 @@ function filtered() {
   });
 }
 
-function renderFeed() {
-  const list = filtered();
-  const ownN = POSTS.filter(p => p.type === 'own' && !S.blinded.has(p.id)).length;
+/* 조회수 — 하드코딩 없이 추천·댓글·제목에서 결정적으로 파생 */
+function views(p) { return p.like * 9 + p.cmt * 23 + p.title.length * 11 + 60; }
 
-  $('#feed').innerHTML = list.length ? list.map(p => card(p)).join('')
-    : `<div class="empty"><span class="ei">🌱</span>이 카테고리에는 아직 글이 없어요.<br>첫 글을 남겨 보시겠어요?</div>`;
-
-  $('#ownCnt').textContent = ownN;
-  bindCards();
-  observeReveal();
+function sortPosts(list) {
+  const s = S.sort || 'new';
+  if (s === 'rec') return list.slice().sort((a, b) => b.like - a.like);
+  if (s === 'view') return list.slice().sort((a, b) => views(b) - views(a));
+  return list; // 최신 = 원본 순서
 }
 
-function card(p) {
+const NOTICES = [
+  { ico: '🛡', t: '허루프는 본인확인을 거친 회원만 글을 쓸 수 있습니다', d: '성별·연령대만 확인하고 이름·연락처는 저장하지 않습니다. 서로 안심하고 이야기하기 위한 최소한의 장치입니다.' },
+  { ico: '🔗', t: '읽을거리는 외부 글의 제목과 짧은 발췌만 보여 드립니다', d: '본문 전체를 가져오지 않고 원문 링크로 연결합니다 — 원 저작자의 권리를 지키기 위해서입니다.' },
+];
+
+function renderFeed() {
+  const list = sortPosts(filtered());
+  const ownN = POSTS.filter(p => p.type === 'own' && !S.blinded.has(p.id)).length;
+  const maxLike = Math.max(1, ...POSTS.filter(p => !S.blinded.has(p.id)).map(p => p.like));
+  const bestCut = Math.max(180, maxLike * 0.55);
+
+  const rows = list.length
+    ? list.map(p => row(p, bestCut)).join('')
+    : `<tr class="brow-empty"><td colspan="6"><div class="empty"><span class="ei">🌱</span>이 카테고리에는 아직 글이 없어요. 첫 글을 남겨 보시겠어요?</div></td></tr>`;
+
+  $('#feed').innerHTML = `
+    <table class="board">
+      <colgroup><col class="cg-div"><col class="cg-subj"><col class="cg-auth"><col class="cg-rec"><col class="cg-view"><col class="cg-date"></colgroup>
+      <thead><tr><th>구분</th><th class="th-subj">제목</th><th>글쓴이</th><th>추천</th><th>조회</th><th>날짜</th></tr></thead>
+      <tbody>${NOTICES.map(noticeRow).join('')}${rows}</tbody>
+    </table>`;
+
+  $('#ownCnt').textContent = ownN;
+  renderSide();
+  bindCards();
+}
+
+function noticeRow(n) {
+  return `<tr class="brow notice">
+    <td class="c-div"><span class="tag-notice">공지</span></td>
+    <td class="c-subj"><span class="subj subj-notice">${n.ico} ${n.t}</span><div class="c-sub">${n.d}</div></td>
+    <td class="c-auth">허루프</td><td class="c-rec">–</td><td class="c-view">–</td><td class="c-date">고정</td>
+  </tr>`;
+}
+
+function row(p, bestCut) {
   const isExt = p.type === 'ext';
   const opened = S.open === p.id;
+  const best = p.like >= bestCut;
+  const who = isExt ? p.src : p.author;
+  const av = isExt ? '' : `<span class="av av-sm" style="background:${p.ac}">${p.av}</span>`;
+  const v = views(p);
   return `
-  <article class="card ${isExt ? 'ext' : 'own'} rv" data-id="${p.id}">
-    <div class="c-top">
-      ${isExt
-        ? `<span class="src src-ext">🔗 ${p.src}</span>`
-        : `<span class="src src-own">✍️ 회원 작성</span>`}
-      <span class="c-cat">${p.cat}</span>
-      <span class="c-time">${p.time}</span>
-    </div>
+  <tr class="brow ${isExt ? 'ext' : 'own'} ${best ? 'best' : ''} ${opened ? 'open' : ''}" data-id="${p.id}">
+    <td class="c-div"><span class="div ${isExt ? 'div-ext' : ''}">${isExt ? '🔗 ' + p.src : p.cat}</span></td>
+    <td class="c-subj">
+      <a class="subj" data-open="${p.id}">${p.title}</a>${p.cmt ? ` <span class="rcmt">[${p.cmt}]</span>` : ''}${isExt ? ` <span class="tag-ext">링크</span>` : ''}${best ? ` <span class="tag-best">BEST</span>` : ''}
+      <div class="c-sub">${isExt ? '출처 ' + p.host : who} · ${p.time} · 추천 ${p.like} · 조회 ${v}</div>
+    </td>
+    <td class="c-auth">${av}<span class="au-n">${who}</span></td>
+    <td class="c-rec ${best ? 'hot' : ''}">${p.like}</td>
+    <td class="c-view">${v}</td>
+    <td class="c-date">${p.time}</td>
+  </tr>${opened ? detailRow(p, isExt) : ''}`;
+}
 
-    <h3 class="c-title">${p.title}</h3>
-
+function detailRow(p, isExt) {
+  return `<tr class="brow-detail"><td colspan="6"><div class="detail">
     ${isExt
-      ? `<p class="c-excerpt">${p.excerpt}</p>
-         <a class="outlink" href="javascript:void(0)" onclick="goOut('${p.host}')">
-           🔗 원문은 <span class="host">${p.host}</span> 에서 확인하세요
-           <span class="arw">→</span>
-         </a>`
-      : (opened
-          ? `<div class="c-body">${p.body}</div>`
-          : `<p class="c-excerpt">${p.body.split('\n')[0]}</p>`)}
-
-    <div class="c-foot">
-      ${!isExt ? `<span class="c-author"><span class="av" style="background:${p.ac}">${p.av}</span>${p.author}</span>` : ''}
-      <button class="act ${p.liked ? 'on' : ''}" data-like="${p.id}">${p.liked ? '♥' : '♡'} ${p.like}</button>
-      <button class="act" data-open="${p.id}">💬 ${p.cmt}</button>
-      <button class="act rep" data-rep="${p.id}">신고</button>
+      ? `<p class="d-excerpt">${p.excerpt}</p>
+         <a class="outlink" href="javascript:void(0)" onclick="goOut('${p.host}')">🔗 원문은 <span class="host">${p.host}</span> 에서 확인하세요 <span class="arw">→</span></a>`
+      : `<div class="d-body">${p.body}</div>`}
+    <div class="d-foot">
+      <button class="act ${p.liked ? 'on' : ''}" data-like="${p.id}">${p.liked ? '♥' : '♡'} 추천 ${p.like}</button>
+      <button class="act" data-open="${p.id}">💬 댓글 ${p.cmt}</button>
+      <button class="act rep" data-rep="${p.id}">🚩 신고</button>
     </div>
+    ${comments(p)}
+  </div></td></tr>`;
+}
 
-    ${opened ? comments(p) : ''}
-  </article>`;
+function renderSide() {
+  const best = POSTS.filter(p => !S.blinded.has(p.id)).slice().sort((a, b) => b.like - a.like).slice(0, 5);
+  const tags = CATS.filter(c => c !== '전체');
+  $('#boardSide').innerHTML = `
+    <div class="wgt">
+      <div class="wgt-h">🔥 실시간 인기글</div>
+      <ol class="best-list">
+        ${best.map((p, i) => `<li><span class="rk ${i < 3 ? 'rk-hot' : ''}">${i + 1}</span><a class="bl-a" data-open="${p.id}">${p.title}</a><span class="bl-n">${p.like}</span></li>`).join('')}
+      </ol>
+    </div>
+    <div class="wgt">
+      <div class="wgt-h"># 인기 태그</div>
+      <div class="tagcloud">${tags.map(t => `<button class="tagc" onclick="setCat('${t}')">#${t}</button>`).join('')}</div>
+    </div>
+    <div class="wgt guide-wgt">
+      <div class="wgt-h">🐳 허루프 이용 안내</div>
+      <ul class="guide-pts">
+        <li><b>여성 전용</b> · 본인확인(성별·연령대)을 거친 회원만 글·댓글을 남깁니다. 이름·연락처는 저장하지 않습니다.</li>
+        <li><b>읽을거리</b> · 외부 글은 제목 + 짧은 발췌 + 원문 링크만. 본문은 복제하지 않습니다.</li>
+        <li><b>긴급 신고 즉시 가림</b> · 신상 노출·성적 괴롭힘·불법촬영물 의심은 검토 전에 먼저 가려집니다.</li>
+      </ul>
+    </div>`;
 }
 
 function comments(p) {
@@ -335,11 +393,18 @@ function setCat(c) {
   $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.c === c));
   renderFeed();
 }
+function setSort(s) {
+  S.sort = s;
+  $$('#sortSeg .so').forEach(b => b.classList.toggle('on', b.dataset.s === s));
+  renderFeed();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   $('#tabs').innerHTML = CATS.map(c =>
     `<button class="tab ${c === '전체' ? 'on' : ''}" data-c="${c}" onclick="setCat('${c}')">${c}</button>`).join('');
   $$('.hd-nav button').forEach(b => b.onclick = () => setView(b.dataset.v));
+  $$('#sortSeg .so').forEach(b => b.onclick = () => setSort(b.dataset.s));
+  $('#writeBtn').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
   $('#gate').addEventListener('click', e => { if (e.target.id === 'gate') closeGate(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGate(); });
   $('#fab').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
