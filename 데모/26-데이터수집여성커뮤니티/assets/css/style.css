@@ -572,3 +572,9 @@ table.board{width:100%;border-collapse:collapse;background:var(--white);border:1
   table.board{table-layout:auto}
   .cg-div{width:58px}
 }
+
+/* 카드 섹션을 게시물 단락(board-wrap) 안으로 — 컨테이너 정렬 · 컴팩트 타일 · 리스트와 구분 */
+.topic-band{margin-bottom:clamp(22px,3vw,34px);padding-bottom:clamp(22px,3vw,34px);border-bottom:1px solid var(--line)}
+.topic-band .topics-grid{padding-inline:0;gap:clamp(12px,1.4vw,18px)}
+.topic-band .topic{aspect-ratio:16/10}
+@media (max-width:900px){ .topic-band .topic{aspect-ratio:16/9} }
