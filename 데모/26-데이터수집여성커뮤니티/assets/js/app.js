@@ -405,6 +405,17 @@ document.addEventListener('DOMContentLoaded', () => {
   $$('.hd-nav button').forEach(b => b.onclick = () => setView(b.dataset.v));
   $$('#sortSeg .so').forEach(b => b.onclick = () => setSort(b.dataset.s));
   $('#writeBtn').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
+
+  // 주제 카드 → 게시판 카테고리 바로가기 (그래픽 단락과 게시판 연결)
+  const goBoard = cat => {
+    setCat(cat);
+    const b = $('.board-wrap');
+    if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  $$('.topic[data-cat]').forEach(el => {
+    el.onclick = () => goBoard(el.dataset.cat);
+    el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goBoard(el.dataset.cat); } };
+  });
   $('#gate').addEventListener('click', e => { if (e.target.id === 'gate') closeGate(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGate(); });
   $('#fab').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
