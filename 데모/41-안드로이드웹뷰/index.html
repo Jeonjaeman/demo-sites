@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WRAPLY 랩리 — 모바일웹을 Google Play 하이브리드 앱으로</title>
+<meta name="description" content="이미 운영 중인 모바일웹을 심사 통과하는 Android 하이브리드(WebView) 앱으로. FCM HTTP v1 푸시·파일 처리·로그인 유지·Play 배포까지. 제안용 데모.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="hd">
+  <div class="shell hd-in">
+    <a class="logo" href="#top">
+      <span class="mk">W</span>
+      <span>WRAPLY <small>랩리</small></span>
+    </a>
+    <nav class="hd-nav">
+      <a href="#demo">앱 데모</a>
+      <a href="#review">Play 심사</a>
+      <a href="#push">FCM 푸시</a>
+      <a href="#risks">리스크 검토</a>
+      <a href="#quote">견적</a>
+    </nav>
+    <div class="hd-r">
+      <a class="btn btn-g btn-sm" href="#risks">발견 사항 6</a>
+      <a class="btn btn-p btn-sm" href="#quote">견적 보기</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div>
+        <span class="eyebrow g-reveal">WEB → GOOGLE PLAY · 하이브리드 WebView</span>
+        <h1 class="g-reveal">웹은 그대로.<br><span class="accent">심사 통과하는 앱</span>만<br>씌웁니다.</h1>
+        <p class="hero-sub g-reveal">이미 운영 중인 모바일웹을 다시 개발하지 않습니다. Android 하이브리드(WebView)로 감싸 <b style="color:var(--ink)">Google Play에 배포</b>하고, 웹만으로는 어려운 <b style="color:var(--ink)">FCM 푸시</b>로 재방문을 만듭니다. 단, ‘그냥 웹뷰’는 반려됩니다 — 그 경계를 아래에서 직접 확인하세요.</p>
+        <div class="hero-cta g-reveal">
+          <a class="btn btn-p" href="#demo">앱 동작 체험 ↓</a>
+          <a class="btn btn-g" href="#review">Play 심사 진단</a>
+        </div>
+        <div class="hero-meta g-reveal">
+          <span>예산 <b class="mono">300만원</b> · 30일</span>
+          <span>대상 API <b class="mono">36</b> (Android 16)</span>
+          <span>발송 <b class="mono">FCM HTTP v1</b></span>
+        </div>
+      </div>
+      <!-- 인터랙티브 폰 -->
+      <div class="hero-phone">
+        <div class="phone" id="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-scr">
+            <!-- 푸시 배너 -->
+            <div class="push-banner" id="pushBanner" data-deeplink="orders">
+              <div class="pi">🔔</div>
+              <div class="pt"><b>새 주문 알림</b><span id="pushBody">방금 들어온 주문을 확인하세요 · 탭하면 주문 화면</span></div>
+              <div class="pw">now</div>
+            </div>
+            <!-- 파일 시트 -->
+            <div class="app-sheet" id="fileSheet">
+              <h5>파일 첨부</h5>
+              <div class="sheet-opt" data-file="카메라 촬영본.jpg"><span class="si">📷</span> 카메라 촬영</div>
+              <div class="sheet-opt" data-file="증빙_2026.pdf"><span class="si">🖼</span> 갤러리·파일에서 선택</div>
+              <button class="sheet-cancel" id="fileCancel">취소</button>
+            </div>
+            <!-- 오프라인/로딩 오버레이 -->
+            <div class="app-overlay" id="appOverlay">
+              <div class="ico" id="ovIco">📡</div>
+              <div class="app-spin" id="ovSpin" style="display:none"></div>
+              <h4 id="ovTitle">인터넷 연결이 끊겼습니다</h4>
+              <p id="ovDesc">네트워크 상태를 확인하고 다시 시도해 주세요. 앱은 오류 화면으로 안전하게 안내합니다.</p>
+              <button class="btn btn-p btn-sm" id="ovRetry">다시 시도</button>
+            </div>
+            <!-- 앱 상태바 -->
+            <div class="app-bar">
+              <span class="dot"></span>
+              <span class="lock">🔒</span>
+              <span class="url" id="appUrl">m.yourservice.co.kr</span>
+            </div>
+            <!-- 웹뷰 -->
+            <div class="webview" id="webview">
+              <div class="web-page" id="webPage"><!-- JS 렌더 --></div>
+            </div>
+            <!-- 하단 탭바(네이티브 셸) -->
+            <div class="app-tabbar">
+              <button class="app-tab on" data-screen="home"><span class="i">🏠</span>홈</button>
+              <button class="app-tab" data-screen="orders"><span class="i">🧾</span>주문</button>
+              <button class="app-tab" data-screen="files"><span class="i">📎</span>파일</button>
+              <button class="app-tab" data-screen="my"><span class="i">👤</span>내정보</button>
+            </div>
+          </div>
+        </div>
+        <!-- 폰 외부 컨트롤 -->
+        <div class="phone-ctl">
+          <div class="ctl-row">
+            <button class="ctl on" id="ctlFlush" title="CookieManager.flush()">🍪 로그인 유지 ON</button>
+            <button class="ctl" id="ctlRestart">🔄 앱 재시작</button>
+          </div>
+          <div class="ctl-row">
+            <button class="ctl" id="ctlBack">◀ 뒤로가기</button>
+            <button class="ctl" id="ctlOffline">📴 오프라인</button>
+            <button class="ctl warn" id="ctlPush">🔔 푸시 발송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 풀블리드 이미지 statement -->
+  <section class="statement gbleed" aria-label="핵심 메시지">
+    <div class="statement-bg"><img src="assets/img/statement-hero.jpg" alt="" data-parallax></div>
+    <div class="statement-in shell">
+      <span class="eyebrow g-reveal" style="margin-bottom:16px">THE LINE</span>
+      <h2 class="mask"><span>웹을 감싸는 건 쉽습니다.</span></h2>
+      <h2 class="mask d1"><span><span class="accent">심사를 통과하는</span> 앱은 다릅니다.</span></h2>
+      <p class="g-reveal">Google Play는 2025년부터 ‘웹을 상자에 넣은’ 앱을 정책 4.3(최소 기능)으로 반려합니다. 푸시·파일·오프라인·네이티브 내비게이션 — 이 네 가지가 있어야 앱은 ‘앱’이 됩니다. WRAPLY는 그 경계를 코드가 아니라 화면으로 증명합니다.</p>
+    </div>
+  </section>
+
+  <!-- ① 마우스 반응 카드 (4 기둥) -->
+  <section class="sec" id="pillars">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">FOUR PILLARS</span>
+        <h2 class="mask"><span>웹뷰 앱을 ‘앱’으로 만드는 네 가지</span></h2>
+        <p class="g-reveal">각 기둥은 의뢰하신 요구사항이자, 잘못 만들면 그대로 실패하는 지점입니다. 카드 위에 마우스를 올려 보세요.</p>
+      </div>
+    </div>
+    <div class="shell">
+      <div class="pillars">
+        <article class="pillar g-reveal"><img src="assets/img/pillar-webview.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">01 / SHELL</span><h3>WebView 셸</h3><p>JavaScript·DOM 스토리지·뒤로가기·오류 화면. 웹이 앱 안에서 ‘정상 웹’으로 돌게 만드는 설정. 이게 어설프면 흰 화면·먹통 뒤로가기가 납니다.</p></div>
+        </article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-push.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">02 / PUSH</span><h3>FCM 푸시</h3><p>디바이스 토큰·알림 표시·탭 시 딥링크. 서버는 HTTP v1(서비스 계정)로 발송. Legacy 서버키는 2024년 종료돼 그대로면 푸시가 안 나갑니다.</p></div>
+        </article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-file.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">03 / FILE · SESSION</span><h3>파일 · 로그인 유지</h3><p>파일 첨부(onShowFileChooser)·다운로드·카메라 권한, 그리고 재실행해도 유지되는 로그인(쿠키 flush). 웹처럼 ‘그냥 되겠지’가 가장 많이 깨지는 곳.</p></div>
+        </article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-deploy.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">04 / DEPLOY</span><h3>Play 배포</h3><p>키스토어 서명·릴리스 빌드·타깃 API 36·Data Safety·개인정보처리방침. 기능이 있어도 등록 정보가 비면 반려됩니다.</p></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 인터랙티브 안내(폰과 연결) -->
+  <section class="sec" id="demo" style="padding-top:0">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">LIVE APP DEMO</span>
+        <h2 class="mask"><span>위 폰에서 앱 동작을 직접 눌러 보세요</span></h2>
+        <p class="g-reveal">모든 버튼은 실제로 동작합니다. <b style="color:var(--ink)">로그인 유지 OFF로 두고 ‘앱 재시작’</b>을 누르면 재실행 시 로그아웃되는 흔한 버그를 재현하고, ON이면 유지됩니다. <b style="color:var(--ink)">파일 첨부·오프라인·뒤로가기·푸시</b>도 네이티브 셸이 어떻게 처리하는지 그대로 보여 줍니다.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="v grn" data-count="4">0</div><div class="l">네이티브 처리 동작</div></div>
+        <div class="stat"><div class="v cyan" data-count="1"><span>0</span></div><div class="l">코드베이스 (웹과 항상 동기화)</div></div>
+        <div class="stat"><div class="v" data-count="62">0<span class="u">명</span></div><div class="l">이 공고 지원자 — 갈리는 건 디테일</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Play 심사 통과 진단 -->
+  <section class="sec" id="review">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">POLICY 4.3 · MINIMUM FUNCTIONALITY</span>
+        <h2 class="mask"><span>Play 심사 통과 진단</span></h2>
+        <p class="g-reveal">‘웹을 감싼 앱’은 네이티브 가치와 등록 정보가 갖춰져야 통과합니다. 항목을 켜고 끄면 통과 가능성이 실제로 계산됩니다.</p>
+      </div>
+      <div class="tool tool-grid">
+        <div>
+          <div id="reviewList"><!-- JS --></div>
+        </div>
+        <div>
+          <div class="gauge">
+            <div class="gauge-ring" id="reviewGauge"><div class="gauge-val" id="reviewPct">0<small>%</small></div></div>
+            <div class="gauge-label">심사 통과 가능성 (가중 추정)</div>
+          </div>
+          <div class="verdict" id="reviewVerdict">항목을 선택해 보세요.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FCM 발송 방식 진단 -->
+  <section class="sec" id="push">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">FCM HTTP v1 · SERVICE ACCOUNT</span>
+        <h2 class="mask"><span>기존 PHP 푸시, ‘수정’으로 끝날까?</span></h2>
+        <p class="g-reveal">공고는 “기존 PHP 소스 수정”이라 적혀 있습니다. 그런데 그 기존 코드가 <b style="color:var(--ink)">Legacy(서버키)</b> 방식이면, 그건 수정이 아니라 <b style="color:var(--ink)">인증 체계 전면 교체</b>이고 이미 발송이 멈춰 있습니다. 현재 방식을 골라 확인하세요.</p>
+      </div>
+      <div class="tool">
+        <div class="seg" id="fcmSeg">
+          <button class="on" data-fcm="legacy">기존: Legacy (서버키)</button>
+          <button data-fcm="v1">전환: HTTP v1 (서비스 계정)</button>
+        </div>
+        <div class="tool-grid">
+          <div>
+            <div class="fcm-panel on" data-panel="legacy">
+              <div class="codebox" aria-label="Legacy 코드">
+<span class="c">// 기존 PHP — 2024.07.22 종료된 방식</span>
+$k = <span class="s">"AAAA…서버키"</span>;  <span class="c">// Server key</span>
+$url = <span class="s">"https://fcm.googleapis.com/<span class="del">fcm/send</span>"</span>;
+<span class="k">Authorization:</span> <span class="del">key=$serverKey</span>
+<span class="c">→ 응답: 401 / NotRegistered · 발송 중단</span>
+              </div>
+              <div class="verdict fail" style="margin-top:14px"><b>진단: 작동 불가.</b> Legacy HTTP API는 2023.6 지원 중단, <b>2024.7.22 셧다운</b>. 서버키 인증 자체가 폐기되어 이 코드는 지금 푸시를 보내지 못합니다.</div>
+            </div>
+            <div class="fcm-panel" data-panel="v1">
+              <div class="codebox" aria-label="HTTP v1 코드">
+<span class="c">// 전환 후 — FCM HTTP v1 + OAuth2</span>
+$token = getAccessToken(<span class="s">$serviceAccountJson</span>);
+$url = <span class="s">"https://fcm.googleapis.com/v1/projects/<b>PID</b>/messages:send"</span>;
+<span class="k">Authorization:</span> <span class="s">Bearer $token</span>
+{ <span class="k">"message"</span>:{ <span class="k">"token"</span>:<span class="s">"…"</span>, <span class="k">"notification"</span>:{…},
+  <span class="k">"data"</span>:{ <span class="k">"deeplink"</span>:<span class="s">"orders"</span> } } }
+<span class="c">→ 응답: 200 · 발송 성공 · 딥링크 포함</span>
+              </div>
+              <div class="verdict pass" style="margin-top:14px"><b>진단: 정상.</b> 서비스 계정 JSON으로 OAuth2 액세스 토큰을 발급해 v1 엔드포인트로 발송. 보안·확장성 확보, 딥링크 payload로 알림 탭 시 화면 이동까지 연결.</div>
+            </div>
+          </div>
+          <div>
+            <b style="font-size:13px">전환 절차 (서버 측)</b>
+            <div class="steps" style="margin-top:6px">
+              <div class="step"><span class="sn"></span><p>Firebase 콘솔에서 <b>서비스 계정 키(JSON)</b> 발급·서버에 안전 보관</p></div>
+              <div class="step"><span class="sn"></span><p>PHP에서 JWT 서명 → <b>OAuth2 액세스 토큰</b> 발급(1시간 캐시)</p></div>
+              <div class="step"><span class="sn"></span><p>발송 엔드포인트를 <b>/v1/projects/PID/messages:send</b>로 교체</p></div>
+              <div class="step"><span class="sn"></span><p>payload를 <b>message.notification + data(deeplink)</b> 구조로 재작성</p></div>
+              <div class="step"><span class="sn"></span><p>토큰 만료·NotRegistered <b>정리 로직</b> 추가(반송 토큰 삭제)</p></div>
+            </div>
+            <button class="btn btn-p btn-sm" id="sendPush" style="margin-top:16px">▶ 위 폰으로 v1 발송 시뮬레이션</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 리스크 검토 -->
+  <section class="sec" id="risks">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">RISK REVIEW · 발견을 기능으로</span>
+        <h2 class="mask"><span>착수 전에 짚어야 할 6가지</span></h2>
+        <p class="g-reveal">지적으로 끝내지 않았습니다. 각 항목은 위 데모·진단 화면에 이미 대응이 구현돼 있습니다. 근거는 공식 문서·정책으로 붙였습니다.</p>
+      </div>
+      <div class="risks" id="riskGrid"><!-- JS --></div>
+    </div>
+  </section>
+
+  <!-- ⑤ 텍스트 애니메이션 밴드 -->
+  <section class="sec" style="text-align:center">
+    <div class="shell">
+      <h2 class="mask" style="font-size:clamp(1.6rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>웹은 한 번 만들고,</span></h2>
+      <h2 class="mask d1" style="font-size:clamp(1.6rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>앱은 <span style="color:var(--grn)">그 위에 얇게</span> 얹습니다.</span></h2>
+      <p class="g-reveal" style="max-width:52ch;margin:20px auto 0;color:var(--ink-2);line-height:1.75">코드베이스는 하나. 웹을 고치면 앱도 같이 바뀝니다. 앱은 푸시·파일·세션·배포만 책임지는 얇은 네이티브 셸입니다 — 유지보수가 두 배가 되지 않도록.</p>
+    </div>
+  </section>
+
+  <!-- 견적 -->
+  <section class="sec" id="quote">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">ESTIMATE · 공수 기준</span>
+        <h2 class="mask"><span>이 범위를, 이 공수에</span></h2>
+        <p class="g-reveal">일 50,000원 기준으로 작업별 일수를 그대로 공개합니다. 예산에 맞춘 숫자가 아니라 계산한 결과입니다.</p>
+      </div>
+      <div class="quote">
+        <div class="tool">
+          <table class="q-table">
+            <thead><tr><th>작업</th><th style="text-align:right">일수</th></tr></thead>
+            <tbody>
+              <tr><td>WebView 셸 구현 — JS·DOM스토리지·뒤로가기·오류/로딩 화면·런타임 권한</td><td class="d">5</td></tr>
+              <tr><td>파일 업로드/다운로드 — onShowFileChooser·카메라(FileProvider)·DownloadManager</td><td class="d">3</td></tr>
+              <tr><td>로그인 유지 — CookieManager 영속·flush·세션 만료 대응</td><td class="d">1.5</td></tr>
+              <tr><td>Firebase 신규 프로젝트 + FCM SDK 연동(토큰·수신·표시·딥링크)</td><td class="d">3</td></tr>
+              <tr><td>기존 PHP → HTTP v1 전환(서비스 계정·OAuth2·payload·토큰 정리)</td><td class="d">3.5</td></tr>
+              <tr><td>앱 서명·릴리스 빌드·Play Console 등록·Data Safety·심사 대응</td><td class="d">3</td></tr>
+              <tr><td>운영 매뉴얼(빌드·배포·푸시 발송) 및 QA·수정 반영</td><td class="d">3</td></tr>
+              <tr class="tot"><td>합계 (VAT 별도)</td><td class="d">22일 · 110만원</td></tr>
+            </tbody>
+          </table>
+          <p class="q-note">※ 공고 예산(300만원)은 참고만 합니다. 공수대로 계산한 금액을 제시합니다. Firebase·Play 개발자 계정($25, 1회)·기존 PHP 서버 접근·유료 폰트/이미지 라이선스·개인정보처리방침 문안 검토는 의뢰자 부담 영역입니다.</p>
+        </div>
+        <div>
+          <div class="q-card">
+            <div class="big">110<small>만원</small></div>
+            <div style="font-size:12.5px;color:var(--muted);margin-top:4px">22일 · 일 5만원 · VAT 별도</div>
+            <ul>
+              <li>Android 소스 + 서명·빌드 설정</li>
+              <li>수정된 PHP(HTTP v1) 발송 소스</li>
+              <li>Firebase 설정·연동 안내서</li>
+              <li>Play 등록·배포 완료(스토어 게시)</li>
+              <li>빌드·배포·푸시 운영 매뉴얼</li>
+            </ul>
+            <div class="q-note">수정 요청은 화면 단위로 당일 반영합니다. 고도화(공고 언급)도 이 코드베이스 위에서 이어서 진행합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="shell ft-in">
+    <div>
+      <span class="demo-tag">PROPOSAL DEMO</span>
+      <div class="logo" style="margin-bottom:10px"><span class="mk">W</span><span>WRAPLY <small>랩리</small></span></div>
+      <p>제안용 데모입니다. 화면의 모든 데이터·발송·심사 수치는 시연용 가상값이며, 실제 스토어 등록·발송을 수행하지 않습니다. 레퍼런스 실측: Median.co · Firebase(도메인) / Linear.app · Vercel.com(디자인).</p>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:2">
+      <a href="#demo" style="display:block">앱 데모</a>
+      <a href="#review" style="display:block">Play 심사 진단</a>
+      <a href="#push" style="display:block">FCM 푸시 전환</a>
+      <a href="#risks" style="display:block">리스크 검토</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
