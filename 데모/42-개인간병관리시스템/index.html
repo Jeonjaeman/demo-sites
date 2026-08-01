@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CAREON 케어온 — 개인간병 업체 운영 관리(배정·회비·준법)</title>
+<meta name="description" content="엑셀로 하던 간병사 배정현황·회비 입금현황을 사무실에서도 밖에서도. 배정·회비·준법을 한 화면에서 관리하는 개인간병 업체 운영 프로그램. 제안용 데모.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body id="top">
+<header class="hd">
+  <div class="shell hd-in">
+    <a class="logo" href="#top"><span class="mk">C</span><span>CAREON <small>케어온</small></span></a>
+    <nav class="hd-nav">
+      <a href="#dash">운영 대시보드</a>
+      <a href="#legal">준법 검토</a>
+      <a href="#risks">리스크</a>
+      <a href="#quote">견적</a>
+    </nav>
+    <div class="hd-r">
+      <a class="btn btn-g btn-sm" href="#risks">발견 6</a>
+      <a class="btn btn-p btn-sm" href="#dash">대시보드 열기</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="shell hero-grid">
+      <div>
+        <span class="eyebrow g-reveal">개인간병 업체 운영 관리</span>
+        <h1 class="g-reveal">엑셀 대신,<br><span class="accent">배정도 회비도</span><br>한 화면에서.</h1>
+        <p class="hero-sub g-reveal">간병사 <b>배정현황</b>과 <b>회비 입금현황</b>을 사무실에서도, 밖에서도 봅니다. 다만 그냥 엑셀을 웹으로 옮기면 <b>위법 리스크</b>가 오히려 커집니다 — 소개와 관리·감독의 경계, 환자 건강정보 보호까지 설계에 담았습니다.</p>
+        <div class="hero-cta g-reveal">
+          <a class="btn btn-p" href="#dash">운영 대시보드 체험 ↓</a>
+          <a class="btn btn-g" href="#legal">준법 검토 보기</a>
+        </div>
+        <div class="hero-meta g-reveal">
+          <span>배정률 <b class="mono">실시간</b></span>
+          <span>회비 수납률 <b class="mono">자동 집계</b></span>
+          <span>민감정보 <b class="mono">역할별 마스킹</b></span>
+        </div>
+      </div>
+      <div class="g-reveal">
+        <div class="preview">
+          <div class="preview-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="t">CAREON · 오늘의 운영</span></div>
+          <div class="preview-body">
+            <div class="pv-kpi">
+              <div><div class="v teal">8<span style="font-size:11px;color:var(--muted)">명</span></div><div class="l">활동 간병사</div></div>
+              <div><div class="v">7<span style="font-size:11px;color:var(--muted)">건</span></div><div class="l">진행 배정</div></div>
+              <div><div class="v warm">4<span style="font-size:11px;color:var(--muted)">명</span></div><div class="l">회비 미납</div></div>
+            </div>
+            <div class="pv-bars">
+              <div class="pv-bar"><span class="nm">배정률</span><span class="track"><span class="fill" data-w="71"></span></span><span class="pc">71%</span></div>
+              <div class="pv-bar"><span class="nm">수납률</span><span class="track"><span class="fill warm" data-w="50"></span></span><span class="pc">50%</span></div>
+              <div class="pv-bar"><span class="nm">자격보유</span><span class="track"><span class="fill" data-w="62"></span></span><span class="pc">62%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② 풀블리드 statement -->
+  <section class="statement gbleed" aria-label="핵심 메시지">
+    <div class="statement-bg"><img src="assets/img/statement-care.jpg" alt="" data-parallax></div>
+    <div class="statement-in shell">
+      <span class="eyebrow g-reveal" style="margin-bottom:14px;color:#6FD8C8">THE LINE</span>
+      <h2 class="mask"><span>배정은 <span class="accent">소개</span>까지.</span></h2>
+      <h2 class="mask d1"><span>관리·감독은 선을 넘습니다.</span></h2>
+      <p class="g-reveal">간병인을 소개하고 회비를 받는 순간 유료직업소개사업입니다. 여기에 근무 지시·관리·감독까지 더하면 불법 근로자공급이 됩니다. CAREON은 그 경계를 화면 설계로 지킵니다 — 배정은 알선까지, 지시는 담지 않습니다.</p>
+    </div>
+  </section>
+
+  <!-- ① 마우스 반응 카드 -->
+  <section class="sec">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">FOUR PILLARS</span>
+        <h2 class="mask"><span>엑셀이 못 하던 네 가지</span></h2>
+        <p class="g-reveal">각 기둥은 요청하신 기능이자, 잘못 다루면 법·분쟁으로 이어지는 지점입니다. 카드에 마우스를 올려 보세요.</p>
+      </div>
+    </div>
+    <div class="shell">
+      <div class="pillars">
+        <article class="pillar g-reveal"><img src="assets/img/pillar-assign.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">01 / ASSIGN</span><h3>배정 현황</h3><p>간병사↔의뢰 매칭·근무형태·간병비를 한눈에. 배정(소개) 단위로만 관리해 근로자공급 선을 넘지 않습니다.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-dues.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">02 / DUES</span><h3>회비·정산</h3><p>간병사별 월 회비 입금·미납을 실시간 집계. 수납률·미납액이 사람마다 다르게 세어지지 않습니다.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-privacy.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">03 / PRIVACY</span><h3>민감정보 보호</h3><p>환자 질환·상태는 민감정보. 역할별로 열람 범위를 나눠 밖에서 열어도 담당 외 정보는 가려집니다.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-mobile.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">04 / ANYWHERE</span><h3>어디서나</h3><p>사무실·현장 어디서나 같은 데이터. 단, 외부 접속엔 역할·세션 통제를 붙여 안전하게.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 운영 대시보드 -->
+  <section class="sec" id="dash">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">LIVE DASHBOARD</span>
+        <h2 class="mask"><span>운영 대시보드 — 직접 눌러 보세요</span></h2>
+        <p class="g-reveal">필터·역할 전환이 실제로 데이터를 바꿉니다. 특히 <b>역할을 ‘외부 간병사’로</b> 바꾸면 담당 외 환자의 질환·보호자 연락처가 마스킹되고, 타 간병사 회비가 비공개로 전환됩니다.</p>
+      </div>
+      <div class="dash">
+        <div class="dash-top">
+          <span class="title">🩺 오늘의 운영</span>
+          <div class="roleseg" id="roleSeg">
+            <button class="on" data-role="admin">👤 사무실 관리자</button>
+            <button data-role="cg">📱 외부 간병사</button>
+          </div>
+        </div>
+        <div class="role-note" id="roleNote"></div>
+        <div class="dash-body">
+          <div class="kpis" id="kpis"></div>
+          <div class="dash-tabs">
+            <button class="dtab on" data-tab="assign">배정 현황</button>
+            <button class="dtab" data-tab="dues">회비·정산</button>
+            <button class="dtab" data-tab="legal">준법 검토</button>
+          </div>
+
+          <!-- 배정 -->
+          <div class="dpanel on" data-panel="assign" style="padding-top:16px">
+            <div class="filters" id="assignFilters">
+              <button class="chip on" data-f="all">전체</button>
+              <button class="chip" data-f="assigned">배정중</button>
+              <button class="chip" data-f="open">공석</button>
+              <button class="chip" data-f="ended">종료</button>
+              <span class="sp" id="assignCount"></span>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tbl">
+                <thead><tr><th>간병사</th><th>의뢰(환자·장소)</th><th>상태(민감)</th><th>근무</th><th style="text-align:right">간병비</th><th>배정</th></tr></thead>
+                <tbody id="assignBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 회비 -->
+          <div class="dpanel" data-panel="dues" style="padding-top:16px">
+            <div class="filters" id="duesFilters">
+              <button class="chip on" data-f="all">전체</button>
+              <button class="chip" data-f="paid">완납</button>
+              <button class="chip" data-f="unpaid">미납·예정</button>
+              <span class="sp" id="duesSummary"></span>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="tbl">
+                <thead><tr><th>간병사</th><th style="text-align:right">이번달 회비</th><th>상태</th><th>입금일</th></tr></thead>
+                <tbody id="duesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 준법 -->
+          <div class="dpanel" data-panel="legal" style="padding-top:16px">
+            <div class="legal-grid">
+              <div id="legalList"></div>
+              <div>
+                <div class="gauge">
+                  <div class="gauge-ring" id="legalGauge"><div class="gauge-val" id="legalPct">0<small>%</small></div></div>
+                  <div class="gauge-label">준법 준비도 (가중 추정)</div>
+                </div>
+                <div class="verdict" id="legalVerdict"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 리스크 -->
+  <section class="sec" id="risks">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">RISK REVIEW · 발견을 기능으로</span>
+        <h2 class="mask"><span>착수 전에 짚어야 할 6가지</span></h2>
+        <p class="g-reveal">지적으로 끝내지 않았습니다. 각 항목은 위 대시보드·준법 화면에 이미 대응이 들어가 있고, 근거는 법령·판례로 붙였습니다.</p>
+      </div>
+      <div class="risks" id="riskGrid"></div>
+    </div>
+  </section>
+
+  <!-- ⑤ 텍스트 애니 -->
+  <section class="sec" style="text-align:center">
+    <div class="shell">
+      <h2 class="mask" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>엑셀은 기록하고,</span></h2>
+      <h2 class="mask d1" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>CAREON은 <span style="color:var(--teal)">지켜 줍니다.</span></span></h2>
+      <p class="g-reveal" style="max-width:50ch;margin:18px auto 0;color:var(--ink-2);line-height:1.75">같은 배정·회비 데이터라도, 누가 보느냐에 따라 열람 범위가 달라지고, 위법이 되기 전에 경계를 짚어 줍니다. 프로그램은 편하자고 쓰는 것이지, 리스크를 키우려고 쓰는 게 아닙니다.</p>
+    </div>
+  </section>
+
+  <!-- 견적 -->
+  <section class="sec" id="quote">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">ESTIMATE · 공수 기준</span>
+        <h2 class="mask"><span>이 범위를, 이 공수에</span></h2>
+        <p class="g-reveal">작업별 공수를 그대로 공개합니다. 범위에 대한 산정 결과입니다.</p>
+      </div>
+      <div class="quote">
+        <div class="qbox">
+          <table class="q-table">
+            <thead><tr><th>작업</th><th style="text-align:right">일수</th></tr></thead>
+            <tbody>
+              <tr><td>배정 현황 보드 — 간병사↔의뢰 매칭·상태·근무·간병비·필터</td><td class="d">4</td></tr>
+              <tr><td>회비·정산 — 간병사별 입금/미납·수납률·미납 집계</td><td class="d">3</td></tr>
+              <tr><td>권한·역할 — 관리자/간병사 뷰·민감정보 마스킹·접근통제</td><td class="d">3</td></tr>
+              <tr><td>준법 검토 화면 — 등록·소개 경계·근로자성·보험 점검</td><td class="d">2</td></tr>
+              <tr><td>엑셀 가져오기·감사로그·모바일 반응형·외부 접속 세션</td><td class="d">4</td></tr>
+              <tr><td>배포·운영 매뉴얼·QA·수정 반영</td><td class="d">2</td></tr>
+              <tr class="tot"><td>합계 (VAT 별도)</td><td class="d">18일 · 90만원</td></tr>
+            </tbody>
+          </table>
+          <p class="q-note">※ 예산은 미팅에서 협의합니다. 회원(간병사) 로그인·알림·전자계약 등 고도화는 2차 범위로 분리합니다. 서버·호스팅·문자/알림 발송 종량 요금·개인정보처리방침 문안 검토는 의뢰자 부담입니다.</p>
+        </div>
+        <div>
+          <div class="qbox q-card">
+            <div class="big">90<small>만원</small></div>
+            <div style="font-size:12.5px;color:var(--muted);margin-top:4px">18일 공수 · VAT 별도</div>
+            <ul>
+              <li>배정·회비 관리 웹앱(사무실·모바일)</li>
+              <li>역할별 권한·민감정보 마스킹</li>
+              <li>준법 점검 화면 + 정산 집계</li>
+              <li>엑셀 가져오기·감사로그</li>
+              <li>운영 매뉴얼 + 배포</li>
+            </ul>
+            <div class="q-note">수정 요청은 화면 단위로 당일 반영합니다. 회원 앱·전자계약 등은 이 위에서 이어서 확장합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="shell ft-in">
+    <div>
+      <span class="demo-tag">PROPOSAL DEMO</span>
+      <div class="logo" style="margin-bottom:9px"><span class="mk">C</span><span>CAREON <small>케어온</small></span></div>
+      <p>제안용 데모입니다. 모든 간병사·환자·연락처·회비·수치는 시연용 가상값이며 실존 인물·업체와 무관합니다. 레퍼런스 실측: 케어네이션·케어닥(도메인) / Linear·Vercel(디자인 메트릭).</p>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:2">
+      <a href="#dash" style="display:block">운영 대시보드</a>
+      <a href="#legal" style="display:block">준법 검토</a>
+      <a href="#risks" style="display:block">리스크</a>
+      <a href="#quote" style="display:block">견적</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
