@@ -109,40 +109,19 @@
     </div>
   </section>
 
-  <!-- ② 풀블리드 이미지 statement -->
-  <section class="statement gbleed" aria-label="핵심 메시지">
-    <div class="statement-bg"><img src="assets/img/statement-hero.jpg" alt="" data-parallax></div>
-    <div class="statement-in shell">
-      <span class="eyebrow g-reveal" style="margin-bottom:16px">THE LINE</span>
-      <h2 class="mask"><span>웹을 감싸는 건 쉽습니다.</span></h2>
-      <h2 class="mask d1"><span><span class="accent">심사를 통과하는</span> 앱은 다릅니다.</span></h2>
-      <p class="g-reveal">Google Play는 2025년부터 ‘웹을 상자에 넣은’ 앱을 정책 4.3(최소 기능)으로 반려합니다. 푸시·파일·오프라인·네이티브 내비게이션 — 이 네 가지가 있어야 앱은 ‘앱’이 됩니다. WRAPLY는 그 경계를 코드가 아니라 화면으로 증명합니다.</p>
-    </div>
-  </section>
-
-  <!-- ① 마우스 반응 카드 (4 기둥) -->
+  <!-- 웹뷰 앱을 '앱'으로 만드는 네 가지 (기능형 피처 그리드 · 이미지/틸트 없음) -->
   <section class="sec" id="pillars">
     <div class="shell">
       <div class="sec-head">
         <span class="eyebrow g-reveal">FOUR PILLARS</span>
-        <h2 class="mask"><span>웹뷰 앱을 ‘앱’으로 만드는 네 가지</span></h2>
-        <p class="g-reveal">각 기둥은 의뢰하신 요구사항이자, 잘못 만들면 그대로 실패하는 지점입니다. 카드 위에 마우스를 올려 보세요.</p>
+        <h2 class="g-reveal" style="font-size:clamp(1.7rem,3.6vw,2.9rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;margin-top:14px">웹뷰 앱을 ‘앱’으로 만드는 네 가지</h2>
+        <p class="g-reveal">Google Play는 ‘웹을 상자에 넣은’ 앱을 정책 4.3(최소 기능)으로 반려합니다. 아래 넷이 있어야 앱은 ‘앱’이 됩니다 — 각 항목은 요구사항이자, 잘못 만들면 그대로 실패하는 지점입니다.</p>
       </div>
-    </div>
-    <div class="shell">
-      <div class="pillars">
-        <article class="pillar g-reveal"><img src="assets/img/pillar-webview.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">01 / SHELL</span><h3>WebView 셸</h3><p>JavaScript·DOM 스토리지·뒤로가기·오류 화면. 웹이 앱 안에서 ‘정상 웹’으로 돌게 만드는 설정. 이게 어설프면 흰 화면·먹통 뒤로가기가 납니다.</p></div>
-        </article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-push.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">02 / PUSH</span><h3>FCM 푸시</h3><p>디바이스 토큰·알림 표시·탭 시 딥링크. 서버는 HTTP v1(서비스 계정)로 발송. Legacy 서버키는 2024년 종료돼 그대로면 푸시가 안 나갑니다.</p></div>
-        </article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-file.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">03 / FILE · SESSION</span><h3>파일 · 로그인 유지</h3><p>파일 첨부(onShowFileChooser)·다운로드·카메라 권한, 그리고 재실행해도 유지되는 로그인(쿠키 flush). 웹처럼 ‘그냥 되겠지’가 가장 많이 깨지는 곳.</p></div>
-        </article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-deploy.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">04 / DEPLOY</span><h3>Play 배포</h3><p>키스토어 서명·릴리스 빌드·타깃 API 36·Data Safety·개인정보처리방침. 기능이 있어도 등록 정보가 비면 반려됩니다.</p></div>
-        </article>
+      <div class="feat-grid">
+        <div class="feat g-reveal"><span class="fi">🧩</span><span class="fn">01 · SHELL</span><h3>WebView 셸</h3><p>JavaScript·DOM 스토리지·뒤로가기·오류 화면. 웹이 앱 안에서 ‘정상 웹’으로 돌게 만드는 설정. 어설프면 흰 화면·먹통 뒤로가기.</p></div>
+        <div class="feat g-reveal"><span class="fi">🔔</span><span class="fn">02 · PUSH</span><h3>FCM 푸시</h3><p>디바이스 토큰·알림 표시·탭 시 딥링크. 서버는 HTTP v1(서비스 계정) 발송. Legacy 서버키는 2024년 종료돼 그대로면 안 나갑니다.</p></div>
+        <div class="feat g-reveal"><span class="fi">📎</span><span class="fn">03 · FILE·SESSION</span><h3>파일 · 로그인 유지</h3><p>파일 첨부(onShowFileChooser)·다운로드·카메라 권한, 재실행해도 유지되는 로그인(쿠키 flush). ‘그냥 되겠지’가 가장 많이 깨지는 곳.</p></div>
+        <div class="feat g-reveal"><span class="fi">🚀</span><span class="fn">04 · DEPLOY</span><h3>Play 배포</h3><p>키스토어 서명·릴리스 빌드·타깃 API 36·Data Safety·개인정보처리방침. 기능이 있어도 등록 정보가 비면 반려됩니다.</p></div>
       </div>
     </div>
   </section>
@@ -252,12 +231,11 @@ $url = <span class="s">"https://fcm.googleapis.com/v1/projects/<b>PID</b>/messag
     </div>
   </section>
 
-  <!-- ⑤ 텍스트 애니메이션 밴드 -->
+  <!-- 핵심 메시지 (절제된 텍스트 밴드) -->
   <section class="sec" style="text-align:center">
     <div class="shell">
-      <h2 class="mask" style="font-size:clamp(1.6rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>웹은 한 번 만들고,</span></h2>
-      <h2 class="mask d1" style="font-size:clamp(1.6rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>앱은 <span style="color:var(--grn)">그 위에 얇게</span> 얹습니다.</span></h2>
-      <p class="g-reveal" style="max-width:52ch;margin:20px auto 0;color:var(--ink-2);line-height:1.75">코드베이스는 하나. 웹을 고치면 앱도 같이 바뀝니다. 앱은 푸시·파일·세션·배포만 책임지는 얇은 네이티브 셸입니다 — 유지보수가 두 배가 되지 않도록.</p>
+      <h2 class="g-reveal" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2">웹은 한 번 만들고, 앱은 <span style="color:var(--grn)">그 위에 얇게</span> 얹습니다.</h2>
+      <p class="g-reveal" style="max-width:52ch;margin:18px auto 0;color:var(--ink-2);line-height:1.75">코드베이스는 하나. 웹을 고치면 앱도 같이 바뀝니다. 앱은 푸시·파일·세션·배포만 책임지는 얇은 네이티브 셸입니다 — 유지보수가 두 배가 되지 않도록.</p>
     </div>
   </section>
 
