@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<!-- saved from url=(0232)https://cdn.wishket.com/project/files/143047/%E1%84%87%E1%85%A7%E1%86%AF%E1%84%8E%E1%85%A5%E1%86%B73_%E1%84%8B%E1%85%AA%E1%84%8B%E1%85%B5%E1%84%8B%E1%85%A5%E1%84%91%E1%85%B3%E1%84%85%E1%85%A6%E1%84%8B%E1%85%B5%E1%86%B7_20260731.html -->
+<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pack&amp;Fly RFQ 별첨 4 — 화면 와이어프레임</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif; background:#e8e8e8; color:#222; padding:24px; }
+  .notice { max-width:1100px; margin:0 auto 28px; background:#fff8e1; border:2px solid #e0a800; padding:16px 20px; border-radius:8px; font-size:14px; line-height:1.7; }
+  .notice strong { color:#a07000; }
+  h1 { max-width:1100px; margin:0 auto 8px; font-size:22px; }
+  .sub { max-width:1100px; margin:0 auto 24px; color:#666; font-size:13px; }
+  h2 { max-width:1100px; margin:36px auto 14px; font-size:17px; border-left:5px solid #888; padding-left:10px; }
+  .row { max-width:1100px; margin:0 auto; display:flex; flex-wrap:wrap; gap:20px; align-items:flex-start; }
+  .frame { width:250px; background:#fff; border:2px solid #999; border-radius:14px; overflow:hidden; flex-shrink:0; }
+  .frame.wide { width:340px; }
+  .flabel { background:#555; color:#fff; font-size:12px; font-weight:700; padding:6px 10px; }
+  .fbody { padding:10px; font-size:11px; line-height:1.55; }
+  .bar { background:#ddd; border-radius:4px; padding:5px 8px; margin:4px 0; color:#444; }
+  .btn { background:#bbb; border-radius:6px; padding:7px 8px; margin:6px 0; text-align:center; font-weight:700; color:#333; }
+  .btn.primary { background:#888; color:#fff; }
+  .btn.ghost { background:#fff; border:1.5px dashed #999; }
+  .box { border:1.5px solid #bbb; border-radius:6px; padding:7px 8px; margin:6px 0; background:#fafafa; }
+  .box.hl { border-color:#777; background:#f0f0f0; }
+  .muted { color:#888; font-size:10px; }
+  .tag { display:inline-block; background:#eee; border:1px solid #ccc; border-radius:3px; padding:1px 5px; font-size:10px; margin-right:3px; }
+  .split { display:flex; gap:6px; } .split > div { flex:1; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; }
+  .dot.r { background:#c66; } .dot.g { background:#6a6; }
+  .map { background:repeating-linear-gradient(45deg,#e5e5e5,#e5e5e5 8px,#dcdcdc 8px,#dcdcdc 16px); border-radius:6px; height:110px; margin:6px 0; position:relative; }
+  .pin { position:absolute; font-size:13px; }
+  .sec-title { font-weight:700; margin:8px 0 2px; font-size:11.5px; }
+  .divider { border-top:1px dashed #ccc; margin:8px 0; }
+  .note { font-size:10.5px; color:#775; background:#fbf9ee; border-radius:4px; padding:5px 7px; margin:6px 0; }
+  /* flowchart */
+  .flow { max-width:1100px; margin:0 auto; background:#fff; border:2px solid #999; border-radius:10px; padding:22px; font-size:12px; }
+  .fnode { display:inline-block; border:2px solid #777; border-radius:8px; padding:8px 14px; background:#f4f4f4; font-weight:600; margin:4px; }
+  .fnode.dec { border-radius:20px; background:#eee; border-style:dashed; }
+  .fnode.end { background:#ddd; }
+  .farrow { color:#888; font-weight:700; margin:0 6px; }
+  .fline { margin:10px 0; line-height:2.4; }
+  .findent { margin-left:40px; }
+  .flabel2 { font-size:10.5px; color:#996; background:#fbf9ee; padding:1px 6px; border-radius:3px; }
+</style>
+</head>
+<body>
+
+<h1>Pack&amp;Fly 시스템 — 화면 와이어프레임 (별첨 4)</h1>
+<div class="sub">RFQ 본문 §7 화면별 명세의 이해를 돕기 위한 참고 자료 · 2026-07-31</div>
+
+<div class="notice">
+  ⚠️ <strong>이 문서는 디자인 시안이 아닙니다.</strong> 화면의 구성 요소와 흐름을 전달하기 위한 <strong>구조도</strong>입니다.
+  실제 UI/UX 디자인(레이아웃·색·타이포·인터랙션)은 <strong>개발사의 제안 영역</strong>이며, 본 와이어프레임과 다르게 제안하셔도 됩니다.
+  단, <strong>각 화면에 담긴 요소·동작·분기 로직은 RFQ 본문 명세를 따라야 합니다.</strong>
+</div>
+
+<!-- ============ S-01 흐름도 ============ -->
+<h2>S-01 예약 폼 — 분기 흐름도 (가장 중요)</h2>
+<div class="flow" style="text-align:center">
+
+<svg viewBox="0 0 700 1250" style="max-width:700px;width:100%" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,&#39;Apple SD Gothic Neo&#39;,&#39;Malgun Gothic&#39;,sans-serif">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#666"></path>
+    </marker>
+  </defs>
+  <style>
+    .p { fill:#e9e9e9; stroke:#888; stroke-width:1.5; }
+    .d { fill:#f2f2f2; stroke:#888; stroke-width:1.5; }
+    .s { fill:#bcd8ea; stroke:#7aaac8; stroke-width:1.5; }
+    .t { font-size:13px; fill:#222; text-anchor:middle; }
+    .tm { font-size:10.5px; fill:#777; text-anchor:middle; }
+    .lb { font-size:11px; fill:#555; font-weight:700; }
+    .ln { stroke:#666; stroke-width:1.5; fill:none; marker-end:url(#ar); }
+    .ln2 { stroke:#666; stroke-width:1.5; fill:none; }
+  </style>
+
+  <text x="350" y="22" style="font-size:15px;font-weight:700" text-anchor="middle">〈 짐배송 흐름 〉</text>
+
+  <!-- 시작 -->
+  <rect class="s" x="300" y="36" width="100" height="34" rx="17"></rect>
+  <text class="t" x="350" y="57">시작</text>
+  <line class="ln" x1="350" y1="70" x2="350" y2="92"></line>
+
+  <!-- P1 -->
+  <rect class="p" x="240" y="94" width="220" height="40"></rect>
+  <text class="t" x="350" y="118">① 방향 + 짐 총 개수</text>
+  <line class="ln" x1="350" y1="134" x2="350" y2="156"></line>
+
+  <!-- P2 -->
+  <rect class="p" x="225" y="158" width="250" height="46"></rect>
+  <text class="t" x="350" y="177">② 출발지 입력</text>
+  <text class="tm" x="350" y="193">Google Places 자동완성</text>
+  <line class="ln" x1="350" y1="204" x2="350" y2="228"></line>
+
+  <!-- D1 프런트 -->
+  <polygon class="d" points="350,230 455,285 350,340 245,285"></polygon>
+  <text class="t" x="350" y="290">프런트 있음?</text>
+  <!-- 있음 → 왼쪽 우회 -->
+  <line class="ln2" x1="245" y1="285" x2="90" y2="285"></line>
+  <line class="ln2" x1="90" y1="285" x2="90" y2="860"></line>
+  <line class="ln" x1="90" y1="860" x2="223" y2="860"></line>
+  <text class="lb" x="150" y="278">있음</text>
+  <!-- 없음 → 아래 -->
+  <line class="ln" x1="350" y1="340" x2="350" y2="366"></line>
+  <text class="lb" x="362" y="360">없음 · 모름</text>
+
+  <!-- D2 할증 ON? -->
+  <polygon class="d" points="350,368 470,428 350,488 230,428"></polygon>
+  <text class="t" x="350" y="424">방문수거 할증</text>
+  <text class="t" x="350" y="441">금액 &gt; 0 ? (S-14 설정)</text>
+  <!-- 0 → 왼쪽 우회 합류 -->
+  <line class="ln2" x1="230" y1="428" x2="90" y2="428"></line>
+  <text class="lb" x="128" y="420">= 0</text>
+  <text class="tm" x="160" y="446">특가 기간 = 현재</text>
+  <text class="tm" x="160" y="459">블록 미표시, 그냥 진행</text>
+  <!-- >0 → 아래 -->
+  <line class="ln" x1="350" y1="488" x2="350" y2="514"></line>
+  <text class="lb" x="366" y="508">&gt; 0</text>
+
+  <!-- D3 거점 있음? -->
+  <polygon class="d" points="350,516 480,581 350,646 220,581"></polygon>
+  <text class="t" x="350" y="572">반경 1km 내 거점</text>
+  <text class="t" x="350" y="589">있음? (적재율 80% 미만)</text>
+  <!-- 없음 → 오른쪽 -->
+  <line class="ln" x1="480" y1="581" x2="530" y2="581"></line>
+  <text class="lb" x="495" y="573">없음</text>
+  <rect class="p" x="532" y="558" width="150" height="46"></rect>
+  <text class="t" x="607" y="578">방문수거만 표시</text>
+  <text class="tm" x="607" y="594">(+할증 US$25)</text>
+  <line class="ln2" x1="607" y1="604" x2="607" y2="860"></line>
+  <line class="ln" x1="607" y1="860" x2="477" y2="860"></line>
+  <!-- 있음 → 아래 -->
+  <line class="ln" x1="350" y1="646" x2="350" y2="672"></line>
+  <text class="lb" x="362" y="666">있음</text>
+
+  <!-- P3 거점 선택 -->
+  <rect class="p" x="215" y="674" width="270" height="46"></rect>
+  <text class="t" x="350" y="693">거점 지도·목록 표시 → 손님 선택</text>
+  <text class="tm" x="350" y="709">가까운 순 · 지도 핀 연동</text>
+  <line class="ln" x1="350" y1="720" x2="350" y2="744"></line>
+
+  <!-- P4 사이즈 -->
+  <rect class="p" x="215" y="746" width="270" height="46"></rect>
+  <text class="t" x="350" y="765">★ 사이즈별 개수 입력 (S/M/L)</text>
+  <text class="tm" x="350" y="781">합계 = 총 개수 검증 · 접수료 계산</text>
+  <line class="ln" x1="350" y1="792" x2="350" y2="836"></line>
+
+  <!-- P5 도착지 (합류점) -->
+  <rect class="p" x="225" y="838" width="250" height="46"></rect>
+  <text class="t" x="350" y="857">③ 도착지 + 항공편</text>
+  <text class="tm" x="350" y="873">②와 동일 구조 · 동일 분기 반복</text>
+  <line class="ln" x1="350" y1="884" x2="350" y2="908"></line>
+
+  <!-- P6 -->
+  <rect class="p" x="240" y="910" width="220" height="40"></rect>
+  <text class="t" x="350" y="934">④ 연락처 · 메신저 채널</text>
+  <line class="ln" x1="350" y1="950" x2="350" y2="974"></line>
+
+  <!-- P7 -->
+  <rect class="p" x="240" y="976" width="220" height="40"></rect>
+  <text class="t" x="350" y="1000">⑤ 요금 확인 → 약관 동의</text>
+  <line class="ln" x1="350" y1="1016" x2="350" y2="1040"></line>
+
+  <!-- P8 결제 -->
+  <rect class="p" x="240" y="1042" width="220" height="46"></rect>
+  <text class="t" x="350" y="1061">S-04 결제 (PayPal)</text>
+  <text class="tm" x="350" y="1077">통화별 정액 그대로 청구</text>
+  <line class="ln" x1="350" y1="1088" x2="350" y2="1112"></line>
+
+  <!-- 끝 -->
+  <rect class="s" x="255" y="1114" width="190" height="40" rx="20"></rect>
+  <text class="t" x="350" y="1133">예약번호 발급 → S-02</text>
+  <text class="tm" x="350" y="1147">PF-MMDD-XXXX</text>
+
+  <text class="tm" x="350" y="1195">※ 원거리(송정·기장·정관) = +₩15,000 자동 가산</text>
+  <text class="tm" x="350" y="1212">※ 부산 외 주소 = 예약 대신 "문의해 주세요" + 문의 버튼</text>
+</svg>
+
+<svg viewBox="0 0 700 480" style="max-width:700px;width:100%;margin-top:10px" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,&#39;Apple SD Gothic Neo&#39;,&#39;Malgun Gothic&#39;,sans-serif">
+  <defs>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto">
+      <path d="M0,0 L8,3.5 L0,7 Z" fill="#666"></path>
+    </marker>
+  </defs>
+  <style>
+    .p2 { fill:#e9e9e9; stroke:#888; stroke-width:1.5; }
+    .s2 { fill:#bcd8ea; stroke:#7aaac8; stroke-width:1.5; }
+    .t2 { font-size:13px; fill:#222; text-anchor:middle; }
+    .tm2 { font-size:10.5px; fill:#777; text-anchor:middle; }
+    .la { stroke:#666; stroke-width:1.5; fill:none; marker-end:url(#ar2); }
+  </style>
+
+  <text x="350" y="22" style="font-size:15px;font-weight:700" text-anchor="middle">〈 짐보관 흐름 〉</text>
+
+  <rect class="s2" x="300" y="36" width="100" height="34" rx="17"></rect>
+  <text class="t2" x="350" y="57">시작</text>
+  <line class="la" x1="350" y1="70" x2="350" y2="90"></line>
+
+  <rect class="p2" x="215" y="92" width="270" height="46"></rect>
+  <text class="t2" x="350" y="111">① 지도에서 거점 선택</text>
+  <text class="tm2" x="350" y="127">거점 핀 → 탭 → 요금·영업시간·남은 자리</text>
+  <line class="la" x1="350" y1="138" x2="350" y2="158"></line>
+
+  <rect class="p2" x="215" y="160" width="270" height="40"></rect>
+  <text class="t2" x="350" y="184">② 맡길 / 찾을 날짜·시간 (최대 7일)</text>
+  <line class="la" x1="350" y1="200" x2="350" y2="220"></line>
+
+  <rect class="p2" x="215" y="222" width="270" height="40"></rect>
+  <text class="t2" x="350" y="246">③ 사이즈별 개수 (요금이 사이즈별)</text>
+  <line class="la" x1="350" y1="262" x2="350" y2="282"></line>
+
+  <rect class="p2" x="240" y="284" width="220" height="40"></rect>
+  <text class="t2" x="350" y="308">④ 연락처 · 메신저 채널</text>
+  <line class="la" x1="350" y1="324" x2="350" y2="344"></line>
+
+  <rect class="p2" x="240" y="346" width="220" height="40"></rect>
+  <text class="t2" x="350" y="370">⑤ 약관 동의 → S-04 결제</text>
+  <line class="la" x1="350" y1="386" x2="350" y2="406"></line>
+
+  <rect class="s2" x="255" y="408" width="190" height="40" rx="20"></rect>
+  <text class="t2" x="350" y="427">예약번호 발급 → S-02</text>
+  <text class="tm2" x="350" y="441">배송과 동일 체계</text>
+</svg>
+
+</div>
+
+<!-- ============ 고객 화면 ============ -->
+<h2>고객 화면</h2>
+<div class="row">
+
+  <div class="frame">
+    <div class="flabel">S-01 예약 폼 · 0단계</div>
+    <div class="fbody">
+      <div class="bar">Pack&amp;Fly</div>
+      <div class="sec-title">무엇을 도와드릴까요?</div>
+      <div class="btn primary">🚚 짐배송<br><span class="muted">숙소↔공항 운송</span></div>
+      <div class="btn">📦 짐보관<br><span class="muted">거점에 맡기고 찾아가기</span></div>
+      <div class="note">기기 언어 자동 감지 (4개 언어)<br>통화도 언어 따라 정액 표시</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-01 · 수거 방식 선택 (할증 ON일 때만)</div>
+    <div class="fbody">
+      <div class="box hl">프런트가 없는 숙소네요.<br>두 가지 방법이 있습니다.</div>
+      <div class="sec-title">● 근처 거점에 맡기기 (지도 핀으로만 선택)</div>
+      <div class="map">
+        <span class="pin" style="top:30px;left:60px">🏠<span style="font-size:9px">내 숙소</span></span>
+        <span class="pin" style="top:15px;left:25px">📍</span>
+        <span class="pin" style="top:65px;left:95px">📍</span>
+        <span class="pin" style="top:8px;right:8px;bottom:8px;left:115px;position:absolute;background:#fff;border:1.5px solid #999;border-radius:6px;padding:5px;font-size:9.5px;line-height:1.5">
+          ◀ 슬라이드 패널<br><b>○○카페</b> · 도보 3분<br>08~22시 · 남은자리<br>짐 크기 S[1] M[2] L[0]<br>접수료 +NT$XXX<br><span style="background:#888;color:#fff;border-radius:3px;padding:1px 8px">선택</span>
+        </span>
+      </div>
+      <div class="muted">핀 탭 → 오른쪽에서 패널 슬라이드 등장 · 목록 없음<br>1km 반경 · 80% 이상 거점 핀 제외 · 배송은 사이즈만 입력</div>
+      <div class="muted">→ 거점에 맡기면 NT$XXX 절약</div>
+      <div class="sec-title">○ 숙소로 방문 수거 +NT$XXX</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-01 · 짐보관 1단계 (지도 먼저)</div>
+    <div class="fbody">
+      <div class="bar">주소 또는 내 위치 🔍</div>
+      <div class="map" style="height:150px">
+        <span class="pin" style="top:20px;left:30px">📍</span>
+        <span class="pin" style="top:75px;left:60px">📍</span>
+        <span class="pin" style="top:8px;right:8px;bottom:8px;left:100px;position:absolute;background:#fff;border:1.5px solid #999;border-radius:6px;padding:5px;font-size:9.5px;line-height:1.5">
+          ◀ 슬라이드 패널<br><b>○○카페</b> · 도보 3분<br>08~22시 · 남은자리 S7 M3 L2<br>맡길 7/28 10:00<br>찾을 7/30 15:00 (최대 7일)<br>S[0] M[1] L[0] · NT$XXX<br><span style="background:#888;color:#fff;border-radius:3px;padding:1px 8px">선택</span>
+        </span>
+      </div>
+      <div class="note">목록 없음 — 핀 탭 → 패널에서 날짜·사이즈 입력<br>적재율 80% 이상 거점은 핀 제외<br>배송 거점접수 패널과 동일 컴포넌트(그쪽은 사이즈만)</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-04 결제 (S-01 5단계에서 진입)</div>
+    <div class="fbody">
+      <div class="note">흐름: S-01 요금확인·약관동의 → <b>결제</b> → S-02 예약완료<br>(S-03에서 미결제 재결제 시에도 진입)</div>
+      <div class="box">주문 요약<br>배송 3개 + 거점 접수 · <b>NT$XXX</b></div>
+      <div class="box" style="text-align:center;padding:18px">[ PayPal 임베드 영역 ]</div>
+      <div class="muted">통화별 정액 그대로 청구 (TWD·JPY·USD·KRW)<br>결제 완료 시 예약 자동 확정</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-02 예약 완료 (결제 후)</div>
+    <div class="fbody">
+      <div class="box hl" style="text-align:center;font-size:16px;font-weight:700">PF-0728-1435</div>
+      <div class="muted" style="text-align:center">예약번호를 저장해 주세요 (배송·보관 공통)</div>
+      <div class="box">요약: 배송 · Cozybay→김해공항<br>7/28 · 짐 3개 · NT$XXX</div>
+      <div class="sec-title">연락 채널 연결 <span class="muted">(손님이 4단계에서 고른 채널)</span></div>
+      <div class="btn primary">LINE 연결 (QR)</div>
+      <div class="btn">WhatsApp 연결</div>
+      <div class="muted">KakaoTalk · WeChat 동일 — 선택 채널의 버튼이 표시됨<br>"연락 주시면 확정·수거·전달 안내를 보내드립니다"</div>
+      <div class="btn ghost">예약 조회하기</div>
+      <div class="note">진입 시 확인 메일 자동 발송</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-03 예약 조회 · 배송 (로그인 없음)</div>
+    <div class="fbody">
+      <div class="bar">예약번호 [ PF-____-____ ] [조회]</div>
+      <div class="box">DAI MENG CHEN 님<br>Cozybay → 김해공항 · 3개<br>BR163 · 7/28</div>
+      <div class="box hl">📍 짐 맡기는 곳 <span class="muted">(거점 이용 시만)</span><br>○○카페 · 도보 3분 <span class="tag">지도</span><br>
+        <div class="divider"></div>
+        짐을 맡기셨나요?<br>
+        <span class="btn" style="display:block">📷 사진 찍기</span>
+        <span class="btn primary" style="display:block">✓ 짐을 맡겼어요</span>
+        <span class="muted">사진 올려야 버튼 활성화<br>이 확인이 곧 입고 접수</span>
+      </div>
+      <div class="box">✅ 예약 확정<br>⬜ 수거 완료<br>⬜ 전달 완료</div>
+      <div class="box">💳 미결제 NT$XXX <span class="tag">결제하기</span></div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-03 예약 조회 · 짐보관 버전</div>
+    <div class="fbody">
+      <div class="bar">예약번호 [ PF-____-____ ] [조회]</div>
+      <div class="box">WANG YU CHI 님 · 📦 짐보관<br>○○카페 · M 1개<br>7/28 10:00 ~ 7/30 15:00 (2일)</div>
+      <div class="box hl">📍 맡기는 곳<br>○○카페 · 광안로22번길 40 <span class="tag">지도</span><br>
+        <div class="divider"></div>
+        짐을 맡기셨나요?<br>
+        <span class="btn" style="display:block">📷 사진 찍기</span>
+        <span class="btn primary" style="display:block">✓ 짐을 맡겼어요</span>
+      </div>
+      <div class="box">✅ 예약 확정<br>✅ 입고 완료 <span class="tag">📷</span><br>⬜ 출고 완료</div>
+      <div class="box hl">⚠️ 보관 기간이 지났습니다<br><span class="btn primary" style="display:block">연장하기 (1일 × 동일 요율)</span><span class="muted">탭 → 일수 선택 → S-04 결제 → 찾을 날짜 자동 갱신</span></div>
+      <div class="muted">찾아갈 때: 거점 직원에게 이름 확인 → 직원이 「찾아갔습니다」 처리(S-15)</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-05 로그인 / S-06 내 예약</div>
+    <div class="fbody">
+      <div class="sec-title">S-05 로그인 (선택)</div>
+      <div class="btn">LINE으로 계속</div>
+      <div class="btn">Google로 계속</div>
+      <div class="muted">가입 쿠폰 지급</div>
+      <div class="btn ghost">로그인 없이 예약번호로 조회 →</div>
+      <div class="muted">게스트 경로 반드시 유지 · 로그인 강제 금지</div>
+      <div class="divider"></div>
+      <div class="sec-title">S-06 내 예약 목록</div>
+      <div class="box">진행 중 (2) / 완료 (5)<br><span class="muted">카드 탭 → S-03 · 재예약 시 정보 자동 입력</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 관리자 화면 ============ -->
+<h2>관리자 화면</h2>
+<div class="row">
+
+  <div class="frame">
+    <div class="flabel">S-08 오늘 할 일</div>
+    <div class="fbody">
+      <div class="bar">📅 오늘 7/28 ◀ ▶ <span class="tag">목록</span><span class="tag">지도</span></div>
+      <div class="sec-title">수거할 것</div>
+      <div class="box">09:00 DAI · 대저동→공항 · 3개 ⚠️프런트無</div>
+      <div class="box">11:00 CHEN · ○○카페(거점) · 1개</div>
+      <div class="sec-title">인도할 것</div>
+      <div class="box">15:00 WANG · 김해공항 · 2개</div>
+      <div class="sec-title">환불 필요</div>
+      <div class="box">LIN · PF-0727-9821</div>
+      <div class="divider"></div>
+      <div class="map"><span class="pin" style="top:15px;left:50px">📍</span><span class="pin" style="top:60px;left:150px">📍</span></div>
+      <div class="muted">지도 탭 = 오늘 방문지 위치만 (시간·경로 없음)<br>보관 건은 여기 안 나옴</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-09 예약 현황 (세로 아코디언)</div>
+    <div class="fbody">
+      <div class="bar">[날짜▾] 🔍 검색</div>
+      <div class="box hl">▼ ① 예약대기 <b>2건</b><br>
+        <span class="muted">DAI · 7/28 · 숙소→공항 · 3개 </span><span class="dot r"></span></div>
+      <div class="box hl">▼ ② 확정 <b>3건</b><br>
+        <span class="muted">LIN · 7/28 · 숙소→공항 · 2개 </span><span class="dot g"></span></div>
+      <div class="box hl">▼ ③ 수거완료 <b>2건</b></div>
+      <div class="box">▶ ④ 전달완료 <span class="muted">최근 7일 12건 (접힘)</span></div>
+      <div class="box">▶ ⑤ 취소 <b>1건</b> <span class="muted">(접힘)</span></div>
+      <div class="note">가로 칸반 아님 · 드래그 없음 · 상태 변경은 S-10에서<br>보관·거점 건은 S-12에서</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-10 예약 상세</div>
+    <div class="fbody">
+      <div class="box">PF-0728-1435 · 배송 · 상태 <b>확정</b><br><span class="muted">손님·경로·항공편·연락처 등 전체 정보</span></div>
+      <div class="btn primary">수거완료</div>
+      <div class="muted" style="text-align:center">현 상태의 다음 단계명이 버튼 라벨</div>
+      <div class="btn ghost">← 되돌리기</div>
+      <div class="split">
+        <div class="btn">취소<br><span class="muted">사유 자유입력</span></div>
+        <div class="btn">결제 변경<br><span class="muted">현금 등</span></div>
+      </div>
+      <div class="divider"></div>
+      <div class="sec-title">위치</div>
+      <div class="box">○○카페 <span class="muted">(입고 시 자동) · 수거하면 「이동중」</span></div>
+      <div class="sec-title">거점</div>
+      <div class="box">○○카페 [변경▾] · <span class="tag">대신 입고 처리</span></div>
+      <div class="sec-title">사진</div>
+      <div class="box"><span class="tag">수거 2</span><span class="tag">전달 0</span><span class="tag">손님 1</span></div>
+      <div class="sec-title">변경 이력</div>
+      <div class="box muted">7/28 09:10 대표 · 확정→수거완료<br>7/28 08:12 손님 · 거점 입고</div>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="flabel">S-11 수기 등록 / S-13 통계 / S-14 설정</div>
+    <div class="fbody">
+      <div class="sec-title">S-11 수기 등록·수정 ★</div>
+      <div class="box">S-01과 동일 필드 · <b>미확정 값 허용</b><br>메신저·전화 예약 입력용 · 번호 자동발급</div>
+      <div class="divider"></div>
+      <div class="sec-title">S-13 통계</div>
+      <div class="box">서비스별 건수 · 완료율 · 외국인 건수<br>거점별 건수·지급액 · 폼 이탈률<br><span class="tag">CSV 내보내기</span></div>
+      <div class="divider"></div>
+      <div class="sec-title">S-14 설정</div>
+      <div class="box">통화별 정액 가격표 (KRW·TWD·JPY·USD)<br>할증 ON/OFF · 원거리 지역 목록<br>쿠폰 · 이메일 템플릿 · 계정</div>
+    </div>
+  </div>
+
+  <div class="frame wide">
+    <div class="flabel">S-12 거점 관리 (기본 탭 = 지도)</div>
+    <div class="fbody">
+      <div class="bar"><span class="tag">🗺️지도</span><span class="tag">목록</span> [+ 거점 추가]</div>
+      <div class="map">
+        <span class="pin" style="top:15px;left:70px">📍<span style="font-size:9px">45%</span></span>
+        <span class="pin" style="top:50px;left:180px">📍<span style="font-size:9px">80%⚠️</span></span>
+        <span class="pin" style="top:75px;left:110px">📍<span style="font-size:9px">10%</span></span>
+      </div>
+      <div class="box hl">○○카페 <span class="tag">수정</span><br>
+        <span class="muted">광안로22번길 40 · 08~22시 · ☑배송(접수) ☑보관</span><br>
+        수용량 S[10] M[5] L[2] · 현재 45%<br>
+        <div class="divider"></div>
+        <b>★ 현재 이 거점의 짐</b><br>
+        <span class="tag">보관</span>WANG · M1 · 입고완료 · 7/30 출고예정<br>
+        <span class="tag">접수</span>DAI · M2 · 입고완료 · 오늘 수거예정<br>
+        <span class="tag">보관</span>TSAI · S1 · ⏳입고 대기<br>
+        <div class="divider"></div>
+        지급액(정액): 접수 S3,000/M4,000/L5,000<br>
+        전용링크 <span class="tag">복사</span><span class="tag">재발급</span> · 접수QR <span class="tag">다운로드</span><br>
+        이번 달 12건 · 지급 예정 ₩XX,XXX
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 거점 화면 ============ -->
+<h2>거점 직원 화면</h2>
+<div class="row">
+  <div class="frame">
+    <div class="flabel">S-15 거점 현황판 (로그인 없음 · 전용 링크)</div>
+    <div class="fbody">
+      <div class="bar">📦 Pack&amp;Fly · ○○카페 <span class="tag">새로고침</span></div>
+      <div class="muted">보관 중 3건 · 오늘 입고 예정 2건 · 이번 달 12건</div>
+      <div class="sec-title">🚚 오늘 가져갈 것 (2) <span class="muted">Pack&amp;Fly가 수거</span></div>
+      <div class="box">DAI MENG CHEN · M 2개 · 08:12 입고 <span class="tag">📷</span></div>
+      <div class="box">CHEN YU TING · L1 S1 · 09:40 입고 <span class="tag">📷</span></div>
+      <div class="sec-title">📦 손님이 찾아갈 것 (1)</div>
+      <div class="box">WANG YU CHI · M 1개 · 어제 입고 <span class="tag">📷</span>
+        <div class="btn primary">✓ 손님이 찾아갔습니다</div>
+        <span class="muted">유일한 버튼 · 누른 뒤 되돌리기 상시 가능</span>
+      </div>
+      <div class="sec-title">⏳ 오늘 입고 예정 (2) <span class="muted">아직 안 온 짐</span></div>
+      <div class="box muted">LIN PEI NING · M 2개<br>TSAI YICHEN · S 1개</div>
+      <div class="bar">문의 010-2805-2100</div>
+      <div class="note">이름·개수·사진만 표시. 연락처·주소·금액 숨김<br>교육 30초 목표</div>
+    </div>
+  </div>
+</div>
+
+<div class="sub" style="margin-top:32px">— 끝 · 문의: packnflykorea@gmail.com —</div>
+
+
+</body></html>
