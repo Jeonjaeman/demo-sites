@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CLASSKIT 클래스킷 — 학부모·교사를 위한 교육 콘텐츠</title>
+<meta name="description" content="학부모·교사 대상 교육 콘텐츠(시리즈) 소개와 무료체험. 유인물·수업 가이드 자료를 온라인에서. 제안용 데모(1단계).">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body id="top">
+<header class="hd">
+  <div class="shell hd-in">
+    <a class="logo" href="#top"><span class="mk">C</span><span>CLASSKIT <small>클래스킷</small></span></a>
+    <nav class="hd-nav">
+      <a href="#series">콘텐츠</a>
+      <a href="#trial">무료체험</a>
+      <a href="#contact">상담 문의</a>
+      <a href="#protect">콘텐츠 보호</a>
+      <a href="#risks">리스크</a>
+      <a href="#quote">견적</a>
+    </nav>
+    <div class="hd-r">
+      <a class="btn btn-p btn-sm" href="#trial">무료체험 신청</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 히어로 + 무료체험 폼 -->
+  <section class="hero" id="trial">
+    <div class="shell hero-grid">
+      <div>
+        <div class="badge-row g-reveal"><span class="tagpill">학부모·교사 대상</span><span class="tagpill green">교육 자료 시리즈</span></div>
+        <h1 class="g-reveal">수업이 쉬워지는<br><span class="accent">유인물·가이드</span>,<br>먼저 체험해 보세요.</h1>
+        <p class="hero-sub g-reveal">인터넷 강의가 아니라, 교육에 바로 쓰는 <b>유인물·수업 가이드</b> 자료입니다. 무료로 먼저 써 보고, 맞으면 그때 결제하세요. (1단계 데모 — 소개·무료체험 중심)</p>
+        <div class="hero-cta g-reveal">
+          <a class="btn btn-p" href="#trial">무료체험 신청 ↓</a>
+          <a class="btn btn-g" href="#series">콘텐츠 둘러보기</a>
+        </div>
+        <div class="hero-trust g-reveal">
+          <span class="stat"><span class="v clay" data-count="3">0</span><span class="l">체험 중인 시리즈</span></span>
+          <span class="stat"><span class="v green" data-count="417">0</span><span class="l">누적 후기</span></span>
+          <span class="stat"><span class="v" data-count="70" data-u="%">0<span class="u">%</span></span><span class="l">교사 재사용 의향</span></span>
+        </div>
+      </div>
+      <!-- 무료체험 신청 카드 -->
+      <div class="g-reveal">
+        <div class="trial-card">
+          <div class="trial-top">🎁 무료체험 신청</div>
+          <div class="trial-body">
+            <div class="fld"><label>학부모/교사 이름 <span class="req">*</span></label><input id="tName" placeholder="홍길동"><div class="err">이름을 2자 이상 입력하세요.</div></div>
+            <div class="fld"><label>연락처 <span class="req">*</span></label><input id="tPhone" placeholder="010-1234-5678"><div class="err">올바른 휴대폰 번호를 입력하세요.</div></div>
+            <div class="fld"><label>자녀 학년 <span class="req">*</span></label><select id="tGrade"></select><div class="err">자녀 학년을 선택하세요.</div></div>
+            <label class="consent"><input type="checkbox" id="tConsent1"><span class="tx"><b>개인정보 수집·이용 동의</b><span>신청자 이름·연락처를 체험 안내·상담 목적으로 수집합니다.</span></span></label>
+            <label class="consent guardian"><input type="checkbox" id="tConsent2"><span class="tx"><b>법정대리인(보호자) 동의 — 자녀 정보</b><span>만 14세 미만 자녀 정보는 보호자 동의가 필요합니다. 자녀는 <b>이름 없이 학년만</b> 최소 수집합니다.</span></span></label>
+            <button class="btn btn-p btn-block" id="trialSubmit">무료체험 신청하기</button>
+            <div class="notify" id="trialNotify"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ② statement -->
+  <section class="statement gbleed" aria-label="핵심 메시지">
+    <div class="statement-bg"><img src="assets/img/statement-content.jpg" alt="" data-parallax></div>
+    <div class="statement-in shell">
+      <span class="eyebrow g-reveal" style="margin-bottom:14px;color:#E9946A">THE MATERIAL</span>
+      <h2 class="mask"><span>좋은 자료는 팔기 쉽습니다.</span></h2>
+      <h2 class="mask d1"><span><span class="accent">지키기가</span> 어렵습니다.</span></h2>
+      <p class="g-reveal">유인물은 한 번 새면 끝이고, 자녀 정보를 잘못 받으면 처벌입니다. 예쁜 소개 페이지 뒤에서 아동 개인정보·콘텐츠 유출·환불 규정을 먼저 챙겼습니다 — 공고의 무료체험·샘플이 바로 그 장치입니다.</p>
+    </div>
+  </section>
+
+  <!-- ① 카드 -->
+  <section class="sec">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">FOUR PILLARS</span>
+        <h2 class="mask"><span>1단계에 담은 네 가지</span></h2>
+        <p class="g-reveal">각 기둥은 공고의 1단계 기능이자, 잘못 다루면 법·유출·환불로 이어지는 지점입니다.</p>
+      </div>
+    </div>
+    <div class="shell">
+      <div class="pillars">
+        <article class="pillar g-reveal"><img src="assets/img/pillar-content.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">01 / SERIES</span><h3>시리즈 소개</h3><p>유인물·수업 가이드를 시리즈로 소개. 1단계는 결제 없이 소개·샘플만, 본편은 뒤에서.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-trial.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">02 / TRIAL</span><h3>무료체험·상담</h3><p>이름·연락처·자녀 학년으로 신청 → 담당자 즉시 알림. 자녀 정보는 보호자 동의 후 최소수집.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-teacher.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">03 / SAMPLE</span><h3>샘플 미리보기</h3><p>샘플 수업 영상(유튜브 임베드)과 자료 일부. 사보기 전에 확인 — 청약철회 고지의 근거이기도.</p></div></article>
+        <article class="pillar g-reveal"><img src="assets/img/pillar-protect.jpg" alt=""><div class="pillar-spot"></div>
+          <div class="pillar-body"><span class="n">04 / PROTECT</span><h3>콘텐츠 보호</h3><p>구매자 워터마크·다운로드 로그를 뒤에 붙일 수 있게 1단계부터 설계. 유출은 사업의 생존.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 시리즈 소개 -->
+  <section class="sec" id="series">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">CONTENT SERIES</span>
+        <h2 class="mask"><span>콘텐츠 시리즈</span></h2>
+        <p class="g-reveal">1단계에서는 결제 없이 소개만. 샘플 영상으로 먼저 확인하고 무료체험으로 이어집니다. (가격은 참고 표시)</p>
+      </div>
+      <div class="series" id="seriesGrid"></div>
+    </div>
+  </section>
+
+  <!-- 상담 문의 -->
+  <section class="sec" id="contact">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">CONTACT</span>
+        <h2 class="mask"><span>상담 문의</span></h2>
+        <p class="g-reveal">무료체험은 위에서, 일반 상담은 여기서. 기관(B2B) 라이선스 문의는 접수 시 자동으로 분리됩니다(관리자에서 확인).</p>
+      </div>
+      <div class="forms">
+        <div class="formbox">
+          <div class="ft">💬 일반 상담 문의</div>
+          <div class="fb">
+            <div class="fld"><label>이름 <span class="req">*</span></label><input id="aName" placeholder="이름"></div>
+            <div class="fld"><label>연락처 <span class="req">*</span></label><input id="aPhone" placeholder="010-0000-0000"></div>
+            <div class="fld"><label>문의 내용 <span class="req">*</span></label><textarea id="aBody" placeholder="궁금한 점을 남겨 주세요"></textarea></div>
+            <label class="consent"><input type="checkbox" id="aConsent"><span class="tx"><b>개인정보 수집·이용 동의</b><span>상담 응대 목적으로 이름·연락처를 수집합니다.</span></span></label>
+            <button class="btn btn-p btn-block" id="askSubmit">문의 접수</button>
+          </div>
+        </div>
+        <div class="formbox">
+          <div class="ft">🏫 기관(B2B) 라이선스</div>
+          <div class="fb">
+            <p style="font-size:13px;color:var(--ink-2);line-height:1.7">학교·교육청·기관 단위 라이선스는 <b>일반 문의와 분리</b>해 별도 관리합니다(2단계 B2B 문의 관리 기능). 세금계산서·정부지원 정산도 여기서 안내합니다.</p>
+            <div style="margin-top:14px;padding:14px;border:1px dashed var(--line);border-radius:var(--r-12);background:var(--bg-2);font-size:12.5px;color:var(--muted)">데모에서는 접수만 시뮬레이션합니다. 관리자 화면에서 <b>B2B</b> 태그로 분리 표시됩니다 ↓</div>
+            <a class="btn btn-g btn-block" href="#admin" style="margin-top:14px">관리자 접수 현황 보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 콘텐츠 보호·환불 -->
+  <section class="sec" id="protect">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">PROTECT · REFUND</span>
+        <h2 class="mask"><span>유출과 환불, 먼저 막습니다</span></h2>
+        <p class="g-reveal">2단계 결제·다운로드에 대비해 1단계부터 설계에 반영했습니다. 아래 토글을 눌러 유출·환불 리스크가 어떻게 달라지는지 보세요.</p>
+      </div>
+      <div class="tool">
+        <div class="protect-demo">
+          <div>
+            <div class="doc" id="protectDoc">
+              <div class="line"></div><div class="line"></div><div class="line s"></div>
+              <div class="line"></div><div class="line"></div><div class="line s"></div>
+              <div class="wm">구매자 ID · 홍길동 · #A83F</div>
+            </div>
+            <div style="margin-top:12px;display:grid;gap:8px">
+              <label class="consent"><input type="checkbox" id="wmToggle"><span class="tx"><b>구매자 ID 워터마크</b><span>다운로드 파일에 구매자 식별자를 삽입(레포트월드류) — 유출 추적</span></span></label>
+              <label class="consent"><input type="checkbox" id="refundToggle"><span class="tx"><b>“다운로드 후 환불 불가” 고지 + 무료체험 제공</b><span>전자상거래법상 청약철회 제한을 유효하게 만드는 장치</span></span></label>
+            </div>
+          </div>
+          <div>
+            <div class="callout ok" id="protectVerdict"></div>
+            <p style="font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px">디지털 콘텐츠는 다운로드가 시작되면 청약철회가 제한되지만, <b>불가 사실 고지 + 시험사용(무료체험·샘플)</b>이 없으면 이 제한이 무효가 되어 환불해줘야 합니다. 유출은 워터마크로, 환불은 고지로 — 둘 다 켜야 안전합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 관리자 접수 -->
+  <section class="sec" id="admin">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">ADMIN · 접수 현황</span>
+        <h2 class="mask"><span>운영팀 — 접수 현황</span></h2>
+        <p class="g-reveal">무료체험·상담·B2B 문의가 한 화면에. 위에서 무료체험/상담을 접수하면 여기에 실시간으로 쌓입니다(B2B는 자동 분리).</p>
+      </div>
+      <div class="admin">
+        <div class="admin-top"><span class="t">📥 오늘 접수</span><span class="tag" id="leadTag"></span></div>
+        <div class="admin-body"><div id="leadList"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 리스크 -->
+  <section class="sec" id="risks">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">RISK REVIEW</span>
+        <h2 class="mask"><span>착수 전에 짚어야 할 6가지</span></h2>
+        <p class="g-reveal">지적으로 끝내지 않았습니다. 각 항목은 위 폼·보호·접수 화면에 이미 대응이 들어가 있고, 근거는 법령으로 붙였습니다.</p>
+      </div>
+      <div class="risks" id="riskGrid"></div>
+    </div>
+  </section>
+
+  <!-- ⑤ 텍스트 애니 -->
+  <section class="sec" style="text-align:center">
+    <div class="shell">
+      <h2 class="mask" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>소개 페이지는 하루면 예뻐집니다.</span></h2>
+      <h2 class="mask d1" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>지키는 설계는 <span style="color:var(--clay)">처음부터</span>입니다.</span></h2>
+      <p class="g-reveal" style="max-width:52ch;margin:18px auto 0;color:var(--ink-2);line-height:1.75">아동 개인정보·콘텐츠 유출·환불은 2·3단계에서 갑자기 붙이면 데이터를 다시 짜야 합니다. 1단계 소개만 만들 때도, 그 뒤를 아는 사람이 만들어야 합니다.</p>
+    </div>
+  </section>
+
+  <!-- 견적 (단계별) -->
+  <section class="sec" id="quote">
+    <div class="shell">
+      <div class="sec-head">
+        <span class="eyebrow g-reveal">ESTIMATE · 단계별</span>
+        <h2 class="mask"><span>1단계 견적 + 2·3단계 참고</span></h2>
+        <p class="g-reveal">공고 요청대로 우선 1단계를 산정하고, 2·3단계는 참고용으로 함께 드립니다. 정부지원 정산·세금계산서 발행을 전제로 합니다.</p>
+      </div>
+      <div class="stages">
+        <div class="stage primary">
+          <span class="badge">1단계 · 필수</span>
+          <h3>소개 · 무료체험</h3>
+          <div class="price">900<small>만원</small></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">약 1.5개월 · VAT 별도 · 선금 10%</div>
+          <ul id="stage1List"></ul>
+        </div>
+        <div class="stage ref">
+          <span class="badge">2단계 · 참고</span>
+          <h3>결제 · 보호 · 후기</h3>
+          <div class="price ref">참고 1,100~1,400<small>만원</small></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">1단계 반응 확인 후</div>
+          <ul>
+            <li>실제 결제(카드·간편결제)</li>
+            <li>다운로드 워터마크·보안</li>
+            <li>장바구니</li>
+            <li>후기(별점+텍스트)</li>
+            <li>기관(B2B) 문의 관리 분리</li>
+          </ul>
+        </div>
+        <div class="stage ref">
+          <span class="badge">3단계 · 참고</span>
+          <h3>확장 · 구독</h3>
+          <div class="price ref">참고 별도 산정</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">시점 미정</div>
+          <ul>
+            <li>영어 등 다국어</li>
+            <li>운영팀 콘텐츠 관리자</li>
+            <li>회원가입·로그인·마이페이지</li>
+            <li>구독형 정기결제</li>
+          </ul>
+        </div>
+      </div>
+      <p class="est-note">※ 1단계 900만원(VAT 별도)은 공고에 명시된 1단계 범위 기준입니다. 2·3단계는 참고가로, 1단계 반응·데이터 모델 확정 후 정식 산정합니다. 콘텐츠·상품 변경 자유도를 위해 운영팀 편집이 쉬운 구조로 설계하고, 확장(결제·구독·B2B)을 막지 않도록 데이터 모델을 처음부터 잡습니다. 정부지원 정산 서식·세금계산서 발행 전제. 서버·호스팅·PG 수수료·유료 폰트/이미지 라이선스는 의뢰자 부담.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="ft">
+  <div class="shell ft-in">
+    <div>
+      <span class="demo-tag">PROPOSAL DEMO · 1단계</span>
+      <div class="logo" style="margin-bottom:9px"><span class="mk">C</span><span>CLASSKIT <small>클래스킷</small></span></div>
+      <p>제안용 데모입니다. 모든 시리즈·후기·수치·접수는 시연용 가상값이며 실존 자료·인물과 무관합니다. 레퍼런스 실측: 아이스크림·티처빌·쌤동네(도메인) / Linear·Vercel(디자인 메트릭).</p>
+      <p class="legal"><a href="#">이용약관</a> · <a href="#">개인정보처리방침</a> · 다운로드형 콘텐츠는 청약철회가 제한될 수 있으며, 구매 전 무료체험·샘플을 제공합니다.</p>
+    </div>
+    <div style="font-size:12.5px;color:var(--muted);line-height:2">
+      <a href="#trial" style="display:block">무료체험</a>
+      <a href="#series" style="display:block">콘텐츠</a>
+      <a href="#protect" style="display:block">콘텐츠 보호</a>
+      <a href="#quote" style="display:block">견적</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
