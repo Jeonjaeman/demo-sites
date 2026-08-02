@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pack&Fly 팩앤플라이 — 외국인 짐배송·짐보관 예약·운영관리</title>
-<meta name="description" content="부산·김해 외국인 관광객 짐배송·짐보관 예약과 운영관리. 4개 언어·통화, PayPal 결제, 예약번호 조회. 제안용 데모.">
+<title>Pack&Fly 팩앤플라이 — 외국인 짐배송·짐보관 예약·운영관리 (15개 화면 데모)</title>
+<meta name="description" content="부산·김해 외국인 관광객 짐배송·짐보관 예약·운영관리 시스템. RFQ의 15개 화면(고객6·관리자8·제휴점1)을 전부 동작하는 데모로 구현. 제안용.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="assets/css/style.css">
@@ -14,145 +14,81 @@
   <div class="shell hd-in">
     <a class="logo" href="#top"><span class="mk">✈</span><span>Pack&amp;Fly <small>팩앤플라이</small></span></a>
     <nav class="hd-nav">
-      <a href="#book">예약</a>
+      <a href="#demo">고객 앱</a>
+      <a href="admin.html">관리자</a>
+      <a href="partner.html">거점 현황판</a>
       <a href="#rate">요금·통화 진단</a>
-      <a href="#lookup">예약 조회</a>
-      <a href="#admin">관리자</a>
       <a href="#risks">리스크</a>
       <a href="#quote">견적</a>
     </nav>
     <div class="hd-r">
-      <div class="lang">
-        <button data-l="en" class="on">EN</button><button data-l="ko">KO</button><button data-l="ja">JA</button><button data-l="zh">ZH</button>
+      <div class="lang" id="langSel">
+        <button data-l="zh" class="on">中</button><button data-l="en">EN</button><button data-l="ja">日</button><button data-l="ko">한</button>
       </div>
     </div>
   </div>
 </header>
 
 <main>
-  <!-- 히어로 + 예약 위저드 -->
-  <section class="hero" id="book">
+  <!-- 고객 앱 (S-01~S-06) + 화면 인덱스 -->
+  <section class="hero" id="demo">
     <div class="shell hero-grid">
-      <div>
-        <span class="eyebrow g-reveal" data-i18n="heroKick">Busan·Gimhae · Luggage for travelers</span>
-        <h1 class="g-reveal"><span data-i18n="heroT1">We carry it.</span><br><span class="accent" data-i18n="heroT2">You travel light.</span></h1>
-        <p class="hero-sub g-reveal" data-i18n="heroSub">Deliver or store luggage between your stay and the airport.</p>
+      <div class="hero-lead">
+        <span class="eyebrow g-reveal">RFQ 15 SCREENS · ALL WORKING</span>
+        <h1 class="g-reveal">화면 15개,<br><span class="accent">전부 돌아갑니다.</span></h1>
+        <p class="hero-sub g-reveal">검수 기준이 “화면 15개 전부 실기기에서 정상 작동”이라, 제안서 대신 <b>15개 화면이 실제로 동작하는 데모</b>를 만들었습니다. 오른쪽 폰이 고객 앱(S-01~S-06)입니다 — 와이어프레임의 분기 로직 그대로.</p>
         <div class="hero-cta g-reveal">
-          <a class="btn btn-p" href="#book" data-i18n="ctaBook">Book now</a>
-          <a class="btn btn-g" href="#lookup" data-i18n="ctaLookup">Find booking</a>
+          <a class="btn btn-d" href="admin.html">관리자 8화면 (S-07~14) →</a>
+          <a class="btn btn-g" href="partner.html">거점 현황판 (S-15) →</a>
         </div>
         <div class="hero-meta g-reveal">
-          <span>거점 <b class="mono">부산·김해</b></span>
-          <span>통화 <b class="mono">KRW·TWD·JPY·USD</b></span>
-          <span>언어 <b class="mono">4</b></span>
+          <span class="chk">배송/보관 분기 · 프런트→거점→할증 분기 흐름도 그대로</span>
+          <span class="chk">원거리(송정·기장·정관) <b>+₩15,000</b> 자동 · 부산 외 → 문의 전환</span>
+          <span class="chk">4개 언어·통화별 정액(<b>KRW·TWD·JPY·USD</b>) · PF-MMDD-XXXX</span>
+          <span class="chk">조회는 <b>번호+전화 뒷자리</b> — 타인 예약 유출(IDOR) 차단</span>
         </div>
       </div>
-      <!-- 위저드 -->
-      <div class="g-reveal">
-        <div class="wizard">
-          <div class="wz-top">
-            <span class="t" data-i18n="wzTitle">Book luggage</span>
-            <span class="wz-price"><span class="v" id="wzPrice">₩10,000</span><span class="l">est. total</span></span>
-          </div>
-          <div class="wz-steps" id="wzSteps"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="wz-body" id="wzBody"></div>
-          <div class="wz-body" style="padding-top:0;display:flex;gap:10px">
-            <button class="btn btn-g" id="wzBack" style="visibility:hidden">← Back</button>
-            <button class="btn btn-p btn-block" id="wzNext">Next</button>
+
+      <div class="hero-phone">
+        <div class="phone g-reveal">
+          <div class="phone-scr">
+            <div class="phone-notch"><i></i></div>
+            <div class="app-hd" id="appHd"></div>
+            <div class="stepbar" id="stepbar" style="display:none"></div>
+            <div class="app-body" id="appBody"></div>
+            <div class="app-foot" id="appFoot" style="display:none"></div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
 
-  <!-- ② statement -->
-  <section class="statement gbleed" aria-label="핵심 메시지">
-    <div class="statement-bg"><img src="assets/img/statement-travel.jpg" alt="" data-parallax></div>
-    <div class="statement-in shell">
-      <span class="eyebrow g-reveal" style="margin-bottom:14px;color:#FF9985">HANDS-FREE</span>
-      <h2 class="mask"><span>짐은 맡기고,</span></h2>
-      <h2 class="mask d1"><span>여행은 <span class="accent">가볍게.</span></span></h2>
-      <p class="g-reveal">부산·김해를 찾는 외국인 관광객이 숙소와 공항 사이에서 짐에 묶이지 않도록. 다만 ‘예약을 받는다’는 건 남의 개인정보·결제·짐을 책임진다는 뜻입니다 — 그 경계를 화면으로 설계했습니다.</p>
-    </div>
-  </section>
-
-  <!-- ① 카드 -->
-  <section class="sec">
-    <div class="shell">
-      <div class="sec-head">
-        <span class="eyebrow g-reveal">FOUR PILLARS</span>
-        <h2 class="mask"><span>편리함 뒤의 네 가지</span></h2>
-        <p class="g-reveal">각 기둥은 RFQ의 기능이자, 잘못 만들면 유출·손해·분쟁으로 이어지는 지점입니다.</p>
-      </div>
-    </div>
-    <div class="shell">
-      <div class="pillars">
-        <article class="pillar g-reveal"><img src="assets/img/pillar-deliver.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">01 / DELIVER · STORE</span><h3>배송·보관</h3><p>숙소↔공항·숙소↔숙소 배송과 보관. 예약 폼 0단계에 분기를 넣어 흐름을 나눕니다.</p></div></article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-pay.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">02 / PAY · 4 CURRENCIES</span><h3>결제·통화</h3><p>PayPal 4통화 정액. 환율 자동환산이 없으면 원화 실수취가 통화마다 달라집니다 — 진단으로 드러냅니다.</p></div></article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-map.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">03 / LOOKUP</span><h3>예약 조회</h3><p>로그인 없이 번호로. 단, 번호만이면 남의 예약이 샙니다. 번호+연락처로 본인만 열람.</p></div></article>
-        <article class="pillar g-reveal"><img src="assets/img/pillar-store.jpg" alt=""><div class="pillar-spot"></div>
-          <div class="pillar-body"><span class="n">04 / CARE</span><h3>안전·배상</h3><p>분실·파손 배상한도·통지기한·수거사진. 여행자 짐을 맡는 서비스의 최소 안전장치.</p></div></article>
+      <div class="hero-index g-reveal">
+        <div class="scr-index">
+          <div class="top">고객 화면 인덱스 <span class="r">클릭하면 폰이 이동</span></div>
+          <ul id="scrIndex">
+            <li data-s="S-01"><button data-go="home"><span class="sc">S-01</span><span><b>예약 폼</b><span class="d">배송/보관 분기 · 프런트→거점→할증 흐름</span></span></button></li>
+            <li data-s="S-04"><button data-go="pay"><span class="sc">S-04</span><span><b>결제</b><span class="d">PayPal 임베드 · 통화별 정액 그대로 청구</span></span></button></li>
+            <li data-s="S-02"><button data-go="done"><span class="sc">S-02</span><span><b>예약 완료</b><span class="d">PF-MMDD-XXXX · 채널 연결 · 확인 메일</span></span></button></li>
+            <li data-s="S-03"><button data-go="lookup"><span class="sc">S-03</span><span><b>예약 조회</b><span class="d">번호+연락처 · 입고 확인 · 연장 결제</span></span></button></li>
+            <li data-s="S-05"><button data-go="login"><span class="sc">S-05</span><span><b>로그인</b><span class="d">LINE·Google · 게스트 경로 유지</span></span></button></li>
+            <li data-s="S-06"><button data-go="mybk"><span class="sc">S-06</span><span><b>내 예약 목록</b><span class="d">진행/완료 · 탭하면 조회로</span></span></button></li>
+          </ul>
+        </div>
+        <p class="scr-note">S-04·S-02는 예약 흐름을 끝까지 진행하면 자연스럽게 나옵니다. 인덱스 클릭은 <b>해당 화면의 예시 상태</b>로 바로 이동합니다. 언어를 바꾸면(우상단) 통화도 언어를 따라 바뀝니다 — 기기 언어 자동 감지의 데모입니다.</p>
       </div>
     </div>
   </section>
 
   <!-- 요금·통화 진단 -->
-  <section class="sec" id="rate">
+  <section class="sec" id="rate" style="padding-top:clamp(20px,3vw,36px)">
     <div class="shell">
       <div class="sec-head">
         <span class="eyebrow g-reveal">PRICING · CURRENCY DIAGNOSIS</span>
-        <h2 class="mask"><span>요금과 통화, 숫자로 짚어 드립니다</span></h2>
-        <p class="g-reveal">별첨1 코드의 tier 할인과 RFQ 균일가가 어긋나고, PayPal 통화별 정액가는 원화 실수취가 달라집니다. 실제로 계산했습니다.</p>
+        <h2 class="g-reveal">요금과 통화, 숫자로 짚었습니다</h2>
+        <p class="g-reveal">별첨1 코드의 tier 할인은 RFQ 균일가와 어긋나고, PayPal 통화별 정액가는 원화 실수취가 통화마다 다릅니다. 관리자 <a href="admin.html" style="text-decoration:underline">설정(S-14)</a>에는 이 계산이 실시간으로 들어가 있습니다.</p>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="rate-wrap">
-        <div class="tool"><b style="font-size:13px">① 요금 로직 — tier vs 균일</b><div id="rateDiag" style="margin-top:10px"></div></div>
-        <div class="tool"><b style="font-size:13px">② PayPal 통화별 정액 → 원화 실수취</b><div id="curDiag" style="margin-top:10px"></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 예약 조회 보안 -->
-  <section class="sec" id="lookup">
-    <div class="shell">
-      <div class="sec-head">
-        <span class="eyebrow g-reveal">SECURE LOOKUP</span>
-        <h2 class="mask"><span>“번호로 조회”, 이대로면 다 샙니다</span></h2>
-        <p class="g-reveal">RFQ의 “로그인 없이 번호로 조회”를 두 방식으로 비교했습니다. 왼쪽(번호만)과 오른쪽(번호+연락처)을 직접 눌러 보세요.</p>
-      </div>
-      <div class="tool">
-        <div class="lookup">
-          <div class="card bad">
-            <h4>❌ 번호만으로 조회 (현재 발상)</h4>
-            <div class="fld" style="margin-top:10px"><label>예약번호</label><input id="lkBadNo" value="PF-8842" placeholder="PF-8842"></div>
-            <button class="btn btn-g btn-block btn-sm" id="lkBad">조회</button>
-            <div class="result" id="lkBadRes">예약번호를 넣어 보세요. 아무 번호나 근처면 남의 예약이 나옵니다.</div>
-          </div>
-          <div class="card good">
-            <h4>✓ 번호 + 연락처 뒷자리 (제안)</h4>
-            <div class="fld" style="margin-top:10px"><label>예약번호</label><input id="lkGoodNo" value="PF-8842" placeholder="PF-8842"></div>
-            <div class="fld"><label>연락처 뒷 3자리</label><input id="lkGoodTail" value="386" placeholder="386"></div>
-            <button class="btn btn-p btn-block btn-sm" id="lkGood">조회</button>
-            <div class="result" id="lkGoodRes">번호와 연락처가 모두 맞아야 열립니다. 시도 횟수도 제한됩니다.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 관리자 오늘 할 일 -->
-  <section class="sec" id="admin">
-    <div class="shell">
-      <div class="sec-head">
-        <span class="eyebrow g-reveal">ADMIN · TODAY</span>
-        <h2 class="mask"><span>관리자 — 오늘 할 일</span></h2>
-        <p class="g-reveal">모바일에서 오늘의 픽업·전달을 시간순으로. 별첨2 시트의 실제 운영 패턴(새벽 픽업·당일 실측·수거사진)을 반영했습니다.</p>
-      </div>
-      <div class="admin">
-        <div class="admin-top"><span class="t">🗓 2026-08-02 · 오늘</span><span class="tag" id="adminTag"></span></div>
-        <div class="admin-body"><div class="today" id="todayList"></div></div>
+      <div class="rate-wrap">
+        <div class="tool g-reveal"><b style="font-size:13px">① 요금 로직 — tier vs RFQ 균일</b><div id="rateDiag" style="margin-top:10px"></div></div>
+        <div class="tool g-reveal"><b style="font-size:13px">② PayPal 통화별 정액 → 원화 실수취</b><div id="curDiag" style="margin-top:10px"></div></div>
       </div>
     </div>
   </section>
@@ -162,19 +98,10 @@
     <div class="shell">
       <div class="sec-head">
         <span class="eyebrow g-reveal">RISK REVIEW</span>
-        <h2 class="mask"><span>착수 전에 짚어야 할 6가지</span></h2>
-        <p class="g-reveal">지적으로 끝내지 않았습니다. 각 항목은 위 진단·조회·예약 화면에 이미 대응이 들어가 있고, 근거는 법령·문서로 붙였습니다.</p>
+        <h2 class="g-reveal">착수 전에 짚어야 할 6가지</h2>
+        <p class="g-reveal">지적으로 끝내지 않았습니다 — 각 항목의 대응이 위 데모 화면에 이미 구현되어 있습니다.</p>
       </div>
       <div class="risks" id="riskGrid"></div>
-    </div>
-  </section>
-
-  <!-- ⑤ 텍스트 애니 -->
-  <section class="sec" style="text-align:center">
-    <div class="shell">
-      <h2 class="mask" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>예약은 3초면 끝나지만,</span></h2>
-      <h2 class="mask d1" style="font-size:clamp(1.5rem,3.6vw,2.7rem);font-weight:800;letter-spacing:-.03em;line-height:1.2"><span>책임은 <span style="color:var(--coral)">그 뒤부터</span> 시작됩니다.</span></h2>
-      <p class="g-reveal" style="max-width:52ch;margin:18px auto 0;color:var(--ink-2);line-height:1.75">화면을 예쁘게 만드는 건 기본이고, 남의 짐·개인정보·결제를 안전하게 다루는 게 이 서비스의 진짜 일입니다. RFQ가 화면 단위로 꼼꼼한 이유도 그것입니다.</p>
     </div>
   </section>
 
@@ -183,10 +110,10 @@
     <div class="shell">
       <div class="sec-head">
         <span class="eyebrow g-reveal">ESTIMATE · 화면 단위 A~M</span>
-        <h2 class="mask"><span>화면 단위로 분리한 견적</span></h2>
-        <p class="g-reveal">RFQ 요구대로 총액이 아니라 화면 단위(A~M 13개)로 나눴습니다. 총 <b class="mono" id="estTotal">0</b>작업일 산정.</p>
+        <h2 class="g-reveal">화면 단위로 분리한 견적</h2>
+        <p class="g-reveal">RFQ 요구대로 총액이 아니라 화면 단위(A~M 13개 항목)로 나눴습니다. 총 <b class="mono" id="estTotal">0</b>작업일.</p>
       </div>
-      <div class="est">
+      <div class="est g-reveal">
         <table>
           <thead><tr><th>항목 (화면)</th><th style="text-align:right">작업일</th></tr></thead>
           <tbody id="estBody"></tbody>
@@ -195,7 +122,7 @@
           <thead><tr><th>옵션 (참고 가격 별도)</th><th style="text-align:right">참고</th></tr></thead>
           <tbody id="estOpts"></tbody>
         </table>
-        <p class="est-note">※ 총 1,500만원(VAT 별도) · 화면 A~M 기준. 정부지원사업(초기관광벤처) 연계 11월 정산 일정을 지키도록 1차 오픈(10월 초)→정식 런칭·정산(11월)로 단계 배치. 대금 선금 30/중도금 40/잔금 30, 잔금 완납 시 소스 일체 귀속·특수 빌드환경/난독화 없이 인계. 옵션(국내 PG·PayPal 환불 API·유지보수)은 참고가로 별도.</p>
+        <p class="est-note">※ 총 1,500만원(VAT 별도) · 화면 A~M 기준. 초기관광벤처 연계 일정(1차 오픈 10월 초 → 정식 런칭·정산 11월)에 맞춘 단계 배치. 대금 선금 30/중도금 40/잔금 30, 잔금 완납 시 소스 일체 귀속 · 특수 빌드환경/난독화 없이 표준 구조로 인계(발주자 직접 수정·배포 가능). 기존 자산(packnfly.kr 정적 4개 언어·SEO·PWA)은 이관 재사용, Google Sheets 데이터 이관은 발주자 수행분으로 범위에서 제외했습니다.</p>
       </div>
     </div>
   </section>
@@ -204,15 +131,15 @@
 <footer class="ft">
   <div class="shell ft-in">
     <div>
-      <span class="demo-tag">PROPOSAL DEMO</span>
+      <span class="demo-tag">PROPOSAL DEMO · 15 SCREENS</span>
       <div class="logo" style="margin-bottom:9px"><span class="mk">✈</span><span>Pack&amp;Fly <small>팩앤플라이</small></span></div>
-      <p>제안용 데모입니다. 모든 손님·연락처·예약·금액·환율은 시연용 가상값이며 실존 인물·업체와 무관합니다. 레퍼런스 실측: Bounce·Radical Storage(도메인) / Linear·Vercel(디자인 메트릭).</p>
+      <p>제안용 데모입니다. 모든 손님·연락처·예약·금액·환율은 시연용 가상값이며 실존 인물·업체와 무관합니다. 레퍼런스: Bounce·Radical Storage(도메인) / Linear·Vercel(디자인 메트릭).</p>
     </div>
     <div style="font-size:12.5px;color:var(--muted);line-height:2">
-      <a href="#book" style="display:block">예약</a>
-      <a href="#rate" style="display:block">요금·통화 진단</a>
-      <a href="#lookup" style="display:block">예약 조회</a>
-      <a href="#quote" style="display:block">견적</a>
+      <a href="#demo" style="display:block">고객 앱 (S-01~06)</a>
+      <a href="admin.html" style="display:block">관리자 (S-07~14)</a>
+      <a href="partner.html" style="display:block">거점 현황판 (S-15)</a>
+      <a href="#quote" style="display:block">견적 A~M</a>
     </div>
   </div>
 </footer>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pack&Fly 관리자 — 오늘 할 일·예약·거점·통계·설정 (S-07~S-14)</title>
+<meta name="description" content="Pack&Fly 관리자 8화면(S-07~S-14) — 로그인·오늘 할 일·예약 현황·상세·수기 등록·거점 관리·통계·설정. 제안용 데모.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin-body">
+
+<!-- S-07 로그인 게이트 -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="mk">✈</div>
+    <h1>Pack&amp;Fly 관리자</h1>
+    <p>S-07 관리자 로그인 — 데모에서는 아래 버튼으로 바로 입장합니다.<br>실제 구축에서는 계정+2단계 인증.</p>
+    <div class="fld"><label>아이디</label><input value="admin@packnfly.kr" readonly></div>
+    <div class="fld"><label>비밀번호</label><input type="password" value="••••••••" readonly></div>
+    <button class="btn btn-p btn-block" id="gateGo">데모 계정으로 입장</button>
+  </div>
+</div>
+
+<div class="adm">
+  <aside class="sb">
+    <a class="sb-logo" href="index.html"><span class="mk">✈</span><span>Pack&amp;Fly<small>관리자 · 실장용</small></span></a>
+    <nav class="sb-nav" id="sbNav">
+      <button class="on" data-view="today"><span class="sc">S-08</span>오늘 할 일</button>
+      <button data-view="status"><span class="sc">S-09</span>예약 현황</button>
+      <button data-view="manual"><span class="sc">S-11</span>수기 등록</button>
+      <button data-view="bases"><span class="sc">S-12</span>거점 관리</button>
+      <button data-view="stats"><span class="sc">S-13</span>통계</button>
+      <button data-view="settings"><span class="sc">S-14</span>설정</button>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-links">
+        <a href="index.html">← 고객 앱 (S-01~06)</a>
+        <a href="partner.html">거점 현황판 (S-15) →</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="am">
+    <header class="topbar">
+      <div><h1 id="vTitle"></h1><p id="vSub"></p></div>
+      <div class="topbar-r">
+        <span class="chip mono" id="todayChip"></span>
+        <span class="chip">🟢 구글시트 백업 동기화</span>
+      </div>
+    </header>
+
+    <div class="am-in">
+      <!-- S-08 오늘 할 일 -->
+      <section class="view on" data-view="today">
+        <div class="kpis" id="kpis"></div>
+        <div class="card">
+          <div class="card-top wrap">
+            <span class="t">오늘 할 일</span>
+            <div class="seg" id="todaySeg"><button class="on" data-m="list">목록</button><button data-m="map">지도</button></div>
+            <span class="r">배송 건만 표시 — 보관·거점 건은 S-12 (와이어프레임 규칙)</span>
+          </div>
+          <div class="card-body" id="todayBody"></div>
+        </div>
+      </section>
+
+      <!-- S-09 예약 현황 (세로 아코디언) -->
+      <section class="view" data-view="status">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-top wrap">
+            <span class="t">예약 현황</span>
+            <div class="filters">
+              <select class="search" id="fltDate" style="width:auto">
+                <option value="all">전체 날짜</option><option value="0">오늘 (8/2)</option><option value="-1">어제 (8/1)</option><option value="old">이전</option>
+              </select>
+              <input class="search" id="fltQ" placeholder="이름·번호 검색">
+            </div>
+            <span class="r">가로 칸반 아님 · 드래그 없음 · 상태 변경은 상세(S-10)에서</span>
+          </div>
+        </div>
+        <div id="accWrap"></div>
+      </section>
+
+      <!-- S-11 수기 등록 -->
+      <section class="view" data-view="manual">
+        <div class="card" style="max-width:680px">
+          <div class="card-top"><span class="t">수기 등록 · 수정</span><span class="r">메신저·전화 예약 입력용 · S-01과 동일 필드 · ★미확정 값 허용</span></div>
+          <div class="card-body">
+            <div class="grid2">
+              <div class="fld"><label>손님명</label><input id="mName" value="游 CHIA HAO"></div>
+              <div class="fld"><label>방향</label><select id="mDir"><option>숙소→공항</option><option>공항→숙소</option><option>숙소→숙소</option><option>보관</option></select></div>
+              <div class="fld"><label>날짜</label><input type="date" id="mDate" value="2026-08-03"></div>
+              <div class="fld"><label>시간 <span style="color:var(--muted);font-weight:400">(미정 허용)</span></label><input id="mTime" value="미정" placeholder="11:00 또는 '미정'"></div>
+              <div class="fld"><label>짐 개수 <span style="color:var(--muted);font-weight:400">(미정 허용)</span></label><input id="mBags" value="당일 실측 (3~4개)" placeholder="3 또는 '당일 실측'"></div>
+              <div class="fld"><label>금액 <span style="color:var(--muted);font-weight:400">(미정 허용)</span></label><input id="mAmt" value="당일 청구 30,000~40,000" placeholder="30000 또는 '당일 청구'"></div>
+              <div class="fld"><label>출발지</label><input id="mFrom" value="광안리 민락수변로 (에어비앤비·프런트無)"></div>
+              <div class="fld"><label>도착지</label><input id="mTo" value="김해공항 국제선 Gate 3"></div>
+              <div class="fld"><label>항공편</label><input id="mFlight" value="CI187 20:00"></div>
+              <div class="fld"><label>결제</label><select id="mPay"><option>미정</option><option>현금</option><option>PayPal</option><option>현금 또는 PayPal</option></select></div>
+            </div>
+            <div class="fld"><label>메모</label><textarea id="mMemo">Sandy 소개 / 짐 개수 당일 공항 실측 후 청구 / 전날·당일 리마인드</textarea></div>
+            <button class="btn btn-p" id="mSave">등록 — 예약번호 자동 발급</button>
+            <span id="mResult" style="margin-left:10px;font-family:var(--mono);font-size:12.5px;color:var(--green)"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- S-12 거점 관리 -->
+      <section class="view" data-view="bases">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-top wrap">
+            <span class="t">거점 관리</span>
+            <div class="seg" id="baseSeg"><button class="on" data-m="map">🗺 지도</button><button data-m="list">목록</button></div>
+            <span class="r"><button class="btn btn-g btn-xs">+ 거점 추가</button></span>
+          </div>
+          <div class="card-body" id="baseMapWrap"><div class="map-admin"><canvas id="baseMap" data-h="280"></canvas></div>
+            <p style="font-size:11.5px;color:var(--muted);margin-top:8px">핀의 숫자 = 적재율 · <b style="color:var(--amber)">80%↑</b>는 고객 지도에서 핀 제외 · 핀 클릭 = 아래 카드로 스크롤</p>
+          </div>
+        </div>
+        <div id="baseCards"></div>
+      </section>
+
+      <!-- S-13 통계 -->
+      <section class="view" data-view="stats">
+        <div class="kpis" id="statKpis"></div>
+        <div class="statgrid">
+          <div class="card">
+            <div class="card-top"><span class="t">예약 폼 이탈 퍼널 (단계별 이탈 추적)</span><span class="r">RFQ 주요 기능</span></div>
+            <div class="card-body funnel" id="funnelBody"></div>
+          </div>
+          <div class="card">
+            <div class="card-top"><span class="t">거점별 건수 · 지급액</span><span class="r"><button class="btn btn-g btn-xs" id="csvStats">CSV 내보내기</button></span></div>
+            <div class="card-body" id="basePayBody"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- S-14 설정 -->
+      <section class="view" data-view="settings">
+        <div class="grid2">
+          <div class="card">
+            <div class="card-top"><span class="t">통화별 정액 가격표 (배송 짐 1개)</span><span class="r">수정하면 원화 실수취 즉시 재계산</span></div>
+            <div class="card-body">
+              <table class="set-tbl"><thead><tr><th>통화</th><th style="text-align:right">정액</th><th style="text-align:right">PayPal 수수료 차감</th><th style="text-align:right">원화 실수취</th><th style="text-align:right">기준 대비</th></tr></thead>
+              <tbody id="curTblBody"></tbody></table>
+              <div class="callout warn" id="curWarn" style="display:none"></div>
+              <p style="font-size:11px;color:var(--muted);margin-top:10px">환율 자동환산 없음(RFQ) — 정액을 통화별로 직접 관리하는 대신, <b>원화 실수취를 여기서 항상 보이게</b> 해 마진 역전을 예방합니다. (시연 환율·수수료)</p>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:14px">
+              <div class="card-top"><span class="t">요금 규칙</span></div>
+              <div class="card-body pad-s">
+                <div class="setrow"><span><span class="k">첫출시 프로모 (개당 ₩10,000)</span><span class="d">OFF 시 균일 ₩22,000 — tier 코드는 이관하지 않음</span></span><span class="r"><span class="switch on" id="swPromo"></span></span></div>
+                <div class="setrow"><span><span class="k">방문수거 할증</span><span class="d">₩33,000 (US$25) — OFF 시 고객 폼에서 거점 블록 미표시</span></span><span class="r"><span class="switch on" id="swSur"></span></span></div>
+                <div class="setrow"><span><span class="k">원거리 지역 (+₩15,000 자동)</span><span class="d" id="farList"></span></span><span class="r"><button class="btn btn-g btn-xs">편집</button></span></div>
+                <div class="setrow"><span><span class="k">보관 최대 기간</span><span class="d">초과 시 고객 조회(S-03)에서 연장 결제</span></span><span class="r mono">7일</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-top"><span class="t">이메일 템플릿 3종 · 계정</span></div>
+              <div class="card-body pad-s">
+                <div class="setrow"><span class="k">① 예약 확인</span><span class="r"><button class="btn btn-g btn-xs" data-mail="확인">미리보기</button></span></div>
+                <div class="setrow"><span class="k">② 전날 리마인드</span><span class="r"><button class="btn btn-g btn-xs" data-mail="리마인드">미리보기</button></span></div>
+                <div class="setrow"><span class="k">③ 완료·리뷰 요청</span><span class="r"><button class="btn btn-g btn-xs" data-mail="완료">미리보기</button></span></div>
+                <div class="setrow"><span><span class="k">관리자 계정</span><span class="d">admin@packnfly.kr · 2FA</span></span><span class="r"><span class="badge delivered">활성</span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- S-10 예약 상세 드로어 -->
+<div class="drawer-dim" id="drawerDim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-hd"><span class="no" id="dwNo"></span><span id="dwBadge"></span><button class="x" id="dwClose">✕</button></div>
+  <div class="drawer-bd" id="dwBody"></div>
+  <div class="drawer-ft" id="dwFoot"></div>
+</aside>
+
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

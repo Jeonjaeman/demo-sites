@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pack&Fly 거점 현황판 — 광안 코너카페 (S-15)</title>
+<meta name="description" content="Pack&Fly 제휴 거점 현황판(S-15) — 로그인 없는 전용 링크, 모바일 전용. 이름·개수·사진만 표시. 제안용 데모.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="pt-body">
+
+<header class="pt-hd">
+  <span class="mk">✈</span>
+  <span><b>Pack&amp;Fly 거점 현황판</b><small>광안 코너카페 · 전용 링크(로그인 없음) · S-15</small></span>
+  <span class="r"><button id="ptRefresh">↻ 새로고침</button></span>
+</header>
+
+<div class="pt-in">
+  <div class="pt-sum" id="ptSum"></div>
+  <div id="ptList"></div>
+
+  <div class="pt-note">
+    이 화면은 <b>이름·개수·사진만</b> 보여줍니다 — 연락처·주소·금액은 숨김(개인정보 최소화).<br>
+    버튼은 「손님이 찾아갔습니다」 하나뿐이고, 잘못 눌러도 되돌리기가 상시 가능합니다. 교육 30초 목표.
+  </div>
+  <a class="pt-call" href="#" onclick="return false">📞 문의 010-****-2100 (Pack&amp;Fly)</a>
+  <p style="font-size:10.5px;color:var(--muted);text-align:center;margin-top:14px">제안용 데모 — 모든 손님·짐·시각은 시연용 가상값 · <a href="index.html" style="text-decoration:underline">데모 허브로</a></p>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/data.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  function toast(msg, type) {
+    var el = document.createElement('div'); el.className = 'toast ' + (type || '');
+    el.innerHTML = msg; $('#toasts').appendChild(el);
+    setTimeout(function () { el.style.opacity = '0'; el.style.transition = '.3s'; setTimeout(function () { el.remove(); }, 320); }, 3200);
+  }
+  var BASE = 'gw'; /* 전용 링크의 거점 — 광안 코너카페 */
+  function items() { return BOOKINGS.filter(function (k) { return k.base === BASE; }); }
+  function szTxt(k) { return ['S','M','L'].map(function (z) { return (k.sizes||{})[z] ? z + '×' + k.sizes[z] : ''; }).filter(Boolean).join(' '); }
+
+  function render() {
+    var all = items();
+    /* Pack&Fly가 가져갈 것 = 배송 접수 건(입고됨) · 손님이 찾아갈 것 = 보관 in · 입고 예정 = wait */
+    var take = all.filter(function (k) { return k.type === 'deliver' && (k.status === 'confirmed' || k.status === 'wait'); });
+    var give = all.filter(function (k) { return k.type === 'store' && k.status === 'in'; });
+    var due  = all.filter(function (k) { return k.type === 'store' && k.status === 'wait'; });
+    var stored = give.length + take.length;
+    $('#ptSum').innerHTML =
+      '<div><div class="v">' + stored + '</div><div class="l">보관 중</div></div>' +
+      '<div><div class="v">' + due.length + '</div><div class="l">오늘 입고 예정</div></div>' +
+      '<div><div class="v">12</div><div class="l">이번 달 누적</div></div>';
+    var html =
+      '<div class="pt-sec"><span class="n">🚚</span>오늘 가져갈 것 (' + take.length + ') <span style="color:var(--muted);font-weight:400;font-size:10.5px">Pack&Fly가 수거</span></div>' +
+      (take.map(function (k) {
+        return '<div class="pt-item"><b>' + k.name + '</b> · ' + (szTxt(k) || (k.bags + '개')) + '<span class="pic">📷 ' + (k.photos.guest + k.photos.pick) + '</span>' +
+          '<div class="meta">' + (k.hist[0] ? k.hist[0][0] + ' ' + k.hist[0][2] : '') + '</div></div>';
+      }).join('') || '<div class="pt-item dim">없음</div>') +
+      '<div class="pt-sec"><span class="n">📦</span>손님이 찾아갈 것 (' + give.length + ')</div>' +
+      (give.map(function (k, i) {
+        return '<div class="pt-item"><b>' + k.name + '</b> · ' + szTxt(k) + '<span class="pic">📷 ' + k.photos.guest + '</span>' +
+          '<div class="meta">' + k.inAt + ' 입고 · ' + k.outAt + ' 출고 예정</div>' +
+          (k._out
+            ? '<div class="meta" style="color:var(--green);font-weight:700;margin-top:6px">✓ 출고 처리됨</div><button class="undo" data-undo="' + k.no + '">되돌리기</button>'
+            : '<button class="btn btn-p" data-out="' + k.no + '">✓ 손님이 찾아갔습니다</button>') +
+          '</div>';
+      }).join('') || '<div class="pt-item dim">없음</div>') +
+      '<div class="pt-sec"><span class="n">⏳</span>오늘 입고 예정 (' + due.length + ') <span style="color:var(--muted);font-weight:400;font-size:10.5px">아직 안 온 짐</span></div>' +
+      (due.map(function (k) {
+        return '<div class="pt-item dim"><b>' + k.name + '</b> · ' + szTxt(k) + '<div class="meta">' + k.inAt + ' 예정</div></div>';
+      }).join('') || '<div class="pt-item dim">없음</div>');
+    $('#ptList').innerHTML = html;
+    [].slice.call(document.querySelectorAll('[data-out]')).forEach(function (b) {
+      b.onclick = function () {
+        var k = BOOKINGS.filter(function (x) { return x.no === b.dataset.out; })[0];
+        k._out = true; render();
+        toast('✓ <b>' + k.name + '</b> 출고 처리 — 본사 관리자(S-10)에 즉시 반영', 'ok');
+      };
+    });
+    [].slice.call(document.querySelectorAll('[data-undo]')).forEach(function (b) {
+      b.onclick = function () {
+        var k = BOOKINGS.filter(function (x) { return x.no === b.dataset.undo; })[0];
+        k._out = false; render();
+        toast('↩ 되돌렸습니다 (실수 방지 — 상시 가능)', '');
+      };
+    });
+  }
+  $('#ptRefresh').onclick = function () { render(); toast('↻ 새로고침 — 30초마다 자동 갱신(실서비스)', ''); };
+  render();
+})();
+</script>
+</body>
+</html>
