@@ -1,5 +1,8 @@
 /* ============================================================
    MOLIP 몰입 스터디카페 — 데이터 (전부 시연용 가상값)
+   관리자 데이터는 의뢰자 엑셀 출석표 양식 3개 시트를 그대로 모델링:
+     ① 출석계획표(작성 규칙)  ② 개인별 출석 계획표(시간×요일 O표시)
+     ③ 일별 전체 출석표(좌석×시간)
    ============================================================ */
 
 /* 요금제 (공개 홈) */
@@ -45,37 +48,92 @@ const EST_QUESTIONS = [
   '사장님이 직접 수정하고 싶은 콘텐츠 범위는 어디까지일까요? (요금·공지·이벤트·사진 등)',
 ];
 
-/* ---------------- 관리자 데이터 ---------------- */
+/* ============================================================
+   관리자 데이터 — 엑셀 양식 모델
+   ============================================================ */
+
+/* 시간 축 — 엑셀 「개인별 출석 계획표」(09:00~23:50)·「일별 전체 출석표」(09시~24시) 그대로 */
+const HOURS = (function(){ var a=[]; for(var h=9;h<24;h++) a.push(h); return a; })(); /* 9..23, 칸당 50분 */
+const DAYS = ['월','화','수','목','금','토','일'];
+function hourLabel(h){ return (h<10?'0':'')+h+':00'; }
+
+/* 운영시간 — 엑셀 「출석계획표」 주의사항 7번 그대로 */
+const OPEN_HOURS = {
+  term: { label:'학기중', wd:[15,24], we:[10,22], txt:'평일 15:00–24:00 · 주말/공휴일 10:00–22:00' },
+  vac:  { label:'방학',   wd:[9,24],  we:[9,24],  txt:'전일 09:00–24:00 (방학 운영시간은 미팅에서 확정)' },
+};
+function isOpen(mode, d, h){ var o=OPEN_HOURS[mode]; var r = d<5 ? o.wd : o.we; return h>=r[0] && h<r[1]; }
+
+/* 엑셀 「출석계획표」 작성 규칙 — 의뢰자 양식 요약 */
+const XLS_RULES = [
+  '출석할 시간대에 <b>O 표시</b> — 표시 외 시간도 자유 이용 가능',
+  '학기중에는 <b>한 달 최소 60시간</b> 이상 학습하도록 계획표 작성',
+  '식사·휴식 시간을 <b>포함해</b> 작성',
+  '수업·운동 등 특별한 사정을 감안해 계획',
+  '계획표는 신중히 — 전체 시간이 계획보다 줄지 않게',
+  '좌석 지정 후 변경은 관리자에게 문의',
+  '자율학습 운영시간 — <b>평일 15:00–24:00 · 주말(공휴일 포함) 10:00–22:00</b>',
+];
+const RULE_MIN_MONTH_H = 60; /* 월 최소 학습시간 */
+
+/* 좌석 배치 — 일별 전체 출석표의 좌석 축 */
+const ZONES = [
+  { name:'A존 · 집중석',   seats:['A-01','A-02','A-03','A-04','A-05','A-06','A-07','A-08','A-09','A-10','A-11','A-12'] },
+  { name:'B존 · 노트북석', seats:['B-01','B-02','B-03','B-04','B-05','B-06','B-07','B-08'] },
+];
+const SEATS = ZONES.reduce(function(a,z){ return a.concat(z.seats); }, []);
+
+/* 회원 — wd/we: 평일/토요일 계획 슬롯 수(계획 성향), miss: 미이행률(0~4/10), goalM: 월 목표 학습시간 */
 const MEMBERS = [
-  { name:'김민준', grade:'고2', seat:'A-07', plan:'고정석', phone:'010-****-2231', parent:'010-****-8842', status:'act', month:62 },
-  { name:'이서연', grade:'고3', seat:'A-12', plan:'고정석', phone:'010-****-5540', parent:'010-****-1120', status:'act', month:88 },
-  { name:'박도윤', grade:'중3', seat:'B-03', plan:'고정석', phone:'010-****-9982', parent:'010-****-4530', status:'act', month:54 },
-  { name:'최지우', grade:'고1', seat:'—',   plan:'자유석', phone:'010-****-3310', parent:'—',            status:'new', month:0 },
-  { name:'정하은', grade:'고2', seat:'A-21', plan:'고정석', phone:'010-****-7724', parent:'010-****-9033', status:'act', month:71 },
-  { name:'강시우', grade:'중2', seat:'—',   plan:'라운지', phone:'010-****-4417', parent:'010-****-2205', status:'new', month:0 },
+  { name:'김민준', grade:'고2', seat:'A-07', plan:'고정석', phone:'010-****-2231', parent:'010-****-8842', status:'act', goalM:110, wd:4, we:8,  miss:2, subj:[['국어',72],['수학',65],['영어',80]] },
+  { name:'이서연', grade:'고3', seat:'A-12', plan:'고정석', phone:'010-****-5540', parent:'010-****-1120', status:'act', goalM:160, wd:6, we:10, miss:1, subj:[['국어',78],['수학',70],['영어',85]] },
+  { name:'박도윤', grade:'중3', seat:'B-03', plan:'고정석', phone:'010-****-9982', parent:'010-****-4530', status:'act', goalM:90,  wd:3, we:6,  miss:3, subj:[['국어',64],['수학',58],['영어',71]] },
+  { name:'정하은', grade:'고2', seat:'A-09', plan:'고정석', phone:'010-****-7724', parent:'010-****-9033', status:'act', goalM:120, wd:4, we:9,  miss:1, subj:[['국어',80],['수학',74],['영어',77]] },
+  { name:'윤지호', grade:'고1', seat:'A-03', plan:'고정석', phone:'010-****-6118', parent:'010-****-3402', status:'act', goalM:100, wd:4, we:7,  miss:2, subj:[['국어',69],['수학',75],['영어',66]] },
+  { name:'장서준', grade:'고3', seat:'A-05', plan:'고정석', phone:'010-****-8850', parent:'010-****-7261', status:'act', goalM:150, wd:5, we:10, miss:2, subj:[['국어',82],['수학',79],['영어',84]] },
+  { name:'한유진', grade:'중2', seat:'B-06', plan:'고정석', phone:'010-****-1093', parent:'010-****-5570', status:'act', goalM:70,  wd:3, we:4,  miss:2, subj:[['국어',61],['수학',66],['영어',59]] },
+  { name:'오세아', grade:'고2', seat:'B-01', plan:'고정석', phone:'010-****-4426', parent:'010-****-8815', status:'act', goalM:110, wd:4, we:8,  miss:1, subj:[['국어',76],['수학',71],['영어',73]] },
+  { name:'신재원', grade:'고1', seat:'A-10', plan:'고정석', phone:'010-****-2270', parent:'010-****-6644', status:'act', goalM:60,  wd:2, we:3,  miss:4, subj:[['국어',52],['수학',48],['영어',55]] },
+  { name:'문가은', grade:'고3', seat:'A-02', plan:'고정석', phone:'010-****-9911', parent:'010-****-1188', status:'act', goalM:140, wd:5, we:9,  miss:0, subj:[['국어',88],['수학',83],['영어',90]] },
+  { name:'서지안', grade:'고1', seat:'—',   plan:'자유석', phone:'010-****-7085', parent:'010-****-9027', status:'act', goalM:0, wd:0, we:0, miss:0, subj:[] },
+  { name:'최지우', grade:'고1', seat:'—',   plan:'자유석', phone:'010-****-3310', parent:'—',            status:'new', goalM:0, wd:0, we:0, miss:0, subj:[] },
+  { name:'강시우', grade:'중2', seat:'—',   plan:'라운지', phone:'010-****-4417', parent:'010-****-2205', status:'new', goalM:0, wd:0, we:0, miss:0, subj:[] },
 ];
 
-/* 출석 슬롯 — 시간(09~22) × 요일(월~일). 값: 0 공란 / 1 출석(O) / 2 계획 */
-const HOURS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
-const DAYS = ['월','화','수','목','금','토','일'];
-/* 좌석별 프리필(A-12 이서연 예시) — 결정적으로 채워 클릭 없이도 이미 채워진 상태 */
-function seedAttendance(seatKey){
-  var g=[]; var s=0;
-  for(var h=0;h<HOURS.length;h++){ g[h]=[]; for(var d=0;d<DAYS.length;d++){
-    var v=0;
-    // 결정적 패턴: 평일 오후~저녁 출석, 토요일 오전, 일부 계획
-    if(d<5){ if(h>=6&&h<=12) v=1; else if(h>=3&&h<6) v=2; }
-    else if(d===5){ if(h>=1&&h<=8) v=1; }
-    // 좌석별 약간 변주
-    if((h+d+seatKey.length)%7===0 && v===1) v=0;
-    g[h][d]=v; if(v===1) s++;
-  }}
+/* ---------- 결정적 생성 (하드코딩 아님 — 아래 그리드에서 모든 수치를 실계산) ---------- */
+function h32(s){ var h=5381; for(var i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))>>>0; return h; }
+
+/* 계획 그리드 — 엑셀 「개인별 출석 계획표」의 O표시. HOURS×DAYS, 0/1 */
+function mkPlan(m, weekId, mode){
+  var g=[], H=h32(m.name+'|'+weekId+'|'+mode);
+  for(var i=0;i<HOURS.length;i++){ g[i]=[0,0,0,0,0,0,0]; }
+  if(m.seat==='—') return g;
+  for(var d=0; d<7; d++){
+    var open=[]; for(var k=0;k<HOURS.length;k++) if(isOpen(mode,d,HOURS[k])) open.push(k);
+    if(!open.length) continue;
+    var base = d<5 ? m.wd : (d===5 ? m.we : Math.max(0, m.we-1));
+    var n = base + ((H>>d)&1) - (d===6 ? ((H>>3)&1) : 0);
+    n = Math.max(0, Math.min(n, open.length));
+    if(!n) continue;
+    var j = (H>>(d+7))&1;
+    var st = d<5 ? Math.max(0, open.length-n-j) : Math.min((H>>(d+2))&3, open.length-n);
+    for(var q=0;q<n;q++) g[open[st+q]][d]=1;
+  }
   return g;
 }
 
-/* 리포트 데이터 (기간별) — 이서연 예시 */
-const REPORT = {
-  weekly:  { period:'2026.09.07 ~ 09.13', attend:'6/7일', hours:38, goal:60, subjects:[['국어',72],['수학',65],['영어',80]], note:'이번 주 목표 학습시간의 63%를 달성했어요. 수학 진도가 조금 밀렸습니다.' },
-  monthly: { period:'2026년 9월', attend:'26/30일', hours:171, goal:240, subjects:[['국어',78],['수학',70],['영어',85]], note:'월 목표의 71%. 지난달 대비 출석이 안정적으로 늘었습니다.' },
-  yearly:  { period:'2026년 (누적)', attend:'241/270일', hours:1620, goal:2160, subjects:[['국어',81],['수학',74],['영어',88]], note:'연간 누적 1,620시간. 꾸준함이 잘 유지되고 있습니다.' },
-};
+/* 실제 출석 그리드 — 지난 시간대만 채움. past(d,h)는 호출측이 판단 */
+function mkActual(m, weekId, mode, plan, past){
+  var g=[], off=[];
+  for(var d0=0; d0<7; d0++) off[d0] = (h32(m.name+'@'+weekId+'@'+d0) % 21) < m.miss; /* 통째 결석일 */
+  for(var i=0;i<HOURS.length;i++){
+    g[i]=[0,0,0,0,0,0,0];
+    for(var d=0;d<7;d++){
+      if(off[d] || !isOpen(mode,d,HOURS[i]) || !past(d,HOURS[i])) continue;
+      var hc = h32(m.name+'#'+weekId+'#'+d+'#'+HOURS[i]);
+      if(plan[i][d]) g[i][d] = (hc%10) >= m.miss ? 1 : 0;   /* 계획 이행 여부 */
+      else g[i][d] = (hc%29)===0 ? 1 : 0;                    /* 드문 계획 외 출석 */
+    }
+  }
+  return g;
+}
