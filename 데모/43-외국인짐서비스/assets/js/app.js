@@ -69,8 +69,8 @@
         (wz.service === 'store' ? '<div class="fld"><label>맡길 곳(프런트 보관?)</label><select><option>front — 숙소 프런트 보관</option><option>none — 보관 불가(현장)</option><option>unknown — 미정</option></select></div>' : '');
     } else if (s === 4) {
       h = '<div class="step-num">STEP 4</div><div class="wz-q">' + t('q4') + '</div>' +
-        '<div class="fld"><label>' + t('name') + ' <span class="req">*</span></label><input id="fName" placeholder="GILDONG HONG"></div>' +
-        '<div class="fld"><label>' + t('phone') + ' <span class="req">*</span></label><div class="row"><select class="pcode" id="fPcode">' + PCODES.map(function (p) { return '<option' + (p === (LANG_PCODE[lang] || '+886') ? ' selected' : '') + '>' + p + '</option>'; }).join('') + '</select><input id="fPhone" placeholder="912 345 678"></div><div class="hint">언어별 국가번호 기본값 자동</div></div>' +
+        '<div class="fld"><label>' + t('name') + ' <span class="req">*</span></label><input id="fName" value="GILDONG HONG" placeholder="GILDONG HONG"></div>' +
+        '<div class="fld"><label>' + t('phone') + ' <span class="req">*</span></label><div class="row"><select class="pcode" id="fPcode">' + PCODES.map(function (p) { return '<option' + (p === (LANG_PCODE[lang] || '+886') ? ' selected' : '') + '>' + p + '</option>'; }).join('') + '</select><input id="fPhone" value="912 345 678" placeholder="912 345 678"></div><div class="hint">예시값이 채워져 있어 타이핑 없이 진행됩니다 · 언어별 국가번호 자동</div></div>' +
         '<div class="fld"><label>' + t('email') + '</label><input id="fEmail" type="email" placeholder="you@example.com"></div>' +
         '<div class="fld"><label>LINE ID</label><input placeholder="line id (선택)"></div>' +
         '<label class="checkrow"><input type="checkbox" id="fTerms"><span class="tx"><b>약관·개인정보(국외이전 포함) 동의</b><span>배상한도·통지기한·수집항목 고지 (2026-07-31 추가)</span></span></label>';

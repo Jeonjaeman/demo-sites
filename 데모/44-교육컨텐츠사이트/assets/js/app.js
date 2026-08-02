@@ -49,6 +49,12 @@
     return ok;
   }
   function bindTrial() {
+    $('#trialFill').onclick = function () {
+      $('#tName').value = '홍길동'; $('#tPhone').value = '010-1234-5678'; $('#tGrade').value = '초3';
+      $('#tConsent1').checked = true; $('#tConsent2').checked = true;
+      $$('.fld').forEach(function (f) { f.classList.remove('bad'); });
+      toast('예시값을 채웠습니다 · 이제 <b>무료체험 신청하기</b>를 눌러 보세요', 'ok');
+    };
     $('#trialSubmit').onclick = function () {
       var okFields = validTrial();
       var c1 = $('#tConsent1').checked, c2 = $('#tConsent2').checked;
@@ -70,6 +76,11 @@
 
   /* ---------------- 상담 문의 폼 ---------------- */
   function bindAsk() {
+    $('#askFill').onclick = function () {
+      $('#aName').value = '김문의'; $('#aPhone').value = '010-2222-3333';
+      $('#aBody').value = '교사용 지도안을 개별로 구매할 수 있나요?'; $('#aConsent').checked = true;
+      toast('예시값을 채웠습니다 · 이제 <b>문의 접수</b>를 눌러 보세요', 'ok');
+    };
     $('#askSubmit').onclick = function () {
       var name = $('#aName').value.trim(), phone = $('#aPhone').value.trim(), body = $('#aBody').value.trim();
       if (name.length < 2 || !phone || body.length < 5) { toast('이름·연락처·문의 내용을 입력해 주세요', 'err'); return; }
