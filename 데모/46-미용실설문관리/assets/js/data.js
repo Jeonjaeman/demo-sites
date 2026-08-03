@@ -236,8 +236,15 @@
     requestAnimationFrame(step);
   }
 
+  /* 종이 설문지 뷰용 — 문항별 전체 선택지 */
+  var OPTS = {
+    visit: VISIT, menus: MENU, images: IMAGE, scalp: SCALP, hair: HAIRW, home: HOME,
+    grade: ['실장', '선임수석실장', '부원장', '원장', '관계없음'],
+    stylePhoto: ['있어요', '없어요', '상담 디자이너가 추천해 주세요']
+  };
+
   global.QUILL = {
-    FIELD_TYPES: FIELD_TYPES, TPL_IDHAIR: TPL_IDHAIR, TPL_LIB: TPL_LIB,
+    FIELD_TYPES: FIELD_TYPES, TPL_IDHAIR: TPL_IDHAIR, TPL_LIB: TPL_LIB, OPTS: OPTS,
     makeRevisit: makeRevisit, makeStaff: makeStaff, makeEvent: makeEvent,
     STORES: STORES, DESIGNERS: DESIGNERS, ROLES: ROLES, RESPONSES: RESPONSES,
     storeName: storeName, designerName: designerName,

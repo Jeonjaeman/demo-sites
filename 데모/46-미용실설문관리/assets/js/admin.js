@@ -272,25 +272,48 @@
     var r = Q.RESPONSES.filter(function (x) { return x.id === id; })[0];
     if (!r) return;
     var b = document.getElementById('drBody');
-    function f(l, v) { return '<div class="dr-field"><div class="fl">' + l + '</div><div class="fv">' + v + '</div></div>'; }
+
+    // 종이 설문지 뷰 — 전체 선택지를 ☐로 깔고 응답만 ☑
+    function cks(all, picked) {
+      var arr = Array.isArray(picked) ? picked : [picked];
+      return all.map(function (o) {
+        var on = arr.indexOf(o) >= 0;
+        return '<span class="p-ck' + (on ? ' on' : '') + '"><span class="bx">' + (on ? '☑' : '☐') + '</span>' + esc(o) + '</span>';
+      }).join('');
+    }
+    function pq(label, inner) { return '<div class="p-q"><div class="pqh">' + label + '</div><div class="pqb">' + inner + '</div></div>'; }
+
     b.innerHTML =
-      f('제출일', '<span class="mono">' + r.date + '</span>') +
-      f('고객', esc(r.name)) +
-      f('연락처', '<span class="' + (role.id === 'designer' ? 'masked' : 'mono') + '">' + showPhone(r) + '</span>') +
-      f('생년월일', '<span class="' + (role.id === 'designer' ? 'masked' : 'mono') + '">' + showBirth(r) + '</span>') +
-      f('매장 / 담당', Q.storeName(r.store) + ' · ' + Q.designerName(r.designer)) +
-      f('방문 동기', r.visit) +
-      f('스타일 사진', r.stylePhoto) +
-      f('희망 직급', r.grade) +
-      f('관심 메뉴', r.menus.join(', ')) +
-      f('원하는 이미지', r.images.join(', ') || '—') +
-      f('두피 고민', r.scalp.join(', ') || '—') +
-      f('모발 고민', r.hair.join(', ') || '—') +
-      f('홈케어 구매', r.home) +
-      f('첫인상 별점', '★'.repeat(r.rating) + ' (' + r.rating + '/5)') +
-      f('메모', esc(r.memo) || '—') +
-      f('마케팅 수신', r.mkt ? '<span class="tag ok">선택 동의</span>' : '<span class="tag mut">미동의 — 발송 금지</span>');
-    document.getElementById('drTitle').textContent = esc(r.name) + ' 님 응답';
+      '<div class="psheet">' +
+      '<div class="p-logo">id<i>HAIR</i></div>' +
+      '<div class="p-mgr">담당 디자이너 : <b>' + Q.designerName(r.designer) + '</b> <span style="color:#999">(' + Q.storeName(r.store) + ')</span></div>' +
+      '<table class="p-info"><tr>' +
+      '<td class="pl">성 함</td><td class="pv">' + esc(r.name) + '</td>' +
+      '<td class="pl">생년월일</td><td class="pv ' + (role.id === 'designer' ? 'masked' : 'mono') + '" style="font-size:12.5px">' + showBirth(r) + '</td></tr>' +
+      '<tr><td class="pl">연락처</td><td class="pv ' + (role.id === 'designer' ? 'masked' : 'mono') + '" style="font-size:12.5px">' + showPhone(r) + '</td>' +
+      '<td class="pl">제출일</td><td class="pv mono" style="font-size:12.5px">' + r.date + '</td></tr></table>' +
+      '<div class="p-consent-line"><span>개인정보 수집 동의 <span class="p-ck on" style="margin:0"><span class="bx">☑</span>동의(필수)</span></span>' +
+      '<span>마케팅 수신 ' + (r.mkt
+        ? '<span class="p-ck on" style="margin:0"><span class="bx">☑</span>동의(선택)</span>'
+        : '<span class="p-ck" style="margin:0"><span class="bx">☐</span>미동의 — 광고 발송 금지</span>') + '</span></div>' +
+      '<div style="border:1px solid #E4E0D6; border-bottom:none; margin-top:12px">' +
+      pq('방문동기', cks(Q.OPTS.visit, r.visit)) +
+      pq('스타일 사진', cks(Q.OPTS.stylePhoto, r.stylePhoto)) +
+      pq('희망 직급', cks(Q.OPTS.grade, r.grade)) +
+      pq('관심 있는 메뉴', cks(Q.OPTS.menus, r.menus)) +
+      pq('원하는 이미지', r.images.length ? cks(Q.OPTS.images, r.images) : cks(Q.OPTS.images, [])) +
+      pq('두피 고민', cks(Q.OPTS.scalp, r.scalp)) +
+      pq('모발 고민', cks(Q.OPTS.hair, r.hair)) +
+      pq('홈케어 구매', cks(Q.OPTS.home, r.home)) +
+      pq('첫인상', '<span class="p-stars"><b>' + '★'.repeat(r.rating) + '</b>' + '★'.repeat(5 - r.rating) + '</span><span style="margin-left:8px; color:#8b877c">(' + r.rating + '/5)</span>') +
+      '<div class="p-q" style="grid-template-columns:1fr"><div class="p-memo"><div style="font-weight:750; font-size:12px; margin-bottom:6px">디자이너에게 미리 전하는 말</div>' +
+      '<div class="ml">' + (esc(r.memo) || '<span style="color:#bbb">—</span>') + '</div></div></div>' +
+      '</div>' +
+      '<div class="p-foot"><span>QUILL 디지털 설문 · 종이 설문지 뷰</span><span>응답 번호 ' + r.id.toUpperCase() + '</span></div>' +
+      '</div>';
+
+    document.getElementById('drTitle').textContent = esc(r.name) + ' 님 — 설문지 보기';
+    document.getElementById('drawer').classList.add('wide');
     document.getElementById('drawerBg').classList.add('on');
     document.getElementById('drawer').classList.add('on');
   }

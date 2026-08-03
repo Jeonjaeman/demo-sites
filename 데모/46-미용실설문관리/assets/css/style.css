@@ -437,6 +437,36 @@ table.tbl{width:100%; border-collapse:collapse; font-size:13.5px; min-width:640p
 .log-line{font-family:var(--mono); font-size:12px; color:var(--mut); padding:6px 0; border-bottom:1px dashed var(--line)}
 .log-line b{color:var(--ink)}
 
+/* ---------- 종이 설문지 뷰 (응답 상세) ---------- */
+.drawer.wide{width:600px}
+.drawer.wide .drawer-b{background:#EFECE4; min-height:calc(100vh - 65px)}
+.psheet{background:#fff; border:1px solid #DDD8CC; border-radius:2px; padding:26px 24px 30px;
+  box-shadow:0 1px 0 #eee, 0 14px 34px -18px rgba(20,18,12,.35); color:#222; font-size:12.5px; line-height:1.5}
+.psheet .p-logo{text-align:center; font-size:24px; font-weight:900; letter-spacing:-0.05em; margin-bottom:4px}
+.psheet .p-logo i{font-style:normal; font-weight:500}
+.psheet .p-mgr{display:flex; justify-content:flex-end; gap:8px; font-size:12px; padding:6px 0 4px; border-bottom:2px solid #222}
+.psheet .p-mgr b{border-bottom:1px solid #999; min-width:90px; text-align:center; font-weight:600}
+.p-info{width:100%; border-collapse:collapse; margin-top:2px}
+.p-info td{padding:7px 6px; border-bottom:1px solid #E4E0D6; vertical-align:bottom}
+.p-info .pl{width:64px; color:#666; font-size:11px; font-weight:700; letter-spacing:.02em}
+.p-info .pv{font-weight:600; font-size:13px}
+.p-consent-line{display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:11px; color:#555;
+  background:#F7F5F0; border:1px solid #E4E0D6; padding:7px 10px; margin-top:10px; flex-wrap:wrap}
+.p-q{display:grid; grid-template-columns:92px 1fr; border-bottom:1px solid #E4E0D6}
+.p-q:last-child{border-bottom:none}
+.p-q .pqh{padding:12px 8px 12px 2px; font-weight:750; font-size:12px; color:#222; letter-spacing:-0.01em; border-right:1px solid #E4E0D6; display:flex; align-items:center}
+.p-q .pqb{padding:10px 2px 10px 12px; display:flex; flex-wrap:wrap; align-items:center; row-gap:4px}
+.p-ck{display:inline-flex; align-items:center; gap:5px; margin-right:14px; color:#8b877c; white-space:nowrap; font-size:12px}
+.p-ck .bx{font-size:13px; line-height:1}
+.p-ck.on{color:#111; font-weight:700}
+.p-ck.on .bx{color:var(--acc)}
+.p-stars{font-size:16px; letter-spacing:2px; color:#D8D3C6}
+.p-stars b{color:var(--acc); font-weight:400}
+.p-memo{width:100%; padding:10px 2px 4px 12px}
+.p-memo .ml{background:repeating-linear-gradient(to bottom, transparent 0 21px, #E4E0D6 21px 22px); min-height:44px; font-size:12.5px; line-height:22px; color:#333}
+.p-foot{margin-top:14px; display:flex; justify-content:space-between; gap:10px; font-size:10.5px; color:#999; flex-wrap:wrap}
+@media(max-width:560px){ .p-q{grid-template-columns:76px 1fr} }
+
 /* ---------- 알림톡 ---------- */
 .talk-steps{display:flex; flex-direction:column}
 .talk-step{display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--line)}
