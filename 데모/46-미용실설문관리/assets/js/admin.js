@@ -320,6 +320,168 @@
     return html;
   }
 
+  /* ============ 뷰: 알림톡 (연동 설정 → 템플릿 검수 → 발송) ============ */
+  var talk = {
+    channel: true,                 // 1. 카카오 비즈니스 채널 개설 (완료 가정)
+    profile: false,                // 2. 발신프로필 등록
+    api: false,                    // 3. 발송 API 연동
+    profileKey: 'KA01PF2026IDHAIR',
+    agency: '메시지허브',
+    templates: [
+      { id: 't1', name: '설문 제출 완료 안내', kind: '정보성', st: 'ok',
+        body: '#{고객명}님, #{매장명} 설문이 접수되었습니다.\n담당 디자이너 #{디자이너명}이 시술 전에 꼭 확인할게요.\n\n· 제출일시: #{제출일시}\n· 문의: 매장으로 연락해 주세요' },
+      { id: 't2', name: '예약 리마인드', kind: '정보성', st: 'ok',
+        body: '#{고객명}님, 내일 #{예약시간} #{매장명} 예약이 있습니다.\n변경이 필요하면 매장으로 연락해 주세요.' },
+      { id: 't3', name: '가을 컬러 이벤트 20% 할인', kind: '광고성', st: 'reject',
+        body: '#{고객명}님! 9월 한 달간 컬러 시술 20% 할인 이벤트를 진행합니다. 지금 예약하세요!' }
+    ]
+  };
+  function talkLinked() { return talk.channel && talk.profile && talk.api; }
+  var AD_RE = /할인|이벤트|특가|무료|쿠폰|프로모션|세일|절약|증정|추첨|경품|(\d+\s*%)/;
+
+  function vTalk() {
+    if (role.id === 'designer') {
+      return '<div class="panel"><div class="panel-h"><h3>알림톡</h3></div>' +
+        '<div class="notice bad">🔒 알림톡은 <b>본사·원장 권한</b>에서만 사용할 수 있습니다. 디자이너 권한은 발송·설정 모두 차단됩니다(고객 연락처 대량 사용 경로 차단).</div></div>';
+    }
+    var isSuper = role.id === 'super';
+    var html = '';
+
+    /* --- 1. 연동 설정 --- */
+    html += '<div class="panel"><div class="panel-h"><h3>① 카카오 알림톡 연동 설정</h3>' +
+      '<span class="sub">' + (talkLinked() ? '<span class="tag ok">연동 완료</span>' : '<span class="tag warn">미연동 — 아래 단계를 완료하세요</span>') + '</span></div>';
+    if (!isSuper) {
+      html += '<div class="notice">연동 설정은 <b>슈퍼관리자(본사) 전용</b>입니다. 원장 권한은 아래 발송 기능만 사용할 수 있습니다.</div>';
+    } else {
+      html += '<div class="talk-steps">' +
+        '<div class="talk-step done"><span class="tn">✓</span><div class="tb"><b>카카오 비즈니스 채널 개설</b><div class="small muted">@idhair — 채널 검색 허용 · 비즈니스 인증 완료</div></div><span class="tag ok">완료</span></div>' +
+        '<div class="talk-step' + (talk.profile ? ' done' : '') + '"><span class="tn">' + (talk.profile ? '✓' : '2') + '</span><div class="tb"><b>발신프로필 키 등록</b><div class="small muted">카카오 비즈니스 → 발신프로필에서 발급한 키</div></div>' +
+        '<span class="row"><input id="tkProfile" value="' + talk.profileKey + '" style="width:180px" ' + (talk.profile ? 'disabled' : '') + '>' +
+        (talk.profile ? '<span class="tag ok">등록됨</span>' : '<button class="btn btn-sm btn-pri" id="tkRegProfile">등록</button>') + '</span></div>' +
+        '<div class="talk-step' + (talk.api ? ' done' : '') + '"><span class="tn">' + (talk.api ? '✓' : '3') + '</span><div class="tb"><b>발송 API 연동</b><div class="small muted">발송 대행사 선택 후 API 키 검증 (건당 6~9원 수준 · 의뢰자 부담)</div></div>' +
+        '<span class="row"><select id="tkAgency" ' + (talk.api ? 'disabled' : '') + '><option' + (talk.agency === '메시지허브' ? ' selected' : '') + '>메시지허브</option><option' + (talk.agency === '톡센드' ? ' selected' : '') + '>톡센드</option></select>' +
+        (talk.api ? '<span class="tag ok">연동됨</span>' : '<button class="btn btn-sm btn-pri" id="tkRegApi">연동 테스트</button>') + '</span></div>' +
+        '</div>';
+      if (talkLinked()) html += '<div class="notice ok" style="margin-top:12px">✓ 연동 완료 — 아래에서 템플릿을 검수받고 발송할 수 있습니다. (운영에서는 발신프로필·API 키를 서버에 암호화 보관합니다)</div>';
+    }
+    html += '</div>';
+
+    /* --- 2. 템플릿 관리 --- */
+    html += '<div class="panel"><div class="panel-h"><h3>② 알림톡 템플릿 — 카카오 검수 시뮬레이션</h3><span class="sub">알림톡은 「정보성」만 허용 — 광고성은 검수 반려</span></div>' +
+      '<div class="warn-line" style="margin-bottom:14px"><span class="ic">⚠️</span><span><b>알림톡으로 광고를 보낼 수 없습니다.</b> 할인·이벤트 등 광고성 내용은 카카오 검수에서 반려되며, 광고는 「친구톡」(채널 친구+수신동의) 또는 문자(LMS·동의자만)로 보내야 합니다. 이 데모의 검수 시뮬레이션이 광고성 문구를 자동 감지합니다.</span></div>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>템플릿명</th><th>유형</th><th>검수 상태</th><th>미리보기</th></tr></thead><tbody>' +
+      talk.templates.map(function (t) {
+        var st = t.st === 'ok' ? '<span class="tag ok">승인</span>' : t.st === 'pend' ? '<span class="tag warn">검수중</span>' : '<span class="tag bad">반려</span>';
+        return '<tr><td class="cell-name">' + esc(t.name) + '</td><td>' + (t.kind === '정보성' ? '<span class="tag info">정보성</span>' : '<span class="tag warn">광고성</span>') + '</td><td class="tpl-status">' + st +
+          (t.st === 'reject' ? '<div class="small muted" style="margin-top:4px">사유: 광고성 문구 — 친구톡/LMS로 발송</div>' : '') +
+          '</td><td><button class="btn btn-sm btn-gho tk-pv" data-id="' + t.id + '">보기</button></td></tr>';
+      }).join('') + '</tbody></table></div>' +
+      '<hr class="hr"><h4 style="font-size:14px; margin-bottom:10px">새 템플릿 등록</h4>' +
+      '<div class="stack-8"><input id="tkNewName" class="s-input" style="height:40px; font-size:14px" value="시술 후 홈케어 안내" placeholder="템플릿명">' +
+      '<textarea id="tkNewBody" class="s-input" style="min-height:80px; font-size:13.5px">#{고객명}님, 오늘 #{시술명} 시술 후 홈케어 방법을 안내드립니다.\n· 48시간 내 샴푸는 피해주세요\n· 궁금한 점은 담당 디자이너에게 문의해 주세요</textarea>' +
+      '<div class="row"><button class="btn btn-sm btn-pri" id="tkSubmit">검수 요청</button><span class="small muted">광고성 문구(할인·이벤트·% 등)가 있으면 자동 반려됩니다 — 넣어서 테스트해 보세요</span></div>' +
+      '<div id="tkVerdict"></div></div></div>';
+
+    /* --- 3. 발송 --- */
+    var approved = talk.templates.filter(function (t) { return t.st === 'ok'; });
+    var rows = scoped();
+    var mktN = rows.filter(function (r) { return r.mkt; }).length;
+    html += '<div class="panel"><div class="panel-h"><h3>③ 발송</h3><span class="sub">' + (role.id === 'owner' ? Q.storeName(role.store) + ' 범위만' : '전체 범위') + '</span></div>';
+    if (!talkLinked()) {
+      html += '<div class="notice warn">연동 설정(①)을 먼저 완료해야 발송할 수 있습니다.' + (isSuper ? '' : ' — 본사에 연동을 요청하세요.') + '</div></div>';
+    } else {
+      html += '<div class="row" style="margin-bottom:14px; align-items:flex-end">' +
+        '<div class="filt"><label>템플릿 (승인된 것만)</label><select id="tkSendTpl">' +
+        approved.map(function (t) { return '<option value="' + t.id + '">' + esc(t.name) + '</option>'; }).join('') + '</select></div>' +
+        '<div class="filt"><label>발송 대상</label><div id="tkTarget" class="small" style="height:38px; display:flex; align-items:center; padding:0 12px; border:1px solid var(--line-2); border-radius:9px; background:var(--paper)"></div></div>' +
+        '<button class="btn btn-pri" id="tkSend" style="height:38px">💬 발송 시뮬레이션</button></div>' +
+        '<div class="notice" style="margin-bottom:14px">정보성 알림톡은 수신동의와 무관하게 발송 가능(<b>' + rows.length + '명</b>) · 광고는 알림톡 불가 — 마케팅 동의자(<b>' + mktN + '명</b>)에게 친구톡/LMS만 가능합니다. 템플릿을 바꾸면 대상이 자동으로 바뀝니다.</div>' +
+        '<div class="row" style="align-items:flex-start; gap:20px"><div class="ktalk" id="tkPreview"></div><div style="flex:1; min-width:220px" id="tkResult"></div></div></div>';
+    }
+    return html;
+  }
+
+  function talkSample(t, forRole) {
+    var body = t.body
+      .replace(/#\{고객명\}/g, '김서연')
+      .replace(/#\{매장명\}/g, role.id === 'owner' ? Q.storeName(role.store) : '강남점')
+      .replace(/#\{디자이너명\}/g, '이유진 디자이너')
+      .replace(/#\{제출일시\}/g, '2026-08-04 14:20')
+      .replace(/#\{예약시간\}/g, '오후 2시')
+      .replace(/#\{시술명\}/g, '펌');
+    return '<div class="kch">idHAIR</div><div class="kb"><div class="kh">알림톡 도착</div><div class="km">' + esc(body) + '</div><div class="kf">채널 추가</div></div>';
+  }
+
+  function bindTalk() {
+    var rp = document.getElementById('tkRegProfile');
+    if (rp) rp.addEventListener('click', function () {
+      var v = document.getElementById('tkProfile').value.trim();
+      if (v.length < 10) { Q.toast('발신프로필 키 형식이 올바르지 않습니다', 'bad'); return; }
+      talk.profileKey = v; talk.profile = true;
+      Q.toast('발신프로필을 등록했습니다', 'ok'); render();
+    });
+    var ra = document.getElementById('tkRegApi');
+    if (ra) ra.addEventListener('click', function () {
+      talk.agency = document.getElementById('tkAgency').value; talk.api = true;
+      Q.toast(talk.agency + ' API 연동 테스트 성공 — 테스트 메시지 1건 수신 확인 (시뮬레이션)', 'ok'); render();
+    });
+    [].forEach.call(document.querySelectorAll('.tk-pv'), function (b) {
+      b.addEventListener('click', function () {
+        var t = talk.templates.filter(function (x) { return x.id === b.dataset.id; })[0];
+        var v = document.getElementById('tkVerdict');
+        v.innerHTML = '<div class="ktalk" style="margin-top:10px">' + talkSample(t) + '</div>';
+      });
+    });
+    var ts = document.getElementById('tkSubmit');
+    if (ts) ts.addEventListener('click', function () {
+      var name = document.getElementById('tkNewName').value.trim() || '(무제)';
+      var body = document.getElementById('tkNewBody').value;
+      var isAd = AD_RE.test(name + body);
+      var v = document.getElementById('tkVerdict');
+      if (isAd) {
+        talk.templates.push({ id: 'tx' + talk.templates.length, name: name, kind: '광고성', st: 'reject', body: body });
+        v.innerHTML = '<div class="warn-line bad" style="margin-top:10px"><span class="ic">⛔</span><span><b>검수 반려 (시뮬레이션)</b> — 광고성 문구가 감지되었습니다: ' +
+          esc((name + ' ' + body).match(AD_RE)[0]) + '. 알림톡은 정보성만 허용됩니다. 이 내용은 「친구톡」(채널 친구+수신동의) 또는 문자(마케팅 동의자만)로 보내야 합니다.</span></div>';
+        Q.toast('검수 반려 — 광고성 문구 감지', 'bad');
+      } else {
+        talk.templates.push({ id: 'tx' + talk.templates.length, name: name, kind: '정보성', st: 'ok', body: body });
+        v.innerHTML = '<div class="notice ok" style="margin-top:10px">✓ 검수 승인 (시뮬레이션 — 실제 카카오 검수는 1~3영업일) — 발송(③)에서 사용할 수 있습니다.</div>';
+        Q.toast('템플릿 검수 승인', 'ok');
+      }
+      render();
+      var v2 = document.getElementById('tkVerdict');
+      if (v2) v2.innerHTML = isAd
+        ? '<div class="warn-line bad" style="margin-top:10px"><span class="ic">⛔</span><span><b>검수 반려</b> — 광고성 문구 감지. 친구톡/LMS(동의자만)로 발송하세요.</span></div>'
+        : '<div class="notice ok" style="margin-top:10px">✓ 검수 승인 — 발송(③)에서 사용할 수 있습니다.</div>';
+    });
+    var sel = document.getElementById('tkSendTpl');
+    if (sel) {
+      var upd = function () {
+        var t = talk.templates.filter(function (x) { return x.id === sel.value; })[0];
+        if (!t) return;
+        document.getElementById('tkPreview').innerHTML = talkSample(t);
+        var rows = scoped();
+        var target = t.kind === '정보성' ? rows.length + '명 (정보성 — 전체 응답자)' : rows.filter(function (r) { return r.mkt; }).length + '명 (광고 — 마케팅 동의자만)';
+        document.getElementById('tkTarget').textContent = target;
+      };
+      sel.addEventListener('change', upd); upd();
+      document.getElementById('tkSend').addEventListener('click', function () {
+        var t = talk.templates.filter(function (x) { return x.id === sel.value; })[0];
+        var rows = scoped();
+        var n = t.kind === '정보성' ? rows.length : rows.filter(function (r) { return r.mkt; }).length;
+        var fail = Math.max(1, Math.round(n * 0.03));
+        document.getElementById('tkResult').innerHTML =
+          '<div class="notice ok">✓ 발송 완료 (시뮬레이션)</div>' +
+          '<div class="backup-row"><span>발송 대상</span><b class="mono">' + n + '명</b></div>' +
+          '<div class="backup-row"><span>알림톡 성공</span><b class="mono">' + (n - fail) + '건</b></div>' +
+          '<div class="backup-row"><span>실패(미가입·차단)</span><b class="mono">' + fail + '건</b></div>' +
+          '<div class="backup-row"><span>문자(LMS) 대체 발송</span><b class="mono">' + fail + '건</b></div>' +
+          '<p class="small muted" style="margin-top:8px">운영에서는 발송 이력·수신 상태가 저장되고, 실패분은 자동으로 문자 대체 발송됩니다(대체 발송 요금 별도).</p>';
+        Q.toast('알림톡 ' + (n - fail) + '건 발송 + 문자 대체 ' + fail + '건 (시뮬레이션)', 'ok');
+      });
+    }
+  }
+
   /* ============ 뷰: 백업·복구 ============ */
   function vBackup() {
     var html = '<div class="panel"><div class="panel-h"><h3>백업·복구</h3><span class="sub">공고 요구사항 — 데이터 백업/복구 기능</span></div>';
@@ -353,6 +515,8 @@
       row('설문 편집(빌더)', Y, N, N) +
       row('백업·복구', Y, N, N) +
       row('마케팅 발송', Y, P + '<div class="small muted">매장분만</div>', N) +
+      row('알림톡 연동 설정(발신프로필·API)', Y, N, N) +
+      row('알림톡 템플릿·발송', Y, P + '<div class="small muted">매장분만</div>', N) +
       '</tbody></table></div>' +
       '<div class="notice" style="margin-top:16px">💡 <b>왜 디자이너에게 마스킹·내보내기 차단인가</b> — 미용업계 최다 분쟁이 <b>퇴사 디자이너의 고객 명단 유출</b>입니다. 열람은 시술에 필요한 만큼 허용하되, 대량 유출 경로(원문 연락처 + 내보내기)를 시스템에서 끊습니다. 접속 기록은 감사 로그로 남깁니다.</div>' +
       '<div class="notice warn" style="margin-top:10px">⚠️ <b>100개 지점 구조 확인 필요</b> — 각 지점이 별도 사업자(가맹점)라면 지점→본사 데이터 흐름은 「처리위탁」인지 「제3자 제공」인지 계약 형태에 따라 달라지고, 후자는 고객 동의 문구에 명시해야 합니다. 착수 미팅에서 가맹 계약 구조를 확인한 뒤 동의 문구를 확정하는 것이 안전합니다.</div></div>';
@@ -400,6 +564,7 @@
         Q.toast('알림톡 ' + n + '건 발송 시뮬레이션 — 미동의 ' + (scoped().length - n) + '명은 자동 제외되었습니다', 'ok');
       });
     }
+    else if (view === 'talk') { viewRoot.innerHTML = vTalk(); bindTalk(); }
     else if (view === 'backup') {
       viewRoot.innerHTML = vBackup();
       var bb = document.getElementById('btnBk');
