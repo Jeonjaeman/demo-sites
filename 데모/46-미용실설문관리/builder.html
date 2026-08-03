@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>설문 빌더 — QUILL 퀼</title>
+<meta name="description" content="어떤 설문이든 자유롭게 만드는 폼 빌더 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="left">
+      <a class="brand" href="index.html" style="font-size:16px"><span class="brand-mark">Q</span>QUILL</a>
+      <span class="tag mut">설문 빌더</span>
+    </div>
+    <div class="right">
+      <button class="btn btn-sm btn-gho" id="btnTpl">📋 템플릿</button>
+      <button class="btn btn-sm btn-gho" id="btnPreview">미리보기</button>
+      <button class="btn btn-sm btn-acc" id="btnSave">저장하기</button>
+    </div>
+  </header>
+
+  <div class="b-wrap">
+    <main class="b-canvas">
+      <div class="b-canvas-in">
+        <div class="notice" style="margin-bottom:16px" id="builderHint">
+          💡 <b>클릭만으로 체험하세요</b> — 지금 열려 있는 설문은 의뢰하신 <b>종이 설문지 15문항을 그대로</b> 옮긴 것입니다.
+          질문을 클릭해 수정하고, 오른쪽에서 새 질문 유형을 추가해 보세요. 순서 이동(↑↓)·복제·삭제·필수 토글 전부 동작합니다.
+        </div>
+
+        <div class="form-head">
+          <input class="t" id="fTitle" placeholder="설문 제목">
+          <input class="d" id="fDesc" placeholder="설명을 입력하세요">
+        </div>
+
+        <div id="qList"></div>
+
+        <div class="row" style="justify-content:center; margin-top:18px">
+          <button class="btn btn-gho" id="btnAddBottom">＋ 질문 추가</button>
+        </div>
+
+        <div id="lawWarns" style="margin-top:22px"></div>
+      </div>
+    </main>
+
+    <aside class="b-side">
+      <div class="side-sec">
+        <h4>질문 추가</h4>
+        <div class="add-menu" id="addMenu"></div>
+      </div>
+      <div class="side-sec">
+        <h4>테마 색상</h4>
+        <div class="theme-row" id="themeRow"></div>
+      </div>
+      <div class="side-sec">
+        <h4>이 설문</h4>
+        <div class="side-stat"><span>질문 수</span><b id="stQ">0</b></div>
+        <div class="side-stat"><span>필수 질문</span><b id="stReq">0</b></div>
+        <div class="side-stat"><span>식별정보 필드</span><b id="stPii">0</b></div>
+        <div class="side-stat"><span>동의 블록</span><b id="stConsent">0</b></div>
+      </div>
+      <div class="side-sec">
+        <h4>바로가기</h4>
+        <div class="stack-8">
+          <a class="btn btn-sm btn-gho" href="survey.html" style="justify-content:flex-start">📱 태블릿 응답 화면</a>
+          <a class="btn btn-sm btn-gho" href="admin.html" style="justify-content:flex-start">📊 응답 대시보드</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- 템플릿 모달 -->
+<div class="modal-bg" id="tplModal">
+  <div class="modal">
+    <div class="modal-h"><h3>템플릿에서 시작</h3><button class="x" data-close>✕</button></div>
+    <div class="modal-b">
+      <p class="small muted" style="margin-bottom:14px">미용실 설문뿐 아니라 <b>어떤 설문이든</b> 이 빌더로 만듭니다. 템플릿을 적용해 보세요.</p>
+      <div class="stack-8" id="tplList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 미리보기 모달 -->
+<div class="modal-bg" id="pvModal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-h"><h3>미리보기 (응답자 화면)</h3><button class="x" data-close>✕</button></div>
+    <div class="modal-b" id="pvBody"></div>
+  </div>
+</div>
+
+<p class="disclaimer">제안용 데모 — 모든 데이터·인물·매장은 가상입니다. 저장은 이 브라우저(localStorage)에만 됩니다.</p>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/builder.js"></script>
+</body>
+</html>

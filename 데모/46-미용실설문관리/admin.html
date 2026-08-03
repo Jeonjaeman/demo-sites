@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>응답 대시보드 — QUILL 퀼</title>
+<meta name="description" content="권한 3단계(본사·원장·디자이너) 응답 데이터 대시보드 (제안용 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="left">
+      <a class="brand" href="index.html" style="font-size:16px"><span class="brand-mark">Q</span>QUILL</a>
+      <span class="tag mut">응답 대시보드</span>
+    </div>
+    <div class="right">
+      <a class="btn btn-sm btn-gho" href="builder.html">✎ 빌더</a>
+      <a class="btn btn-sm btn-gho" href="survey.html">📱 응답 화면</a>
+    </div>
+  </header>
+
+  <div class="a-wrap">
+    <nav class="a-side" id="sideNav">
+      <a class="a-nav on" data-view="dash"><span class="ic">📊</span>대시보드</a>
+      <a class="a-nav" data-view="resp"><span class="ic">🗂</span>응답 목록</a>
+      <a class="a-nav" data-view="mkt"><span class="ic">📣</span>마케팅 대상</a>
+      <a class="a-nav" data-view="backup"><span class="ic">💾</span>백업·복구</a>
+      <a class="a-nav" data-view="perm"><span class="ic">🔐</span>권한 설계</a>
+    </nav>
+
+    <main class="a-main">
+      <!-- 역할 스위처 -->
+      <div class="role-bar">
+        <span class="rl">역할 전환 체험</span>
+        <div class="role-tabs" id="roleTabs"></div>
+        <div class="role-scope">보는 범위: <span class="who" id="scopeWho"></span></div>
+      </div>
+
+      <div id="viewRoot"></div>
+    </main>
+  </div>
+</div>
+
+<!-- 응답 상세 드로어 -->
+<div class="drawer-bg" id="drawerBg"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-h"><h3 style="font-size:16px" id="drTitle">응답 상세</h3><button class="x" id="drClose">✕</button></div>
+  <div class="drawer-b" id="drBody"></div>
+</div>
+
+<p class="disclaimer">제안용 데모 — 모든 고객·디자이너·매장·응답은 가상입니다.</p>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
