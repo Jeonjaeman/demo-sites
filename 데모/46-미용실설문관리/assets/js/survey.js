@@ -257,7 +257,7 @@
     root.innerHTML = '<div class="s-done">' +
       '<div class="chk">✓</div>' +
       '<h2>설문이 제출되었습니다</h2>' +
-      '<p>소중한 답변 감사합니다. 담당 디자이너가 시술 전에 꼭 확인할게요.' + (mktYes ? '<br><span class="small">이벤트 소식은 알림톡으로 보내드릴게요 (선택 동의하심)</span>' : '') + '</p>' +
+      '<p>소중한 답변 감사합니다. 담당 디자이너가 시술 전에 꼭 확인할게요.' + (mktYes ? '<br><span class="small">이벤트 소식은 문자로 안내드릴게요 (선택 동의하심)</span>' : '') + '</p>' +
       '<div class="kiosk-guard"><b>🔒 개인정보 보호 자동 초기화</b>' +
       '매장 공용 태블릿이므로 입력하신 내용은 화면에서 즉시 삭제되었고,<br><span class="kiosk-count" id="kc">' + secs + '</span>초 후 처음 화면으로 돌아갑니다. <button class="btn btn-sm btn-gho" id="resetNow" style="margin-top:10px">지금 초기화</button></div>' +
       '</div>';
