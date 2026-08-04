@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ENCORE 앙코르 — 아이돌 카드 맞추기 미니게임 · 모바일 웹 UI 디자인 시안 (제안용 데모)</title>
+<meta name="description" content="아이돌 IP 카드 맞추기 모바일 웹 미니게임 UI 디자인 시안 — 7파트 20화면, 전부 눌러볼 수 있는 동작 시안 (제안용 데모)">
+<meta name="theme-color" content="#0A0A0B">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="viewer">
+  <!-- 데스크톱: 디자인 시안 인덱스 (7파트 20화면) -->
+  <aside class="v-side" id="vSide">
+    <div class="v-brand"><span class="en">ENC<b>O</b>RE</span><small>앙코르</small></div>
+    <p class="v-sub">아이돌 카드 맞추기 미니게임<br>모바일 웹 UI 디자인 시안 — <b style="color:var(--ink-2)">7파트 · 20화면</b><br>모든 화면이 실제로 눌러집니다.</p>
+    <nav id="vNav"></nav>
+    <div class="v-note"><b>디자인 시안 뷰어입니다.</b> 좌측 목록이 공고의 "모바일 페이지 UI 15~20장(7파트)"에 해당하고, 오른쪽 폰에서 실제 플레이 흐름 그대로 확인합니다. 모바일 기기에서는 전체 화면으로 열립니다.<br><br>그룹 LUMIN·멤버·기록은 전부 가상입니다. 실존 아이돌 사진은 퍼블리시티권(부정경쟁방지법) 문제로 데모에 쓰지 않았습니다.</div>
+  </aside>
+
+  <!-- 폰 스테이지 -->
+  <main class="v-stage">
+    <div class="v-stage-meta"><span class="t" id="metaTitle">01 · 스플래시</span><span class="k" id="metaPart">PART 1 — 온보딩</span></div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </main>
+</div>
+
+<!-- 모바일: 하단 화면 전환 바 -->
+<nav class="m-nav" id="mNav"></nav>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>
