@@ -72,7 +72,7 @@ img{max-width:100%; display:block}
 
 /* 언어 스위처 */
 .langs{display:inline-flex; background:var(--bg); border:1px solid var(--line-2); border-radius:999px; padding:3px; gap:2px}
-.langs button{height:28px; min-width:38px; padding:0 8px; border-radius:999px; font-size:12px; font-weight:650; color:var(--mut); transition:all .15s}
+.langs button{height:34px; min-width:44px; padding:0 9px; border-radius:999px; font-size:12.5px; font-weight:650; color:var(--mut); transition:all .15s}
 .langs button.on{background:var(--acc); color:#fff}
 
 .cta{display:flex; align-items:center; justify-content:center; gap:8px; height:52px; border-radius:14px; font-size:15.5px; font-weight:700; width:100%; transition:transform .13s var(--ease), background .15s}
