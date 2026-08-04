@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="상품권 매입 준법 데모 — KYC·이상거래탐지 기반 안전한 상품권 매입">
-  <meta name="theme-color" content="#1B5CF6">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231B5CF6'/%3E%3Cpath d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#0E9484">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230E9484'/%3E%3Cpath d='M20 33l8 8 16-18' fill='none' stroke='white' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <title>PINGUARD 핀가드 — 안전하게 확인하고 매입하는 상품권 현금화</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <link rel="stylesheet" href="assets/css/pinguard.css">
   <script defer src="assets/js/data.js"></script>
   <script defer src="assets/js/app.js"></script>
@@ -15,7 +16,8 @@
   <a class="skip-link" href="#apply">매입 신청으로 바로가기</a>
   <div class="demo-ribbon">
     <span><b>제안용 인터랙티브 데모</b></span>
-    <span>실제 매입률·거래·계좌·사업자정보가 아닌 가상 데이터입니다.</span>
+    <span class="rb-note">실제 매입률·거래·계좌·사업자정보가 아닌 가상 데이터입니다.</span>
+    <span class="rb-links"><a href="compliance.html">검토용 · 준법 진단</a><a href="admin.html">관리자 데모</a></span>
   </div>
 
   <header class="site-header">
@@ -26,28 +28,28 @@
       </a>
       <nav class="nav" aria-label="주요 메뉴">
         <a href="#rates">매입 시세</a>
-        <a href="#apply">매입 신청</a>
-        <a href="#live">처리 현황</a>
-        <a href="compliance.html">준법 안내</a>
+        <a href="#live">실시간 내역</a>
+        <a href="#apply">판매 신청서</a>
+        <a href="#guide">이용 안내</a>
       </nav>
       <div class="header-actions">
-        <a class="btn btn-primary btn-sm" href="#apply">지금 매입하기</a>
+        <a class="btn btn-primary btn-sm" href="#apply">상품권 판매하기</a>
         <button class="menu-button" type="button" aria-label="메뉴"><span></span><span></span></button>
       </div>
     </div>
   </header>
 
   <main id="top">
-    <!-- HERO -->
+    <!-- HERO — 규격: 카피 + 시세 보드 -->
     <section class="hero">
       <div class="shell hero-grid">
         <div class="hero-copy">
-          <span class="hero-eyebrow reveal">본인확인 · 이상거래탐지 적용</span>
-          <h1 class="reveal" data-delay="60">빠른 것보다<br><span class="accent">안전한 매입</span>이<br>먼저입니다.</h1>
-          <p class="hero-lead reveal" data-delay="120">컬쳐랜드·롯데모바일은 자동판별로, 그 외 상품권은 상담으로 매입합니다. 본인확인을 거친 계좌로만 지급해, 매입대금이 엉뚱한 곳으로 새지 않게 합니다.</p>
+          <span class="hero-eyebrow reveal">본인확인 · 이상거래탐지 적용 매입</span>
+          <h1 class="reveal" data-delay="60">회원가입 없이 간편하게,<br>지급은 <span class="accent">확인하고 안전하게</span>.</h1>
+          <p class="hero-lead reveal" data-delay="120">컬쳐랜드·롯데모바일은 등록 결과를 자동 판별하고, 그 외 상품권은 상담으로 매입합니다. 매입대금은 본인확인을 거친 예금주 계좌로만 지급합니다.</p>
           <div class="hero-cta reveal" data-delay="180">
-            <a class="btn btn-primary" href="#apply">매입 신청하기</a>
-            <a class="btn btn-ghost" href="compliance.html">준법 설계 보기</a>
+            <a class="btn btn-primary" href="#apply">상품권 판매 신청</a>
+            <a class="btn btn-ghost" href="#rates">매입 시세 보기</a>
           </div>
           <div class="hero-trust reveal" data-delay="240">
             <div><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> 본인확인(KYC) 후 지급</div>
@@ -55,29 +57,63 @@
             <div><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> 매입률 투명 고지</div>
           </div>
         </div>
-        <div class="hero-card reveal" data-delay="140">
-          <div class="hero-card-top">
-            <strong>실시간 매입 시세</strong>
-            <span class="live-dot"><i></i> LIVE</span>
+        <div class="hero-visual reveal" data-delay="140" data-hero-fan aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <!-- 지표 밴드 — 규격: #f8f8f8 + 대형 숫자 -->
+    <section class="stats-band" aria-label="서비스 지표">
+      <div class="shell stats-in">
+        <div class="stat reveal"><b><span data-count="97" data-suffix="초">0</span></b><span>평균 검증·지급 시간</span></div>
+        <div class="stat reveal" data-delay="60"><b><span data-count="128400">0</span><small>회</small></b><span>누적 매입 거래</span></div>
+        <div class="stat reveal" data-delay="120"><b><span data-count="1294">0</span><small>건</small></b><span>이상거래 사전 차단</span></div>
+        <div class="stat reveal" data-delay="180"><b>0<small>건</small></b><span>거래 사고</span></div>
+      </div>
+    </section>
+
+    <!-- 프로모 배너 밴드 — 규격 sub_banner -->
+    <section class="section" style="padding-bottom:0" aria-label="안내 배너">
+      <div class="shell promo-grid">
+        <a class="promo dark reveal" href="#apply">
+          <span class="p-eye">BULK SALE</span>
+          <h3>상품권 대량 판매 환영</h3>
+          <p>10건 이상 대량 판매는 상담 매입으로 안전하게 진행됩니다.</p>
+          <span class="p-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="gcard p-card" style="--c1:#6D6AF0;--c2:#4438CA" aria-hidden="true"></span>
+        </a>
+        <a class="promo tint reveal" data-delay="80" href="#guide">
+          <span class="p-eye">FIRST TRADE</span>
+          <h3>첫 거래, 본인확인 후 바로 지급</h3>
+          <p>실명·계좌주 일치 확인만 거치면 이후 거래는 더 빨라집니다.</p>
+          <span class="p-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+          <span class="gcard p-card" style="--c1:rgba(255,255,255,.28);--c2:rgba(255,255,255,.08)" aria-hidden="true"></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- 실시간 판매내역 + 공지 — 규격 latest -->
+    <section class="section" id="live">
+      <div class="shell">
+        <div class="section-head reveal">
+          <p class="section-kicker">실시간 판매내역</p>
+          <h2>최근에 판매된 내역을 보실 수 있습니다</h2>
+          <p>이상거래로 판단되면 자동 지급을 멈추고 관리자 검토로 넘깁니다. 그게 안전장치입니다.</p>
+        </div>
+        <div class="latest-grid">
+          <div class="board reveal">
+            <div class="board-head"><h3>실시간 판매내역</h3><span>시간·금액·상태는 시연용 가상 데이터</span></div>
+            <div class="live-list" data-live-list></div>
           </div>
-          <div class="rate-mini" data-hero-rates></div>
-          <p class="quote-note">※ 표시 시세는 데모용 가상 값이며 실제 매입률이 아닙니다.</p>
+          <div class="board reveal" data-delay="80">
+            <div class="board-head"><h3>공지사항</h3><span>안내·이벤트</span></div>
+            <nav class="notice-list" data-notice-list aria-label="공지사항"></nav>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- ② 풀블리드 이미지 statement (100vw) -->
-    <section class="statement" aria-label="안전 약속">
-      <div class="statement-bg"><img src="assets/img/statement-secure.jpg" alt="" data-parallax></div>
-      <div class="statement-in shell">
-        <span class="st-eye">Safe by Design</span>
-        <h2 class="words" data-split>빠른 것보다, 안전한 매입이 먼저입니다</h2>
-        <p class="reveal">본인확인·구매경로·이상거래탐지를 통과한 거래만 지급됩니다. 매입대금이 엉뚱한 곳으로 새지 않도록, 설계부터 다릅니다.</p>
-      </div>
-    </section>
-
-    <!-- 시세 -->
-    <section class="section" id="rates">
+    <!-- 매입 시세 -->
+    <section class="section alt" id="rates">
       <div class="shell">
         <div class="section-head reveal">
           <p class="section-kicker">매입 시세</p>
@@ -88,99 +124,125 @@
       </div>
     </section>
 
-    <!-- 매입 신청 -->
-    <section class="section" id="apply" style="background:var(--bg2)">
+    <!-- 상품권 판매 신청서 — 규격: STEP 세로 노출 원페이지 폼 -->
+    <section class="section" id="apply">
       <div class="shell">
         <div class="section-head reveal">
-          <p class="section-kicker">매입 신청</p>
-          <h2>4단계로 안전하게</h2>
-          <p>핀번호는 여러 건 함께 신청할 수 있습니다. 본인확인을 통과해야 매입대금이 지급됩니다.</p>
+          <p class="section-kicker">상품권 판매 신청서</p>
+          <h2>신청서를 작성하시면 검증 후 입금해드립니다</h2>
+          <p>핀번호는 한 번에 최대 20건까지 함께 신청할 수 있습니다. 본인확인과 이상거래 검사를 통과한 신청만 지급됩니다.</p>
         </div>
-        <div class="apply-wrap reveal" data-delay="80">
-          <div>
-            <div class="steps">
-              <div class="step-pill is-active"><b>1</b>종류 선택</div>
-              <div class="step-pill"><b>2</b>핀·금액</div>
-              <div class="step-pill"><b>3</b>본인확인</div>
-              <div class="step-pill"><b>4</b>계좌·완료</div>
-            </div>
+        <div class="apply-wrap">
+          <div class="step-flow">
 
-            <div class="panel">
-              <!-- Step 1 -->
-              <div class="step-body is-active">
-                <h3>상품권 종류를 선택하세요</h3>
-                <p class="hint">자동판별 상품권은 즉시 검증, 상담매입은 채널톡으로 연결됩니다.</p>
+            <!-- STEP 01 -->
+            <article class="step-card reveal" data-step="1">
+              <div class="step-head">
+                <span class="step-no">STEP 01</span>
+                <h3>상품권 종류 선택</h3>
+                <span class="step-state" data-step-state="1">선택 전</span>
+              </div>
+              <div class="step-body">
+                <p class="hint">판매할 상품권 종류를 선택해 주세요.</p>
                 <div class="gc-select" data-gc-select></div>
-                <div class="step-actions">
-                  <span></span>
-                  <button class="btn btn-primary" type="button" data-next-1>다음</button>
+                <div class="gc-info" data-gc-info>
+                  <dl>
+                    <div><dt>매입 방식</dt><dd data-i-mode>-</dd></div>
+                    <div><dt>매입률</dt><dd data-i-rate>-</dd></div>
+                    <div><dt>액면가 범위</dt><dd data-i-range>-</dd></div>
+                    <div><dt>처리</dt><dd data-i-note>-</dd></div>
+                  </dl>
                 </div>
               </div>
+            </article>
 
-              <!-- Step 2 -->
+            <!-- STEP 02 -->
+            <article class="step-card reveal" data-step="2">
+              <div class="step-head">
+                <span class="step-no">STEP 02</span>
+                <h3>핀번호 · 구매경로 확인</h3>
+                <span class="step-state" data-step-state="2">입력 전</span>
+              </div>
               <div class="step-body">
-                <h3>핀번호와 금액을 입력하세요</h3>
-                <p class="hint">한 번에 최대 20건까지 입력할 수 있습니다.</p>
-                <label class="field"><span>1건당 액면가 <b>*</b></span>
-                  <input type="text" inputmode="numeric" data-face placeholder="예: 50000"></label>
+                <p class="hint">핀번호 복사 후 붙여넣기가 가능합니다. 한 번에 최대 20건까지 입력할 수 있습니다.</p>
+                <div class="field-row">
+                  <label class="field"><span>1건당 액면가 <b>*</b></span>
+                    <input type="text" inputmode="numeric" data-face placeholder="예: 50000"></label>
+                  <div class="field"><span>&nbsp;</span>
+                    <button type="button" class="btn btn-ghost" style="height:47px;border-radius:var(--radius-s);width:100%" data-sample>예시 값으로 채우기</button>
+                  </div>
+                </div>
                 <div class="field"><span>핀번호 (다건 입력) <b>*</b></span>
                   <div class="pin-list" data-pin-list></div>
                   <button type="button" class="pin-add" data-pin-add>+ 핀번호 추가</button>
                 </div>
                 <div class="field"><span>이 상품권의 구매 경로 <b>*</b></span>
-                  <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
-                    <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer"><input type="radio" name="route" value="self" style="margin-top:3px"><span>선물·정상 구매로 <b style="color:var(--ink)">본인이 보유</b>한 상품권입니다</span></label>
-                    <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;cursor:pointer"><input type="radio" name="route" value="micropay" style="margin-top:3px"><span>휴대폰 <b style="color:var(--ink)">소액결제·신용카드로 방금 구매</b>했습니다</span></label>
+                  <div class="route-opts">
+                    <label class="route-opt"><input type="radio" name="route" value="self"><span>선물·정상 구매로 <b>본인이 보유</b>한 상품권입니다</span></label>
+                    <label class="route-opt"><input type="radio" name="route" value="micropay"><span>휴대폰 <b>소액결제·신용카드로 방금 구매</b>했습니다</span></label>
                   </div>
                 </div>
-                <div class="kyc-gate" data-route-warn hidden style="border-color:var(--red);background:var(--red-soft)">
-                  <div class="kyc-head" style="color:#B42318"><svg viewBox="0 0 24 24" style="stroke:var(--red)"><path d="M12 9v4M12 17h.01M10.3 3.9l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0z"/></svg>취급할 수 없는 매입입니다</div>
-                  <p style="color:#8A2018">소액결제·신용카드로 구매한 상품권의 현금화는 <b>정보통신망법 제72조(3년 이하 징역/3천만원)</b> 위반 소지가 있어 취급하지 않습니다. 본인이 정상 보유한 상품권만 매입합니다.</p>
-                </div>
-                <div class="step-actions">
-                  <button class="btn btn-ghost" type="button" data-prev>이전</button>
-                  <button class="btn btn-primary" type="button" data-next-2>다음</button>
+                <div class="gate is-danger" data-route-warn hidden>
+                  <div class="gate-head"><svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3l-8-14a2 2 0 0 0-3.4 0z"/></svg>취급할 수 없는 매입입니다</div>
+                  <p>소액결제·신용카드로 구매한 상품권의 현금화는 <b>정보통신망법 제72조(3년 이하 징역/3천만원)</b> 위반 소지가 있어 취급하지 않습니다. 본인이 정상 보유한 상품권만 매입합니다.</p>
                 </div>
               </div>
+            </article>
 
-              <!-- Step 3 -->
-              <div class="step-body" data-kyc>
+            <!-- STEP 03 -->
+            <article class="step-card reveal" data-step="3" data-kyc>
+              <div class="step-head">
+                <span class="step-no">STEP 03</span>
                 <h3>본인확인 (KYC)</h3>
+                <span class="step-state" data-step-state="3">확인 전</span>
+              </div>
+              <div class="step-body">
                 <p class="hint">자금세탁방지 의무에 따라 첫 거래는 실명·계좌주 일치를 확인합니다.</p>
-                <div class="kyc-gate">
-                  <div class="kyc-head"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/></svg><span>본인확인이 필요합니다</span></div>
-                  <p class="kyc-body">자금세탁방지 의무에 따라 첫 거래는 실명·계좌주 일치 확인 후에만 송금됩니다. (데모에서는 입력만으로 시연)</p>
+                <div class="gate" data-kyc-gate>
+                  <div class="gate-head"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/></svg><span>본인확인이 필요합니다</span></div>
+                  <p data-kyc-body>실명·계좌주 일치 확인 후에만 매입대금이 지급됩니다. (데모에서는 입력만으로 시연)</p>
                 </div>
                 <label class="field"><span>이름(실명) <b>*</b></span><input type="text" placeholder="예금주와 동일해야 합니다"></label>
-                <div class="field-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="field-row">
                   <label class="field"><span>생년월일 <b>*</b></span><input type="text" inputmode="numeric" placeholder="예: 1990-01-01"></label>
                   <label class="field"><span>휴대폰 <b>*</b></span><input type="tel" inputmode="numeric" placeholder="010-0000-0000"></label>
                 </div>
-                <div class="step-actions">
-                  <button class="btn btn-ghost" type="button" data-prev>이전</button>
-                  <button class="btn btn-primary" type="button" data-next-3>본인확인 완료</button>
-                </div>
               </div>
+            </article>
 
-              <!-- Step 4 -->
+            <!-- STEP 04 -->
+            <article class="step-card reveal" data-step="4">
+              <div class="step-head">
+                <span class="step-no">STEP 04</span>
+                <h3>주문정보 입력</h3>
+                <span class="step-state" data-step-state="4">입력 전</span>
+              </div>
               <div class="step-body">
-                <h3>입금 계좌 입력</h3>
                 <p class="hint">본인확인한 명의와 <b>동일한 예금주</b> 계좌만 지급됩니다.</p>
                 <form data-apply-form novalidate>
-                  <label class="field"><span>은행 <b>*</b></span><select data-bank required></select></label>
-                  <label class="field"><span>예금주 <b>*</b></span><input type="text" required placeholder="본인확인한 실명과 동일"></label>
-                  <label class="field"><span>계좌번호 <b>*</b></span><input class="mono" type="text" inputmode="numeric" required placeholder="'-' 없이 숫자만"></label>
-                  <div class="step-actions">
-                    <button class="btn btn-ghost" type="button" data-prev>이전</button>
-                    <button class="btn btn-primary" type="submit">매입 신청 완료</button>
+                  <label class="field"><span>은행명 <b>*</b></span><select data-bank required></select></label>
+                  <div class="field-row">
+                    <label class="field"><span>예금주 이름 <b>*</b></span><input type="text" data-holder required placeholder="본인확인한 실명과 동일"></label>
+                    <label class="field"><span>계좌번호 <b>*</b></span><input class="mono" type="text" data-acct inputmode="numeric" required placeholder="'-' 없이 숫자만"></label>
                   </div>
+                  <div class="check-box">
+                    <div class="ck-title"><b>CHECK!</b> 꼭 확인해주세요</div>
+                    <ul>
+                      <li>매입률은 상품권별로 다르며, 신청 전 <b data-ck-rate>견적</b>에서 최종 지급액을 확인할 수 있습니다.</li>
+                      <li>주문신청 후 <b>환불·취소는 불가능</b>합니다. 핀번호와 금액을 다시 확인해 주세요.</li>
+                      <li>소액결제·신용카드로 구매한 상품권은 <b>매입하지 않습니다.</b></li>
+                      <li>본인확인·이상거래 검사를 통과해야 지급되며, 이상거래는 관리자 검토로 전환됩니다.</li>
+                    </ul>
+                    <label class="agree"><input type="checkbox" data-agree><span>개인정보 수집·이용 및 준법 확인 사항에 동의합니다. <b>*</b></span></label>
+                  </div>
+                  <button class="btn btn-primary btn-lg btn-block" type="submit">매입 신청 완료</button>
                 </form>
               </div>
-            </div>
+            </article>
           </div>
 
           <!-- 견적 사이드 -->
-          <aside class="quote">
+          <aside class="quote reveal" data-delay="100">
             <h4>실시간 견적</h4>
             <div class="quote-line"><span>상품권</span><strong data-q-gc>-</strong></div>
             <div class="quote-line"><span>매입률</span><strong data-q-rate>-</strong></div>
@@ -188,96 +250,128 @@
             <div class="quote-line"><span>액면 합계</span><strong data-q-face>0원</strong></div>
             <div class="quote-line"><span>수수료</span><strong data-q-fee style="color:var(--red)">0원</strong></div>
             <div class="quote-total"><span>받을 금액</span><strong data-q-pay>0원</strong></div>
-            <p class="quote-note">신청 후 환불·취소가 불가하므로 핀번호와 금액을 다시 확인해 주세요. 최종 지급액은 검증 완료 후 확정됩니다.</p>
+            <div class="quote-steps" data-q-steps>
+              <div data-qs="1">상품권 선택</div>
+              <div data-qs="2">핀번호·구매경로</div>
+              <div data-qs="3">본인확인</div>
+              <div data-qs="4">계좌·동의</div>
+            </div>
+            <p class="quote-note">최종 지급액은 핀 검증 완료 후 확정됩니다. 표시 금액은 매입률 기준 예상액입니다.</p>
           </aside>
         </div>
       </div>
     </section>
 
-    <!-- 실시간 처리 현황 -->
-    <section class="section" id="live">
+    <!-- WHY — 규격 3단 -->
+    <section class="section alt" id="why">
       <div class="shell">
         <div class="section-head reveal">
-          <p class="section-kicker">처리 현황</p>
-          <h2>실시간 매입 처리</h2>
-          <p>이상거래로 판단되면 자동 송금을 멈추고 관리자 검토로 넘깁니다. 그게 안전장치입니다.</p>
+          <p class="section-kicker">WHY PINGUARD</p>
+          <h2>안전은 말이 아니라 절차로 증명합니다</h2>
+          <p>속도가 아니라, 아래 세 가지를 모두 통과해야만 매입대금이 지급됩니다.</p>
         </div>
-        <div class="live-list reveal" data-live-list></div>
-        <p class="quote-note" style="margin-top:14px">※ 목록의 시간·금액·상태는 기능 시연용 가상 데이터입니다.</p>
+        <div class="why-grid">
+          <article class="why-item reveal">
+            <div class="w-ico"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+            <span class="w-no">01 · KYC</span>
+            <h3>본인확인</h3>
+            <p>첫 거래는 실명·계좌주 일치를 확인합니다. 대포통장·타인 계좌로의 자금세탁을 차단합니다.</p>
+          </article>
+          <article class="why-item reveal" data-delay="80">
+            <div class="w-ico"><svg viewBox="0 0 24 24"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg></div>
+            <span class="w-no">02 · SOURCE</span>
+            <h3>구매경로 확인</h3>
+            <p>소액결제·신용카드로 구매한 상품권은 신청 단계에서 자동 차단합니다. 본인이 정상 보유한 상품권만 매입합니다.</p>
+          </article>
+          <article class="why-item reveal" data-delay="160">
+            <div class="w-ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+            <span class="w-no">03 · FDS</span>
+            <h3>이상거래탐지</h3>
+            <p>대량·고액·심야·분할 거래를 자동 판정해 보류합니다. 통과한 거래만 자동 지급됩니다.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ① 마우스 반응 카드 (3중 안전장치) 100vw -->
-    <section class="section apps" id="safe">
+    <!-- 상품권 교환 안내 및 유의사항 — 규격 아코디언 -->
+    <section class="section" id="guide">
       <div class="shell">
         <div class="section-head reveal">
-          <p class="section-kicker">3중 안전장치</p>
-          <h2 style="font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.03em"><span class="mask"><span>안전은 말이 아니라</span></span><span class="mask d1"><span>기능으로 증명합니다.</span></span></h2>
-          <p style="color:var(--muted);margin-top:12px;font-size:15.5px">속도가 아니라, 아래 세 가지를 모두 통과해야만 매입대금이 지급됩니다. <span style="color:var(--muted)">(카드에 마우스를 올려보세요)</span></p>
+          <p class="section-kicker">이용 안내</p>
+          <h2>상품권 교환 안내 및 유의사항</h2>
         </div>
-      </div>
-      <div class="wide">
-        <div class="apps-grid reveal">
-          <article class="app-card"><img src="assets/img/safe-1.jpg" alt="본인확인"><div class="app-spot"></div><div class="app-body"><span class="n">01 · KYC</span><h3>본인확인</h3><p>첫 거래는 실명·계좌주 일치를 확인합니다. 대포통장·타인 계좌로의 자금세탁을 차단합니다.</p></div></article>
-          <article class="app-card"><img src="assets/img/safe-2.jpg" alt="구매경로 확인"><div class="app-spot"></div><div class="app-body"><span class="n">02 · SOURCE</span><h3>구매경로 확인</h3><p>소액결제·신용카드로 구매한 상품권은 자동 차단합니다. 본인이 정상 보유한 상품권만 매입합니다.</p></div></article>
-          <article class="app-card"><img src="assets/img/safe-3.jpg" alt="이상거래탐지"><div class="app-spot"></div><div class="app-body"><span class="n">03 · FDS</span><h3>이상거래탐지</h3><p>대량·고액·심야·분할 거래를 자동 판정해 보류합니다. 통과한 거래만 자동 송금됩니다.</p></div></article>
-        </div>
-      </div>
-    </section>
-
-    <!-- 준법 배너 -->
-    <section class="section" style="padding-top:0">
-      <div class="shell">
-        <div class="compliance-banner reveal">
-          <div class="cb-icon"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <div>
-            <h3>“회원가입 없이 3초 자동송금”은 왜 그대로 만들면 안 될까요?</h3>
-            <p>공고의 요구 기능을 하나씩 법적으로 진단하고, 준법 대안을 화면으로 정리했습니다. 소액결제 현금화·무인 송금·스크래핑 자동화의 위험과 대안을 확인하세요.</p>
-          </div>
-          <a class="btn btn-primary" href="compliance.html">준법 진단 보기</a>
+        <div class="faq-list reveal">
+          <details open>
+            <summary>매입 절차는 어떻게 진행되나요?</summary>
+            <div class="faq-body">신청서 작성 → 핀 등록 결과 자동 판별(컬쳐랜드·롯데모바일) 또는 상담 확인(그 외) → 본인확인·이상거래 검사 → 예금주 일치 계좌로 지급 순서로 진행됩니다. 검증에 문제가 없으면 영업시간 기준 수 분 내에 지급됩니다.</div>
+          </details>
+          <details>
+            <summary>왜 본인확인(KYC)을 요구하나요?</summary>
+            <div class="faq-body">자금세탁방지 의무(특정금융정보법) 때문입니다. 본인확인 없이 임의 계좌로 자동 송금하면 대포통장·보이스피싱 환전 통로로 악용될 수 있어, <b>첫 거래는 실명·계좌주 일치 확인 후에만 지급</b>합니다. 동일 명의 반복 거래는 간소화됩니다.</div>
+          </details>
+          <details>
+            <summary>소액결제·신용카드로 산 상품권도 팔 수 있나요?</summary>
+            <div class="faq-body"><b>매입하지 않습니다.</b> 휴대폰 소액결제·신용카드로 구매한 상품권의 현금화 알선은 정보통신망법 제72조 위반(3년 이하 징역 또는 3천만원 이하 벌금) 소지가 있습니다. 신청 단계의 구매경로 확인에서 자동 차단됩니다.</div>
+          </details>
+          <details>
+            <summary>신청 후 취소·환불이 가능한가요?</summary>
+            <div class="faq-body">핀번호가 등록·검증된 이후에는 <b>환불·취소가 불가능</b>합니다. 신청 전 핀번호와 액면가, 예상 지급액을 반드시 확인해 주세요.</div>
+          </details>
+          <details>
+            <summary>이상거래로 보류되면 어떻게 되나요?</summary>
+            <div class="faq-body">대량·고액·심야·분할 등 이상거래 규칙에 해당하면 자동 지급을 멈추고 관리자 검토로 전환됩니다. 확인 후 정상 거래로 판정되면 지급이 재개되며, 필요 시 추가 확인을 요청드릴 수 있습니다.</div>
+          </details>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" style="margin-top:0">
     <div class="shell">
       <div class="footer-grid">
         <div>
-          <div class="footer-brand">PINGUARD 핀가드</div>
+          <div class="footer-brand"><span class="brand-mark"><svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/></svg></span>PINGUARD 핀가드</div>
           <p class="biz-info">
-            <b>상호</b> 핀가드(가상) · <b>대표</b> 홍길동<br>
-            <b>사업자등록번호</b> 000-00-00000 (상품권매매업)<br>
-            <b>통신판매업신고</b> 제0000-서울-0000호<br>
-            <b>주소</b> 서울특별시 ○○구 ○○로 000 (가상)
+            <b>상호</b> 핀가드(가상)<span class="sep">ㅣ</span><b>대표</b> 홍길동<span class="sep">ㅣ</span><b>사업자등록번호</b> 000-00-00000 (상품권매매업)<br>
+            <b>통신판매업신고</b> 제0000-서울-0000호<span class="sep">ㅣ</span><b>주소</b> 서울특별시 ○○구 ○○로 000 (가상)
           </p>
+          <div class="footer-cs">
+            고객센터 <strong>070-0000-0000</strong>
+            영업시간 00:00 ~ 24:00 (연중무휴) · 고객센터 09:00 ~ 01:00
+          </div>
         </div>
         <div>
-          <strong>매입</strong>
+          <strong class="f-title">매입</strong>
           <a href="#rates">매입 시세</a>
-          <a href="#apply">매입 신청</a>
-          <a href="#live">처리 현황</a>
+          <a href="#apply">판매 신청서</a>
+          <a href="#live">실시간 내역</a>
+          <a href="#guide">이용 안내</a>
         </div>
         <div>
-          <strong>안내</strong>
-          <a href="compliance.html">준법 안내</a>
-          <a href="admin.html">관리자 데모</a>
+          <strong class="f-title">안내</strong>
+          <a href="#guide">이용 안내·유의사항</a>
           <a href="#apply">채널톡 상담(그 외 상품권)</a>
+          <a href="#live">공지사항</a>
         </div>
       </div>
       <div class="footer-legal">
         <strong>준법 고지</strong> 본 사이트는 정상 보유한 상품권만 매입하며, 휴대폰 소액결제·신용카드로 구매한 상품권의 현금화(깡)는 취급하지 않습니다. 매입대금은 본인확인(KYC)을 거친 예금주 계좌로만 지급됩니다.<br>
         본 사이트는 제안 검토용 <strong>비공식 데모</strong>이며, 모든 수치·거래·사업자정보는 가상입니다. 실제 서비스가 아닙니다.
+        검토용 화면 — <a href="compliance.html" style="text-decoration:underline;text-underline-offset:3px">준법 진단</a> · <a href="admin.html" style="text-decoration:underline;text-underline-offset:3px">관리자 데모</a>
       </div>
     </div>
   </footer>
 
   <dialog class="modal" data-done-dialog aria-labelledby="doneTitle">
     <h3 id="doneTitle">매입 신청이 접수되었습니다</h3>
-    <p>예상 지급액 <strong data-done-amt style="color:var(--blue)">-</strong><br><span data-done-mode></span><br><br>데모에서는 실제 송금이 발생하지 않습니다. 실제 서비스에서는 본인확인·이상거래탐지를 통과한 뒤 지급됩니다.</p>
+    <p>예상 지급액 <strong data-done-amt style="color:var(--accent-ink)">-</strong><br><span data-done-mode></span><br><br>데모에서는 실제 송금이 발생하지 않습니다. 실제 서비스에서는 본인확인·이상거래탐지를 통과한 뒤 지급됩니다.</p>
     <div class="modal-actions"><button class="btn btn-primary done-close" type="button">확인</button></div>
   </dialog>
 
+  <button class="kakao-float" type="button" data-kakao aria-label="카카오톡 상담">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.8 3 2.6 6.3 2.6 10.4c0 2.6 1.7 4.9 4.3 6.2l-1 3.7c-.1.3.3.6.6.4l4.4-2.9c.4 0 .7.1 1.1.1 5.2 0 9.4-3.3 9.4-7.5S17.2 3 12 3z"/></svg>
+    카카오톡 상담
+  </button>
   <div class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

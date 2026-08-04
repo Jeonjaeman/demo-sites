@@ -36,7 +36,7 @@
   };
 
   const runReveal = () => {
-    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const vh = window.innerHeight || document.documentElement.clientHeight || 900;
     $$(".reveal:not(.is-visible)").forEach((el) => {
       const r = el.getBoundingClientRect();
       if (r.top < vh * 0.95 && r.bottom > 0) {

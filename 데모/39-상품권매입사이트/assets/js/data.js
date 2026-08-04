@@ -5,30 +5,47 @@ window.PINGUARD = {
      mode: auto = 컬처랜드/롯데(자동판별 대상) · manual = 채널톡 상담매입
      소액결제/카드 구매분은 준법상 매입 불가(구매경로 확인 단계에서 차단) */
   giftcards: [
-    { id: "culture",  name: "컬쳐랜드",        sub: "16핀 · 문화상품권", rate: 92.5, mode: "auto",   trend: "up",   min: 1000, max: 500000 },
-    { id: "book",     name: "북앤라이프",      sub: "도서문화상품권",    rate: 91.0, mode: "auto",   trend: "flat", min: 1000, max: 500000 },
-    { id: "teencash", name: "틴캐시",          sub: "16핀",              rate: 88.0, mode: "auto",   trend: "down", min: 1000, max: 300000 },
-    { id: "lotte",    name: "롯데모바일상품권", sub: "바코드/교환권",     rate: 90.5, mode: "auto",   trend: "up",   min: 1000, max: 500000 },
-    { id: "happy",    name: "해피머니",        sub: "18핀",              rate: 87.5, mode: "manual", trend: "flat", min: 1000, max: 500000 },
-    { id: "culture-paper", name: "문화상품권(지류)", sub: "지류 스캔",    rate: 89.0, mode: "manual", trend: "flat", min: 5000, max: 100000 },
-    { id: "ssg",      name: "신세계·이마트",    sub: "모바일교환권",      rate: 84.0, mode: "manual", trend: "down", min: 5000, max: 500000 },
-    { id: "starbucks",name: "스타벅스",        sub: "e카드/기프티콘",    rate: 82.0, mode: "manual", trend: "up",   min: 5000, max: 200000 },
-    { id: "google",   name: "구글기프트카드",  sub: "PIN",               rate: 78.0, mode: "manual", trend: "down", min: 10000, max: 500000 }
+    /* art: 카드 페이스 그라디언트 [상단, 하단] + en 워드마크 — CSS로 직접 그린 가상 카드(실제 브랜드 디자인 아님) */
+    { id: "culture",  name: "컬쳐랜드",        en: "CULTURE",  sub: "16핀 · 문화상품권", rate: 92.5, mode: "auto",   trend: "up",   min: 1000, max: 500000,  art: ["#6D6AF0", "#4438CA"] },
+    { id: "book",     name: "북앤라이프",      en: "BOOK&LIFE",sub: "도서문화상품권",    rate: 91.0, mode: "auto",   trend: "flat", min: 1000, max: 500000,  art: ["#2FA8E8", "#0B69B4"] },
+    { id: "teencash", name: "틴캐시",          en: "TEENCASH", sub: "16핀",              rate: 88.0, mode: "auto",   trend: "down", min: 1000, max: 300000,  art: ["#F5A623", "#C46A08"] },
+    { id: "lotte",    name: "롯데모바일상품권", en: "L.MOBILE", sub: "바코드/교환권",     rate: 90.5, mode: "auto",   trend: "up",   min: 1000, max: 500000,  art: ["#F0526E", "#B81C3D"] },
+    { id: "happy",    name: "해피머니",        en: "HAPPY",    sub: "18핀",              rate: 87.5, mode: "manual", trend: "flat", min: 1000, max: 500000,  art: ["#FB8A3C", "#C74E10"] },
+    { id: "culture-paper", name: "문화상품권(지류)", en: "PAPER", sub: "지류 스캔",      rate: 89.0, mode: "manual", trend: "flat", min: 5000, max: 100000,  art: ["#34B368", "#137A42"] },
+    { id: "ssg",      name: "신세계·이마트",    en: "S.MALL",   sub: "모바일교환권",      rate: 84.0, mode: "manual", trend: "down", min: 5000, max: 500000,  art: ["#E8B815", "#96700A"] },
+    { id: "starbucks",name: "스타벅스",        en: "COFFEE",   sub: "e카드/기프티콘",    rate: 82.0, mode: "manual", trend: "up",   min: 5000, max: 200000,  art: ["#0FA57E", "#065F46"] },
+    { id: "google",   name: "구글기프트카드",  en: "G.PLAY",   sub: "PIN",               rate: 78.0, mode: "manual", trend: "down", min: 10000, max: 500000, art: ["#5E9BF7", "#1D5FD6"] }
   ],
 
   /* 은행 목록 */
   banks: ["국민","신한","우리","하나","농협","기업","카카오뱅크","토스뱅크","케이뱅크","SC제일","부산","대구"],
 
-  /* 실시간 처리 현황 (가상) — status: done 송금완료 / review 검토중 / hold 이상거래 보류 */
+  /* 실시간 판매내역 (가상) — 규격(24PIN·라이브콘): 날짜 + 마스킹 이름 + N건 + 금액 + 상태
+     status: done 입금완료 / review 검증중 / hold 이상거래 보류 */
   live: [
-    { time: "23:58", gc: "컬쳐랜드",        amt: 46250,  status: "done" },
-    { time: "23:55", gc: "롯데모바일상품권", amt: 90500,  status: "done" },
-    { time: "23:51", gc: "구글기프트카드",  amt: 234000, status: "review" },
-    { time: "23:47", gc: "컬쳐랜드",        amt: 462500, status: "hold" },
-    { time: "23:44", gc: "틴캐시",          amt: 26400,  status: "done" },
-    { time: "23:40", gc: "신세계·이마트",    amt: 42000,  status: "done" },
-    { time: "23:36", gc: "해피머니",        amt: 87500,  status: "review" },
-    { time: "23:31", gc: "컬쳐랜드",        amt: 46250,  status: "done" }
+    { date: "08/04", name: "김*우", gc: "컬쳐랜드 상품권",     count: 1,  amt: 46250,  status: "done" },
+    { date: "08/04", name: "이*헌", gc: "롯데모바일 상품권",   count: 1,  amt: 90500,  status: "done" },
+    { date: "08/04", name: "박*수", gc: "구글기프트카드",      count: 2,  amt: 234000, status: "review" },
+    { date: "08/04", name: "최*정", gc: "컬쳐랜드 상품권",     count: 10, amt: 462500, status: "hold" },
+    { date: "08/04", name: "정*훈", gc: "틴캐시 상품권",       count: 1,  amt: 26400,  status: "done" },
+    { date: "08/04", name: "강*현", gc: "신세계·이마트 교환권", count: 1,  amt: 42000,  status: "done" },
+    { date: "08/04", name: "임*경", gc: "해피머니 상품권",     count: 1,  amt: 87500,  status: "review" },
+    { date: "08/03", name: "한*우", gc: "컬쳐랜드 상품권",     count: 5,  amt: 231250, status: "done" },
+    { date: "08/03", name: "송*태", gc: "롯데모바일 상품권",   count: 4,  amt: 362000, status: "done" },
+    { date: "08/03", name: "황*수", gc: "컬쳐랜드 상품권",     count: 1,  amt: 9250,   status: "done" },
+    { date: "08/03", name: "나*균", gc: "북앤라이프 상품권",   count: 1,  amt: 45500,  status: "done" },
+    { date: "08/03", name: "차*환", gc: "문화상품권(지류)",    count: 3,  amt: 26700,  status: "done" }
+  ],
+
+  /* 공지사항 (가상) — 규격: 제목 + 날짜, 상단 고정 공지 */
+  notices: [
+    { title: "상품권 매입 이용 안내 — 본인확인(KYC) 절차 안내", date: "08/01", pin: true },
+    { title: "2026년 8월 매입 단가표 안내", date: "08/01" },
+    { title: "소액결제·신용카드 구매 상품권 매입 불가 안내", date: "07/22", pin: true },
+    { title: "이상거래탐지(FDS) 기준 개편 안내", date: "07/15" },
+    { title: "심야 시간대(00~05시) 고액 신청 검토 지연 안내", date: "07/08" },
+    { title: "상품권 대량 판매 문의 환영", date: "06/30" },
+    { title: "고객센터 운영시간 변경 안내", date: "06/21" }
   ],
 
   /* ★ 준법 진단 — 공고 요구 기능별 위법 신호등 (이 데모의 핵심)

@@ -1,18 +1,24 @@
+/* PINGUARD — 공개 사이트 스크립트 (2026.08 리뉴얼)
+   규격: 참고 사이트(24PIN·라이브콘·24핀팜)와 동일하게 STEP을 한 페이지에
+   세로로 전부 노출하고, 완성도는 단계별 실시간 검증 + 견적 사이드로 능가한다. */
 (() => {
   const D = window.PINGUARD;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const won = (n) => n.toLocaleString("ko-KR") + "원";
+  const reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------- scroll reveal (getBoundingClientRect 기반) ---------- */
   const runReveal = () => {
-    const vh = window.innerHeight || document.documentElement.clientHeight;
+    /* 백그라운드 탭(innerHeight=0)에서도 첫 화면이 비지 않도록 폴백 */
+    const vh = window.innerHeight || document.documentElement.clientHeight || 900;
     $$(".reveal:not(.is-visible)").forEach((el) => {
       const r = el.getBoundingClientRect();
-      if (r.top < vh * 0.92 && r.bottom > 0) {
+      if (r.top < vh * 0.94 && r.bottom > 0) {
         const d = Number(el.dataset.delay || 0);
         el.style.transitionDelay = Math.min(d, 300) + "ms";
         el.classList.add("is-visible");
+        if (el.querySelector("[data-count]")) el.querySelectorAll("[data-count]").forEach(startCount);
       }
     });
   };
@@ -20,45 +26,22 @@
   window.addEventListener("resize", runReveal);
   window.addEventListener("load", runReveal);
 
-  /* ---------- 지침 섹션: 텍스트 애니메이션 · 패럴랙스 · 마우스 반응 틸트 ---------- */
-  const reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  $$("[data-split]").forEach((el) => {
-    const words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map((w, i) => `<span class="w"><i style="transition-delay:${Math.min(i * 60, 500)}ms">${w}</i></span>`).join(" ");
-  });
-  const parallaxEls = $$("[data-parallax]");
-  const gReveal = () => {
-    const vh = window.innerHeight || document.documentElement.clientHeight;
-    $$(".mask:not(.is-visible), .words:not(.is-visible)").forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add("is-visible");
-    });
-    parallaxEls.forEach((el) => {
-      const wrap = el.closest(".statement-bg") || el.parentElement;
-      const r = wrap.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) return;
-      const prog = (r.top + r.height / 2 - vh / 2) / vh;
-      el.style.transform = `translateY(${(-prog * 60).toFixed(1)}px) scale(1.16)`;
-    });
+  /* ---------- 카운트업 (지표 밴드) ---------- */
+  const startCount = (el) => {
+    if (el.dataset.counted) return;
+    el.dataset.counted = "1";
+    const target = Number(el.dataset.count);
+    const suffix = el.dataset.suffix || "";
+    if (reduceM) { el.textContent = target.toLocaleString("ko-KR") + suffix; return; }
+    const t0 = performance.now(), dur = 1100;
+    const tick = (t) => {
+      const p = Math.min((t - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased).toLocaleString("ko-KR") + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   };
-  window.addEventListener("scroll", gReveal, { passive: true });
-  window.addEventListener("resize", gReveal);
-  window.addEventListener("load", gReveal);
-  gReveal();
-  if (!reduceM && window.matchMedia("(hover:hover)").matches) {
-    $$(".app-card").forEach((el) => {
-      el.addEventListener("pointermove", (e) => {
-        const r = el.getBoundingClientRect();
-        const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-        el.classList.add("tilting");
-        el.style.setProperty("--ry", `${(px - .5) * 10}deg`);
-        el.style.setProperty("--rx", `${(.5 - py) * 10}deg`);
-        el.style.setProperty("--mx", `${px * 100}%`);
-        el.style.setProperty("--my", `${py * 100}%`);
-      });
-      el.addEventListener("pointerleave", () => { el.classList.remove("tilting"); el.style.setProperty("--ry", "0deg"); el.style.setProperty("--rx", "0deg"); });
-    });
-  }
 
   /* ---------- toast ---------- */
   const toast = $(".toast");
@@ -75,92 +58,119 @@
   $(".menu-button")?.addEventListener("click", () => {
     const nav = $(".nav");
     const open = nav.style.display === "flex";
-    nav.style.cssText = open ? "" : "display:flex;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:#fff;padding:16px var(--gutter);border-bottom:1px solid var(--line);gap:6px;box-shadow:0 12px 24px -16px rgba(0,0,0,.3)";
+    nav.style.cssText = open ? "" : "display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;background:#fff;padding:12px var(--gutter) 16px;border-bottom:1px solid var(--line);gap:2px;box-shadow:0 12px 24px -16px rgba(0,0,0,.25)";
   });
 
-  /* ---------- 매입률 그리드 + 히어로 미니 ---------- */
+  /* ---------- 상품권 카드 아트 (CSS로 그린 가상 카드 — 실브랜드 디자인 아님) ---------- */
   const gcById = Object.fromEntries(D.giftcards.map((g) => [g.id, g]));
   const trendLabel = { up: "▲", down: "▼", flat: "―" };
+  const cardArt = (g, cls = "") =>
+    `<span class="gcard ${cls}" style="--c1:${g.art[0]};--c2:${g.art[1]}" aria-hidden="true">` +
+    `<span class="gc-wm">${g.en}</span><span class="gc-label">GIFT CARD</span>` +
+    `<span class="gc-pin">•••• •••• ••••</span><span class="gc-name">${g.name}</span>` +
+    `<span class="gc-initial">${g.en.charAt(0)}</span></span>`;
+
+  /* 히어로 카드 팬 */
+  const heroFan = $("[data-hero-fan]");
+  if (heroFan) {
+    const picks = [gcById.lotte, gcById.book, gcById.culture];
+    heroFan.innerHTML = picks.map((g, i) => cardArt(g, "f" + (i + 1))).join("") +
+      `<span class="hv-rate"><span>컬쳐랜드 최고 매입률</span><b>${gcById.culture.rate.toFixed(1)}%</b></span>`;
+  }
+
+  /* ---------- 매입률 그리드 (카드 아트 + 매입률) ---------- */
   const gridHost = $("[data-rate-grid]");
   if (gridHost) {
     gridHost.replaceChildren(...D.giftcards.map((g) => {
-      const card = document.createElement("article");
+      const card = document.createElement("button");
+      card.type = "button";
       card.className = "rate-card " + (g.mode === "auto" ? "is-auto" : "is-manual");
       card.innerHTML =
-        `<div class="gc-name">${g.name}</div><div class="gc-sub">${g.sub}</div>` +
+        cardArt(g) +
+        `<div class="gc-name">${g.name}<span class="tag">${g.mode === "auto" ? "자동판별" : "상담매입"}</span></div><div class="gc-sub">${g.sub}</div>` +
         `<div class="gc-rate">${g.rate.toFixed(1)}<span>%</span></div>` +
         `<div class="gc-meta"><span>1만원권 → ${won(Math.round(10000 * g.rate / 100))}</span>` +
         `<span class="rate-trend ${g.trend}">${trendLabel[g.trend]}</span></div>`;
-      card.tabIndex = 0;
-      card.style.cursor = "pointer";
       card.addEventListener("click", () => { selectGc(g.id); $("#apply")?.scrollIntoView({ behavior: "smooth" }); });
       return card;
     }));
   }
-  const heroMini = $("[data-hero-rates]");
-  if (heroMini) {
-    heroMini.replaceChildren(...D.giftcards.slice(0, 4).map((g) => {
-      const row = document.createElement("div");
-      row.className = "rate-row";
-      row.innerHTML = `<div class="rate-name">${g.name}<small>${g.sub}</small></div>` +
-        `<span class="rate-val">${g.rate.toFixed(1)}%</span>` +
-        `<span class="rate-trend ${g.trend}">${trendLabel[g.trend]}</span>`;
-      return row;
-    }));
-  }
 
-  /* ---------- 실시간 처리 현황 ---------- */
+  /* ---------- 실시간 판매내역 · 규격: 날짜+마스킹 이름+N건+금액+상태 필 ---------- */
   const liveHost = $("[data-live-list]");
-  const statusLabel = { done: "송금완료", review: "검토중", hold: "이상거래 보류" };
+  const statusLabel = { done: "입금완료", review: "검증중", hold: "보류" };
   if (liveHost) {
     liveHost.replaceChildren(...D.live.map((it) => {
       const row = document.createElement("div");
       row.className = "live-item";
-      row.innerHTML = `<span class="li-time mono">${it.time}</span>` +
-        `<span class="li-gc">${it.gc}</span>` +
-        `<span class="li-amt">${won(it.amt)}</span>` +
+      row.innerHTML = `<span class="li-date">${it.date}</span>` +
+        `<span class="li-name">${it.name}</span>` +
+        `<span class="li-desc">${it.gc} <b>${it.count}건 ${it.amt ? won(it.amt) : ""}</b></span>` +
         `<span class="li-status ${it.status}">${statusLabel[it.status]}</span>`;
       return row;
     }));
   }
 
-  /* ==========================================================
-     매입 신청 4스텝
-     ========================================================== */
-  const state = { gc: null, pins: [""], face: 0, route: "", kyc: false };
-  const stepPills = $$(".step-pill");
-  const stepBodies = $$(".step-body");
-  let current = 0;
+  /* ---------- 공지사항 ---------- */
+  const noticeHost = $("[data-notice-list]");
+  if (noticeHost) {
+    noticeHost.replaceChildren(...D.notices.map((n) => {
+      const a = document.createElement("a");
+      a.href = "#guide";
+      a.className = n.pin ? "pin" : "";
+      a.innerHTML = `<b>${n.title}</b><time>${n.date}</time>`;
+      return a;
+    }));
+  }
 
-  const goStep = (n) => {
-    current = Math.max(0, Math.min(3, n));
-    stepPills.forEach((p, i) => {
-      p.classList.toggle("is-active", i === current);
-      p.classList.toggle("is-done", i < current);
-    });
-    stepBodies.forEach((b, i) => b.classList.toggle("is-active", i === current));
-    $("#apply .panel")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  /* ==========================================================
+     상품권 판매 신청서 — 세로 노출 STEP + 단계별 실시간 검증
+     ========================================================== */
+  const state = { gc: null, pins: [""], face: 0, route: "", kyc: false, agree: false };
+
+  const stepStates = {
+    1: $("[data-step-state='1']"), 2: $("[data-step-state='2']"),
+    3: $("[data-step-state='3']"), 4: $("[data-step-state='4']")
+  };
+  const stepCards = Object.fromEntries($$("[data-step]").map((el) => [el.dataset.step, el]));
+  const qSteps = Object.fromEntries($$("[data-qs]").map((el) => [el.dataset.qs, el]));
+
+  const setStep = (n, ok, label, blocked = false) => {
+    const st = stepStates[n], card = stepCards[n], qs = qSteps[n];
+    if (st) st.textContent = label;
+    if (card) { card.classList.toggle("is-done", !!ok); card.classList.toggle("is-blocked", !!blocked); }
+    if (qs) { qs.classList.toggle("ok", !!ok); qs.classList.toggle("bad", !!blocked); }
   };
 
-  /* Step 1 — 종류 선택 */
+  /* STEP 01 — 종류 선택 */
   const gcSelectHost = $("[data-gc-select]");
+  const gcInfo = $("[data-gc-info]");
   const selectGc = (id) => {
     state.gc = id;
     $$(".gc-opt", gcSelectHost).forEach((o) => o.classList.toggle("is-sel", o.dataset.gc === id));
-    updateQuote();
-    $("[data-next-1]").disabled = !id;
+    const g = gcById[id];
+    if (gcInfo && g) {
+      gcInfo.classList.add("is-visible");
+      $("[data-i-mode]").textContent = g.mode === "auto" ? "자동판별 (등록 결과 자동 검증)" : "상담매입 (채널톡 확인 후 매입)";
+      $("[data-i-rate]").textContent = g.rate.toFixed(1) + "%";
+      $("[data-i-range]").textContent = `${won(g.min)} ~ ${won(g.max)}`;
+      $("[data-i-note]").textContent = g.mode === "auto" ? "검증 통과 시 즉시 지급" : "상담원 확인 후 지급";
+    }
+    setStep(1, true, g ? g.name + " 선택됨" : "선택 전");
+    updateAll();
   };
   if (gcSelectHost) {
     gcSelectHost.replaceChildren(...D.giftcards.map((g) => {
       const b = document.createElement("button");
       b.type = "button"; b.className = "gc-opt"; b.dataset.gc = g.id;
-      b.innerHTML = `<b>${g.name}</b><span>${g.rate.toFixed(1)}%</span><small>${g.mode === "auto" ? "자동판별" : "상담매입"}</small>`;
+      b.innerHTML = `<span class="chip" style="--c1:${g.art[0]};--c2:${g.art[1]}" aria-hidden="true"></span>` +
+        `<b>${g.name}</b><span>${g.rate.toFixed(1)}%<small>${g.mode === "auto" ? "자동판별" : "상담매입"}</small></span>`;
       b.addEventListener("click", () => selectGc(g.id));
       return b;
     }));
   }
 
-  /* Step 2 — 핀 다건 입력 + 액면가 + 구매경로 */
+  /* STEP 02 — 핀·액면가·구매경로 */
   const pinListHost = $("[data-pin-list]");
   const renderPins = () => {
     pinListHost.replaceChildren(...state.pins.map((v, i) => {
@@ -169,11 +179,11 @@
       const input = document.createElement("input");
       input.className = "mono"; input.placeholder = `핀번호 ${i + 1} (예: 1234-5678-9012-3456)`;
       input.value = v; input.inputMode = "numeric";
-      input.addEventListener("input", (e) => { state.pins[i] = e.target.value; updateQuote(); validateStep2(); });
+      input.addEventListener("input", (e) => { state.pins[i] = e.target.value; updateAll(); });
       const rm = document.createElement("button");
       rm.type = "button"; rm.className = "pin-remove"; rm.textContent = "×"; rm.setAttribute("aria-label", "핀 삭제");
       rm.disabled = state.pins.length <= 1;
-      rm.addEventListener("click", () => { state.pins.splice(i, 1); renderPins(); updateQuote(); validateStep2(); });
+      rm.addEventListener("click", () => { state.pins.splice(i, 1); renderPins(); updateAll(); });
       row.append(input, rm);
       return row;
     }));
@@ -181,88 +191,112 @@
   $("[data-pin-add]")?.addEventListener("click", () => {
     if (state.pins.length >= 20) { showToast("한 번에 최대 20건까지 신청할 수 있습니다.", true); return; }
     state.pins.push(""); renderPins();
+    pinListHost.lastElementChild?.querySelector("input")?.focus();
   });
   const faceInput = $("[data-face]");
   faceInput?.addEventListener("input", (e) => {
     state.face = Number(String(e.target.value).replace(/[^\d]/g, "")) || 0;
-    updateQuote(); validateStep2();
+    updateAll();
   });
   $$("[name=route]").forEach((r) => r.addEventListener("change", (e) => {
     state.route = e.target.value;
-    const blocked = state.route === "micropay";
-    $("[data-route-warn]").hidden = !blocked;
-    validateStep2();
+    $("[data-route-warn]").hidden = state.route !== "micropay";
+    updateAll();
   }));
-  const validateStep2 = () => {
-    const filled = state.pins.filter((p) => p.replace(/[^\d]/g, "").length >= 8).length;
-    const ok = filled >= 1 && state.face > 0 && state.route === "self";
-    $("[data-next-2]").disabled = !ok;
-    return ok;
-  };
 
-  /* Step 3 — 본인확인(KYC) */
+  /* 예시 값 채우기 — 입력 없이 클릭만으로 체험 */
+  $("[data-sample]")?.addEventListener("click", () => {
+    if (!state.gc) selectGc(D.giftcards[0].id);
+    state.face = 50000;
+    faceInput.value = "50000";
+    state.pins = ["4128-5590-2217-8834", "9083-1146-7752-0419"];
+    renderPins();
+    const self = $$("[name=route]").find((r) => r.value === "self");
+    if (self) { self.checked = true; state.route = "self"; $("[data-route-warn]").hidden = true; }
+    $$("[data-kyc] input").forEach((i, idx) => { i.value = ["김데모", "1990-01-01", "010-1234-5678"][idx] || ""; });
+    const bank = $("[data-bank]"); if (bank) bank.value = "국민";
+    $("[data-holder]").value = "김데모";
+    $("[data-acct]").value = "04012341234567";
+    const agree = $("[data-agree]"); if (agree) { agree.checked = true; state.agree = true; }
+    updateAll();
+    showToast("예시 값이 채워졌습니다. 하단 ‘매입 신청 완료’를 눌러보세요.");
+  });
+
+  const validPinCount = () => state.pins.filter((p) => p.replace(/[^\d]/g, "").length >= 8).length;
+  const step2ok = () => validPinCount() >= 1 && state.face > 0 && state.route === "self";
+
+  /* STEP 03 — KYC */
   const kycInputs = $$("[data-kyc] input");
-  const kycGate = $("[data-kyc] .kyc-gate");
+  const kycGate = $("[data-kyc-gate]");
   const validateKyc = () => {
     const allFilled = kycInputs.every((i) => i.value.trim().length >= 2);
-    state.kyc = allFilled && state.route === "self";
-    kycGate?.classList.toggle("is-verified", state.kyc);
+    state.kyc = allFilled;
     if (kycGate) {
-      $(".kyc-head span", kycGate).textContent = state.kyc ? "본인확인 완료 — 송금 가능 상태" : "본인확인이 필요합니다";
-      $(".kyc-body", kycGate).textContent = state.kyc
+      kycGate.classList.toggle("is-ok", allFilled);
+      $(".gate-head span", kycGate).textContent = allFilled ? "본인확인 완료 — 지급 가능 상태" : "본인확인이 필요합니다";
+      $("[data-kyc-body]").textContent = allFilled
         ? "실명·계좌주 일치가 확인되었습니다. 이상거래가 없으면 검증 완료 후 지급됩니다."
-        : "자금세탁방지 의무에 따라 첫 거래는 실명·계좌주 일치 확인 후에만 송금됩니다. (데모에서는 입력만으로 시연)";
+        : "실명·계좌주 일치 확인 후에만 매입대금이 지급됩니다. (데모에서는 입력만으로 시연)";
     }
-    $("[data-next-3]").disabled = !state.kyc;
-    return state.kyc;
   };
-  kycInputs.forEach((i) => i.addEventListener("input", validateKyc));
+  kycInputs.forEach((i) => i.addEventListener("input", updateAll));
 
-  /* Step 4 — 계좌 + 완료 */
+  /* STEP 04 — 계좌·동의 */
   const bankSel = $("[data-bank]");
-  if (bankSel) bankSel.replaceChildren(new Option("은행 선택", ""), ...D.banks.map((b) => new Option(b, b)));
+  if (bankSel) bankSel.replaceChildren(new Option("선택해 주세요.", ""), ...D.banks.map((b) => new Option(b, b)));
+  const holderInput = $("[data-holder]"), acctInput = $("[data-acct]"), agreeChk = $("[data-agree]");
+  [bankSel, holderInput, acctInput].forEach((el) => el?.addEventListener("input", updateAll));
+  agreeChk?.addEventListener("change", () => { state.agree = agreeChk.checked; updateAll(); });
+  const step4ok = () => !!(bankSel?.value && holderInput?.value.trim().length >= 2 && acctInput?.value.replace(/[^\d]/g, "").length >= 8 && state.agree);
+
   const applyForm = $("[data-apply-form]");
   applyForm?.addEventListener("submit", (e) => {
     e.preventDefault();
-    if (!applyForm.checkValidity()) { applyForm.reportValidity(); return; }
-    if (!state.kyc) { showToast("본인확인이 완료되어야 신청할 수 있습니다.", true); return; }
+    if (!state.gc) { showToast("STEP 01에서 상품권 종류를 선택해 주세요.", true); return; }
+    if (state.route === "micropay") { showToast("소액결제·카드 구매 상품권은 매입할 수 없습니다.", true); return; }
+    if (!step2ok()) { showToast("STEP 02의 핀번호·액면가·구매경로를 확인해 주세요.", true); return; }
+    if (!state.kyc) { showToast("STEP 03 본인확인을 완료해 주세요.", true); return; }
+    if (!step4ok()) { showToast("STEP 04 계좌 정보와 동의를 확인해 주세요.", true); return; }
     const g = gcById[state.gc];
-    const filled = state.pins.filter((p) => p.replace(/[^\d]/g, "").length >= 8).length;
-    const pay = Math.round(state.face * filled * g.rate / 100);
+    const pay = Math.round(state.face * validPinCount() * g.rate / 100);
     $("[data-done-dialog] [data-done-amt]").textContent = won(pay);
     $("[data-done-dialog] [data-done-mode]").textContent = g.mode === "auto"
       ? "자동판별 대상입니다. 검증 완료 후 이상거래가 없으면 지급됩니다."
       : "상담매입 대상입니다. 상담원이 확인 후 지급 절차를 안내합니다.";
     $("[data-done-dialog]").showModal();
   });
+  $(".done-close")?.addEventListener("click", () => { $("[data-done-dialog]").close(); location.reload(); });
 
-  /* 견적 실시간 계산 */
-  const updateQuote = () => {
+  /* ---------- 견적 + 단계 상태 동기화 (호이스팅 필요 — 위 리스너들이 참조) ---------- */
+  function updateAll() {
+    validateKyc();
     const g = state.gc ? gcById[state.gc] : null;
-    const filled = state.pins.filter((p) => p.replace(/[^\d]/g, "").length >= 8).length || 0;
-    const faceTotal = state.face * (filled || 0);
+    const filled = validPinCount();
+    const faceTotal = state.face * filled;
     const pay = g ? Math.round(faceTotal * g.rate / 100) : 0;
     const fee = faceTotal - pay;
     $("[data-q-gc]").textContent = g ? g.name : "-";
     $("[data-q-rate]").textContent = g ? g.rate.toFixed(1) + "%" : "-";
-    $("[data-q-count]").textContent = (filled || 0) + "건";
+    $("[data-q-count]").textContent = filled + "건";
     $("[data-q-face]").textContent = won(faceTotal);
-    $("[data-q-fee]").textContent = "-" + won(fee);
+    $("[data-q-fee]").textContent = fee > 0 ? "-" + won(fee) : won(0);
     $("[data-q-pay]").textContent = won(pay);
-  };
+    const ckRate = $("[data-ck-rate]");
+    if (ckRate) ckRate.textContent = g ? `${g.name} ${g.rate.toFixed(1)}%` : "견적";
 
-  /* 스텝 네비 */
-  $("[data-next-1]")?.addEventListener("click", () => goStep(1));
-  $("[data-next-2]")?.addEventListener("click", () => { if (validateStep2()) goStep(2); });
-  $("[data-next-3]")?.addEventListener("click", () => { if (validateKyc()) goStep(3); });
-  $$("[data-prev]").forEach((b) => b.addEventListener("click", () => goStep(current - 1)));
-  $(".done-close")?.addEventListener("click", () => { $("[data-done-dialog]").close(); location.reload(); });
+    /* 단계 상태 */
+    setStep(1, !!g, g ? g.name + " 선택됨" : "선택 전");
+    if (state.route === "micropay") setStep(2, false, "매입 불가", true);
+    else setStep(2, step2ok(), step2ok() ? `${filled}건 · ${won(faceTotal)}` : "입력 전");
+    setStep(3, state.kyc, state.kyc ? "확인 완료" : "확인 전");
+    setStep(4, step4ok(), step4ok() ? "입력 완료" : "입력 전");
+  }
+
+  /* 카카오 상담 플로팅 (데모) */
+  $("[data-kakao]")?.addEventListener("click", () =>
+    showToast("데모입니다 — 실제 서비스에서는 채널톡·카카오톡 상담으로 연결됩니다."));
 
   /* 초기화 */
   renderPins();
-  updateQuote();
-  goStep(0);
-  $("[data-next-1]").disabled = true;
-  $("[data-next-2]").disabled = true;
-  $("[data-next-3]").disabled = true;
+  updateAll();
 })();
