@@ -389,7 +389,13 @@ const SEED = {
     {sid:111,month:'2026-06',amt:320000,st:'paid',via:'이체'},
     {sid:112,month:'2026-06',amt:320000,st:'unpaid',via:'-'}
   ],
-  clinicVideos: {'확률':'#','일차함수':'#','연립방정식':'#','도형':'#','이차함수':'#','경우의 수':'#','집합과 명제':'#','도형의 방정식':'#'},
+  /* 해설영상 — 원장이 유튜브에 올린 영상 링크를 설정 화면에서 유형별로 등록 ('도형의 방정식'은 미등록 상태 데모) */
+  clinicVideos: {
+    '일차함수':'https://youtu.be/dojang-fn01','연립방정식':'https://youtu.be/dojang-eq01',
+    '확률':'https://youtu.be/dojang-pr01','도형':'https://youtu.be/dojang-geo01',
+    '이차함수':'https://youtu.be/dojang-fn02','경우의 수':'https://youtu.be/dojang-cs01',
+    '집합과 명제':'https://youtu.be/dojang-set01'
+  },
   settings: {
     lateAfter:'16:10', clinicThreshold:70, sendHour:'20:00',
     msgGrade:'[도장수학학원] #{이름} 학생의 성적표가 업데이트되었습니다. 아래 버튼으로 확인해 주세요.',
@@ -436,11 +442,11 @@ function buildSeed(){
 /* ══════════ 상태 ══════════ */
 let DB;
 function load(){
-  try{ DB = JSON.parse(localStorage.getItem('dojangDemoV2')) || buildSeed(); }
+  try{ DB = JSON.parse(localStorage.getItem('dojangDemoV3')) || buildSeed(); }
   catch(e){ DB = buildSeed(); }
 }
-function save(){ try{ localStorage.setItem('dojangDemoV2', JSON.stringify(DB)); }catch(e){} }
-function resetDemo(){ localStorage.removeItem('dojangDemoV2'); sessionStorage.removeItem('dojangTok'); location.reload(); }
+function save(){ try{ localStorage.setItem('dojangDemoV3', JSON.stringify(DB)); }catch(e){} }
+function resetDemo(){ localStorage.removeItem('dojangDemoV3'); sessionStorage.removeItem('dojangTok'); location.reload(); }
 load();
 
 let mode='gate';            /* gate | login | kiosk | shell | pentry | parent */
@@ -662,6 +668,7 @@ const NAVS = {
 };
 function go(v){
   if(v==='kioskgo'){ mode='kiosk'; kioskMode='sel'; render(); return; }
+  if(v!=='grades') gDoneMsg='';
   view=v; render();
 }
 function logout(){ toast('로그아웃되었습니다'); goGate(); }
@@ -691,7 +698,7 @@ function myStudents(){ return role==='teacher' ? DB.students.filter(s=>s.cls===T
 function clinicFor(id){
   const out=[];
   DB.exams.filter(e=>e.sid===id).forEach(e=>e.items.forEach(i=>{
-    if(i.s/i.m*100 < DB.settings.clinicThreshold) out.push({t:i.t,s:i.s,m:i.m,exam:e.name,url:DB.clinicVideos[i.t]||'#'});
+    if(i.s/i.m*100 < DB.settings.clinicThreshold) out.push({t:i.t,s:i.s,m:i.m,exam:e.name,url:DB.clinicVideos[i.t]||''});
   }));
   const seen={}; return out.filter(c=>seen[c.t]?false:(seen[c.t]=1,true));
 }
@@ -767,7 +774,7 @@ function openProfile(id){
   document.getElementById('modalBox').innerHTML=`
   <h2>${s.name} <span class="muted" style="font-weight:400">${s.cls} · ${s.id}번</span></h2>
   ${chartSVG(exams)||'<div class="empty">시험 기록 없음</div>'}
-  ${clinic.length?`<div class="note mt">오답 클리닉 자동 배정: ${clinic.map(c=>`<b>${c.t}</b>(${c.s}점, ${c.exam})`).join(', ')} — 학부모 리포트에 해설영상 링크가 자동 표시됩니다.</div>`:''}
+  ${clinic.length?`<div class="note mt">오답 클리닉 자동 배정: ${clinic.map(c=>`<b>${c.t}</b>(${c.s}점, ${c.exam})${c.url?'':' <span class="bdg warn">영상 미등록</span>'}`).join(', ')} — 영상이 등록된 유형은 학부모 리포트에 해설영상으로 표시됩니다.${clinic.some(c=>!c.url)?(role==='admin'?' 미등록 유형은 <b>설정 › 해설영상</b>에서 등록해 주세요.':' 미등록 유형은 원장님 설정 화면에서 등록이 필요합니다.'):''}</div>`:''}
   <h3 style="font-size:14px;font-weight:700;margin:16px 0 8px">과제 성취도</h3>
   ${hw.length?`<div class="tblwrap"><table><thead><tr><th>주차</th><th>수행률</th><th>취약 유형</th><th>메모</th></tr></thead><tbody>${hw.map(h=>`<tr><td>${h.w}</td><td>${h.rate}%</td><td>${h.weak}</td><td class="muted">${h.note}</td></tr>`).join('')}</tbody></table></div>`:'<div class="muted">기록 없음</div>'}
   <div class="frow mt" style="align-items:flex-end">
@@ -791,8 +798,15 @@ function addHw(id){
   const n=document.getElementById('hwN').value.trim();
   if(!w||isNaN(r)){ toast('주차와 수행률을 입력해 주세요'); return; }
   const parts=n.split('/').map(x=>x.trim());
-  DB.homework.push({sid:id,w,rate:Math.max(0,Math.min(100,r)),weak:parts[0]||'-',note:parts[1]||parts[0]||'-'}); save();
-  toast('과제 기록이 추가되었습니다'); openProfile(id);
+  const rate=Math.max(0,Math.min(100,r));
+  DB.homework.push({sid:id,w,rate,weak:parts[0]||'-',note:parts[1]||parts[0]||'-'});
+  if(rate<100){
+    DB.talkLog.unshift({date:today()+' '+nowT(),to:stu(id).name+' 학부모',type:'과제 미제출 안내',st:'성공',read:''});
+    toast('과제 기록 추가 — 수행률 100% 미만이라 미제출 안내 알림톡이 발송되었습니다');
+  }else{
+    toast('과제 기록이 추가되었습니다');
+  }
+  save(); openProfile(id);
 }
 function addCounsel(id){
   const v=document.getElementById('csIn').value.trim(); if(!v)return;
@@ -818,16 +832,24 @@ function chartSVG(exams){
 }
 
 /* ══════════ 성적 입력 ══════════ */
-function freshGItems(){
-  return [{t:'일차함수',m:25,s:'',c:''},{t:'연립방정식',m:25,s:'',c:''},{t:'확률',m:25,s:'',c:''},{t:'도형',m:25,s:'',c:''}];
+const CLASS_TYPES={'중2 수학A':['일차함수','연립방정식','확률','도형'],'고1 수학B':['이차함수','집합과 명제','경우의 수','도형의 방정식']};
+function freshGItems(cls){
+  return (CLASS_TYPES[cls]||CLASS_TYPES['중2 수학A']).map(t=>({t,m:25,s:'',c:''}));
 }
 let gItems=freshGItems();
+let gDoneMsg='';
+function gClassSwap(sid){
+  const s=stu(+sid); if(!s) return;
+  if(gItems.some(i=>i.s!==''||i.c)){ return; } /* 입력 중이면 유형 유지 */
+  gItems=freshGItems(s.cls); render();
+  const sel=document.getElementById('gSid'); if(sel) sel.value=sid;
+}
 function vGrades(){
   const ss=myStudents();
   return head('성적 입력','문항 유형별 점수·코멘트 입력 → 저장 즉시 추이 그래프와 학부모 리포트에 반영')+`
   <div class="card rv">
     <div class="frow">
-      <div><label class="f">학생</label><select class="inp" id="gSid">${ss.map(s=>`<option value="${s.id}">${s.id} · ${s.name} (${s.cls})</option>`).join('')}</select></div>
+      <div><label class="f">학생</label><select class="inp" id="gSid" onchange="gClassSwap(this.value)">${ss.map(s=>`<option value="${s.id}">${s.id} · ${s.name} (${s.cls})</option>`).join('')}</select></div>
       <div><label class="f">시험명</label><input class="inp" id="gName" value="6월 단원평가"></div>
       <div><label class="f">시행일</label><input class="inp" id="gDate" type="date" value="${today()}"></div>
     </div>
@@ -845,7 +867,7 @@ function vGrades(){
       <button class="btn pri" onclick="saveGrade()">저장 → 알림톡 발송</button>
     </div>
   </div>
-  <div id="gDone"></div>`;
+  <div id="gDone">${gDoneMsg}</div>`;
 }
 function saveGrade(){
   const sid=+document.getElementById('gSid').value;
@@ -856,8 +878,12 @@ function saveGrade(){
   DB.talkLog.unshift({date:today()+' '+nowT(),to:s.name+' 학부모',type:'성적표 업데이트',st:'성공',read:''});
   save();
   const clinic=items.filter(i=>i.s/i.m*100<DB.settings.clinicThreshold);
-  gItems=freshGItems();
-  document.getElementById('gDone').innerHTML=`<div class="note ok mt">✓ 저장 완료 — ${s.name} 학부모에게 알림톡이 발송되었습니다${clinic.length?` · <b>${clinic.map(c=>c.t).join(', ')}</b> 유형 클리닉 영상 자동 배정`:''}. <a href="#" onclick="openProfile(${sid});return false">프로필에서 추이 확인 →</a></div>`;
+  const noVid=clinic.filter(c=>!DB.clinicVideos[c.t]);
+  gItems=freshGItems(s.cls);
+  gDoneMsg=`<div class="note ok mt">✓ 저장 완료 — ${s.name} 학부모에게 알림톡이 발송되었습니다${clinic.length?` · <b>${clinic.map(c=>c.t).join(', ')}</b> 유형 클리닉 자동 배정`:''}. <a href="#" onclick="openProfile(${sid});return false">프로필에서 추이 확인 →</a></div>`
+  +(noVid.length?`<div class="note mt">△ <b>${noVid.map(c=>c.t).join(', ')}</b> 유형은 해설영상이 미등록입니다 — ${role==='admin'?'<a href="#" onclick="go(\'settings\');return false">설정 › 해설영상</a>에서 등록하면':'원장님이 설정 화면에서 등록하면'} 학부모 리포트에 표시됩니다. 그 전까지는 "영상 준비 중"으로 나갑니다.</div>`:'');
+  render();
+  const sel=document.getElementById('gSid'); if(sel) sel.value=sid;
   toast('성적이 저장되었습니다');
 }
 
@@ -949,9 +975,9 @@ function dlCSV(name,rows){
 
 /* ══════════ 알림톡 ══════════ */
 const TPLS=()=>[
-  {key:'grade',label:'성적표 업데이트',msg:DB.settings.msgGrade,btn:'성적표 확인하기',ap:'2026-06-12 승인'},
-  {key:'absent',label:'미등원 안내',msg:DB.settings.msgAbsent,btn:'확인했습니다',ap:'2026-06-12 승인'},
-  {key:'homework',label:'과제 미제출 안내',msg:DB.settings.msgHomework,btn:'과제 확인하기',ap:'2026-06-19 승인'}
+  {key:'grade',label:'성적표 업데이트',msg:DB.settings.msgGrade,btn:'성적표 확인하기',ap:'2026-06-12 승인',when:'성적 입력에서 저장하는 즉시 자동 발송됩니다.'},
+  {key:'absent',label:'미등원 안내',msg:DB.settings.msgAbsent,btn:'확인했습니다',ap:'2026-06-12 승인',when:'매일 발송 시각('+DB.settings.sendHour+')에 그날 미등원 학생 대상 자동 발송됩니다.'},
+  {key:'homework',label:'과제 미제출 안내',msg:DB.settings.msgHomework,btn:'과제 확인하기',ap:'2026-06-19 승인',when:'과제 기록 저장 시 수행률 100% 미만이면 자동 발송됩니다.'}
 ];
 function vTalk(){
   const tpl=TPLS().find(t=>t.key===talkTab)||TPLS()[0];
@@ -970,7 +996,8 @@ function vTalk(){
             <div class="kk-btn" style="cursor:default">${tpl.btn} →</div>
           </div>
         </div>
-        <p class="muted mt"><span class="bdg ok">${tpl.ap}</span> · 문구는 설정 화면에서 직접 수정할 수 있으나, <b>새 템플릿·문구 구조 변경은 카카오 심사 3~5영업일</b>이 걸립니다. 오픈 일정에 이 기간이 반영되어 있습니다.</p>
+        <p class="muted mt"><span class="bdg ok">${tpl.ap}</span> · ${tpl.when}</p>
+        <p class="muted">문구는 설정 화면에서 직접 수정할 수 있으나, <b>새 템플릿·문구 구조 변경은 카카오 심사 3~5영업일</b>이 걸립니다. 오픈 일정에 이 기간이 반영되어 있습니다.</p>
         <p class="muted">성적표 버튼에는 24시간 만료 토큰 링크가 담겨, 학부모가 로그인 없이 자기 자녀 리포트만 열람합니다.</p>
       </div>
       <div class="card rv">
@@ -1118,6 +1145,24 @@ function vSettings(){
   </div>
   <div id="setDone"></div>
   <div class="card mt rv">
+    <h3>오답 클리닉 해설영상 <span class="muted">원장님 유튜브 영상 링크를 유형별로 등록합니다</span></h3>
+    <p class="muted mb">영상 자체는 원장님 유튜브 채널(비공개/일부공개)에 올리고, 여기에는 <b>링크만</b> 등록합니다. 기준 미달 유형에 영상이 등록되어 있어야 학부모 리포트에 해설영상 버튼이 표시됩니다 — 미등록 유형은 "영상 준비 중"으로 나갑니다.</p>
+    <div class="tblwrap"><table><thead><tr><th style="width:22%">문제 유형</th><th>영상 링크</th><th style="width:14%">상태</th><th style="width:10%"></th></tr></thead><tbody>
+    ${videoTypes().map(t=>{
+      const url=DB.clinicVideos[t]||'';
+      return `<tr><td><b>${esc(t)}</b></td>
+      <td><input class="inp" value="${esc(url)}" placeholder="https://youtu.be/…" data-t="${esc(t)}" onchange="updVideo(this.dataset.t,this.value)"></td>
+      <td>${url?'<span class="bdg ok">등록됨</span>':'<span class="bdg warn">미등록</span>'}</td>
+      <td>${url?`<button class="btn sm" data-t="${esc(t)}" onclick="updVideo(this.dataset.t,'')">삭제</button>`:''}</td></tr>`;
+    }).join('')}
+    </tbody></table></div>
+    <div class="frow mt" style="align-items:flex-end">
+      <div style="max-width:180px"><label class="f">새 유형</label><input class="inp" id="nvT" placeholder="예: 이차방정식"></div>
+      <div><label class="f">영상 링크</label><input class="inp" id="nvU" placeholder="https://youtu.be/…"></div>
+      <button class="btn sm" onclick="addVideo()" style="margin-bottom:1px">추가</button>
+    </div>
+  </div>
+  <div class="card mt rv">
     <h3>백업 · 데이터 소유권</h3>
     <p class="muted mb">매월 1일 03:00 구글시트로 전체 데이터가 자동 백업됩니다. 시스템·데이터·소스코드 소유권은 100% 학원에 이전됩니다.</p>
     <div class="tblwrap"><table><thead><tr><th>일시</th><th>유형</th><th>대상</th><th>결과</th></tr></thead><tbody>
@@ -1130,6 +1175,24 @@ function vSettings(){
       <button class="btn" style="margin-left:8px" onclick="dlPayCSV()">수납대장 CSV</button>
     </div>
   </div>`;
+}
+function videoTypes(){
+  const types=new Set(Object.keys(DB.clinicVideos));
+  DB.exams.forEach(e=>e.items.forEach(i=>types.add(i.t)));
+  return [...types].sort((a,b)=>a.localeCompare(b,'ko'));
+}
+function updVideo(t,url){
+  url=url.trim();
+  if(url) DB.clinicVideos[t]=url; else delete DB.clinicVideos[t];
+  save(); render();
+  toast(url?t+' 유형 영상이 등록되었습니다 — 학부모 리포트에 즉시 반영':t+' 유형 영상이 삭제되었습니다');
+}
+function addVideo(){
+  const t=document.getElementById('nvT').value.trim();
+  const u=document.getElementById('nvU').value.trim();
+  if(!t||!u){ toast('유형과 링크를 모두 입력해 주세요'); return; }
+  DB.clinicVideos[t]=u; save(); render();
+  toast(t+' 유형 영상이 등록되었습니다');
 }
 function saveSettings(){
   const s=DB.settings;
@@ -1243,7 +1306,7 @@ function vParent(){
       <h3>오답 클리닉 <span class="bdg red">복습 필요</span></h3>
       ${clinic.map(c=>`<div class="clinic-row">
         <div><b>${c.t}</b><div class="muted">${c.exam} · ${c.s}/${c.m}점</div></div>
-        <a class="btn sm" href="#" onclick="toast('데모 — 실서비스에서는 해설영상이 열립니다');return false">▶ 해설영상</a></div>`).join('')}
+        ${c.url?`<a class="btn sm" href="#" onclick="toast('데모 — 실서비스에서는 해설영상이 열립니다');return false">▶ 해설영상</a>`:'<span class="bdg gray">영상 준비 중</span>'}</div>`).join('')}
       <p class="muted mt" style="margin-bottom:0">기준 점수(${DB.settings.clinicThreshold}%) 미달 유형에 해설영상이 자동 배정됩니다.</p>
     </div>`:''}
     <div class="pcard rv">
