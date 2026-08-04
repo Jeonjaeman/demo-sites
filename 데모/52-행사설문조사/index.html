@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CONFETTI 콘페티 — 행사 부스 모바일 웹 설문 (제안용 데모)</title>
+<meta name="description" content="오프라인 행사 부스 X배너 QR로 진입하는 모바일 전용 설문 — 즉시 진입·문항 전환 애니메이션·엑셀 다운로드 (제안용 데모)">
+<meta name="theme-color" content="#FFC933">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="viewer">
+  <aside class="v-side">
+    <div class="v-brand"><span class="mark">🎉</span><span><b>CONFETTI</b> <small>콘페티</small></span></div>
+    <p class="v-sub">오프라인 행사 부스 <b style="color:var(--ink-2)">X배너 QR → 모바일 전용 설문</b> 데모.<br>
+    로그인·본인인증 없이 즉시 진입, 밝은 톤과 문항 전환 애니메이션, 완료 후 서버 전송(시뮬)까지
+    공고 요구 그대로입니다. 오른쪽 폰에서 바로 체험하세요.</p>
+    <div class="v-links">
+      <a href="admin.html">📊 관리자 — 응답 집계·엑셀 다운로드·QR 생성 →</a>
+    </div>
+    <div class="v-note"><b>공고 스코프 그대로:</b> 스마트폰 세로 모드 최적화 · 비회원 즉시 참여 · 객관식+주관식 · 응답별 최적 입력 폼(라디오·체크·별점·텍스트) · 완료 시 전체 응답 서버 전송(데모는 localStorage) · 관리자 엑셀(Excel) 다운로드 · 인쇄용 QR 제공.<br><br>행사·문항·응답 데이터는 전부 가상입니다.</div>
+  </aside>
+
+  <main class="v-stage">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

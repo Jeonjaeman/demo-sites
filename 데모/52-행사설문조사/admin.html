@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CONFETTI 관리자 — 응답 집계·엑셀·QR (제안용 데모)</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs@master/qrcode.min.js"></script>
+</head>
+<body class="admin">
+
+<header class="adm-top">
+  <span class="tt"><span class="mark">🎉</span>CONFETTI 관리자 <span style="color:var(--mut); font-weight:500; font-size:12px">· 응답 집계 · 엑셀 · QR</span></span>
+  <a class="btn btn-sm btn-gho" href="index.html">설문 화면 보기 →</a>
+</header>
+
+<div class="adm-wrap">
+  <div class="kpis" id="kpis"></div>
+
+  <div class="adm-grid">
+    <div>
+      <div class="panel">
+        <div class="panel-h"><h3>Q1 · 방문 경로</h3><span class="sub">실집계</span></div>
+        <div class="bars" id="barQ1"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Q2 · 부스 만족도</h3><span class="sub">별점 분포</span></div>
+        <div class="bars" id="barQ2"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Q3 · 좋았던 점 (복수)</h3><span class="sub">복수 선택 합산</span></div>
+        <div class="bars" id="barQ3"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Q4 · 구매 의향</h3></div>
+        <div class="bars" id="barQ4"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Q5 · 주관식 의견</h3><span class="sub" id="txtCount"></span></div>
+        <div class="txt-list" id="txtList"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-h"><h3>응답 데이터 내보내기</h3></div>
+        <button class="btn btn-ink" id="btnXls" style="width:100%">⬇ 엑셀(Excel) 다운로드 — .xls</button>
+        <button class="btn btn-gho" id="btnCsv" style="width:100%; margin-top:8px">CSV(UTF-8 BOM) 다운로드</button>
+        <div class="notice ok" style="margin-top:10px">✓ 공고 요구 그대로 <b>Excel 파일 포맷</b>으로 내려받습니다 — 전 문항·전 응답, 한글 깨짐 없음. 행사 종료 후 자체 분석용.</div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>인쇄용 QR 코드</h3></div>
+        <div class="qr-box" id="qrBox"></div>
+        <div class="link-row"><input class="input" id="qrLink" readonly><button class="btn btn-sm btn-gho" id="copyLink">복사</button></div>
+        <button class="btn btn-sun" id="btnQrPng" style="width:100%; margin-top:10px">🖨 인쇄용 PNG 다운로드</button>
+        <div class="notice" style="margin-top:10px">X배너 인쇄소에 전달할 QR입니다. <b>실제로 스캔되며</b>, 휴대폰으로 찍으면 이 데모 설문이 바로 열립니다.</div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>운영 메모</h3></div>
+        <div class="notice">
+          · 응답 = 가상 샘플 200건 + 이 브라우저에서 제출한 응답 실합산<br>
+          · 실서비스: Node.js + MongoDB, 제출 즉시 서버 적재<br>
+          · 대량 접속(행사 피크) 대비 정적 프론트 + 큐 적재 구조 제안
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="disclaimer">행사·문항·응답 데이터는 전부 가상 · 제안용 데모</p>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+/* ============================================================
+   CONFETTI 콘페티 — 오프라인 행사 부스 전용 모바일 웹 설문 (제안용 데모)
+   공고: 밝은 톤 + 애니메이션 · 문항 전환 애니메이션 · 즉시 진입(로그인 없음)
+   ※ 행사·문항·응답 데이터 전부 가상.
+   ============================================================ */
+
+:root{
+  --bg:#FFFDF6; --card:#FFFFFF; --ink:#241F18; --ink-2:#4A443A; --mut:#8B8578; --mut-2:#B9B3A5;
+  --line:#F0EADC; --line-2:#E3DCCB;
+  --sun:#FFC933; --sun-deep:#E8A800; --coral:#FF6B57; --coral-deep:#E04B37; --mint:#19B98A; --mint-wash:#E4F7F0;
+  --sun-wash:#FFF6DC; --coral-wash:#FFEDE9;
+  --r:16px; --r-s:12px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI","Malgun Gothic",sans-serif;
+  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1); --bounce:cubic-bezier(.34,1.56,.64,1);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html{overflow-x:clip; -webkit-text-size-adjust:100%}
+body{margin:0; font-family:var(--font); background:#F4F0E4; color:var(--ink);
+  line-height:1.6; letter-spacing:-0.011em; -webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+a{color:inherit; text-decoration:none}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; padding:0}
+img{max-width:100%; display:block}
+.mono{font-family:var(--mono); font-feature-settings:"tnum" 1; letter-spacing:0}
+
+/* ============ 데스크톱 뷰어 (폰 프레임) ============ */
+.viewer{display:grid; grid-template-columns:320px 1fr; min-height:100vh}
+.v-side{border-right:1px solid var(--line-2); background:#fff; padding:26px 22px; position:sticky; top:0; max-height:100vh; overflow:auto}
+.v-brand{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+.v-brand .mark{width:34px; height:34px; border-radius:10px; background:var(--sun); display:grid; place-items:center; font-size:17px; transform:rotate(-6deg)}
+.v-brand b{font-size:21px; letter-spacing:-0.02em}
+.v-brand small{color:var(--mut); font-size:11px}
+.v-sub{font-size:12.5px; color:var(--mut); line-height:1.65; margin-bottom:18px}
+.v-note{margin-top:16px; padding:13px 14px; background:var(--bg); border:1px solid var(--line); border-radius:11px; font-size:11.5px; color:var(--mut); line-height:1.6}
+.v-note b{color:var(--ink-2)}
+.v-links{display:flex; flex-direction:column; gap:6px; margin-top:14px}
+.v-links a{display:flex; align-items:center; gap:9px; padding:10px 12px; border-radius:10px; background:var(--bg); border:1px solid var(--line); font-size:13px; font-weight:650; color:var(--ink-2); transition:border-color .15s}
+.v-links a:hover{border-color:var(--sun-deep)}
+.v-stage{display:grid; place-items:center; padding:34px 20px}
+.phone{width:390px; height:812px; background:#fff; border-radius:44px; border:1px solid #ddd6c4;
+  box-shadow:0 0 0 10px #262117, 0 0 0 11px #453d2c, 0 50px 110px -40px rgba(60,50,20,.45);
+  overflow:hidden; position:relative; flex:none}
+.phone .notch{position:absolute; top:10px; left:50%; transform:translateX(-50%); width:118px; height:30px; background:#262117; border-radius:18px; z-index:60; pointer-events:none}
+.screen{position:absolute; inset:0; overflow:hidden; background:var(--bg)}
+@media(max-width:900px){
+  .viewer{display:block}
+  .v-side{display:none}
+  .v-stage{padding:0}
+  .phone{width:100%; height:100vh; height:100dvh; border-radius:0; border:none; box-shadow:none}
+  .phone .notch{display:none}
+}
+
+/* ============ 설문 공통 ============ */
+.stage{position:absolute; inset:0; display:flex; flex-direction:column; overflow:hidden}
+.prog-wrap{flex:none; padding:56px 22px 0}
+.prog-top{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--mut); margin-bottom:8px}
+.prog-top b{color:var(--coral); font-family:var(--mono); font-size:13px}
+.prog{height:8px; background:var(--line); border-radius:999px; overflow:hidden}
+.prog i{display:block; height:100%; background:linear-gradient(90deg, var(--sun), var(--coral)); width:0; transition:width .5s var(--ease); border-radius:999px}
+
+/* 문항 카드 (전환 애니메이션) */
+.q-stage{flex:1; position:relative; overflow:hidden}
+.q-card{position:absolute; inset:0; padding:26px 22px 20px; display:flex; flex-direction:column; overflow-y:auto; opacity:0; transform:translateX(60px); pointer-events:none; transition:opacity .38s var(--ease), transform .38s var(--ease)}
+.q-card.on{opacity:1; transform:none; pointer-events:auto}
+.q-card.out{opacity:0; transform:translateX(-60px)}
+.q-num{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:800; color:var(--sun-deep); letter-spacing:.08em; margin-bottom:10px}
+.q-num .dot{width:8px; height:8px; border-radius:50%; background:var(--sun); animation:qdot 1.6s var(--ease) infinite}
+@keyframes qdot{0%,100%{transform:scale(1)} 50%{transform:scale(1.5)}}
+.q-title{font-size:24px; font-weight:790; letter-spacing:-0.03em; line-height:1.28}
+.q-help{font-size:13px; color:var(--mut); margin-top:6px}
+.q-opts{margin-top:22px; display:flex; flex-direction:column; gap:11px}
+
+/* 선택지 (라디오·체크) */
+.opt{display:flex; align-items:center; gap:13px; background:#fff; border:2px solid var(--line-2); border-radius:var(--r); padding:16px; font-size:15.5px; font-weight:600; text-align:left; transition:all .16s var(--bounce); animation:optIn .4s var(--ease) backwards}
+.opt:nth-child(1){animation-delay:.05s} .opt:nth-child(2){animation-delay:.1s}
+.opt:nth-child(3){animation-delay:.15s} .opt:nth-child(4){animation-delay:.2s}
+.opt:nth-child(5){animation-delay:.25s}
+@keyframes optIn{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
+.opt:active{transform:scale(.97)}
+.opt .emo{font-size:22px; flex:none}
+.opt .mk{margin-left:auto; width:24px; height:24px; border:2.5px solid var(--line-2); flex:none; display:grid; place-items:center; color:#fff; font-size:13px; font-weight:800; transition:all .15s var(--bounce)}
+.opt.radio .mk{border-radius:50%} .opt.check .mk{border-radius:8px}
+.opt.sel{border-color:var(--coral); background:var(--coral-wash)}
+.opt.sel .mk{background:var(--coral); border-color:var(--coral); transform:scale(1.1)}
+.opt.sel .mk::after{content:"✓"}
+
+/* 별점 */
+.stars{display:flex; gap:10px; justify-content:center; margin-top:30px; font-size:46px; color:var(--line-2)}
+.stars .st{cursor:pointer; transition:transform .18s var(--bounce), color .15s}
+.stars .st:active{transform:scale(1.25)}
+.stars .st.on{color:var(--sun); text-shadow:0 4px 18px rgba(255,201,51,.5)}
+.stars-label{text-align:center; font-size:14px; font-weight:700; color:var(--coral); margin-top:14px; min-height:22px}
+
+/* 주관식 */
+textarea.txt, input.txt{width:100%; border:2px solid var(--line-2); border-radius:var(--r); padding:15px 16px; font-size:15px; font-family:inherit; outline:none; background:#fff; transition:border-color .15s; margin-top:18px}
+textarea.txt{min-height:120px; resize:none; line-height:1.6}
+.txt:focus{border-color:var(--sun-deep)}
+.txt-count{text-align:right; font-size:11.5px; color:var(--mut-2); margin-top:6px; font-family:var(--mono)}
+
+/* 하단 버튼 */
+.q-foot{flex:none; padding:14px 22px calc(18px + env(safe-area-inset-bottom)); display:flex; gap:10px; background:linear-gradient(0deg, var(--bg) 60%, transparent)}
+.cta{display:flex; align-items:center; justify-content:center; gap:8px; height:54px; border-radius:16px; font-size:16px; font-weight:800; transition:transform .14s var(--bounce), background .15s, box-shadow .2s}
+.cta:active{transform:scale(.97)}
+.cta-sun{flex:1; background:var(--ink); color:#fff}
+.cta-sun:not(:disabled):hover{box-shadow:0 12px 30px -12px rgba(36,31,24,.5)}
+.cta-sun:disabled{background:var(--line-2); color:var(--mut-2); cursor:not-allowed}
+.cta-back{width:54px; flex:none; background:#fff; border:2px solid var(--line-2); color:var(--mut); border-radius:16px}
+
+/* ============ 커버 ============ */
+.cover{position:absolute; inset:0; display:flex; flex-direction:column; overflow-y:auto; background:linear-gradient(180deg, var(--sun-wash), var(--bg) 55%)}
+.cover-art{height:210px; flex:none; overflow:hidden; position:relative}
+.cover-art img{width:100%; height:100%; object-fit:cover}
+.cover-art::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, var(--sun-wash))}
+.cover-body{flex:1; padding:22px 26px; text-align:center; display:flex; flex-direction:column}
+.cover .chip{margin:0 auto 14px}
+.cover h1{font-size:30px; font-weight:820; letter-spacing:-0.035em; line-height:1.22; margin:0}
+.cover h1 em{font-style:normal; color:var(--coral)}
+.cover p{font-size:14px; color:var(--mut); margin:12px 0 0; line-height:1.65}
+.cover-meta{display:flex; justify-content:center; gap:18px; margin-top:18px; font-size:12.5px; color:var(--mut)}
+.cover-meta b{color:var(--ink)}
+.cover-foot{padding:0 26px calc(22px + env(safe-area-inset-bottom))}
+.no-login{display:flex; align-items:center; justify-content:center; gap:7px; font-size:12px; color:var(--mint); font-weight:700; margin-top:12px}
+.chip{display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 14px; border-radius:999px; font-size:12px; font-weight:750; background:#fff; border:1.5px solid var(--sun); color:var(--sun-deep)}
+
+/* ============ 완료 ============ */
+.done{position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:30px; background:var(--bg)}
+.done .big-emo{font-size:64px; animation:pop .55s var(--bounce)}
+@keyframes pop{from{transform:scale(.4); opacity:0} to{transform:none; opacity:1}}
+.done h2{font-size:28px; font-weight:820; letter-spacing:-0.03em; margin:14px 0 0}
+.done p{font-size:14px; color:var(--mut); margin:10px 0 0; line-height:1.65}
+.done .gift{margin:20px auto 0; display:inline-flex; align-items:center; gap:10px; background:var(--sun-wash); border:1.5px dashed var(--sun-deep); border-radius:14px; padding:13px 18px; font-size:14px; font-weight:700; color:var(--sun-deep)}
+.confetti-cv{position:absolute; inset:0; pointer-events:none; z-index:5}
+
+/* ============ 관리자 ============ */
+body.admin{background:var(--bg)}
+.adm-top{display:flex; align-items:center; justify-content:space-between; height:58px; padding:0 20px; background:#fff; border-bottom:1px solid var(--line-2); position:sticky; top:0; z-index:50}
+.adm-top .tt{font-weight:760; font-size:15px; display:flex; align-items:center; gap:10px}
+.adm-top .tt .mark{width:28px; height:28px; border-radius:8px; background:var(--sun); display:grid; place-items:center; font-size:14px; transform:rotate(-6deg)}
+.adm-wrap{max-width:1100px; margin:0 auto; padding:24px 20px 60px}
+.kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px}
+@media(max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} }
+.kpi{background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px}
+.kpi .v{font-size:27px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-0.02em}
+.kpi .v em{font-style:normal; color:var(--coral)}
+.kpi .k{font-size:11.5px; color:var(--mut); margin-top:3px}
+.adm-grid{display:grid; grid-template-columns:1fr 360px; gap:16px; align-items:start}
+@media(max-width:920px){ .adm-grid{grid-template-columns:1fr} }
+.panel{background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px}
+.panel-h{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+.panel-h h3{font-size:16px; margin:0}
+.panel-h .sub{font-size:12px; color:var(--mut)}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; height:42px; padding:0 17px; border-radius:12px; font-size:13.5px; font-weight:720; transition:all .14s var(--bounce)}
+.btn:active{transform:scale(.97)}
+.btn-ink{background:var(--ink); color:#fff}
+.btn-sun{background:var(--sun); color:var(--ink)}
+.btn-gho{background:#fff; border:1.5px solid var(--line-2)}
+.btn-sm{height:34px; padding:0 13px; font-size:12.5px; border-radius:9px}
+.bars{display:flex; flex-direction:column; gap:11px}
+.bar-row{display:grid; grid-template-columns:130px 1fr 52px; gap:12px; align-items:center; font-size:13px}
+.bar-row .bl{text-align:right; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600}
+.bar-track{height:24px; background:var(--bg); border-radius:8px; overflow:hidden; border:1px solid var(--line)}
+.bar-fill{height:100%; background:linear-gradient(90deg, var(--sun), var(--coral)); width:0; transition:width .8s var(--ease); border-radius:8px 0 0 8px}
+.bar-row .bv{font-family:var(--mono); font-size:12px; color:var(--mut); text-align:right}
+.qr-box{display:grid; place-items:center; background:var(--bg); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:12px}
+.qr-box canvas, .qr-box img{background:#fff; padding:12px; border-radius:10px; box-shadow:0 8px 24px -10px rgba(60,50,20,.2)}
+.notice{background:var(--bg); border:1px solid var(--line-2); border-radius:11px; padding:12px 14px; font-size:12.5px; color:var(--ink-2); line-height:1.6}
+.notice.ok{background:var(--mint-wash); border-color:#BEE7D6; color:#0d7a56}
+.txt-list{display:flex; flex-direction:column; gap:8px}
+.txt-item{background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:11px 13px; font-size:13px; color:var(--ink-2); line-height:1.55}
+.txt-item .ti-meta{font-size:10.5px; color:var(--mut-2); font-family:var(--mono); margin-top:4px}
+.disclaimer{font-size:11px; color:var(--mut-2); text-align:center; padding:16px}
+.link-row{display:flex; gap:8px}
+.link-row .input{flex:1; background:#fff; border:1px solid var(--line-2); border-radius:9px; padding:9px 11px; font-size:12px; font-family:var(--mono); outline:none}
+.toast-wrap{position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:200; display:flex; flex-direction:column; align-items:center; gap:8px}
+.toast{background:var(--ink); color:#fff; padding:11px 18px; border-radius:999px; font-size:13.5px; font-weight:650; box-shadow:0 16px 44px -14px rgba(36,31,24,.5); animation:toastIn .3s var(--ease)}
+.toast.sun{background:var(--sun); color:var(--ink)}
+@keyframes toastIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
