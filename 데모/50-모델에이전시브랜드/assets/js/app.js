@@ -60,18 +60,29 @@
         var p = Math.min(1, y / (vh * 0.55));
         heroTxt.style.opacity = String(1 - p);
         heroTxt.style.transform = 'translateY(' + (p * -34) + 'px)';
-        var cp = $('campaign');
-        if (cp) {
-          var r = cp.getBoundingClientRect();
-          if (r.top < vh && r.bottom > 0) {
-            var prog = (vh - r.top) / (vh + r.height);
-            $('campaignImg').style.transform = 'translateY(' + ((prog - .5) * 60) + 'px)';
-          }
-        }
+        campaignTick(vh);
         ticking = false;
       });
     }, { passive: true });
   }
+
+  /* ---------- 캠페인: 영상 + 패럴랙스·줌 스크럽 (rAF 미실행 환경 대비 인터벌 병행) ---------- */
+  function campaignTick(vh) {
+    var cp = $('campaign');
+    if (!cp) return;
+    vh = vh || window.innerHeight;
+    var r = cp.getBoundingClientRect();
+    var cvid = $('campaignVideo');
+    if (!cvid) return;
+    if (r.top < vh && r.bottom > 0) {
+      var prog = (vh - r.top) / (vh + r.height);
+      cvid.style.transform = 'translateY(' + ((prog - .5) * 60) + 'px) scale(' + (1 + prog * 0.08).toFixed(3) + ')';
+      if (cvid.paused) { var pp = cvid.play(); if (pp && pp.catch) pp.catch(function () {}); }
+    } else if (!cvid.paused) {
+      cvid.pause(); // 뷰포트 밖 정지 (성능·배터리)
+    }
+  }
+  if ($('campaign')) setInterval(function () { campaignTick(); }, 700);
 
   /* ---------- 리빌 + 카운트업 ---------- */
   function revealTick() {

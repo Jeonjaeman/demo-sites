@@ -127,10 +127,16 @@ img{max-width:100%; display:block}
 .mclose{position:absolute; top:26px; right:26px; z-index:130; width:46px; height:46px; border-radius:50%; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:#fff; font-size:19px; display:grid; place-items:center; backdrop-filter:blur(6px)}
 .mclose:hover{background:var(--acc); border-color:var(--acc)}
 
-/* ============ 캠페인 (풀블리드) ============ */
+/* ============ 캠페인 (풀블리드 영상 + 모션) ============ */
 .campaign{position:relative; width:100vw; margin-left:calc(50% - 50vw); height:72vh; min-height:420px; overflow:hidden}
-.campaign img{width:100%; height:114%; object-fit:cover; position:absolute; top:-7%; left:0; will-change:transform}
+.campaign video, .campaign img{width:100%; height:118%; object-fit:cover; position:absolute; top:-9%; left:0; will-change:transform}
 .campaign::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, rgba(14,14,15,.5), transparent 35%, rgba(14,14,15,.62))}
+/* 마퀴 — 영상 위를 흐르는 대형 타이포 */
+.cp-marquee{position:absolute; top:38px; left:0; right:0; z-index:2; overflow:hidden; pointer-events:none; mix-blend-mode:overlay}
+.cp-track{display:flex; white-space:nowrap; will-change:transform; animation:cpMarquee 26s linear infinite}
+.cp-track span{font-size:clamp(44px,7vw,88px); font-weight:190; letter-spacing:.06em; color:rgba(255,255,255,.5); text-transform:uppercase; flex:none}
+@keyframes cpMarquee{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){ .cp-track{animation:none} }
 .campaign .cp-txt{position:absolute; left:0; right:0; bottom:52px; z-index:2}
 .campaign .cp-txt .shell{display:flex; align-items:flex-end; justify-content:space-between; gap:18px; flex-wrap:wrap}
 .campaign h3{font-size:clamp(30px,4.6vw,58px); font-weight:190; text-transform:uppercase; letter-spacing:.02em; line-height:1.02; margin:0}
