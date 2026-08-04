@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Models — ELAN 엘랑 (서브 페이지 · 제안용 데모)</title>
+<meta name="description" content="ELAN 소속 모델 포트폴리오 — 비동기 카테고리 필터·모달·호버 인터랙션 (제안용 데모)">
+<meta name="theme-color" content="#0E0E0F">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="models" style="background:var(--bg)">
+
+<div class="wipe" id="wipe"></div>
+
+<nav class="nav" style="mix-blend-mode:normal; background:linear-gradient(180deg, rgba(14,14,15,.9), transparent)">
+  <div class="nav-in">
+    <a class="brand" href="index.html" data-wipe>ELAN<small>MGMT</small></a>
+    <div class="nav-links">
+      <a href="models.html" style="opacity:1">MODELS</a>
+      <a href="index.html#work" data-wipe>WORK</a>
+      <a href="news.html" data-wipe>NEWS</a>
+      <a href="index.html#about" data-wipe>ABOUT</a>
+      <a href="index.html#contact" data-wipe>CONTACT</a>
+    </div>
+    <a class="nav-cms" href="admin.html">CMS →</a>
+  </div>
+</nav>
+
+<section class="sec" id="models" style="padding-top:150px">
+  <div class="shell">
+    <div class="sec-head rv">
+      <h2>Our <b>Models</b></h2>
+      <span class="cnt" id="modelCnt"></span>
+    </div>
+    <div class="filters rv" id="filters">
+      <button class="ftab on" data-f="all">All<span class="n" data-cnt="all"></span></button>
+      <button class="ftab" data-f="women">Women<span class="n" data-cnt="women"></span></button>
+      <button class="ftab" data-f="men">Men<span class="n" data-cnt="men"></span></button>
+      <button class="ftab" data-f="campaign">Campaign<span class="n" data-cnt="campaign"></span></button>
+      <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px; font-size:11.5px; color:var(--mut)">
+        호버 효과
+        <button class="ftab" id="hoverMode" style="font-size:12px; letter-spacing:.04em; color:var(--ink-2); border:1px solid var(--line-2); border-radius:999px; padding:5px 12px">흑백→컬러 ↔ 색상 반전</button>
+      </span>
+    </div>
+    <div class="grid" id="modelGrid"></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="foot-meta">
+      <span>ELAN MGMT — 제안용 데모 · 모든 인물은 AI 생성 가상 · 서브 페이지(메뉴별 분리) 구성 예시</span>
+      <a href="index.html" data-wipe class="mono">← MAIN</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modalBg">
+  <button class="mclose" id="modalClose">✕</button>
+  <div class="mmodal" id="modalBody"></div>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

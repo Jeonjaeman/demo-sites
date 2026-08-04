@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>News — ELAN 엘랑 (서브 페이지 · 제안용 데모)</title>
+<meta name="description" content="ELAN 뉴스·프레스 — 카테고리 필터·CMS 실연동 (제안용 데모)">
+<meta name="theme-color" content="#0E0E0F">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="news" style="background:var(--bg)">
+
+<div class="wipe" id="wipe"></div>
+
+<nav class="nav" style="mix-blend-mode:normal; background:linear-gradient(180deg, rgba(14,14,15,.9), transparent)">
+  <div class="nav-in">
+    <a class="brand" href="index.html" data-wipe>ELAN<small>MGMT</small></a>
+    <div class="nav-links">
+      <a href="models.html" data-wipe>MODELS</a>
+      <a href="index.html#work" data-wipe>WORK</a>
+      <a href="news.html" style="opacity:1">NEWS</a>
+      <a href="index.html#about" data-wipe>ABOUT</a>
+      <a href="index.html#contact" data-wipe>CONTACT</a>
+    </div>
+    <a class="nav-cms" href="admin.html">CMS →</a>
+  </div>
+</nav>
+
+<section class="sec" id="news" style="padding-top:150px">
+  <div class="shell">
+    <div class="sec-head rv">
+      <h2>News &amp; <b>Press</b></h2>
+      <span class="cnt"><a href="admin.html" style="color:var(--acc)">CMS에서 등록·토글 →</a></span>
+    </div>
+    <div class="filters rv" id="newsFilters">
+      <button class="ftab on" data-nf="all">All</button>
+      <button class="ftab" data-nf="Press">Press</button>
+      <button class="ftab" data-nf="Model">Model</button>
+      <button class="ftab" data-nf="Business">Business</button>
+      <button class="ftab" data-nf="Notice">Notice</button>
+    </div>
+    <div class="news-list rv" id="newsList"></div>
+    <p class="news-empty" id="newsEmpty" style="display:none">이 카테고리에 노출 중인 기사가 없습니다.</p>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="foot-meta">
+      <span>ELAN MGMT — 제안용 데모 · 기사 데이터는 CMS(localStorage)와 실연동 · 카테고리 탭은 bnbindustry.com/news 문법 실측 이식</span>
+      <a href="index.html" data-wipe class="mono">← MAIN</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

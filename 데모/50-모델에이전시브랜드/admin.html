@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ELAN CMS — 콘텐츠 관리 (제안용 데모)</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="cms">
+  <header class="cms-top">
+    <span class="tt">ELAN <small>CMS · 개발 지식 없이 쓰는 관리자</small></span>
+    <a class="btn btn-sm btn-gho" href="index.html">사이트 보기 →</a>
+  </header>
+
+  <div class="cms-wrap">
+    <nav class="cms-side" id="cmsNav">
+      <a class="cms-nav on" data-view="posts">📰 기사 관리</a>
+      <a class="cms-nav" data-view="editor">✎ 새 기사 작성</a>
+      <a class="cms-nav" data-view="video">🎬 메인 배경 영상</a>
+      <a class="cms-nav" data-view="guide">📖 사용 안내</a>
+    </nav>
+    <main class="cms-main" id="cmsMain"></main>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/cms.js"></script>
+</body>
+</html>
