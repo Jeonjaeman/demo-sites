@@ -1,0 +1,206 @@
+/* ============================================================
+   KEYRING 키링 — 외국인 고객용 차량 이용가이드 모바일 앱 (제안용 데모)
+   도메인: 렌터카 현장 QR 안내 흐름 · 위치기반서비스(신고)·기계번역 고지 관행
+   디자인: 클린 화이트 + 트러스트 블루 · 모바일 앱 문법 (여행자용 큰 터치 타겟)
+   ※ 회사·지점·차종·연락처 전부 가상. 차량 이미지는 AI 생성(실존 모델 아님).
+   ============================================================ */
+
+:root{
+  --bg:#F6F7FA; --card:#FFFFFF; --ink:#101623; --ink-2:#3A4356; --mut:#7A8296; --mut-2:#ABB1C0;
+  --line:#E7EAF1; --line-2:#D8DDE8;
+  --acc:#1B64F2; --acc-ink:#0E4CC4; --acc-wash:#EAF1FE;
+  --ok:#118A54; --ok-wash:#E5F5ED; --warn:#B4720E; --warn-wash:#FBF2DF; --bad:#D23B2E; --bad-wash:#FCECEA;
+  --r:14px; --r-s:10px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI","Malgun Gothic",sans-serif;
+  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html{overflow-x:clip; -webkit-text-size-adjust:100%}
+body{margin:0; font-family:var(--font); background:#EDEFF4; color:var(--ink);
+  line-height:1.6; letter-spacing:-0.011em; -webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+a{color:inherit; text-decoration:none}
+button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; padding:0}
+img{max-width:100%; display:block}
+.mono{font-family:var(--mono); font-feature-settings:"tnum" 1; letter-spacing:0}
+
+/* ============ 데스크톱 뷰어 ============ */
+.viewer{display:grid; grid-template-columns:320px 1fr; min-height:100vh}
+.v-side{border-right:1px solid var(--line-2); background:#fff; padding:26px 22px; position:sticky; top:0; max-height:100vh; overflow:auto}
+.v-brand{display:flex; align-items:center; gap:10px; margin-bottom:8px}
+.v-brand .mark{width:34px; height:34px; border-radius:10px; background:var(--acc); color:#fff; display:grid; place-items:center; font-weight:800; font-size:17px; transform:rotate(-6deg)}
+.v-brand b{font-size:21px; letter-spacing:-0.02em}
+.v-brand small{color:var(--mut); font-size:11px}
+.v-sub{font-size:12.5px; color:var(--mut); line-height:1.65; margin-bottom:18px}
+.v-flow{display:flex; flex-direction:column; gap:4px}
+.v-item{display:flex; align-items:center; gap:10px; padding:9px 11px; border-radius:9px; font-size:13.5px; color:var(--ink-2); text-align:left; transition:background .13s}
+.v-item:hover{background:var(--bg)}
+.v-item.on{background:var(--acc); color:#fff; font-weight:680}
+.v-item .no{font-family:var(--mono); font-size:10.5px; color:var(--mut-2); width:18px}
+.v-item.on .no{color:rgba(255,255,255,.6)}
+.v-note{margin-top:18px; padding:13px 14px; background:var(--bg); border:1px solid var(--line); border-radius:11px; font-size:11.5px; color:var(--mut); line-height:1.6}
+.v-note b{color:var(--ink-2)}
+.v-stage{display:grid; place-items:center; padding:34px 20px}
+.phone{width:390px; height:812px; background:#fff; border-radius:44px; border:1px solid #d6d9e2;
+  box-shadow:0 0 0 10px #1c1e26, 0 0 0 11px #3a3d49, 0 50px 110px -40px rgba(20,24,40,.5);
+  overflow:hidden; position:relative; flex:none}
+.phone .notch{position:absolute; top:10px; left:50%; transform:translateX(-50%); width:118px; height:30px; background:#1c1e26; border-radius:18px; z-index:60; pointer-events:none}
+.screen{position:absolute; inset:0; overflow:hidden; background:var(--bg)}
+@media(max-width:900px){
+  .viewer{display:block}
+  .v-side{display:none}
+  .v-stage{padding:0}
+  .phone{width:100%; height:100vh; height:100dvh; border-radius:0; border:none; box-shadow:none}
+  .phone .notch{display:none}
+  .m-nav{display:flex!important}
+}
+.m-nav{display:none; position:fixed; bottom:0; left:0; right:0; z-index:80; background:rgba(255,255,255,.94); backdrop-filter:blur(12px); border-top:1px solid var(--line-2); padding:10px 14px calc(10px + env(safe-area-inset-bottom)); gap:8px; overflow-x:auto}
+.m-nav button{flex:none; height:34px; padding:0 13px; border-radius:999px; border:1px solid var(--line-2); font-size:12px; color:var(--ink-2); white-space:nowrap; background:#fff}
+.m-nav button.on{background:var(--acc); color:#fff; border-color:var(--acc); font-weight:680}
+
+/* ============ 화면 공통 ============ */
+.scr{position:absolute; inset:0; display:none; flex-direction:column; background:var(--bg)}
+.scr.on{display:flex; animation:scrIn .32s var(--ease)}
+@keyframes scrIn{from{opacity:0; transform:translateX(12px)} to{opacity:1; transform:none}}
+.scr-body{flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch}
+.appbar{flex:none; display:flex; align-items:center; gap:12px; padding:52px 18px 12px; background:#fff; border-bottom:1px solid var(--line)}
+.appbar .ab-t{font-size:16px; font-weight:720; flex:1; letter-spacing:-0.01em}
+.ab-btn{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-size:16px; color:var(--ink-2); background:var(--bg)}
+.ab-btn:active{transform:scale(.94)}
+
+/* 언어 스위처 */
+.langs{display:inline-flex; background:var(--bg); border:1px solid var(--line-2); border-radius:999px; padding:3px; gap:2px}
+.langs button{height:28px; min-width:38px; padding:0 8px; border-radius:999px; font-size:12px; font-weight:650; color:var(--mut); transition:all .15s}
+.langs button.on{background:var(--acc); color:#fff}
+
+.cta{display:flex; align-items:center; justify-content:center; gap:8px; height:52px; border-radius:14px; font-size:15.5px; font-weight:700; width:100%; transition:transform .13s var(--ease), background .15s}
+.cta:active{transform:scale(.98)}
+.cta-acc{background:var(--acc); color:#fff} .cta-acc:active{background:var(--acc-ink)}
+.cta-gho{background:#fff; border:1.5px solid var(--line-2); color:var(--ink)}
+.cta.sm{height:44px; font-size:14px; border-radius:12px}
+.chip{display:inline-flex; align-items:center; gap:5px; height:26px; padding:0 11px; border-radius:999px; font-size:11.5px; font-weight:650; background:var(--acc-wash); color:var(--acc-ink)}
+.chip.gray{background:var(--bg); color:var(--mut); border:1px solid var(--line-2)}
+.chip.warn{background:var(--warn-wash); color:var(--warn)}
+
+/* ============ 01 QR 진입 ============ */
+.qr-hero{padding:64px 22px 20px; background:linear-gradient(180deg, #fff, var(--bg)); text-align:center}
+.qr-hero .big{font-size:29px; font-weight:790; letter-spacing:-0.03em; line-height:1.2}
+.qr-hero .big em{font-style:normal; color:var(--acc)}
+.qr-hero p{font-size:13.5px; color:var(--mut); margin:10px 0 0}
+.qr-cards{padding:16px 20px 30px; display:flex; flex-direction:column; gap:12px}
+.qr-card{display:flex; align-items:center; gap:14px; background:#fff; border:1px solid var(--line-2); border-radius:var(--r); padding:14px; text-align:left; transition:transform .16s var(--ease), border-color .16s, box-shadow .2s}
+.qr-card:active{transform:scale(.98)}
+.qr-card:hover{border-color:var(--acc); box-shadow:0 12px 30px -14px rgba(27,100,242,.25)}
+.qr-card .qc-img{width:96px; height:64px; border-radius:10px; overflow:hidden; background:var(--bg); flex:none}
+.qr-card .qc-img img{width:100%; height:100%; object-fit:cover}
+.qr-card .qc-name{font-size:15.5px; font-weight:720}
+.qr-card .qc-sub{font-size:12px; color:var(--mut); margin-top:2px}
+.qr-card .qc-qr{margin-left:auto; width:44px; height:44px; border:1.5px dashed var(--line-2); border-radius:9px; display:grid; place-items:center; font-size:19px; flex:none; color:var(--mut)}
+.qr-scanline{position:relative; overflow:hidden}
+.qr-scanline::after{content:""; position:absolute; left:0; right:0; top:0; height:2px; background:var(--acc); opacity:0; animation:scan 2.4s var(--ease) infinite}
+@keyframes scan{0%{top:0; opacity:0} 15%{opacity:.9} 85%{opacity:.9} 100%{top:100%; opacity:0}}
+
+/* ============ 02 가이드 ============ */
+.g-hero{position:relative; height:190px; flex:none; overflow:hidden; background:#dfe4ee}
+.g-hero img{width:100%; height:100%; object-fit:cover}
+.g-hero::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 40%, rgba(16,22,35,.55))}
+.g-hero .gh-txt{position:absolute; left:18px; bottom:12px; color:#fff; z-index:2}
+.g-hero .gh-name{font-size:21px; font-weight:780; letter-spacing:-0.02em}
+.g-hero .gh-sub{font-size:12px; opacity:.85}
+.mt-badge{display:flex; align-items:flex-start; gap:9px; margin:14px 18px 0; background:var(--acc-wash); border:1px solid #C9DBFC; border-radius:11px; padding:11px 13px; font-size:12px; color:var(--acc-ink); line-height:1.55}
+.mt-badge .ic{font-size:14px}
+.g-sec{background:#fff; border:1px solid var(--line); border-radius:var(--r); margin:14px 18px 0; overflow:hidden}
+.g-sec .gs-h{display:flex; align-items:center; gap:10px; padding:14px 16px; font-size:14.5px; font-weight:720; border-bottom:1px solid var(--line)}
+.g-sec .gs-h .ic{width:28px; height:28px; border-radius:8px; background:var(--acc-wash); display:grid; place-items:center; font-size:14px}
+.g-sec .gs-b{padding:14px 16px; font-size:13.5px; color:var(--ink-2); line-height:1.7}
+.g-sec .gs-b img{border-radius:10px; margin:8px 0}
+.g-sec.warn .gs-h .ic{background:var(--warn-wash)}
+.g-warn-item{display:flex; gap:10px; padding:9px 0; border-bottom:1px dashed var(--line); font-size:13px}
+.g-warn-item:last-child{border-bottom:none}
+.g-warn-item .n{font-family:var(--mono); font-size:11px; color:var(--warn); font-weight:700; flex:none; padding-top:2px}
+.g-orig{display:block; margin-top:3px; font-size:11.5px; color:var(--mut-2)}
+.emg{display:flex; gap:10px; margin:14px 18px 0}
+.emg a{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:#fff; border:1.5px solid var(--line-2); border-radius:var(--r); padding:13px 8px; font-size:12px; font-weight:650; color:var(--ink-2); transition:border-color .15s}
+.emg a:active{border-color:var(--acc)}
+.emg .big{font-size:17px}
+.g-foot{padding:16px 18px calc(20px + env(safe-area-inset-bottom))}
+
+/* ============ 03 지도 ============ */
+.consent-gate{margin:14px 18px 0; background:#fff; border:1.5px solid var(--acc); border-radius:var(--r); padding:16px}
+.consent-gate h4{margin:0 0 6px; font-size:14.5px}
+.consent-gate p{font-size:12.5px; color:var(--mut); margin:0 0 12px; line-height:1.6}
+.map-wrap{margin:14px 18px 0; border-radius:var(--r); overflow:hidden; border:1px solid var(--line-2); position:relative; background:#fff}
+canvas.map{display:block; width:100%}
+.map-legend{position:absolute; top:10px; left:10px; display:flex; flex-direction:column; gap:4px; font-size:10.5px; background:rgba(255,255,255,.92); border-radius:8px; padding:7px 9px; border:1px solid var(--line)}
+.map-legend span{display:flex; align-items:center; gap:6px}
+.map-legend i{width:9px; height:9px; border-radius:50%}
+.branch-list{margin:12px 18px 0; display:flex; flex-direction:column; gap:8px}
+.branch{display:flex; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+.branch .bi{width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:15px; flex:none}
+.branch .bn{font-size:13.5px; font-weight:680}
+.branch .bd{font-size:11.5px; color:var(--mut)}
+.branch .bkm{margin-left:auto; font-family:var(--mono); font-size:12px; color:var(--acc-ink); font-weight:600; flex:none}
+
+/* ============ 04 문의 ============ */
+.chat-card{margin:14px 18px 0; background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:18px; text-align:center}
+.chat-card .ci{width:56px; height:56px; border-radius:50%; background:var(--acc-wash); display:grid; place-items:center; font-size:25px; margin:0 auto 10px}
+.chat-card h4{margin:0 0 5px; font-size:16px}
+.chat-card p{font-size:12.5px; color:var(--mut); margin:0 0 14px; line-height:1.6}
+.ext-note{display:flex; gap:8px; align-items:center; justify-content:center; font-size:11px; color:var(--mut-2); margin-top:10px}
+
+/* ============ 토스트·모달 ============ */
+.toast-wrap{position:absolute; bottom:90px; left:0; right:0; z-index:90; display:flex; flex-direction:column; align-items:center; gap:8px; pointer-events:none}
+.toast{background:var(--ink); color:#fff; padding:10px 17px; border-radius:999px; font-size:13px; font-weight:600; box-shadow:0 14px 40px -12px rgba(16,22,35,.5); animation:toastIn .3s var(--ease); max-width:88%; text-align:center}
+.toast.acc{background:var(--acc)}
+@keyframes toastIn{from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:none}}
+.overlay{position:absolute; inset:0; z-index:70; background:rgba(16,22,35,.5); backdrop-filter:blur(4px); display:grid; place-items:end center; padding:0}
+.sheet{width:100%; background:#fff; border-radius:22px 22px 0 0; padding:22px 20px calc(24px + env(safe-area-inset-bottom)); animation:sheetUp .34s var(--ease)}
+@keyframes sheetUp{from{transform:translateY(40%)} to{transform:none}}
+.sheet h4{margin:0 0 8px; font-size:16.5px}
+.sheet p{font-size:13px; color:var(--mut); margin:0 0 16px; line-height:1.65}
+
+/* ============ 관리자 (admin.html) ============ */
+body.admin{background:var(--bg)}
+.adm-top{display:flex; align-items:center; justify-content:space-between; height:58px; padding:0 20px; background:#fff; border-bottom:1px solid var(--line-2); position:sticky; top:0; z-index:50}
+.adm-top .tt{font-weight:760; font-size:15px; display:flex; align-items:center; gap:10px}
+.adm-top .tt .mark{width:28px; height:28px; border-radius:8px; background:var(--acc); color:#fff; display:grid; place-items:center; font-weight:800; font-size:14px; transform:rotate(-6deg)}
+.adm-wrap{max-width:1080px; margin:0 auto; padding:24px 20px 60px}
+.adm-grid{display:grid; grid-template-columns:1fr 380px; gap:18px; align-items:start}
+@media(max-width:920px){ .adm-grid{grid-template-columns:1fr} }
+.panel{background:#fff; border:1px solid var(--line); border-radius:var(--r); padding:20px; margin-bottom:16px}
+.panel-h{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap}
+.panel-h h3{font-size:16px; margin:0}
+.panel-h .sub{font-size:12px; color:var(--mut)}
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:7px; height:40px; padding:0 16px; border-radius:10px; font-size:13.5px; font-weight:660; transition:all .14s}
+.btn:active{transform:scale(.97)}
+.btn-acc{background:var(--acc); color:#fff} .btn-acc:hover{background:var(--acc-ink)}
+.btn-gho{background:#fff; border:1px solid var(--line-2)} .btn-gho:hover{border-color:var(--ink)}
+.btn-sm{height:32px; padding:0 12px; font-size:12.5px; border-radius:8px}
+.btn-danger{color:var(--bad); border:1px solid #F2C7C2} .btn-danger:hover{background:var(--bad-wash)}
+.input, textarea.input, select.input{width:100%; background:#fff; border:1px solid var(--line-2); border-radius:9px; color:var(--ink); padding:10px 12px; font-size:14px; font-family:inherit; outline:none}
+.input:focus{border-color:var(--acc)}
+textarea.input{min-height:110px; resize:vertical; line-height:1.6}
+.field{margin-bottom:12px}
+.field label{display:block; font-size:11.5px; color:var(--mut); font-weight:650; margin-bottom:5px}
+.adm-row{display:flex; align-items:center; gap:12px; padding:13px 4px; border-bottom:1px solid var(--line)}
+.adm-row:last-child{border-bottom:none}
+.adm-row .ar-img{width:64px; height:42px; border-radius:8px; overflow:hidden; background:var(--bg); flex:none}
+.adm-row .ar-img img{width:100%; height:100%; object-fit:cover}
+.adm-row .ar-t{font-weight:660; font-size:14px; flex:1; min-width:0}
+.adm-row .ar-d{font-size:11.5px; color:var(--mut)}
+.qr-box{display:grid; place-items:center; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:12px}
+.qr-box canvas, .qr-box img{background:#fff; padding:10px; border-radius:8px; box-shadow:0 6px 20px -8px rgba(16,22,35,.15)}
+.link-row{display:flex; gap:8px; align-items:center}
+.link-row .input{font-family:var(--mono); font-size:12px}
+.notice{background:var(--bg); border:1px solid var(--line-2); border-radius:10px; padding:12px 14px; font-size:12.5px; color:var(--ink-2); line-height:1.6}
+.notice.warn{background:var(--warn-wash); border-color:#EBD9B5; color:#7d5310}
+.notice.ok{background:var(--ok-wash); border-color:#BFE3D0; color:#0d6b41}
+.risk-list{display:grid; gap:10px}
+.risk{border:1px solid var(--line); border-left:3px solid var(--acc); border-radius:10px; padding:13px 15px; background:#fff}
+.risk b{font-size:13.5px}
+.risk p{font-size:12.5px; color:var(--mut); margin:4px 0 0; line-height:1.6}
+.disclaimer{font-size:11px; color:var(--mut-2); text-align:center; padding:16px}
+.tag{display:inline-flex; height:22px; padding:0 9px; border-radius:6px; font-size:11px; font-weight:700; align-items:center}
+.tag.live{background:var(--ok-wash); color:var(--ok)}
