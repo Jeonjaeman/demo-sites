@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학원 통합 관리 시스템 — 데모</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --ink:#17233B; --ink2:#22304F; --paper:#F5F6F9; --card:#FFFFFF;
+  --stamp:#C2402E; --stamp-soft:#FBEDEA;
+  --ok:#0E8A6D; --ok-soft:#E6F4EF;
+  --warn:#B5750B; --warn-soft:#FBF3E2;
+  --line:#E3E6EC; --txt:#1E2433; --sub:#67708A; --mut:#9AA1B5;
+  --r:10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;background:var(--paper);color:var(--txt);font-size:15px;line-height:1.6}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit}
+
+/* ── 데모 배너 ── */
+.demo-band{background:var(--ink);color:#fff;font-size:12.5px;padding:7px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.demo-band b{color:#F4C87A;font-weight:600}
+.demo-band .reset{color:#B9C2D8;text-decoration:underline;font-size:12px}
+
+/* ── 레이아웃 ── */
+.app{display:flex;min-height:calc(100vh - 34px)}
+.side{width:216px;background:var(--ink);color:#C7CEDE;flex-shrink:0;display:flex;flex-direction:column;padding:20px 0}
+.logo{padding:0 20px 18px;border-bottom:1px solid var(--ink2);margin-bottom:12px}
+.logo .t{color:#fff;font-weight:700;font-size:16px;letter-spacing:-.3px}
+.logo .s{font-size:11.5px;color:#7C87A3;margin-top:2px}
+.nav{flex:1}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 20px;color:#C7CEDE;font-size:14px;font-weight:500;border-left:3px solid transparent}
+.nav button:hover{background:var(--ink2);color:#fff}
+.nav button.on{background:var(--ink2);color:#fff;border-left-color:var(--stamp)}
+.nav .ico{width:18px;text-align:center;font-size:15px;opacity:.85}
+.side-foot{padding:14px 20px 0;border-top:1px solid var(--ink2);font-size:11.5px;color:#7C87A3}
+
+.main{flex:1;padding:26px 30px;max-width:1080px}
+.pagehead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+h1{font-size:21px;font-weight:700;letter-spacing:-.4px}
+.pagehead .desc{font-size:13px;color:var(--sub);margin-top:3px}
+
+/* ── 역할 전환 ── */
+.rolebar{display:flex;gap:6px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:4px}
+.rolebar button{padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;color:var(--sub)}
+.rolebar button.on{background:var(--ink);color:#fff}
+
+/* ── 카드/그리드 ── */
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:980px){.g4,.g3{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.card h3{font-size:14.5px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.stat .n{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.stat .l{font-size:12.5px;color:var(--sub);margin-top:2px}
+.stat .n.red{color:var(--stamp)} .stat .n.ok{color:var(--ok)} .stat .n.warn{color:var(--warn)}
+
+/* ── 테이블 ── */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:12px;color:var(--mut);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid #F0F1F5;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr.click{cursor:pointer} tr.click:hover td{background:#FAFBFD}
+
+/* ── 뱃지/버튼 ── */
+.bdg{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:99px}
+.bdg.ok{background:var(--ok-soft);color:var(--ok)}
+.bdg.red{background:var(--stamp-soft);color:var(--stamp)}
+.bdg.warn{background:var(--warn-soft);color:var(--warn)}
+.bdg.gray{background:#EEF0F5;color:var(--sub)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--txt)}
+.btn:hover{border-color:#C9CEDA}
+.btn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.pri:hover{background:var(--ink2)}
+.btn.sm{padding:6px 11px;font-size:12.5px}
+.btn.danger{color:var(--stamp);border-color:#EBC7C0}
+
+/* ── 폼 ── */
+label.f{display:block;font-size:12.5px;font-weight:600;color:var(--sub);margin-bottom:5px}
+.inp,select.inp,textarea.inp{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.inp:focus{outline:2px solid #B9C6E4;border-color:#8FA3CE}
+.frow{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.frow>div{flex:1;min-width:120px}
+
+/* ── 키오스크 ── */
+.kiosk{max-width:430px;margin:20px auto;text-align:center}
+.kiosk-clock{font-size:15px;color:var(--sub);margin-bottom:6px}
+.kiosk-title{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:22px}
+.kdisplay{background:#fff;border:2px solid var(--line);border-radius:14px;font-size:34px;font-weight:800;letter-spacing:8px;padding:16px;margin-bottom:14px;min-height:76px;color:var(--ink)}
+.kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpad button{background:#fff;border:1px solid var(--line);border-radius:12px;font-size:24px;font-weight:700;padding:18px 0;color:var(--ink)}
+.kpad button:active{background:#EEF0F5}
+.kpad .act{font-size:16px;font-weight:700}
+.kpad .go{background:var(--ink);color:#fff;border-color:var(--ink)}
+.khint{font-size:12.5px;color:var(--mut);margin-top:14px}
+
+/* ── 도장 ── */
+.stamp-layer{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(23,35,59,.35);z-index:60}
+.stamp-layer.show{display:flex}
+.stamp-card{background:#fff;border-radius:18px;padding:40px 48px;text-align:center;position:relative;min-width:300px}
+.stamp-name{font-size:20px;font-weight:800;margin-bottom:4px}
+.stamp-meta{font-size:13.5px;color:var(--sub)}
+.stamp{width:110px;height:110px;border:5px solid var(--stamp);border-radius:50%;color:var(--stamp);font-size:30px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:18px auto 6px;letter-spacing:2px;transform:rotate(-8deg)}
+@media(prefers-reduced-motion:no-preference){
+  .stamp-layer.show .stamp{animation:slam .45s cubic-bezier(.2,1.4,.4,1) both}
+  @keyframes slam{0%{transform:scale(2.6) rotate(-20deg);opacity:0}55%{transform:scale(.94) rotate(-7deg);opacity:1}100%{transform:scale(1) rotate(-8deg)}}
+}
+.stamp.late{border-color:var(--warn);color:var(--warn)}
+
+/* ── 탭/기타 ── */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.tabs button{padding:9px 15px;font-size:13.5px;font-weight:600;color:var(--sub);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--stamp)}
+.mt{margin-top:14px}.mb{margin-bottom:14px}
+.muted{color:var(--mut);font-size:12.5px}
+.note{background:var(--warn-soft);border:1px solid #EBD9B0;color:#6B4E10;font-size:13px;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.note.ok{background:var(--ok-soft);border-color:#BFE0D4;color:#0A5C48}
+.empty{padding:28px;text-align:center;color:var(--mut);font-size:13.5px}
+
+/* ── 카톡 미리보기 ── */
+.kakao{background:#A9C0D5;border-radius:14px;padding:16px;max-width:340px}
+.kk-head{font-size:12px;font-weight:700;color:#3D4B58;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.kk-ch{width:22px;height:22px;background:#FAE100;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#3B1E1E}
+.kk-bubble{background:#fff;border-radius:4px 14px 14px 14px;padding:0;overflow:hidden;font-size:13px;line-height:1.55}
+.kk-tag{background:#FAE100;font-size:11px;font-weight:700;padding:5px 12px;color:#3B1E1E}
+.kk-body{padding:12px 14px;white-space:pre-line;color:#222}
+.kk-btn{border-top:1px solid #EEE;text-align:center;padding:9px;font-size:12.5px;font-weight:600;color:#3D4B58}
+
+/* ── 학부모 모바일 프레임 ── */
+.phone{max-width:400px;margin:0 auto}
+
+/* ── 그래프 ── */
+.chartbox{overflow-x:auto}
+svg text{font-family:inherit}
+
+/* ── 모달 ── */
+.modal-bg{position:fixed;inset:0;background:rgba(23,35,59,.4);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;padding:24px}
+.modal h2{font-size:17px;font-weight:700;margin-bottom:14px}
+
+@media(max-width:800px){
+  .app{flex-direction:column}
+  .side{width:100%;flex-direction:row;overflow-x:auto;padding:8px 10px;align-items:center}
+  .logo{border:none;margin:0;padding:0 14px 0 6px;white-space:nowrap}
+  .logo .s{display:none}
+  .nav{display:flex}
+  .nav button{white-space:nowrap;border-left:none;border-bottom:3px solid transparent;padding:8px 12px}
+  .nav button.on{border-left:none;border-bottom-color:var(--stamp)}
+  .side-foot{display:none}
+  .main{padding:18px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="demo-band">
+  <span>🔒 <b>데모 모드</b> — 가상 데이터로 동작합니다. 실제 서비스는 서버 DB·로그인·권한 통제가 적용됩니다.</span>
+  <button class="reset" onclick="resetDemo()">데이터 초기화</button>
+</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="logo"><div class="t">○○수학학원</div><div class="s">통합 관리 시스템</div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">외부 자동화 툴 0개<br>월 운영비 0원 구조</div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<div class="stamp-layer" id="stampLayer" onclick="this.classList.remove('show')">
+  <div class="stamp-card">
+    <div class="stamp-name" id="stName"></div>
+    <div class="stamp-meta" id="stMeta"></div>
+    <div class="stamp" id="stMark">출석</div>
+    <div class="muted">화면을 누르면 닫힙니다</div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+
+<script>
+/* ══════════ 시드 데이터 ══════════ */
+const SEED = {
+  students: [
+    {id:101,name:'김서연',cls:'중2 수학A',phone:'010-2314-8871',birth:'0412'},
+    {id:102,name:'이준호',cls:'중2 수학A',phone:'010-5521-3308',birth:'0927'},
+    {id:103,name:'박지민',cls:'중2 수학A',phone:'010-8834-1290',birth:'0116'},
+    {id:104,name:'최유나',cls:'중2 수학A',phone:'010-3390-7745',birth:'0703'},
+    {id:105,name:'정민재',cls:'중2 수학A',phone:'010-9182-6634',birth:'1122'},
+    {id:106,name:'강하은',cls:'중2 수학A',phone:'010-4456-2019',birth:'0530'},
+    {id:107,name:'윤도현',cls:'고1 수학B',phone:'010-7723-9981',birth:'0214'},
+    {id:108,name:'임세아',cls:'고1 수학B',phone:'010-6608-4472',birth:'1009'},
+    {id:109,name:'한지우',cls:'고1 수학B',phone:'010-2290-5563',birth:'0818'},
+    {id:110,name:'오시윤',cls:'고1 수학B',phone:'010-5017-3348',birth:'0325'},
+    {id:111,name:'서예린',cls:'고1 수학B',phone:'010-8845-7726',birth:'1201'},
+    {id:112,name:'김서연',cls:'고1 수학B',phone:'010-3364-9152',birth:'0644'}
+  ],
+  exams: [
+    {sid:101,name:'3월 단원평가',date:'2026-03-14',items:[{t:'일차함수',m:25,s:22,c:'그래프 해석 안정적'},{t:'연립방정식',m:25,s:18,c:'대입 과정 실수 1회'},{t:'확률',m:25,s:15,c:'조건부 개념 복습 필요'},{t:'도형',m:25,s:21,c:'양호'}],cm:'전반적으로 상승 추세. 확률 유형 집중 보완.'},
+    {sid:101,name:'4월 단원평가',date:'2026-04-18',items:[{t:'일차함수',m:25,s:24,c:'우수'},{t:'연립방정식',m:25,s:21,c:'개선됨'},{t:'확률',m:25,s:14,c:'기준 미달 — 클리닉 대상'},{t:'도형',m:25,s:23,c:'우수'}],cm:'확률 제외 전 영역 안정. 클리닉 영상 시청 확인 요망.'},
+    {sid:101,name:'5월 모의고사',date:'2026-05-16',items:[{t:'일차함수',m:25,s:23,c:'유지'},{t:'연립방정식',m:25,s:22,c:'유지'},{t:'확률',m:25,s:19,c:'클리닉 효과 확인'},{t:'도형',m:25,s:22,c:'유지'}],cm:'확률 5점 상승. 클리닉 루틴 유지.'},
+    {sid:102,name:'5월 모의고사',date:'2026-05-16',items:[{t:'일차함수',m:25,s:17,c:'기울기 개념 재점검'},{t:'연립방정식',m:25,s:20,c:'양호'},{t:'확률',m:25,s:16,c:'경우의 수 누락'},{t:'도형',m:25,s:19,c:'보통'}],cm:'함수 파트 클리닉 배정.'}
+  ],
+  homework: [
+    {sid:101,w:'6월 1주',rate:100,weak:'-',note:'전 문항 완료'},
+    {sid:101,w:'6월 2주',rate:85,weak:'확률',note:'서술형 2문항 미제출'},
+    {sid:101,w:'6월 3주',rate:95,weak:'-',note:'양호'},
+    {sid:102,w:'6월 3주',rate:60,weak:'일차함수',note:'미제출 다수 — 알림 발송됨'}
+  ],
+  counsel: [
+    {sid:101,date:'2026-05-20',by:'원장',txt:'학부모 상담. 여름특강 수강 협의, 확률 보강 방향 공유.'},
+    {sid:101,date:'2026-04-21',by:'김강사',txt:'4월 평가 후 개별 면담. 확률 단원 자신감 저하 — 클리닉 영상 배정.'}
+  ],
+  memo: {101:'수학 경시 준비 희망. 학부모 - 매주 금요일 통화 선호.'},
+  payments: [
+    {sid:101,month:'2026-06',amt:280000,st:'paid',via:'카드'},
+    {sid:102,month:'2026-06',amt:280000,st:'unpaid',via:'-'},
+    {sid:103,month:'2026-06',amt:280000,st:'paid',via:'이체'},
+    {sid:104,month:'2026-06',amt:280000,st:'paid',via:'카드'},
+    {sid:105,month:'2026-06',amt:280000,st:'unpaid',via:'-'},
+    {sid:106,month:'2026-06',amt:280000,st:'paid',via:'카드'},
+    {sid:107,month:'2026-06',amt:320000,st:'paid',via:'이체'},
+    {sid:108,month:'2026-06',amt:320000,st:'unpaid',via:'-'},
+    {sid:109,month:'2026-06',amt:320000,st:'paid',via:'카드'},
+    {sid:110,month:'2026-06',amt:320000,st:'paid',via:'카드'},
+    {sid:111,month:'2026-06',amt:320000,st:'paid',via:'이체'},
+    {sid:112,month:'2026-06',amt:320000,st:'paid',via:'카드'}
+  ],
+  clinicVideos: {'확률':'https://youtu.be/demo-prob','일차함수':'https://youtu.be/demo-func','연립방정식':'https://youtu.be/demo-eq','도형':'https://youtu.be/demo-geo'},
+  settings: {lateAfter:'16:10',clinicThreshold:70,sendHour:'20:00',msgGrade:'[○○수학학원] #{이름} 학생의 성적표가 업데이트되었습니다. 아래 버튼으로 확인해 주세요.',msgAbsent:'[○○수학학원] #{이름} 학생이 오늘 등원하지 않았습니다. 확인 부탁드립니다.'},
+  attendance: [],
+  talkLog: [
+    {date:'2026-06-01 20:00',to:'김서연 학부모',type:'성적표 업데이트',st:'성공'},
+    {date:'2026-06-01 20:00',to:'이준호 학부모',type:'과제 미제출 안내',st:'성공'},
+    {date:'2026-05-30 20:00',to:'정민재 학부모',type:'미등원 안내',st:'대체발송(SMS)'}
+  ]
+};
+
+/* ══════════ 상태 ══════════ */
+let DB;
+function load(){ try{ DB = JSON.parse(localStorage.getItem('academyDemo')) || structuredClone(SEED); }catch(e){ DB = structuredClone(SEED);} }
+function save(){ try{ localStorage.setItem('academyDemo', JSON.stringify(DB)); }catch(e){} }
+function resetDemo(){ localStorage.removeItem('academyDemo'); location.reload(); }
+load();
+
+let role = 'admin';           /* admin | teacher | parent | kiosk */
+let view = 'dash';
+const TEACHER_CLS = '중2 수학A';
+const PARENT_SID = 101;
+
+const fmt = n => n.toLocaleString('ko-KR');
+const stu = id => DB.students.find(s=>s.id===id);
+const today = () => { const d=new Date(); return d.toISOString().slice(0,10); };
+const nowT = () => new Date().toTimeString().slice(0,5);
+
+/* ══════════ 네비게이션 ══════════ */
+const NAVS = {
+  admin:[['dash','▦','대시보드'],['students','👥','학생 관리'],['grades','✎','성적 입력'],['pay','₩','수납 관리'],['talk','◈','알림톡'],['settings','⚙','설정'],['kioskgo','▣','출결 키오스크']],
+  teacher:[['dash','▦','대시보드'],['students','👥','담당 학생'],['grades','✎','성적 입력']],
+  parent:[['pview','☰','자녀 리포트']],
+  kiosk:[]
+};
+
+function renderNav(){
+  const n = document.getElementById('nav');
+  n.innerHTML = NAVS[role].map(([v,i,l])=>
+    `<button class="${view===v?'on':''}" onclick="go('${v}')"><span class="ico">${i}</span>${l}</button>`).join('');
+}
+function go(v){
+  if(v==='kioskgo'){ role='kiosk'; view='kiosk'; }
+  else view=v;
+  render();
+}
+function setRole(r){
+  role=r;
+  view = r==='parent' ? 'pview' : r==='kiosk' ? 'kiosk' : 'dash';
+  render();
+}
+
+/* ══════════ 공통 헤더 ══════════ */
+function roleBar(){
+  const items=[['admin','원장'],['teacher','강사'],['parent','학부모'],['kiosk','키오스크']];
+  return `<div class="rolebar">${items.map(([r,l])=>`<button class="${role===r?'on':''}" onclick="setRole('${r}')">${l}</button>`).join('')}</div>`;
+}
+function head(title,desc){
+  return `<div class="pagehead"><div><h1>${title}</h1><div class="desc">${desc||''}</div></div>${roleBar()}</div>`;
+}
+
+/* ══════════ 대시보드 ══════════ */
+function myStudents(){
+  return role==='teacher' ? DB.students.filter(s=>s.cls===TEACHER_CLS) : DB.students;
+}
+function vDash(){
+  const ss = myStudents();
+  const att = DB.attendance.filter(a=>a.date===today() && ss.some(s=>s.id===a.sid));
+  const unpaid = DB.payments.filter(p=>p.st==='unpaid' && ss.some(s=>s.id===p.sid));
+  const late = att.filter(a=>a.st==='late');
+  const rows = att.slice().reverse().map(a=>{
+    const s=stu(a.sid);
+    return `<tr><td><b>${s.name}</b> <span class="muted">${s.cls}</span></td><td>${a.time}</td><td>${a.st==='late'?'<span class="bdg warn">지각</span>':'<span class="bdg ok">출석</span>'}</td></tr>`;
+  }).join('');
+  return head(role==='teacher'?'강사 대시보드':'원장 대시보드', role==='teacher'?`${TEACHER_CLS} 담당 — 담당 반 데이터만 표시됩니다`:'오늘 현황 한눈에 보기')+`
+  <div class="grid g4 mb">
+    <div class="card stat"><div class="n ok">${att.length}<span style="font-size:15px;color:var(--mut)"> / ${ss.length}</span></div><div class="l">오늘 출석</div></div>
+    <div class="card stat"><div class="n warn">${late.length}</div><div class="l">지각</div></div>
+    <div class="card stat"><div class="n red">${unpaid.length}</div><div class="l">6월 미납</div></div>
+    <div class="card stat"><div class="n">${role==='admin'?DB.talkLog.length:'-'}</div><div class="l">알림톡 발송 누적</div></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>실시간 출결 <span class="muted">키오스크 입력 즉시 반영</span></h3>
+      ${att.length?`<table><thead><tr><th>학생</th><th>등원</th><th>상태</th></tr></thead><tbody>${rows}</tbody></table>`
+      :`<div class="empty">아직 오늘 출결 기록이 없습니다.<br>우측 상단에서 <b>키오스크</b>로 전환해 번호를 입력해 보세요.</div>`}
+    </div>
+    <div class="card"><h3>미납 현황 ${role==='admin'?'<button class="btn sm" onclick="go(\'pay\')">수납 관리 →</button>':''}</h3>
+      ${unpaid.length?`<table><tbody>${unpaid.map(p=>{const s=stu(p.sid);return `<tr><td><b>${s.name}</b> <span class="muted">${s.cls}</span></td><td>${fmt(p.amt)}원</td><td><span class="bdg red">미납</span></td></tr>`}).join('')}</tbody></table>`
+      :`<div class="empty">미납 없음</div>`}
+    </div>
+  </div>`;
+}
+
+/* ══════════ 키오스크 ══════════ */
+let kbuf='';
+function vKiosk(){
+  return `<div style="display:flex;justify-content:flex-end">${roleBar()}</div>
+  <div class="kiosk">
+    <div class="kiosk-clock" id="kclock"></div>
+    <div class="kiosk-title">학생 번호를 입력하세요</div>
+    <div class="kdisplay" id="kdisp">&nbsp;</div>
+    <div class="kpad">
+      ${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="kIn(${n})">${n}</button>`).join('')}
+      <button class="act" onclick="kClr()">지움</button>
+      <button onclick="kIn(0)">0</button>
+      <button class="act go" onclick="kGo()">출석</button>
+    </div>
+    <div class="khint">데모 학생 번호: 101 ~ 112 · ${DB.settings.lateAfter} 이후 등원 시 자동 지각 처리</div>
+  </div>`;
+}
+function kIn(n){ if(kbuf.length<4){kbuf+=n; document.getElementById('kdisp').textContent=kbuf;} }
+function kClr(){ kbuf=''; document.getElementById('kdisp').innerHTML='&nbsp;'; }
+function kGo(){
+  const s = stu(parseInt(kbuf,10));
+  const d = document.getElementById('kdisp');
+  if(!s){ d.textContent='등록되지 않은 번호'; setTimeout(kClr,900); return; }
+  if(DB.attendance.some(a=>a.sid===s.id && a.date===today())){ d.textContent='이미 출석 완료'; setTimeout(kClr,900); return; }
+  const t = nowT();
+  const late = t > DB.settings.lateAfter;
+  DB.attendance.push({sid:s.id,date:today(),time:t,st:late?'late':'ok'}); save();
+  document.getElementById('stName').textContent = s.name;
+  document.getElementById('stMeta').textContent = `${s.cls} · ${t} 등원`;
+  const mk=document.getElementById('stMark');
+  mk.textContent = late?'지각':'출석';
+  mk.className = 'stamp'+(late?' late':'');
+  const layer=document.getElementById('stampLayer');
+  layer.classList.remove('show'); void layer.offsetWidth; layer.classList.add('show');
+  kClr();
+}
+setInterval(()=>{const e=document.getElementById('kclock'); if(e){const d=new Date(); e.textContent=d.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'long'})+' '+d.toTimeString().slice(0,8);}},500);
+
+/* ══════════ 학생 관리 ══════════ */
+function vStudents(){
+  const ss=myStudents();
+  return head(role==='teacher'?'담당 학생':'학생 관리', role==='teacher'?'담당 반 학생만 조회·수정할 수 있습니다':'학생을 누르면 프로필이 열립니다')+`
+  <div class="card">
+  <table><thead><tr><th>번호</th><th>이름</th><th>반</th><th>학부모 연락처</th><th>6월 수납</th><th>최근 시험</th></tr></thead><tbody>
+  ${ss.map(s=>{
+    const p=DB.payments.find(x=>x.sid===s.id&&x.month==='2026-06');
+    const ex=DB.exams.filter(e=>e.sid===s.id).slice(-1)[0];
+    const tot=ex?ex.items.reduce((a,i)=>a+i.s,0):null;
+    return `<tr class="click" onclick="openProfile(${s.id})"><td>${s.id}</td><td><b>${s.name}</b></td><td>${s.cls}</td><td class="muted">${s.phone}</td>
+    <td>${p?(p.st==='paid'?'<span class="bdg ok">완납</span>':'<span class="bdg red">미납</span>'):'-'}</td>
+    <td>${tot!==null?tot+'점':'<span class="muted">기록 없음</span>'}</td></tr>`;
+  }).join('')}
+  </tbody></table></div>`;
+}
+
+/* ══════════ 학생 프로필 (모달) ══════════ */
+function openProfile(id){
+  const s=stu(id);
+  const exams=DB.exams.filter(e=>e.sid===id);
+  const hw=DB.homework.filter(h=>h.sid===id);
+  const cs=DB.counsel.filter(c=>c.sid===id);
+  const memo=DB.memo[id]||'';
+  const clinic = clinicFor(id);
+  document.getElementById('modalBox').innerHTML=`
+  <h2>${s.name} <span class="muted" style="font-weight:400">${s.cls} · ${s.id}번</span></h2>
+  ${chartSVG(exams)||'<div class="empty">시험 기록 없음</div>'}
+  ${clinic.length?`<div class="note mt">📎 오답 클리닉 자동 배정: ${clinic.map(c=>`<b>${c.t}</b>(${c.s}점, ${c.exam})`).join(', ')} — 학부모 리포트에 해설영상 링크가 자동 표시됩니다.</div>`:''}
+  <h3 style="font-size:14px;font-weight:700;margin:16px 0 8px">과제 성취도</h3>
+  ${hw.length?`<table><thead><tr><th>주차</th><th>수행률</th><th>취약 유형</th><th>메모</th></tr></thead><tbody>${hw.map(h=>`<tr><td>${h.w}</td><td>${h.rate}%</td><td>${h.weak}</td><td class="muted">${h.note}</td></tr>`).join('')}</tbody></table>`:'<div class="muted">기록 없음</div>'}
+  ${role!=='parent'?`
+  <h3 style="font-size:14px;font-weight:700;margin:16px 0 8px">상담 이력 <span class="bdg gray">내부 전용</span></h3>
+  ${cs.length?cs.map(c=>`<div style="border-left:3px solid var(--line);padding:4px 12px;margin-bottom:8px"><div class="muted">${c.date} · ${c.by}</div>${c.txt}</div>`).join(''):'<div class="muted">기록 없음</div>'}
+  <div class="frow mt"><div><input class="inp" id="csIn" placeholder="상담 내용 입력 후 추가"></div><button class="btn sm" onclick="addCounsel(${id})">추가</button></div>
+  <h3 style="font-size:14px;font-weight:700;margin:16px 0 8px">특이사항 메모 <span class="bdg gray">학부모 비공개</span></h3>
+  <textarea class="inp" id="memoIn" rows="2">${memo}</textarea>
+  <div style="text-align:right;margin-top:8px"><button class="btn sm" onclick="saveMemo(${id})">메모 저장</button></div>`:''}
+  <div style="text-align:right;margin-top:14px"><button class="btn" onclick="closeModal()">닫기</button></div>`;
+  document.getElementById('modalBg').classList.add('show');
+}
+function addCounsel(id){
+  const v=document.getElementById('csIn').value.trim(); if(!v)return;
+  DB.counsel.unshift({sid:id,date:today(),by:role==='teacher'?'김강사':'원장',txt:v}); save(); openProfile(id);
+}
+function saveMemo(id){ DB.memo[id]=document.getElementById('memoIn').value; save(); closeModal(); }
+function closeModal(){ document.getElementById('modalBg').classList.remove('show'); }
+
+function clinicFor(id){
+  const out=[];
+  DB.exams.filter(e=>e.sid===id).forEach(e=>e.items.forEach(i=>{
+    if(i.s/i.m*100 < DB.settings.clinicThreshold) out.push({t:i.t,s:i.s,m:i.m,exam:e.name,url:DB.clinicVideos[i.t]});
+  }));
+  const seen={}; return out.filter(c=>seen[c.t]?false:(seen[c.t]=1,true));
+}
+
+/* ══════════ 성적 추이 SVG ══════════ */
+function chartSVG(exams){
+  if(!exams.length) return '';
+  const pts = exams.map(e=>({label:e.name.replace(' ',''),v:e.items.reduce((a,i)=>a+i.s,0)}));
+  const W=500,H=150,pad=34, max=100;
+  const x=i=>pad+(W-pad*2)*(pts.length===1?.5:i/(pts.length-1));
+  const y=v=>H-24-(H-52)*(v/max);
+  const line=pts.map((p,i)=>`${i?'L':'M'}${x(i)},${y(p.v)}`).join(' ');
+  return `<div class="chartbox"><svg width="100%" viewBox="0 0 ${W} ${H}">
+  ${[0,50,100].map(g=>`<line x1="${pad}" y1="${y(g)}" x2="${W-pad}" y2="${y(g)}" stroke="#EDEFF4"/><text x="${pad-6}" y="${y(g)+4}" font-size="10" fill="#9AA1B5" text-anchor="end">${g}</text>`).join('')}
+  <path d="${line}" fill="none" stroke="#C2402E" stroke-width="2.5" stroke-linecap="round"/>
+  ${pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="#C2402E"/><text x="${x(i)}" y="${y(p.v)-10}" font-size="11" font-weight="700" fill="#1E2433" text-anchor="middle">${p.v}</text><text x="${x(i)}" y="${H-6}" font-size="10" fill="#67708A" text-anchor="middle">${p.label}</text>`).join('')}
+  </svg></div>`;
+}
+
+/* ══════════ 성적 입력 ══════════ */
+let gItems=[{t:'일차함수',m:25,s:'',c:''},{t:'연립방정식',m:25,s:'',c:''},{t:'확률',m:25,s:'',c:''},{t:'도형',m:25,s:'',c:''}];
+function vGrades(){
+  const ss=myStudents();
+  return head('성적 입력','문항 유형별 점수·코멘트 입력 → 저장 즉시 추이 그래프와 학부모 리포트에 반영')+`
+  <div class="card">
+    <div class="frow">
+      <div><label class="f">학생</label><select class="inp" id="gSid">${ss.map(s=>`<option value="${s.id}">${s.id} · ${s.name} (${s.cls})</option>`).join('')}</select></div>
+      <div><label class="f">시험명</label><input class="inp" id="gName" value="6월 단원평가"></div>
+      <div><label class="f">시행일</label><input class="inp" id="gDate" type="date" value="${today()}"></div>
+    </div>
+    <table><thead><tr><th style="width:26%">문제 유형</th><th style="width:12%">배점</th><th style="width:14%">획득</th><th>문항 코멘트</th></tr></thead><tbody id="gRows">
+    ${gItems.map((it,i)=>`<tr>
+      <td><input class="inp" value="${it.t}" onchange="gItems[${i}].t=this.value"></td>
+      <td><input class="inp" type="number" value="${it.m}" onchange="gItems[${i}].m=+this.value"></td>
+      <td><input class="inp" type="number" placeholder="점수" onchange="gItems[${i}].s=+this.value"></td>
+      <td><input class="inp" placeholder="코멘트" onchange="gItems[${i}].c=this.value"></td>
+    </tr>`).join('')}
+    </tbody></table>
+    <div class="mt"><label class="f">총평</label><textarea class="inp" id="gCm" rows="2" placeholder="시험 총평"></textarea></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+      <span class="muted">기준 점수(${DB.settings.clinicThreshold}%) 미달 유형은 오답 클리닉 영상이 자동 배정됩니다</span>
+      <button class="btn pri" onclick="saveGrade()">저장 → 알림톡 발송</button>
+    </div>
+  </div>
+  <div id="gDone"></div>`;
+}
+function saveGrade(){
+  const sid=+document.getElementById('gSid').value;
+  const items=gItems.filter(i=>i.s!=='').map(i=>({t:i.t,m:i.m,s:+i.s,c:i.c||'-'}));
+  if(!items.length){alert('점수를 입력해 주세요');return;}
+  DB.exams.push({sid,name:document.getElementById('gName').value,date:document.getElementById('gDate').value,items,cm:document.getElementById('gCm').value});
+  const s=stu(sid);
+  DB.talkLog.unshift({date:today()+' '+nowT(),to:s.name+' 학부모',type:'성적표 업데이트',st:'성공'});
+  save();
+  const clinic=items.filter(i=>i.s/i.m*100<DB.settings.clinicThreshold);
+  document.getElementById('gDone').innerHTML=`<div class="note ok mt">✓ 저장 완료 — ${s.name} 학부모에게 알림톡이 발송되었습니다${clinic.length?` · <b>${clinic.map(c=>c.t).join(', ')}</b> 유형 클리닉 영상 자동 배정`:''}. <a href="#" onclick="openProfile(${sid});return false">프로필에서 추이 확인 →</a></div>`;
+}
+
+/* ══════════ 수납 관리 ══════════ */
+let csvDone=false;
+const CSV_ROWS=[
+  {name:'이준호',phone:'010-5521-3308',amt:280000,date:'06-25',via:'카드'},
+  {name:'정민재',phone:'010-9182-6634',amt:280000,date:'06-26',via:'이체'},
+  {name:'김서연',phone:'010-0000-9999',amt:320000,date:'06-26',via:'카드'}
+];
+function vPay(){
+  const ps=DB.payments;
+  const paid=ps.filter(p=>p.st==='paid'), unpaid=ps.filter(p=>p.st==='unpaid');
+  return head('수납 관리','결제선생 CSV를 올리면 수납대장과 자동 매칭됩니다')+`
+  <div class="grid g3 mb">
+    <div class="card stat"><div class="n ok">${paid.length}</div><div class="l">완납</div></div>
+    <div class="card stat"><div class="n red">${unpaid.length}</div><div class="l">미납</div></div>
+    <div class="card stat"><div class="n">${fmt(paid.reduce((a,p)=>a+p.amt,0))}<span style="font-size:14px">원</span></div><div class="l">6월 수납액</div></div>
+  </div>
+  <div class="card mb">
+    <h3>결제선생 CSV 업로드 시뮬레이션</h3>
+    <p class="muted mb">실제 서비스에서는 CSV 파일을 드래그하면 됩니다. 데모에서는 아래 버튼으로 3건이 들어온 상황을 재현합니다. <b>이름+연락처</b>로 이중 매칭하며, 동명이인 등 매칭 실패 건은 자동 처리하지 않고 관리자 확인으로 넘깁니다.</p>
+    <button class="btn pri" onclick="runCSV()" ${csvDone?'disabled':''}>${csvDone?'업로드 완료됨':'CSV 업로드 실행'}</button>
+    <div id="csvResult"></div>
+  </div>
+  <div class="card">
+    <h3>6월 수납대장</h3>
+    <table><thead><tr><th>학생</th><th>반</th><th>수강료</th><th>결제</th><th>상태</th></tr></thead><tbody>
+    ${ps.map(p=>{const s=stu(p.sid);return `<tr><td><b>${s.name}</b> <span class="muted">${s.id}</span></td><td>${s.cls}</td><td>${fmt(p.amt)}원</td><td class="muted">${p.via}</td><td>${p.st==='paid'?'<span class="bdg ok">완납</span>':'<span class="bdg red">미납</span>'}</td></tr>`}).join('')}
+    </tbody></table>
+  </div>`;
+}
+function runCSV(){
+  let html='<table class="mt"><thead><tr><th>CSV 행</th><th>매칭 결과</th></tr></thead><tbody>';
+  CSV_ROWS.forEach(r=>{
+    const cands=DB.students.filter(s=>s.name===r.name);
+    const hit=cands.find(s=>s.phone===r.phone);
+    if(hit){
+      const p=DB.payments.find(x=>x.sid===hit.id&&x.month==='2026-06');
+      if(p){p.st='paid';p.via=r.via;}
+      html+=`<tr><td>${r.name} · ${fmt(r.amt)}원 · ${r.date}</td><td><span class="bdg ok">자동 매칭</span> ${hit.id} ${hit.name} → 완납 처리</td></tr>`;
+    }else{
+      html+=`<tr><td>${r.name} · ${fmt(r.amt)}원 · ${r.date}</td><td><span class="bdg warn">확인 필요</span> 동명이인 ${cands.length}명 — 연락처 불일치, 수동 확인 대기</td></tr>`;
+    }
+  });
+  html+='</tbody></table><div class="note mt">동명이인 "김서연" 건은 연락처가 달라 <b>자동 처리하지 않았습니다.</b> 엉뚱한 학생에게 결제가 붙는 사고를 구조적으로 차단하는 설계입니다.</div>';
+  csvDone=true; save();
+  document.getElementById('csvResult').innerHTML=html;
+  document.querySelector('#csvResult').scrollIntoView({behavior:'smooth',block:'nearest'});
+  setTimeout(()=>{render(); document.getElementById('csvResult')&&(document.getElementById('csvResult').innerHTML=html);},0);
+}
+
+/* ══════════ 알림톡 ══════════ */
+function vTalk(){
+  const s=DB.settings;
+  const preview=s.msgGrade.replace('#{이름}','김서연');
+  return head('알림톡','성적 저장·미등원·과제 미제출 시 자동 발송 (솔라피 연동, 건당 13원)')+`
+  <div class="grid g2">
+    <div>
+      <div class="card mb">
+        <h3>발송 미리보기</h3>
+        <div class="kakao">
+          <div class="kk-head"><span class="kk-ch">TALK</span> ○○수학학원</div>
+          <div class="kk-bubble">
+            <div class="kk-tag">알림톡 도착</div>
+            <div class="kk-body">${preview}</div>
+            <div class="kk-btn">성적표 확인하기 →</div>
+          </div>
+        </div>
+        <p class="muted mt">버튼의 링크에는 24시간 만료 토큰이 포함되어, 학부모가 별도 로그인 없이 자기 자녀 리포트만 열람합니다.</p>
+      </div>
+      <div class="card">
+        <h3>발송 실패 대비</h3>
+        <p style="font-size:13.5px">카카오톡 미가입·차단 학부모에게는 <b>자동으로 SMS 대체발송</b>됩니다. 발송 이력에서 상태를 확인할 수 있습니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <h3>발송 이력</h3>
+      <table><thead><tr><th>일시</th><th>수신</th><th>유형</th><th>상태</th></tr></thead><tbody>
+      ${DB.talkLog.map(t=>`<tr><td class="muted">${t.date}</td><td>${t.to}</td><td>${t.type}</td><td>${t.st==='성공'?'<span class="bdg ok">성공</span>':'<span class="bdg warn">'+t.st+'</span>'}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+  </div>`;
+}
+
+/* ══════════ 설정 ══════════ */
+function vSettings(){
+  const s=DB.settings;
+  return head('설정','개발자 없이 원장님이 직접 바꾸는 항목들입니다')+`
+  <div class="grid g2">
+    <div class="card">
+      <h3>운영 기준</h3>
+      <div class="frow"><div><label class="f">지각 판정 시각 (이후 등원 시 지각)</label><input class="inp" id="setLate" value="${s.lateAfter}"></div></div>
+      <div class="frow"><div><label class="f">오답 클리닉 기준 점수 (% 미만 시 영상 자동 배정)</label><input class="inp" id="setClinic" type="number" value="${s.clinicThreshold}"></div></div>
+      <div class="frow"><div><label class="f">알림톡 자동 발송 시각</label><input class="inp" id="setHour" value="${s.sendHour}"></div></div>
+    </div>
+    <div class="card">
+      <h3>알림톡 문구 <span class="muted">#{이름} 자동 치환</span></h3>
+      <div class="frow"><div><label class="f">성적표 업데이트</label><textarea class="inp" id="setMsgG" rows="3">${s.msgGrade}</textarea></div></div>
+      <div class="frow"><div><label class="f">미등원 안내</label><textarea class="inp" id="setMsgA" rows="3">${s.msgAbsent}</textarea></div></div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px">
+    <span class="muted">저장 즉시 키오스크·클리닉·알림톡에 반영됩니다 — 별도 배포 없음</span>
+    <button class="btn pri" onclick="saveSettings()">설정 저장</button>
+  </div>
+  <div id="setDone"></div>`;
+}
+function saveSettings(){
+  const s=DB.settings;
+  s.lateAfter=document.getElementById('setLate').value;
+  s.clinicThreshold=+document.getElementById('setClinic').value;
+  s.sendHour=document.getElementById('setHour').value;
+  s.msgGrade=document.getElementById('setMsgG').value;
+  s.msgAbsent=document.getElementById('setMsgA').value;
+  save();
+  document.getElementById('setDone').innerHTML='<div class="note ok mt">✓ 저장되었습니다. 지각 기준을 바꾼 뒤 키오스크에서 출석해 보면 바로 반영됩니다.</div>';
+}
+
+/* ══════════ 학부모 리포트 ══════════ */
+function vParent(){
+  const s=stu(PARENT_SID);
+  const exams=DB.exams.filter(e=>e.sid===s.id);
+  const last=exams.slice(-1)[0];
+  const hw=DB.homework.filter(h=>h.sid===s.id);
+  const clinic=clinicFor(s.id);
+  const att=DB.attendance.filter(a=>a.sid===s.id&&a.date===today())[0];
+  const pay=DB.payments.find(p=>p.sid===s.id&&p.month==='2026-06');
+  return head('자녀 리포트','알림톡 링크로 접속한 학부모 화면 — 본인 자녀 데이터만 표시됩니다')+`
+  <div class="phone">
+    <div class="card mb">
+      <h3>${s.name} <span class="bdg gray">${s.cls}</span></h3>
+      <div class="grid g2">
+        <div><div class="muted">오늘 등원</div><b>${att?att.time+(att.st==='late'?' (지각)':' 등원'):'기록 없음'}</b></div>
+        <div><div class="muted">6월 수강료</div><b>${pay?(pay.st==='paid'?'납부 완료':'미납'):'-'}</b></div>
+      </div>
+    </div>
+    <div class="card mb">
+      <h3>성적 추이</h3>
+      ${chartSVG(exams)||'<div class="empty">시험 기록 없음</div>'}
+      ${last?`<table class="mt"><thead><tr><th>유형</th><th>점수</th><th>코멘트</th></tr></thead><tbody>
+      ${last.items.map(i=>`<tr><td>${i.t}</td><td><b>${i.s}</b>/${i.m}</td><td class="muted">${i.c}</td></tr>`).join('')}
+      </tbody></table>
+      <div class="note mt" style="background:#F4F6FA;border-color:var(--line);color:var(--txt)"><b>총평</b> — ${last.cm}</div>`:''}
+    </div>
+    ${clinic.length?`<div class="card mb">
+      <h3>오답 클리닉 <span class="bdg red">복습 필요</span></h3>
+      ${clinic.map(c=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #F0F1F5">
+        <div><b>${c.t}</b><div class="muted">${c.exam} · ${c.s}/${c.m}점</div></div>
+        <a class="btn sm" href="${c.url}" onclick="return false">▶ 해설영상</a></div>`).join('')}
+      <p class="muted mt">기준 점수(${DB.settings.clinicThreshold}%) 미달 유형에 해설영상이 자동 배정됩니다.</p>
+    </div>`:''}
+    <div class="card">
+      <h3>과제 성취도</h3>
+      <table><thead><tr><th>주차</th><th>수행률</th><th>피드백</th></tr></thead><tbody>
+      ${hw.map(h=>`<tr><td>${h.w}</td><td><b>${h.rate}%</b></td><td class="muted">${h.note}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <p class="muted mt" style="text-align:center">상담 이력·내부 메모는 학부모 화면에 표시되지 않습니다 (권한 분리)</p>
+  </div>`;
+}
+
+/* ══════════ 라우팅 ══════════ */
+function render(){
+  renderNav();
+  const m=document.getElementById('main');
+  const V={dash:vDash,students:vStudents,grades:vGrades,pay:vPay,talk:vTalk,settings:vSettings,kiosk:vKiosk,pview:vParent};
+  m.innerHTML=(V[view]||vDash)();
+}
+render();
+</script>
+</body>
+</html>
