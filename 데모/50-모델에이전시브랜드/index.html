@@ -74,6 +74,33 @@
   </div>
 </section>
 
+<!-- 필름: 실제 영상 파트 -->
+<section class="sec" id="films">
+  <div class="shell">
+    <div class="sec-head rv">
+      <h2>Campaign <b>Films</b></h2>
+      <span class="cnt">호버 = 미리 재생 · 클릭 = 크게 보기</span>
+    </div>
+    <div class="films rv">
+      <div class="fcard" data-film="hero">
+        <video src="assets/video/hero.mp4" muted loop playsinline preload="metadata" poster="assets/img/hero.jpg"></video>
+        <div class="fc-txt"><span class="fc-k">FW26 · MAIN FILM</span><span class="fc-t">Faces that move</span></div>
+        <span class="fc-play">▶</span>
+      </div>
+      <div class="fcard" data-film="film1">
+        <video src="assets/video/film1.mp4" muted loop playsinline preload="metadata" poster="assets/img/model1.jpg"></video>
+        <div class="fc-txt"><span class="fc-k">EDITORIAL · SUA</span><span class="fc-t">Concrete study</span></div>
+        <span class="fc-play">▶</span>
+      </div>
+      <div class="fcard" data-film="film2">
+        <video src="assets/video/film2.mp4" muted loop playsinline preload="metadata" poster="assets/img/model3.jpg"></video>
+        <div class="fc-txt"><span class="fc-k">CAMPAIGN · ROJE</span><span class="fc-t">Ivory in motion</span></div>
+        <span class="fc-play">▶</span>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- 뉴스: CMS 실연동 -->
 <section class="sec" id="news">
   <div class="shell">
@@ -114,6 +141,13 @@
 <div class="modal-bg" id="modalBg">
   <button class="mclose" id="modalClose">✕</button>
   <div class="mmodal" id="modalBody"></div>
+</div>
+
+<!-- 비디오 모달 -->
+<div class="vmodal-bg" id="vmodalBg">
+  <button class="mclose" id="vmodalClose">✕</button>
+  <video id="vmodalVideo" controls muted loop playsinline></video>
+  <div class="vmodal-cap" id="vmodalCap"></div>
 </div>
 
 <div class="toast-wrap" id="toastWrap"></div>

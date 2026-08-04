@@ -168,9 +168,12 @@
             var k = m.cat === 'campaign' ? ['형식', '연출', '시즌'][i] : ['Height', 'Size', 'Base'][i];
             return '<div class="row"><span class="k">' + k + '</span><span class="v">' + esc(v) + '</span></div>';
           }).join('') + '</div>' +
-          '<div class="mm-video"><button id="mmPlay"><span class="play">▶</span>디지털 폴라·워킹 영상 (시뮬)</button></div></div>';
+          '<div class="mm-video"><button id="mmPlay"><span class="play">▶</span>디지털 폴라·워킹 영상 보기</button></div></div>';
         modalBg.classList.add('on');
-        $('mmPlay').addEventListener('click', function () { toast('영상 플레이어가 열립니다 (데모 시뮬레이션)', true); });
+        $('mmPlay').addEventListener('click', function () {
+          modalBg.classList.remove('on');
+          openFilm(m.id === 'm1' ? 'film1' : m.id === 'm3' ? 'film2' : 'hero');
+        });
       });
       $('modalClose').addEventListener('click', function () { modalBg.classList.remove('on'); });
       modalBg.addEventListener('click', function (e) { if (e.target === modalBg) modalBg.classList.remove('on'); });
@@ -206,6 +209,34 @@
       renderNews();
       setTimeout(revealTick, 40);
     });
+  }
+
+  /* ---------- 필름 파트 (실제 영상 재생) ---------- */
+  var FILM_META = {
+    hero: 'FW26 Main Film — Faces that move',
+    film1: 'Editorial — SUA · Concrete study',
+    film2: 'Campaign — ROJE · Ivory in motion'
+  };
+  var vmBg = $('vmodalBg');
+  function openFilm(key) {
+    if (!vmBg) return;
+    var v = $('vmodalVideo');
+    v.src = 'assets/video/' + key + '.mp4';
+    $('vmodalCap').textContent = FILM_META[key] || '';
+    vmBg.classList.add('on');
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+  }
+  [].forEach.call(document.querySelectorAll('.fcard'), function (card) {
+    var v = card.querySelector('video');
+    card.addEventListener('mouseenter', function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); });
+    card.addEventListener('mouseleave', function () { v.pause(); });
+    card.addEventListener('click', function () { openFilm(card.dataset.film); });
+  });
+  if (vmBg) {
+    function closeFilm() { vmBg.classList.remove('on'); var v = $('vmodalVideo'); v.pause(); v.removeAttribute('src'); v.load(); }
+    $('vmodalClose').addEventListener('click', closeFilm);
+    vmBg.addEventListener('click', function (e) { if (e.target === vmBg) closeFilm(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && vmBg.classList.contains('on')) closeFilm(); });
   }
 
   /* ---------- 페이지 전환 커튼 (해시=스크롤 / .html=실제 라우팅) ---------- */

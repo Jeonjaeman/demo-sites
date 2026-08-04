@@ -29,7 +29,7 @@ img{max-width:100%; display:block}
 .viewer{display:grid; grid-template-columns:320px 1fr; min-height:100vh}
 .v-side{border-right:1px solid var(--line-2); background:#fff; padding:26px 22px; position:sticky; top:0; max-height:100vh; overflow:auto}
 .v-brand{display:flex; align-items:center; gap:10px; margin-bottom:8px}
-.v-brand .mark{width:34px; height:34px; border-radius:10px; background:var(--sun); display:grid; place-items:center; font-size:17px; transform:rotate(-6deg)}
+.v-brand .mark{width:34px; height:34px; border-radius:10px; background:var(--sun); color:var(--ink); display:grid; place-items:center; font-size:17px; font-weight:800; transform:rotate(-6deg)}
 .v-brand b{font-size:21px; letter-spacing:-0.02em}
 .v-brand small{color:var(--mut); font-size:11px}
 .v-sub{font-size:12.5px; color:var(--mut); line-height:1.65; margin-bottom:18px}
@@ -79,7 +79,9 @@ img{max-width:100%; display:block}
 .opt:nth-child(5){animation-delay:.25s}
 @keyframes optIn{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none}}
 .opt:active{transform:scale(.97)}
-.opt .emo{font-size:22px; flex:none}
+.opt .oi{width:38px; height:38px; border-radius:11px; background:var(--sun-wash); color:var(--sun-deep); display:grid; place-items:center; flex:none; transition:all .16s var(--bounce)}
+.opt.sel .oi{background:var(--coral); color:#fff}
+.ico-svg{display:block}
 .opt .mk{margin-left:auto; width:24px; height:24px; border:2.5px solid var(--line-2); flex:none; display:grid; place-items:center; color:#fff; font-size:13px; font-weight:800; transition:all .15s var(--bounce)}
 .opt.radio .mk{border-radius:50%} .opt.check .mk{border-radius:8px}
 .opt.sel{border-color:var(--coral); background:var(--coral-wash)}
@@ -126,18 +128,18 @@ textarea.txt{min-height:120px; resize:none; line-height:1.6}
 
 /* ============ 완료 ============ */
 .done{position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:30px; background:var(--bg)}
-.done .big-emo{font-size:64px; animation:pop .55s var(--bounce)}
+.done .done-mark{width:76px; height:76px; margin:0 auto; border-radius:50%; background:var(--mint-wash); color:var(--mint); display:grid; place-items:center; animation:pop .55s var(--bounce)}
 @keyframes pop{from{transform:scale(.4); opacity:0} to{transform:none; opacity:1}}
 .done h2{font-size:28px; font-weight:820; letter-spacing:-0.03em; margin:14px 0 0}
 .done p{font-size:14px; color:var(--mut); margin:10px 0 0; line-height:1.65}
-.done .gift{margin:20px auto 0; display:inline-flex; align-items:center; gap:10px; background:var(--sun-wash); border:1.5px dashed var(--sun-deep); border-radius:14px; padding:13px 18px; font-size:14px; font-weight:700; color:var(--sun-deep)}
+.done .gift{margin:20px auto 0; display:inline-flex; align-items:center; gap:9px; background:var(--sun-wash); border:1.5px dashed var(--sun-deep); border-radius:14px; padding:13px 18px; font-size:14px; font-weight:700; color:var(--sun-deep)}
 .confetti-cv{position:absolute; inset:0; pointer-events:none; z-index:5}
 
 /* ============ 관리자 ============ */
 body.admin{background:var(--bg)}
 .adm-top{display:flex; align-items:center; justify-content:space-between; height:58px; padding:0 20px; background:#fff; border-bottom:1px solid var(--line-2); position:sticky; top:0; z-index:50}
 .adm-top .tt{font-weight:760; font-size:15px; display:flex; align-items:center; gap:10px}
-.adm-top .tt .mark{width:28px; height:28px; border-radius:8px; background:var(--sun); display:grid; place-items:center; font-size:14px; transform:rotate(-6deg)}
+.adm-top .tt .mark{width:28px; height:28px; border-radius:8px; background:var(--sun); color:var(--ink); display:grid; place-items:center; font-size:14px; font-weight:800; transform:rotate(-6deg)}
 .adm-wrap{max-width:1100px; margin:0 auto; padding:24px 20px 60px}
 .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px}
 @media(max-width:800px){ .kpis{grid-template-columns:repeat(2,1fr)} }
