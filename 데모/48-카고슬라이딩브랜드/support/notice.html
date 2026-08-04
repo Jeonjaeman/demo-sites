@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>공지사항 | PANDORA FACTORY</title>
+<meta name="description" content="판도라팩토리 공지사항 — 신제품 출시, 이벤트, 입점 소식.">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="../assets/img/favicon.png">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/style.css?v=2">
+<style>
+  .notice-view { display: none; }
+  .notice-view.show { display: block; }
+  .board.hide { display: none; }
+  .nv-head { border-top: 2px solid var(--text); border-bottom: 1px solid var(--line); padding: 26px 10px; }
+  .nv-head h2 { font-size: 22px; font-weight: 600; line-height: 1.4; }
+  .nv-head .nv-meta { color: var(--text-dim); font-size: 13px; margin-top: 10px; font-family: var(--head); letter-spacing: 0.08em; }
+  .nv-body { padding: 40px 10px 56px; color: #cfd2d6; font-size: 15.5px; line-height: 1.9; border-bottom: 1px solid var(--line); min-height: 220px; }
+  .nv-body p { margin-bottom: 16px; }
+  .nv-nav { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .nv-nav .move { display: flex; gap: 8px; }
+  .nv-nav button { font-family: var(--head); font-size: 13px; letter-spacing: 0.15em; text-transform: uppercase;
+    background: transparent; color: var(--text-dim); border: 1px solid var(--line); padding: 12px 22px; cursor: pointer; transition: 0.25s; }
+  .nv-nav button:hover:not(:disabled) { border-color: var(--red); color: var(--text); }
+  .nv-nav button:disabled { opacity: 0.3; cursor: default; }
+  .board-row { cursor: pointer; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="../index.html"><img src="../assets/img/logo-emblem.png" alt="" class="logo-emblem"><img src="../assets/img/logo-wordmark.png" alt="PANDORA 판도라팩토리 로고" class="logo-img"></a>
+    <nav aria-label="주 메뉴">
+      <ul class="gnb">
+        <li>
+          <a href="../products/index.html">Products</a>
+          <div class="dd">
+            <a href="../products/sliding-bed.html">Cargo Sliding Bed</a>
+            <a href="../products/coming-soon.html?p=canopy">Canopy Top</a>
+            <a href="../products/coming-soon.html?p=bedrack">Bed Rack</a>
+            <a href="../products/coming-soon.html?p=siderack">PDR Side Rack</a>
+            <a href="../products/coming-soon.html?p=molle">Side Molle Panel</a>
+            <a class="new" href="../products/van-storage.html">Van Storage System</a>
+            <a href="../products/index.html" style="border-top:1px solid var(--line);margin-top:8px;padding-top:14px;">View All →</a>
+          </div>
+        </li>
+        <li><a href="../vehicle-fit.html">Vehicle Fit</a></li>
+        <li><a href="../about.html">About</a></li>
+        <li>
+          <a class="on" href="notice.html">Support</a>
+          <div class="dd"><a href="notice.html">Notice</a><a href="faq.html">FAQ</a></div>
+        </li>
+      </ul>
+    </nav>
+    <a class="header-cta" href="../contact.html">Contact</a>
+    <button class="burger" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<nav class="m-nav" aria-label="모바일 메뉴">
+  <button class="close" aria-label="닫기">×</button>
+  <a href="../products/index.html">Products</a>
+  <a href="../vehicle-fit.html">Vehicle Fit</a>
+  <a href="../about.html">About</a>
+  <a href="notice.html">Notice</a>
+  <a href="faq.html">FAQ</a>
+  <a href="../contact.html" style="color:var(--red)">Contact</a>
+</nav>
+
+<section class="sub-hero" style="height:36vh;min-height:280px">
+  <div class="bg" style="background-image:url('../assets/img/ai/hero-shelf-jobsite.jpg')"></div>
+  <div class="container">
+    <div class="crumb"><a href="../index.html">Home</a><em>/</em>Support<em>/</em>Notice</div>
+    <h1 class="h-display" style="font-size:clamp(32px,4.5vw,56px)">Notice</h1>
+    <p class="sub-kr">공지사항</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:980px">
+
+    <!-- 목록 -->
+    <div class="board reveal" id="notice-list">
+      <div class="board-row" data-id="3"><span class="no">3</span><a>[신제품] 밴 스토리지 시스템 출시 안내 — 스타리아·스프린터·트랜짓 대응</a><span class="date">2026.08</span></div>
+      <div class="board-row" data-id="2"><span class="no">2</span><a>[입점] 기아샵(KIA Shop) 공식 입점 안내</a><span class="date">2026.07</span></div>
+      <div class="board-row" data-id="1"><span class="no">1</span><a>판도라팩토리 공식 홈페이지 오픈</a><span class="date">2026.08</span></div>
+    </div>
+
+    <!-- 상세 뷰 -->
+    <article class="notice-view" id="notice-view">
+      <div class="nv-head">
+        <h2 id="nv-title"></h2>
+        <div class="nv-meta"><span id="nv-date"></span> · PANDORA FACTORY</div>
+      </div>
+      <div class="nv-body" id="nv-body"></div>
+      <div class="nv-nav">
+        <button type="button" id="nv-list-btn">← 목록으로</button>
+        <div class="move">
+          <button type="button" id="nv-prev">이전 글</button>
+          <button type="button" id="nv-next">다음 글</button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="../index.html"><img src="../assets/img/logo-emblem.png" alt="" class="logo-emblem"><img src="../assets/img/logo-wordmark.png" alt="PANDORA 판도라팩토리 로고" class="logo-img"></a>
+        <p style="margin-top:16px;max-width:300px">차량 적재 관리의 새로운 기준.<br>픽업트럭·밴 카고 스토리지 시스템 전문 제조.</p>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="../products/sliding-bed.html">Cargo Sliding Bed</a></li>
+          <li><a href="../products/coming-soon.html?p=canopy">Canopy Top</a></li>
+          <li><a href="../products/coming-soon.html?p=siderack">Side Rack · Molle Panel</a></li>
+          <li><a href="../products/van-storage.html">Van Storage System</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../vehicle-fit.html">Vehicle Fit</a></li>
+          <li><a href="../support/notice.html">Notice</a></li>
+          <li><a href="../support/faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:010-6244-1322">010-6244-1322</a></li>
+          <li><a href="mailto:pandorafactory@naver.com">pandorafactory@naver.com</a></li>
+          <li><a href="https://blog.naver.com/pandorafactory" target="_blank" rel="noopener">네이버 블로그</a></li>
+          <li><a href="https://shop.kia.com" target="_blank" rel="noopener">기아샵 입점관</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 PANDORA FACTORY. All rights reserved. &nbsp;·&nbsp; 경기도 김포시 월곶면 비석동로27번길 70</span>
+      <span>BUILT FOR EVERY LOAD.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/banner.js"></script>
+<script>
+/* 공지 상세 뷰 — 관리자 연동 시 동일 레이아웃으로 DB 글을 ?id= 파라미터로 렌더링 */
+(function () {
+  var posts = {
+    "3": { title: "[신제품] 밴 스토리지 시스템 출시 안내 — 스타리아·스프린터·트랜짓 대응", date: "2026.08",
+      body: "<p>판도라팩토리의 신제품 <strong>밴 스토리지 시스템</strong>이 출시되었습니다.</p><p>상용 밴의 모든 공간을 효율적으로 활용하는 모듈형 서랍·선반·슬라이딩 데크 시스템으로, 스타리아·스타렉스, 스프린터, 트랜짓 전용 사이즈로 제작됩니다. 그 외 상용 밴도 실측 후 커스텀 제작이 가능합니다.</p><p>출시 기념 상담을 진행중입니다. 문의하기를 통해 차종·업종·주요 적재물을 알려주시면 전용 레이아웃을 제안해드립니다.</p>" },
+    "2": { title: "[입점] 기아샵(KIA Shop) 공식 입점 안내", date: "2026.07",
+      body: "<p>판도라팩토리 제품이 <strong>기아샵(shop.kia.com)</strong>에 공식 입점하였습니다.</p><p>기아 타스만 대응 제품을 시작으로 입점 라인업을 순차 확대할 예정입니다. 기아샵에서도 판도라팩토리의 제품을 만나보세요.</p>" },
+    "1": { title: "판도라팩토리 공식 홈페이지 오픈", date: "2026.08",
+      body: "<p>판도라팩토리 공식 홈페이지가 오픈하였습니다.</p><p>제품 소개, 차종 호환표, 문의하기 등 다양한 정보를 제공합니다. 앞으로 신제품 소식과 이벤트를 공지사항을 통해 안내드리겠습니다.</p>" }
+  };
+  var order = ["3", "2", "1"];
+  var list = document.getElementById("notice-list");
+  var view = document.getElementById("notice-view");
+  var cur = null;
+
+  function show(id) {
+    var p = posts[id];
+    if (!p) return;
+    cur = id;
+    document.getElementById("nv-title").textContent = p.title;
+    document.getElementById("nv-date").textContent = p.date;
+    document.getElementById("nv-body").innerHTML = p.body;
+    var i = order.indexOf(id);
+    document.getElementById("nv-prev").disabled = (i <= 0);
+    document.getElementById("nv-next").disabled = (i >= order.length - 1);
+    list.classList.add("hide");
+    view.classList.add("show");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function back() {
+    view.classList.remove("show");
+    list.classList.remove("hide");
+    cur = null;
+  }
+  list.querySelectorAll(".board-row").forEach(function (r) {
+    r.addEventListener("click", function () { show(r.dataset.id); });
+  });
+  document.getElementById("nv-list-btn").addEventListener("click", back);
+  document.getElementById("nv-prev").addEventListener("click", function () {
+    show(order[order.indexOf(cur) - 1]);
+  });
+  document.getElementById("nv-next").addEventListener("click", function () {
+    show(order[order.indexOf(cur) + 1]);
+  });
+  var qid = new URLSearchParams(location.search).get("id");
+  if (qid) show(qid);
+})();
+</script>
+</body>
+</html>
