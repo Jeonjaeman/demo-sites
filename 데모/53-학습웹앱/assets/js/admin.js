@@ -114,8 +114,13 @@
       apply: apply.slice(0, 4)
     };
     var list = AHA.loadCustom();
-    if (editId) list = list.map(function (x) { return x.id === editId ? rec : x; });
-    else list.push(rec);
+    if (editId) {
+      // 샘플 유닛 첫 수정 시에는 목록에 없으므로 오버라이드로 추가
+      var exists = list.some(function (x) { return x.id === editId; });
+      list = exists ? list.map(function (x) { return x.id === editId ? rec : x; }) : list.concat([rec]);
+    } else {
+      list.push(rec);
+    }
     AHA.saveCustom(list);
     editId = null;
     document.getElementById('formTitle').textContent = '새 유닛 등록';
@@ -139,14 +144,19 @@
       units = units.filter(function (u) { return (u.title + ' ' + (u.desc || '') + ' ' + (u.coreQ || '')).toLowerCase().indexOf(k) >= 0; });
     }
     var customIds = custom.map(function (u) { return u.id; });
-    document.getElementById('unitCount').textContent = '샘플 ' + AHA.SAMPLE_UNITS.length + ' + 등록 ' + custom.length;
+    document.getElementById('unitCount').textContent = '샘플 ' + AHA.SAMPLE_UNITS.length + ' + 등록 ' + custom.filter(function (u) { return !AHA.isSampleId(u.id); }).length;
     document.getElementById('unitList').innerHTML = units.length ? units.map(function (u) {
-      var isCustom = customIds.indexOf(u.id) >= 0;
+      var isSample = AHA.isSampleId(u.id);
+      var overridden = isSample && customIds.indexOf(u.id) >= 0;
+      var badge = isSample ? (overridden ? ' · 샘플 (수정됨)' : ' · 샘플') : ' · CMS 등록';
       return '<div class="unit-row"><span class="ur-emo">' + (u.emoji || '📘') + '</span>' +
-        '<span class="ur-t">' + esc(u.title) + '<span class="ur-d" style="display:block">' + esc(u.ch || '') + (isCustom ? ' · CMS 등록' : ' · 샘플') + '</span></span>' +
+        '<span class="ur-t">' + esc(u.title) + '<span class="ur-d" style="display:block">' + esc(u.ch || '') + badge + '</span></span>' +
         '<a class="btn-sm2 b" href="index.html#unit=' + u.id + '" target="_blank">미리보기</a>' +
         '<button class="btn-sm2 b" data-dup="' + u.id + '">복제</button>' +
-        (isCustom ? '<button class="btn-sm2 b" data-edit="' + u.id + '">수정</button><button class="btn-sm2 danger" data-del="' + u.id + '">삭제</button>' : '') +
+        '<button class="btn-sm2 b" data-edit="' + u.id + '">수정</button>' +
+        (isSample
+          ? (overridden ? '<button class="btn-sm2 danger" data-restore="' + u.id + '">원본 복원</button>' : '')
+          : '<button class="btn-sm2 danger" data-del="' + u.id + '">삭제</button>') +
         '</div>';
     }).join('') : '<p style="font-size:13px; color:var(--mut); padding:10px 0">검색 결과가 없습니다.</p>';
   }
@@ -168,12 +178,20 @@
       toast('복제 완료 — 「' + copy.title + '」 가 목록과 학생 앱에 추가되었습니다', true);
       return;
     }
+    var restore = e.target.closest('[data-restore]');
+    if (restore) {
+      if (!confirm('샘플 원본으로 되돌릴까요? 수정 내용이 삭제됩니다.')) return;
+      AHA.saveCustom(AHA.loadCustom().filter(function (x) { return x.id !== restore.dataset.restore; }));
+      renderList();
+      toast('샘플 원본으로 복원했습니다 — 학생 앱에도 반영됨', true);
+      return;
+    }
     var ed = e.target.closest('[data-edit]');
     if (ed) {
-      var u = AHA.loadCustom().filter(function (x) { return x.id === ed.dataset.edit; })[0];
+      var u = AHA.allUnits().filter(function (x) { return x.id === ed.dataset.edit; })[0];
       if (!u) return;
       editId = u.id;
-      document.getElementById('formTitle').textContent = '유닛 수정 — ' + u.title;
+      document.getElementById('formTitle').textContent = '유닛 수정 — ' + u.title + (AHA.isSampleId(u.id) ? ' (샘플)' : '');
       document.getElementById('btnNew').style.display = '';
       document.getElementById('fTitle').value = u.title;
       document.getElementById('fCh').value = u.ch || '';

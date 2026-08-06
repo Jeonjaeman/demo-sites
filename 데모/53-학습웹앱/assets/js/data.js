@@ -84,7 +84,17 @@
     try { return JSON.parse(localStorage.getItem('aha_units')) || []; } catch (e) { return []; }
   }
   function saveCustom(v) { try { localStorage.setItem('aha_units', JSON.stringify(v)); } catch (e) {} }
-  function allUnits() { return SAMPLE_UNITS.concat(loadCustom()); }
+  /* 샘플 유닛도 CMS에서 수정 가능 — 같은 id의 수정본(localStorage)이 있으면 샘플을 대체 */
+  function allUnits() {
+    var custom = loadCustom();
+    var sampleIds = SAMPLE_UNITS.map(function (u) { return u.id; });
+    var merged = SAMPLE_UNITS.map(function (u) {
+      var ov = custom.filter(function (c) { return c.id === u.id; })[0];
+      return ov || u;
+    });
+    return merged.concat(custom.filter(function (c) { return sampleIds.indexOf(c.id) < 0; }));
+  }
+  function isSampleId(id) { return SAMPLE_UNITS.some(function (u) { return u.id === id; }); }
 
-  global.AHA = { SAMPLE_UNITS: SAMPLE_UNITS, loadCustom: loadCustom, saveCustom: saveCustom, allUnits: allUnits };
+  global.AHA = { SAMPLE_UNITS: SAMPLE_UNITS, loadCustom: loadCustom, saveCustom: saveCustom, allUnits: allUnits, isSampleId: isSampleId };
 })(window);
