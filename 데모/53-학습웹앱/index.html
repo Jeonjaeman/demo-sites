@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AHA! 문법 — 추론형 영어 문법 학습 웹앱 (제안용 데모)</title>
+<meta name="description" content="질문형(추론형) 영어 문법 학습 웹앱 + 강사용 CMS — 질문→예시→추론→힌트→설명→Aha!→응용→백지테스트 (제안용 데모)">
+<meta name="theme-color" content="#14213D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="brand"><b>AHA! 문법</b><small>Ask · Hunt · Apply</small></span>
+    <a class="top-link" href="#" id="btnHome" style="display:none">유닛 목록</a>
+    <a class="top-link" href="admin.html">CMS →</a>
+  </div>
+</header>
+
+<div class="prog-wrap" id="progWrap" style="display:none">
+  <div class="prog-top"><span id="progLabel">학습 진행</span><b id="progNum"></b></div>
+  <div class="prog"><i id="progBar"></i></div>
+</div>
+
+<main class="stage" id="stage"></main>
+
+<!-- AHA NOTE 인쇄 전용 -->
+<div class="print-note" id="printNote"></div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

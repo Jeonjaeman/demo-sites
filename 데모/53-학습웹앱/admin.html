@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AHA! 문법 CMS — 유닛 등록·게시 (제안용 데모)</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="cms">
+
+<header class="cms-top">
+  <div class="cms-top-in">
+    <span class="tt">AHA! 문법 CMS<small>· 강사(운영자)용 — 개발 지식 불필요</small></span>
+    <a class="btn btn-secondary sm" href="index.html">학생 앱 보기 →</a>
+  </div>
+</header>
+
+<div class="cms-wrap">
+  <div class="notice" style="margin-bottom:16px">
+    공고 핵심 원칙 그대로 — <b>개발자는 '틀'만 만들고, 콘텐츠는 운영자가 이 CMS로 직접 등록</b>합니다.
+    게시하면 별도 승인 없이 학생 앱 목록에 즉시 반영되고, 미리보기는 실제 학생 화면을 새 탭으로 엽니다.
+    저장은 브라우저(localStorage)에만 기록되는 데모입니다.
+  </div>
+
+  <div class="cms-grid">
+    <div>
+      <div class="panel">
+        <div class="panel-h"><h3>등록된 유닛</h3><span class="sub" id="unitCount"></span></div>
+        <div class="search-row">
+          <input class="input" id="searchInput" placeholder="제목·키워드 검색 (예: 명사)">
+        </div>
+        <div id="unitList"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>이 CMS로 할 수 있는 것 (공고 3.2 전부)</h3></div>
+        <div class="notice" style="background:var(--bg); border-color:var(--line-2); color:var(--ink)">
+          · 유닛 등록 폼 — 제목·핵심 질문·예시(이모지)·추론 질문·선택지·오답 힌트·설명·Aha 문장·응용 3~4개<br>
+          · 게시 즉시 학생 앱 반영 (승인 절차 없음)<br>
+          · 복제(Duplicate) — 기존 유닛 기반 빠른 제작<br>
+          · 검색 (제목/키워드)<br>
+          · 미리보기 = 게시 후 실제 학생 화면 새 탭 (공고 간소화안 그대로)
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-h"><h3 id="formTitle">새 유닛 등록</h3><span class="sub">전 항목 프리필 — 클릭만으로 체험</span></div>
+
+        <div class="field"><label>제목 <i>*</i></label><input class="input" id="fTitle" value="some과 any의 갈림길"></div>
+        <div style="display:grid; grid-template-columns:1fr 110px; gap:10px">
+          <div class="field"><label>챕터 표기</label><input class="input" id="fCh" value="CHAPTER 3"></div>
+          <div class="field"><label>대표 이모지</label><input class="input" id="fEmoji" value="🍪" style="text-align:center; font-size:18px"></div>
+        </div>
+        <div class="field"><label>핵심 질문 <i>*</i></label><textarea class="input" id="fCoreQ">오늘은 some과 any가 언제 갈리는지 직접 찾아볼 거야.</textarea></div>
+
+        <div class="field"><label>예시 (이모지 선택 — 이미지 업로드 없음, 공고 그대로)</label>
+          <div id="exRows"></div>
+          <div class="emoji-pick" id="emojiPick"></div>
+          <p style="font-size:11px; color:var(--mut); margin:6px 0 0">팔레트를 누르면 위 예시 칸에 순서대로 채워집니다</p>
+        </div>
+
+        <div class="field"><label>추론 질문 (선택형 · 오답 시 1줄 힌트) <i>*</i></label><div id="inferRows"></div>
+          <button class="btn-sm2 b" id="addInfer">+ 추론 질문 추가</button></div>
+
+        <div class="field"><label>설명 <i>*</i></label><textarea class="input" id="fExplain">some은 "있다고 기대할 때", any는 "있는지 모를 때/없다고 할 때" 쓰여. 그래서 권유(Would you like some...?)에는 some이 자연스러워.</textarea></div>
+        <div class="field"><label>Aha! 문장 <i>*</i></label><input class="input" id="fAha" value="기대하면 some, 모르거나 없으면 any!"></div>
+        <div class="field"><label>틀린 표현 예 (· 로 구분)</label><input class="input" id="fBadEx" value="❌ I don't have some cookies"></div>
+
+        <div class="field"><label>응용 예시 3~4개 <i>*</i></label><div id="applyRows"></div>
+          <button class="btn-sm2 b" id="addApply">+ 응용 추가</button></div>
+
+        <div style="display:flex; gap:10px; margin-top:16px">
+          <button class="btn btn-accent" id="btnSave" style="flex:1">게시 — 학생 앱에 즉시 반영</button>
+          <button class="btn btn-secondary" id="btnNew" style="display:none">새 등록</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="disclaimer">제안용 데모 · 샘플 유닛 2개는 앱 틀 확인용 예시 콘텐츠입니다</p>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
