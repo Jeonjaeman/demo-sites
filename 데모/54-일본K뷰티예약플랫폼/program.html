@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>プログラム | MIYABI Seoul</title>
+<meta name="description" content="クリニック・エステ・パーソナルカラー・ヘア・メイク — ソウルのK-ビューティープログラムを日本語で予約。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Noto+Sans+JP:wght@300;400;500;600&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* 목록 뷰 */
+.pl-head { padding: calc(var(--nav-h) + 40px) 0 0; }
+.pl-banner { position: relative; overflow: hidden; height: 260px; margin-bottom: 40px; }
+.pl-banner img { width: 100%; height: 100%; object-fit: cover; }
+.pl-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(24,18,10,.18), rgba(24,18,10,.4)); }
+.pl-banner .in { position: absolute; z-index: 2; inset: auto 0 30px 0; color: #F6F1E8; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 34px; }
+.chips button { font-size: 12.5px; letter-spacing: .08em; padding: 10px 20px; border: 1px solid var(--line); background: transparent; transition: all .25s; }
+.chips button:hover { border-color: var(--ink); }
+.chips button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.pl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; padding-bottom: 90px; }
+.pl-grid .car-item { flex: none; }
+@media (max-width: 1080px) { .pl-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .pl-grid { grid-template-columns: 1fr; } }
+.pd-rv { margin: 60px 0 90px; }
+.pd-rv h2 { font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: .05em; margin-bottom: 20px; }
+.pd-rv .rv-grid { grid-template-columns: 1fr 1fr; }
+@media (max-width: 760px) { .pd-rv .rv-grid { grid-template-columns: 1fr; } }
+.fac-score { display: flex; align-items: center; gap: 18px; border: 1px solid var(--line); background: var(--card); padding: 22px 26px; max-width: 460px; }
+.fac-score b { font-family: var(--serif); font-size: 40px; font-weight: 600; }
+.fac-score .bars { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+.fac-score .bar { display: grid; grid-template-columns: 86px 1fr 30px; gap: 10px; align-items: center; font-size: 11.5px; color: var(--ink-soft); }
+.fac-score .tr { height: 4px; background: var(--bg-deep); position: relative; }
+.fac-score .tr i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--accent); transition: width 1.2s var(--ease); }
+</style>
+</head>
+<body>
+
+<header class="nav scrolled">
+  <div class="nav-in">
+    <a class="logo" href="index.html">MIYABI<em>·</em>SEOUL</a>
+    <nav class="nav-links">
+      <a href="program.html" data-i="nav_programs"></a>
+      <a href="index.html#journey" data-i="nav_journey"></a>
+      <a href="index.html#flow" data-i="nav_flow"></a>
+      <a href="index.html#contact" data-i="nav_contact"></a>
+    </nav>
+    <div class="nav-cta">
+      <div class="lang-sw"><button data-lang="ja">JA</button><button data-lang="ko">KO</button></div>
+      <a class="btn sm" href="mypage.html" data-i="nav_mypage"></a>
+    </div>
+    <button class="nav-burger" aria-label="menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main id="app" class="shell"></main>
+
+<!-- 모바일 하단 CTA -->
+<div class="m-cta" id="mCta"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script>
+(() => {
+  const D = window.MIYABI_DATA, L = window.MIYABI_LANG;
+  const app = document.getElementById('app');
+  const q = new URLSearchParams(location.search);
+  const pid = q.get('id'), cat0 = q.get('cat') || 'all';
+
+  const cardHtml = p => {
+    const c = D.CATS[p.cat];
+    return `<a class="car-item rv" href="program.html?id=${p.id}">
+      <div class="thumb"><img src="${c.img}" alt="" loading="lazy">
+        <span class="cbadge">${t(c.medical ? 'badge_medical' : 'badge_instant')}</span></div>
+      <div class="body">
+        <span class="area">${p.area}</span><h3>${pName(p)}</h3>
+        <div class="meta"><span class="star">★ ${p.rating.toFixed(1)}</span><span>(${p.rc})</span><span>${p.dur}${t('pd_min')}</span></div>
+        <div class="price">${p.krw === 0 ? `<b>${t('pd_free_consult')}</b>` : `<b>${fmtKrw(p.krw)}</b><span>${fmtJpy(p.krw)}</span>`}</div>
+      </div></a>`;
+  };
+
+  /* ---------- 목록 뷰 ---------- */
+  if (!pid) {
+    app.classList.remove('shell');
+    app.innerHTML = `
+      <div class="pl-head shell">
+        <a class="pd-back" href="index.html">← MIYABI·SEOUL</a>
+      </div>
+      <div class="pl-banner full-bleed">
+        <img src="assets/img/concierge.webp" alt="">
+        <div class="in shell"><span class="eyebrow" style="color:#D9C39A">${t('cats_eyebrow')}</span>
+          <h1 class="d2" style="color:#FAF6EE">${t('nav_programs')}</h1></div>
+      </div>
+      <div class="shell">
+        <div class="chips" id="chips"></div>
+        <div class="pl-grid" id="grid"></div>
+      </div>`;
+    const chips = [['all', L === 'ko' ? '전체' : 'すべて'], ...Object.entries(D.CATS).map(([k, c]) => [k, c[L] || c.ja])];
+    const chipEl = document.getElementById('chips');
+    chipEl.innerHTML = chips.map(([k, n]) => `<button data-k="${k}" class="${k === cat0 ? 'on' : ''}">${n}</button>`).join('');
+    const render = k => {
+      const list = D.PROGRAMS.filter(p => k === 'all' || p.cat === k);
+      document.getElementById('grid').innerHTML = list.map(cardHtml).join('');
+      revealNow();
+    };
+    chipEl.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      chipEl.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      history.replaceState(null, '', b.dataset.k === 'all' ? 'program.html' : `program.html?cat=${b.dataset.k}`);
+      render(b.dataset.k);
+    });
+    render(cat0);
+    document.title = (L === 'ko' ? '프로그램' : 'プログラム') + ' | MIYABI Seoul';
+  }
+
+  /* ---------- 상세 + 예약 위저드 ---------- */
+  else {
+    const p = D.PROGRAMS.find(x => x.id === pid) || D.PROGRAMS[0];
+    const c = D.CATS[p.cat];
+    const medical = c.medical;
+    document.title = pName(p) + ' | MIYABI Seoul';
+
+    const INCLUDED = {
+      ja: ['日本語コンシェルジュのLINEサポート', '前日リマインド・当日道案内', medical ? '日本語医療通訳の同行 (相談時)' : '日本語カウンセリングシート', p.id === 'p05' ? '診断書PDF (日本語)' : '施設利用に必要なアメニティ'],
+      ko: ['일본어 컨시어지 LINE 서포트', '전일 리마인드·당일 길안내', medical ? '일본어 의료통역 동행(상담 시)' : '일본어 카운셀링 시트', p.id === 'p05' ? '진단서 PDF(일본어)' : '시설 이용 어메니티']
+    };
+    const NOTICE = {
+      ja: [medical ? '施術の可否・料金は医療機関の診断により決定します' : '開始10分前までにお越しください', '生理中・妊娠中の方は事前にLINEでご相談ください', 'ご旅行日程の変更はコンシェルジュが再調整します'],
+      ko: [medical ? '시술 가부·요금은 의료기관 진단으로 결정됩니다' : '시작 10분 전까지 도착해 주세요', '생리 중·임신 중이신 분은 사전에 LINE으로 상담해 주세요', '여행 일정 변경은 컨시어지가 재조정합니다']
+    };
+
+    app.innerHTML = `
+      <div class="pd-wrap">
+        <a class="pd-back" href="program.html">← ${t('pd_back')}</a>
+        <div class="pd-grid">
+          <div>
+            <div class="pd-media rv in">
+              <img src="${c.img}" alt="${pName(p)}">
+              <span class="cbadge">${t(medical ? 'badge_medical' : 'badge_instant')}</span>
+            </div>
+            <div class="pd-body" style="margin-top:34px">
+              <span class="eyebrow">${c[L] || c.ja} — ${p.area}</span>
+              <h1>${pName(p)}</h1>
+              <p class="pd-desc">${pDesc(p)}</p>
+              ${medical ? `<div class="pd-medical">${t('pd_medical_note')}</div>` : ''}
+              <div class="pd-facts">
+                <div><span>${t('pd_duration')}</span><b>${p.dur}${t('pd_min')}</b></div>
+                <div><span>${t('pd_area')}</span><b style="font-size:14px">${p.area}</b></div>
+                <div><span>RATING</span><b>★ ${p.rating.toFixed(1)} <small style="font-size:.6em;color:var(--ink-faint)">(${p.rc})</small></b></div>
+              </div>
+              <h2 class="d3">${t('pd_included')}</h2>
+              <ul class="pd-list">${(INCLUDED[L] || INCLUDED.ja).map(x => `<li>${x}</li>`).join('')}</ul>
+              <h2 class="d3">${t('pd_notice')}</h2>
+              <ul class="pd-list">${(NOTICE[L] || NOTICE.ja).map(x => `<li>${x}</li>`).join('')}</ul>
+            </div>
+            <div class="pd-rv" id="pdRv"></div>
+          </div>
+          <aside class="pd-sticky"><div class="wz" id="wz"></div></aside>
+        </div>
+      </div>`;
+
+    /* 리뷰 영역 — 의료/비의료 분기 (발견의 기능화) */
+    const pdRv = document.getElementById('pdRv');
+    const myRv = D.REVIEWS.filter(r => r.pid === p.id);
+    if (medical) {
+      pdRv.innerHTML = `<h2>${t('pd_reviews')}</h2>
+        <div class="fac-score">
+          <b>${p.rating.toFixed(1)}</b>
+          <div class="bars">
+            ${[[L==='ko'?'통역 만족도':'通訳満足度',96],[L==='ko'?'상담 친절도':'相談の丁寧さ',94],[L==='ko'?'시설 청결':'施設の清潔さ',98]].map(([n,v]) =>
+              `<div class="bar"><span>${n}</span><span class="tr"><i data-w="${v}"></i></span><span>${(v/20).toFixed(1)}</span></div>`).join('')}
+          </div>
+        </div>
+        <div class="rv-note" style="margin-top:18px">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex:0 0 auto;margin-top:3px"><circle cx="7.5" cy="7.5" r="6.7" stroke="#8A8072" stroke-width="1.1"/><path d="M7.5 4.4v.5M7.5 6.8v4" stroke="#8A8072" stroke-width="1.1"/></svg>
+          <span>${t('rv_policy')}</span>
+        </div>`;
+      setTimeout(() => pdRv.querySelectorAll('.tr i').forEach(i => i.style.width = i.dataset.w + '%'), 80);
+    } else {
+      pdRv.innerHTML = `<h2>${t('pd_reviews')}</h2>
+        ${myRv.length ? `<div class="rv-grid">${myRv.map(r => `
+          <div class="rv-card">
+            <span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5 - r.stars)}</span>
+            <blockquote>${L === 'ko' ? r.ko : r.ja}</blockquote>
+            <div class="who"><span>${r.name}</span><span>${r.date}</span></div>
+          </div>`).join('')}</div>` : `<p style="color:var(--ink-faint);font-size:13px">${t('mp_empty')}</p>`}`;
+    }
+
+    /* ---------- 위저드 ---------- */
+    const wz = document.getElementById('wz');
+    const state = { date: null, time: null, pax: 1, month: 0 };
+    const steps = medical ? ['w_step1', 'w_step2', 'w_step4'] : ['w_step1', 'w_step2', 'w_step3', 'w_step4'];
+    let cur = 0;
+
+    const monthBase = new Date(D.today); monthBase.setDate(1);
+    /* 로컬 기준 YYYY-MM-DD (toISOString은 UTC 변환으로 KST에서 하루 밀림) */
+    const fmtD = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+
+    const calHtml = () => {
+      const m = new Date(monthBase); m.setMonth(m.getMonth() + state.month);
+      const y = m.getFullYear(), mo = m.getMonth();
+      const first = new Date(y, mo, 1).getDay(), days = new Date(y, mo + 1, 0).getDate();
+      const dows = L === 'ko' ? ['일','월','화','수','목','금','토'] : ['日','月','火','水','木','金','土'];
+      let cells = dows.map(d => `<span class="dow">${d}</span>`).join('') + '<span></span>'.repeat(first);
+      for (let d = 1; d <= days; d++) {
+        const dt = new Date(y, mo, d), ds = fmtD(dt);
+        const past = dt <= D.today;
+        cells += `<button data-d="${ds}" ${past ? 'disabled' : ''} class="${state.date === ds ? 'sel' : ''}">${d}</button>`;
+      }
+      return `<div class="cal-head">
+          <button id="calPrev" ${state.month === 0 ? 'disabled' : ''}>←</button>
+          <b>${y}.${String(mo + 1).padStart(2, '0')}</b>
+          <button id="calNext" ${state.month === 2 ? 'disabled' : ''}>→</button>
+        </div><div class="cal">${cells}</div>`;
+    };
+
+    const sumHtml = pay => {
+      const total = p.krw * state.pax;
+      return `<div class="wz-sum">
+        <div class="row"><span>${pName(p)}</span><span>× ${state.pax}</span></div>
+        <div class="row"><span>${state.date || '—'} ${state.time || ''}</span><span>${p.dur}${t('pd_min')}</span></div>
+        ${medical ? `<div class="row total"><span>${t('pd_price')}</span><b>${t('pd_free_consult')}</b></div>`
+        : `<div class="row total"><span>TOTAL</span><b>${fmtKrw(total)}</b></div><div class="jpy">${fmtJpy(total)} — ${t('pd_jpy_note')}</div>`}
+      </div>`;
+    };
+
+    const render = () => {
+      wz.innerHTML = `
+        <div class="wz-steps">${steps.map((s, i) => `<span class="${i === cur ? 'on' : ''}">${i + 1}. ${t(s)}</span>`).join('')}</div>
+        ${paneHtml()}`;
+      bind();
+    };
+
+    const paneHtml = () => {
+      /* STEP: 일시 */
+      if (cur === 0) return `<div class="wz-pane on">
+        <label>${t('w_date')}</label>${calHtml()}
+        <label>${t('w_time')}</label>
+        <div class="slots">${state.date
+          ? D.slotsFor(p.id, state.date).map(s =>
+              `<button data-t="${s.t}" class="${s.full ? 'full' : ''} ${state.time === s.t ? 'sel' : ''}">${s.t}${s.full ? `<span style="position:absolute;font-size:8px;inset:auto 0 1px 0">${t('w_full')}</span>` : ''}</button>`).join('')
+          : `<p style="grid-column:1/-1;font-size:12px;color:var(--ink-faint)">${t('w_date')} →</p>`}</div>
+        <label>${t('w_pax')}</label>
+        <div class="pax-row"><button id="paxM">−</button><b>${state.pax}</b><button id="paxP">＋</button><span style="font-size:12px;color:var(--ink-faint)">${t('persons')}</span></div>
+        ${sumHtml()}
+        <div class="wz-nav"><button class="btn" id="next" ${state.date && state.time ? '' : 'disabled'}>${t('w_next')}</button></div>
+      </div>`;
+      /* STEP: 정보 (프리필 ★) */
+      if (cur === 1) return `<div class="wz-pane on">
+        <label>${t('w_name')}</label><input type="text" id="fName" value="佐藤 結衣">
+        <label>${t('w_email')}</label><input type="email" id="fMail" value="yui.sato@example.jp">
+        <label>${t('w_line')}</label><input type="text" id="fLine" value="yui_s0407">
+        <label>${t('w_allergy')}</label><textarea id="fAllergy" rows="2" data-i-ph="w_allergy_ph" placeholder="${t('w_allergy_ph')}"></textarea>
+        ${sumHtml()}
+        <div class="wz-nav"><button class="btn ghost" id="prev">${t('w_prev')}</button>
+        <button class="btn" id="next">${medical ? t('pd_consult') : t('w_next')}</button></div>
+      </div>`;
+      /* STEP: 결제 (비의료만) */
+      if (!medical && cur === 2) return `<div class="wz-pane on">
+        <div class="pay-brands"><span>JCB</span><span>VISA</span><span>Mastercard</span><span>AMEX</span></div>
+        <label>${t('w_card')}</label><input type="text" id="cNo" value="3540 12•• •••• 8842" inputmode="numeric">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div><label>${t('w_exp')}</label><input type="text" id="cExp" value="09 / 28"></div>
+          <div><label>${t('w_cvc')}</label><input type="text" id="cCvc" value="•••"></div>
+        </div>
+        ${sumHtml(true)}
+        <div class="cp-box"><b style="grid-column:1/-1;font-size:11.5px;letter-spacing:.1em;color:var(--ink)">${t('cp_title')}</b>
+          <span>${t('cp_7')}</span><span>${t('cp_3')}</span><span>${t('cp_1')}</span><span>${t('cp_0')}</span></div>
+        <div class="agree-row"><input type="checkbox" id="agree"><label for="agree" style="margin:0;letter-spacing:.02em;font-size:12.5px;color:var(--ink-soft)">${t('w_agree')}</label></div>
+        <p class="pay-note">${t('w_pay_note')}</p>
+        <div class="wz-nav"><button class="btn ghost" id="prev">${t('w_prev')}</button>
+        <button class="btn" id="pay" disabled>${t('w_pay')}</button></div>
+      </div>`;
+      /* STEP: 완료 */
+      return `<div class="wz-pane on wz-done">
+        <div class="mark"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M6 15.5L12.5 22L24 9" stroke="#9C7C4C" stroke-width="1.6"/></svg></div>
+        <h3>${t(medical ? 'w_consult_done_t' : 'w_done_t')}</h3>
+        <p>${t(medical ? 'w_consult_done_d' : 'w_done_d')}</p>
+        <div class="bno">${t('w_done_no')} — <b id="bno"></b></div>
+        <a class="btn" href="mypage.html">${t('w_to_mypage')}</a>
+      </div>`;
+    };
+
+    const bind = () => {
+      wz.querySelector('#calPrev')?.addEventListener('click', () => { state.month--; render(); });
+      wz.querySelector('#calNext')?.addEventListener('click', () => { state.month++; render(); });
+      wz.querySelectorAll('.cal button[data-d]').forEach(b => b.addEventListener('click', () => { state.date = b.dataset.d; state.time = null; render(); }));
+      wz.querySelectorAll('.slots button[data-t]').forEach(b => b.addEventListener('click', () => { state.time = b.dataset.t; render(); }));
+      wz.querySelector('#paxM')?.addEventListener('click', () => { state.pax = Math.max(1, state.pax - 1); render(); });
+      wz.querySelector('#paxP')?.addEventListener('click', () => { state.pax = Math.min(4, state.pax + 1); render(); });
+      wz.querySelector('#prev')?.addEventListener('click', () => { cur--; render(); });
+      wz.querySelector('#next')?.addEventListener('click', () => {
+        if (cur === 1) {
+          const nm = wz.querySelector('#fName'), em = wz.querySelector('#fMail');
+          let ok = true;
+          [nm, em].forEach(f => { const bad = !f.value.trim() || (f.type === 'email' && !/@/.test(f.value)); f.classList.toggle('err', bad); if (bad) ok = false; });
+          if (!ok) return;
+          if (medical) { finish(); return; }
+        }
+        cur++; render();
+      });
+      const agree = wz.querySelector('#agree'), pay = wz.querySelector('#pay');
+      agree?.addEventListener('change', () => pay.disabled = !agree.checked);
+      pay?.addEventListener('click', () => { pay.textContent = '…'; setTimeout(finish, 900); });
+      updateMcta();
+    };
+
+    const finish = () => {
+      const no = 'MYB-' + String(Date.now()).slice(-6) + '-' + p.id.slice(1);
+      const bk = { no, pid: p.id, date: state.date, time: state.time, pax: state.pax,
+        status: medical ? 'consult' : 'paid', name: '佐藤 結衣', paid: medical ? 0 : p.krw * state.pax, mine: true };
+      const arr = JSON.parse(localStorage.getItem('myb_bk') || '[]'); arr.unshift(bk);
+      localStorage.setItem('myb_bk', JSON.stringify(arr));
+      cur = steps.length - 1; render();
+      wz.querySelector('#bno').textContent = no;
+    };
+
+    /* 모바일 하단 CTA */
+    const mc = document.getElementById('mCta');
+    const updateMcta = () => {
+      if (cur >= steps.length - 1) { mc.classList.remove('show'); return; }
+      mc.classList.add('show');
+      mc.innerHTML = `<div class="p">${p.krw === 0
+          ? `<b>${t('pd_free_consult')}</b><span>${pName(p)}</span>`
+          : `<b>${fmtKrw(p.krw * state.pax)}</b><span>${fmtJpy(p.krw * state.pax)}</span>`}</div>
+        <button class="btn" id="mGo">${medical ? t('pd_consult') : t('pd_book')}</button>`;
+      mc.querySelector('#mGo').addEventListener('click', () => document.querySelector('.pd-sticky').scrollIntoView({ behavior: 'smooth' }));
+    };
+
+    render();
+  }
+
+  /* 목록 카드 즉시 리빌 */
+  function revealNow() { document.querySelectorAll('.rv:not(.in)').forEach((el, i) => setTimeout(() => el.classList.add('in'), 40 * (i % 9))); }
+  revealNow();
+})();
+</script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
