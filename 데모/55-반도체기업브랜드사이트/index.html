@@ -45,7 +45,7 @@
   <div class="allMenuGrid" id="allMenuGrid"></div>
 </div>
 
-<!-- ============ sec1 히어로 ============ -->
+<!-- ============ sec1 히어로 (100vh 풀 비디오 · fz-120 라인 리빌) ============ -->
 <section class="sec sec1">
   <video src="assets/video/hero.mp4" autoplay muted loop playsinline poster="assets/img/hero-poster.webp"></video>
   <div class="innerWrap">
@@ -60,57 +60,58 @@
   <div class="scrollHint">SCROLL</div>
 </section>
 
-<!-- ============ sec2 스테이트먼트 + 핀 스크럽 ============ -->
+<!-- ============ sec2 스테이트먼트 + 핀 스크럽 (fz-80 · 27vw→100vw) ============ -->
 <section class="sec sec2" id="sec2">
   <div class="pinStage">
     <div class="statement">
-      <h2 class="st-item" style="--delay:0">Semiconductor Manufacturing,<br>
-        <em>Engineered by REONIX.</em></h2>
+      <h2 class="st-item" style="--delay:0">Semiconductor,<br><em>Perfected</em> by REONIX.</h2>
     </div>
     <div class="mediaBox" id="sec2Media">
       <video src="assets/video/wafer.mp4" autoplay muted loop playsinline poster="assets/img/wafer-poster.webp"></video>
       <div class="mediaText" id="sec2Text">
         <h3>0.1μm의 오차도<br>허용하지 않는 공정</h3>
-        <p>25년의 공정 노하우와 자동화 라인이 만드는 일관된 수율. 레오닉스의 품질은 통계가 아니라 설비와 사람의 기준에서 나옵니다.</p>
+        <p>25년의 공정 노하우와 자동화 라인이 만드는 일관된 수율.<br>레오닉스의 품질은 통계가 아니라 설비와 사람의 기준에서 나옵니다.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ sec3 Industries ============ -->
+<!-- ============ sec3 Industries (m200 · 카드 544/652) ============ -->
 <section class="sec sec3">
   <div class="innerWrap">
     <div class="titleArea ani">
       <h3 class="containerTitle font-inter">Industries</h3>
       <h4 class="containerSubTitle">반도체 기술의 정점,<br class="pcbr">산업 현장에 최적화된 솔루션</h4>
     </div>
-    <ul class="industryList" id="industryList">
-      <li class="listItem st-item" style="--delay:0" data-nav="Industries — Mobility">
-        <div class="thumbBox"><img src="assets/img/ind-mobility.webp" alt="차량용 반도체" loading="lazy"></div>
-        <div class="textArea">
-          <h6 class="contentTitle font-inter">Mobility</h6>
-          <p class="contentText">전기차·자율주행 시스템의 전력 변환과 제어를 책임지는 차량용 반도체를 공급합니다.</p>
-        </div>
-      </li>
-      <li class="listItem st-item" style="--delay:1" data-nav="Industries — AI & Data Center">
-        <div class="thumbBox"><img src="assets/img/ind-datacenter.webp" alt="AI 데이터센터" loading="lazy"></div>
-        <div class="textArea">
-          <h6 class="contentTitle font-inter">AI &amp; Data Center</h6>
-          <p class="contentText">고밀도 연산 환경의 전력 효율과 발열 관리를 위한 서버용 전력 반도체 솔루션을 제공합니다.</p>
-        </div>
-      </li>
-      <li class="listItem st-item" style="--delay:2" data-nav="Industries — Consumer & IoT">
-        <div class="thumbBox"><img src="assets/img/ind-iot.webp" alt="IoT 디바이스" loading="lazy"></div>
-        <div class="textArea">
-          <h6 class="contentTitle font-inter">Consumer &amp; IoT</h6>
-          <p class="contentText">소형·저전력이 생명인 IoT 디바이스에 맞춘 센서 IC와 커스텀 모듈을 설계·양산합니다.</p>
-        </div>
-      </li>
-    </ul>
+    <div class="content1">
+      <ul class="industryList" id="industryList">
+        <li class="listItem st-item" style="--delay:0" data-nav="Industries — Mobility">
+          <div class="thumbBox"><img src="assets/img/ind-mobility.webp" alt="차량용 반도체" loading="lazy"></div>
+          <div class="textArea">
+            <h6 class="contentTitle font-inter">Mobility</h6>
+            <p class="contentText">전기차·자율주행 시스템의 전력 변환과 제어를 책임지는 차량용 반도체를 공급합니다.</p>
+          </div>
+        </li>
+        <li class="listItem st-item" style="--delay:1" data-nav="Industries — AI & Data Center">
+          <div class="thumbBox"><img src="assets/img/ind-datacenter.webp" alt="AI 데이터센터" loading="lazy"></div>
+          <div class="textArea">
+            <h6 class="contentTitle font-inter">AI &amp; Data Center</h6>
+            <p class="contentText">고밀도 연산 환경의 전력 효율과 발열 관리를 위한 서버용 전력 반도체 솔루션을 제공합니다.</p>
+          </div>
+        </li>
+        <li class="listItem st-item" style="--delay:2" data-nav="Industries — Consumer & IoT">
+          <div class="thumbBox"><img src="assets/img/ind-iot.webp" alt="IoT 디바이스" loading="lazy"></div>
+          <div class="textArea">
+            <h6 class="contentTitle font-inter">Consumer &amp; IoT</h6>
+            <p class="contentText">소형·저전력이 생명인 IoT 디바이스에 맞춘 센서 IC와 커스텀 모듈을 설계·양산합니다.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<!-- ============ sec4 Products ============ -->
+<!-- ============ sec4 Products (타이틀=컨테이너 · 리스트=풀블리드 900px) ============ -->
 <section class="sec sec4">
   <div class="innerWrap">
     <div class="titleArea ani">
@@ -118,7 +119,7 @@
       <h4 class="containerSubTitle">웨이퍼에서 모듈까지,<br class="pcbr">정확성을 위해 설계된 제품</h4>
     </div>
   </div>
-  <div class="innerWrap">
+  <div class="container2">
     <ul class="productsList" id="productsList">
       <li class="listItem" data-nav="Products — Wafer Solutions">
         <div class="itemWrap">
@@ -179,150 +180,173 @@
   </div>
 </section>
 
-<!-- ============ sec5 Services ============ -->
+<!-- ============ sec5 Services (100vh 배경 스왑 · 정사각 글라스 카드 3) ============ -->
 <section class="sec sec5" id="sec5">
   <div class="servicesBg active" style="background-image:url('assets/img/svc-1.webp')"></div>
   <div class="servicesBg" style="background-image:url('assets/img/svc-2.webp')"></div>
   <div class="servicesBg" style="background-image:url('assets/img/svc-3.webp')"></div>
   <div class="innerWrap">
     <div class="titleArea ani">
-      <h3 class="containerTitle font-inter" style="color:#fff">Services</h3>
+      <h3 class="containerTitle font-inter">Services</h3>
       <h4 class="containerSubTitle">공정 하나를 맡겨도,<br class="pcbr">라인 전체를 맡겨도.</h4>
     </div>
-    <ul class="servicesList" id="servicesList">
-      <li class="listItem active" data-nav="Services — Foundry Service">
-        <h6 class="contentTitle font-inter">Foundry Service <i>→</i></h6>
-        <div class="hoverContent">
-          <p>설계 데이터만 주시면 됩니다. 웨이퍼 투입부터 공정 관리, 수율 리포트까지 수탁 제조 전 과정을 책임집니다.</p>
-          <div class="linkBox"><span class="linkBtn white"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
-        </div>
-      </li>
-      <li class="listItem" data-nav="Services — Package & Test Service">
-        <h6 class="contentTitle font-inter">Package &amp; Test <i>→</i></h6>
-        <div class="hoverContent">
-          <p>타사 웨이퍼도 환영합니다. 패키징·번인·전수 테스트를 단독 서비스로 제공해 출하 품질을 완성합니다.</p>
-          <div class="linkBox"><span class="linkBtn white"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
-        </div>
-      </li>
-      <li class="listItem" data-nav="Services — Engineering Support">
-        <h6 class="contentTitle font-inter">Engineering Support <i>→</i></h6>
-        <div class="hoverContent">
-          <p>양산 이관, 공정 최적화, 불량 분석까지 — 25년 경력의 엔지니어가 고객사 라인에 직접 답을 드립니다.</p>
-          <div class="linkBox"><span class="linkBtn white"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
-        </div>
-      </li>
-    </ul>
+    <div class="content2">
+      <ul class="servicesList" id="servicesList">
+        <li class="listItem active" data-nav="Services — Foundry Service">
+          <div class="currentContent"><h6 class="contentTitle">Foundry<br>Service</h6></div>
+          <div class="hoverContent">
+            <div class="hoverTitleMask"><h6 class="contentTitle">Foundry Service</h6></div>
+            <div class="textMask"><p class="contentText">설계 데이터만 주시면 됩니다. 웨이퍼 투입부터 공정 관리, 수율 리포트까지 수탁 제조 전 과정을 책임집니다.</p></div>
+            <div class="linkBox"><span class="linkBtn black"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
+          </div>
+        </li>
+        <li class="listItem" data-nav="Services — Package & Test Service">
+          <div class="currentContent"><h6 class="contentTitle">Package<br>&amp; Test</h6></div>
+          <div class="hoverContent">
+            <div class="hoverTitleMask"><h6 class="contentTitle">Package &amp; Test</h6></div>
+            <div class="textMask"><p class="contentText">타사 웨이퍼도 환영합니다. 패키징·번인·전수 테스트를 단독 서비스로 제공해 출하 품질을 완성합니다.</p></div>
+            <div class="linkBox"><span class="linkBtn black"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
+          </div>
+        </li>
+        <li class="listItem" data-nav="Services — Engineering Support">
+          <div class="currentContent"><h6 class="contentTitle">Engineering<br>Support</h6></div>
+          <div class="hoverContent">
+            <div class="hoverTitleMask"><h6 class="contentTitle">Engineering Support</h6></div>
+            <div class="textMask"><p class="contentText">양산 이관, 공정 최적화, 불량 분석까지 — 25년 경력의 엔지니어가 고객사 라인에 직접 답을 드립니다.</p></div>
+            <div class="linkBox"><span class="linkBtn black"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>
 
-<!-- ============ sec6 R&D ============ -->
+<!-- ============ sec6 R&D (정사각 미디어 + 2×2 리스트) ============ -->
 <section class="sec sec6">
   <div class="innerWrap">
     <div class="containerAll">
-      <div class="imgBox st-item" style="--delay:0">
-        <video src="assets/video/rnd.mp4" autoplay muted loop playsinline poster="assets/img/rnd-poster.webp"></video>
+      <div class="container container1 st-item" style="--delay:0">
+        <div class="imgBox"><video src="assets/video/rnd.mp4" autoplay muted loop playsinline poster="assets/img/rnd-poster.webp"></video></div>
       </div>
-      <div>
+      <div class="container container2">
         <div class="titleArea ani">
           <h3 class="containerTitle font-inter">R&amp;D</h3>
           <h4 class="containerSubTitle">현장에 적용되는<br class="pcbr">실질적 혁신을 만듭니다.</h4>
         </div>
-        <ul class="rdList">
-          <li class="listItem st-item" style="--delay:1" data-nav="R&D — 연구소 소개">
-            <i class="icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M7 13l3-6 3 6" stroke="currentColor" stroke-width="1.4"/></svg></i>
-            <div class="textArea"><h6 class="contentTitle">연구소 소개</h6><p class="contentText">한계 사양을 넘어서는 소자 기술 연구</p></div>
-          </li>
-          <li class="listItem st-item" style="--delay:2" data-nav="R&D — 연구 현황">
-            <i class="icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17V9M8 17V5M13 17v-7M18 17V3" stroke="currentColor" stroke-width="1.4"/></svg></i>
-            <div class="textArea"><h6 class="contentTitle">연구 현황</h6><p class="contentText">데이터 기반의 수율·신뢰성 개선 프로젝트</p></div>
-          </li>
-          <li class="listItem st-item" style="--delay:3" data-nav="R&D — 인증 및 특허">
-            <i class="icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="5" stroke="currentColor" stroke-width="1.4"/><path d="M7 12l-1.5 6L10 16l4.5 2L13 12" stroke="currentColor" stroke-width="1.4"/></svg></i>
-            <div class="textArea"><h6 class="contentTitle">인증 및 특허</h6><p class="contentText">국내외 등록 특허와 품질 인증 보유</p></div>
-          </li>
-          <li class="listItem st-item" style="--delay:4" data-nav="R&D — 개발 실적">
-            <i class="icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 3 3 6-7" stroke="currentColor" stroke-width="1.4"/><path d="M13 6h4v4" stroke="currentColor" stroke-width="1.4"/></svg></i>
-            <div class="textArea"><h6 class="contentTitle">개발 실적</h6><p class="contentText">고객 요구를 성과로 바꾼 양산 이관 기록</p></div>
-          </li>
-        </ul>
+        <div class="content1">
+          <ul class="rdList">
+            <li class="listItem st-item" style="--delay:1" data-nav="R&D — 연구소 소개">
+              <i class="icon"><svg width="34" height="34" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.2"/><path d="M7 13l3-6 3 6" stroke="currentColor" stroke-width="1.2"/></svg></i>
+              <div class="textArea"><h6 class="contentTitle">연구소 소개</h6><p class="contentText">한계 사양을 넘어서는 소자 기술 연구</p></div>
+            </li>
+            <li class="listItem st-item" style="--delay:2" data-nav="R&D — 연구 현황">
+              <i class="icon"><svg width="34" height="34" viewBox="0 0 20 20" fill="none"><path d="M3 17V9M8 17V5M13 17v-7M18 17V3" stroke="currentColor" stroke-width="1.2"/></svg></i>
+              <div class="textArea"><h6 class="contentTitle">연구 현황</h6><p class="contentText">데이터 기반의 수율·신뢰성 개선 프로젝트</p></div>
+            </li>
+            <li class="listItem st-item" style="--delay:3" data-nav="R&D — 인증 및 특허">
+              <i class="icon"><svg width="34" height="34" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="8" r="5" stroke="currentColor" stroke-width="1.2"/><path d="M7 12l-1.5 6L10 16l4.5 2L13 12" stroke="currentColor" stroke-width="1.2"/></svg></i>
+              <div class="textArea"><h6 class="contentTitle">인증 및 특허</h6><p class="contentText">신뢰로 증명된 기술 경쟁력</p></div>
+            </li>
+            <li class="listItem st-item" style="--delay:4" data-nav="R&D — 개발 실적">
+              <i class="icon"><svg width="34" height="34" viewBox="0 0 20 20" fill="none"><path d="M3 15l5-5 3 3 6-7" stroke="currentColor" stroke-width="1.2"/><path d="M13 6h4v4" stroke="currentColor" stroke-width="1.2"/></svg></i>
+              <div class="textArea"><h6 class="contentTitle">개발 실적</h6><p class="contentText">요구를 성과로 바꾼 양산 이관 기록</p></div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ sec7 Merit ============ -->
+<!-- ============ sec7 Merit (좌 타이틀 · 우 4행 fz-100 대형 워드) ============ -->
 <section class="sec sec7">
   <div class="innerWrap">
     <div class="containerAll">
-      <div class="titleArea ani" style="margin-bottom:0">
-        <h3 class="containerTitle font-inter">Merit</h3>
-        <h4 class="containerSubTitle">신뢰로 완성하는<br class="pcbr">제조 파트너십</h4>
+      <div class="container container1">
+        <div class="titleArea ani">
+          <h3 class="containerTitle font-inter">Merit</h3>
+          <h4 class="containerSubTitle">신뢰로 완성하는<br class="pcbr">제조 파트너십</h4>
+        </div>
       </div>
-      <div class="meritGrid">
-        <div class="card st-item" style="--delay:0">
-          <h6 class="contentTitle">품질 인증</h6>
-          <p class="contentText">차량용 품질 기준을 포함한 국제 인증 체계를 갖추고, 전 공정을 문서화된 표준으로 관리합니다.</p>
-          <span class="tag">Certified</span>
+      <div class="container container2" id="meritRows">
+        <div class="content" data-nav="Merit — 품질 인증">
+          <div class="textArea">
+            <h6 class="contentTitle">품질 인증</h6>
+            <p class="contentText">차량용 품질 기준을 포함한 국제 인증 체계를 갖추고,<br class="pcbr">전 공정을 문서화된 표준으로 관리합니다.</p>
+          </div>
+          <div class="wordArea">
+            <strong class="contentSubTitle"><span data-text="Certified" style="transition-delay:.05s">Certified</span></strong>
+            <i class="icon"><svg width="30" height="30" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7.4" stroke="currentColor" stroke-width="1.3"/><path d="M6.6 10l2.3 2.3 4.5-4.6" stroke="currentColor" stroke-width="1.3"/></svg></i>
+          </div>
         </div>
-        <div class="card st-item" style="--delay:1">
-          <h6 class="contentTitle">일관 공정</h6>
-          <p class="contentText">웨이퍼 가공부터 패키징·테스트까지 한 사이트에서 — 이관 손실 없는 일관 라인을 운영합니다.</p>
-          <span class="tag">One-Site</span>
+        <div class="content" data-nav="Merit — 일관 공정">
+          <div class="textArea">
+            <h6 class="contentTitle">일관 공정</h6>
+            <p class="contentText">웨이퍼 가공부터 패키징·테스트까지 한 사이트에서 —<br class="pcbr">이관 손실 없는 일관 라인을 운영합니다.</p>
+          </div>
+          <div class="wordArea">
+            <strong class="contentSubTitle"><span data-text="One-Site" style="transition-delay:.1s">One-Site</span></strong>
+            <i class="icon"><svg width="30" height="30" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><rect x="11" y="11" width="6" height="6" stroke="currentColor" stroke-width="1.3"/><path d="M9 6h5v5" stroke="currentColor" stroke-width="1.3"/></svg></i>
+          </div>
         </div>
-        <div class="card st-item" style="--delay:2">
-          <h6 class="contentTitle">유연한 생산</h6>
-          <p class="contentText">소량 다품종부터 대량 양산까지, 고객 수요 변화에 라인 배치를 유연하게 전환합니다.</p>
-          <span class="tag">Flexible</span>
+        <div class="content" data-nav="Merit — 유연한 생산">
+          <div class="textArea">
+            <h6 class="contentTitle">유연한 생산</h6>
+            <p class="contentText">소량 다품종부터 대량 양산까지,<br class="pcbr">고객 수요 변화에 라인 배치를 유연하게 전환합니다.</p>
+          </div>
+          <div class="wordArea">
+            <strong class="contentSubTitle"><span data-text="Flexible" style="transition-delay:.15s">Flexible</span></strong>
+            <i class="icon"><svg width="30" height="30" viewBox="0 0 20 20" fill="none"><path d="M3 7h10a4 4 0 0 1 0 8H9" stroke="currentColor" stroke-width="1.3"/><path d="M6 4L3 7l3 3" stroke="currentColor" stroke-width="1.3"/></svg></i>
+          </div>
         </div>
-        <div class="card st-item" style="--delay:3">
-          <h6 class="contentTitle">안정 공급</h6>
-          <p class="contentText">이중화된 자재 소싱과 재고 정책으로 장기 공급 계약의 납기를 지킵니다.</p>
-          <span class="tag">Reliable</span>
+        <div class="content" data-nav="Merit — 안정 공급">
+          <div class="textArea">
+            <h6 class="contentTitle">안정 공급</h6>
+            <p class="contentText">이중화된 자재 소싱과 재고 정책으로<br class="pcbr">장기 공급 계약의 납기를 지킵니다.</p>
+          </div>
+          <div class="wordArea">
+            <strong class="contentSubTitle"><span data-text="Reliable" style="transition-delay:.2s">Reliable</span></strong>
+            <i class="icon"><svg width="30" height="30" viewBox="0 0 20 20" fill="none"><path d="M10 2.6l6 2.6v4.4c0 4-2.7 6.6-6 7.8-3.3-1.2-6-3.8-6-7.8V5.2l6-2.6z" stroke="currentColor" stroke-width="1.3"/></svg></i>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ sec8 Careers / Catalog ============ -->
+<!-- ============ sec8 Careers / Catalog (풀블리드 2분할 · m130 6%) ============ -->
 <section class="sec sec8">
-  <div class="innerWrap">
-    <div class="bannerGrid">
-      <div class="banner st-item" style="--delay:0" data-nav="Careers">
-        <div class="bg" style="background-image:url('assets/img/careers.webp')"></div>
-        <div class="inner">
-          <h5 class="bTitle font-inter">Careers</h5>
-          <p class="bText">나노미터의 세계를 함께 넓혀갈<br>동료를 찾습니다.</p>
-          <span class="linkBtn white"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span>
-        </div>
+  <div class="container1">
+    <div class="content content1 st-item" style="--delay:0" data-nav="Careers">
+      <div class="bg"></div>
+      <h6 class="contentTitle fzUp font-inter">Careers</h6>
+      <p class="contentText">나노미터의 세계를 함께 넓혀갈<br>동료를 찾습니다.</p>
+      <div class="linkBox"><span class="linkBtn white"><span>바로가기</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
+    </div>
+    <div class="content content2 st-item" style="--delay:1" data-nav="Catalog">
+      <div class="textArea">
+        <h6 class="contentTitle fzUp font-inter">Catalog</h6>
+        <p class="contentText">제품 스펙과 적용 산업까지,<br>한 권으로 정리했습니다.</p>
+        <div class="linkBox"><span class="linkBtn white"><span>카탈로그 다운로드</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v8M3 6l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.4"/></svg></span></span></div>
       </div>
-      <div class="banner st-item" style="--delay:1" data-nav="Catalog">
-        <div class="bg" style="background-image:url('assets/img/catalog.webp')"></div>
-        <div class="inner">
-          <h5 class="bTitle font-inter">Catalog</h5>
-          <p class="bText">제품 스펙과 적용 산업까지,<br>한 권으로 정리했습니다.</p>
-          <span class="linkBtn white"><span>카탈로그 다운로드</span><span class="iconBox"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v8M3 6l4 4 4-4M2 12h10" stroke="currentColor" stroke-width="1.4"/></svg></span></span>
-        </div>
-      </div>
+      <div class="imgBox"><img src="assets/img/catalog.webp" alt="제품 카탈로그" loading="lazy"></div>
     </div>
   </div>
 </section>
 
-<!-- ============ footer ============ -->
+<!-- ============ footer (로고 + 주소 리스트) ============ -->
 <footer id="footer">
   <div class="innerWrap fGrid">
+    <div class="fLogo">REONIX<i></i></div>
     <div>
-      <div class="fLogo">REONIX<i></i></div>
-      <div class="fInfo">
-        <p style="margin-top:14px"><b>주소</b>경기도 화성시 반월동 000-0 레오닉스 캠퍼스 (가상)</p>
-        <p><b>전화</b>031-000-0000 <b style="margin-left:14px">팩스</b>031-000-0001</p>
-      </div>
+      <p class="companyName">(주)레오닉스 (가상)</p>
+      <ul class="addressList">
+        <li><span class="itemTitle">주소</span><span>경기도 화성시 반월동 000-0 레오닉스 캠퍼스 (가상 주소)</span></li>
+        <li><span class="itemTitle">전화</span><span>031-000-0000</span></li>
+        <li><span class="itemTitle">팩스</span><span>031-000-0001</span></li>
+      </ul>
     </div>
-    <div class="fInfo" style="text-align:right">
-      <p>본 사이트는 제안용 데모입니다.</p>
-      <p>회사·제품·연락처 등 모든 정보는 가상입니다.</p>
-    </div>
-    <p class="fNote">Copyright © 2026 REONIX (fictional demo). ALL RIGHTS RESERVED.</p>
+    <p class="fNote">본 사이트는 제안용 데모이며 회사·제품·연락처 등 모든 정보는 가상입니다. Copyright © 2026 REONIX (fictional demo). ALL RIGHTS RESERVED.</p>
   </div>
 </footer>
 

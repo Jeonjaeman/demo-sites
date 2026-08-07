@@ -73,12 +73,8 @@
     header.classList.remove('panelOpen');
     subPanel.style.height = '0px';
   };
-  depth1List.addEventListener('mouseenter', e => {}, true);
   $$('#depth1List > li').forEach(li => li.addEventListener('mouseenter', () => openPanel(+li.dataset.idx)));
   head.addEventListener('mouseleave', closePanel);
-  depth2List.addEventListener('mouseenter', e => {
-    const li = e.target.closest('li'); if (!li) return;
-  }, true);
   depth2List.addEventListener('mouseover', e => {
     const li = e.target.closest('li[data-i]'); if (!li) return;
     const openIdx = MENU.findIndex(m => m.title === sloganTitle.textContent);
@@ -104,48 +100,58 @@
   });
 
   /* ---------- 헤더 스크롤 상태 ---------- */
-  const onScroll = () => header.classList.toggle('scroll', scrollY > 68);
+  const onScroll = () => header.classList.toggle('scroll', scrollY > 100);
   addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-  /* ---------- 리빌 (.ani / .st-item → .inView) ---------- */
+  /* ---------- 리빌 (.ani / .st-item / sec7 워드 → .inView) ---------- */
   const io = new IntersectionObserver(es => es.forEach(en => {
     if (en.isIntersecting) { en.target.classList.add('inView'); io.unobserve(en.target); }
   }), { threshold: .18, rootMargin: '0px 0px -8% 0px' });
-  $$('.ani, .st-item, .sec1Title').forEach(el => io.observe(el));
+  $$('.ani, .st-item, .sec1Title, .sec7 .container2').forEach(el => io.observe(el));
 
-  /* ---------- sec2 핀 스크럽 (27vw → 100vw 풀스크린 확장) ---------- */
+  /* ---------- sec2 핀 스크럽 (실측: 27vw·510/290 → 100vw/100vh 확장) ---------- */
   const sec2 = $('#sec2'), media = $('#sec2Media'), mediaText = $('#sec2Text');
   const isMobile = () => matchMedia('(max-width: 812px)').matches;
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp01 = v => Math.min(1, Math.max(0, v));
   const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const AR = 290 / 510; // 실측 종횡비
 
   let scrubRaf = 0;
   const scrub = () => {
     scrubRaf = 0;
     const rect = sec2.getBoundingClientRect();
     const total = sec2.offsetHeight - innerHeight;
-    const p = clamp01(-rect.top / total);            // 0~1 스크럽 진행도
-    const grow = easeInOut(clamp01(p / .62));        // 0~62%: 확장
-    const textP = clamp01((p - .58) / .2);           // 58%~: 텍스트
-    if (isMobile()) {
-      media.style.width = lerp(94, 100, grow) + 'vw';
-      media.style.left = '50%';
-      media.style.transform = 'translateX(-50%)';
-      media.style.bottom = lerp(6, 0, grow) + 'vh';
-      media.style.top = 'auto';
-      media.style.height = lerp(30, 100, grow) + 'vh';
+    const p = clamp01(-rect.top / total);
+    const grow = easeInOut(clamp01(p / .62));
+    const textP = clamp01((p - .58) / .2);
+    const iw = innerWidth, ih = innerHeight;
+    if (p === 0) {
+      /* 초기 상태는 CSS(27vw · aspect 510/290)로 복원 */
+      media.style.cssText = '';
+    } else if (isMobile()) {
+      const w = lerp(iw * .94, iw, grow);
+      const h = lerp(iw * .94 * AR, ih, grow);
+      media.style.width = w + 'px';
+      media.style.height = h + 'px';
       media.style.aspectRatio = 'auto';
+      media.style.left = '50%';
+      media.style.top = 'auto';
+      media.style.bottom = lerp(.06 * ih, 0, grow) + 'px';
+      media.style.transform = 'translateX(-50%)';
+      media.style.borderRadius = lerp(20, 0, grow) + 'px';
     } else {
-      media.style.width = lerp(27, 100, grow) + 'vw';
-      media.style.height = grow > 0 ? lerp(27 * 10 / 16, 100, grow) + (grow < 1 ? 'vh' : 'vh') : '';
+      const w = lerp(iw * .27, iw, grow);
+      const h = lerp(iw * .27 * AR, ih, grow);
+      media.style.width = w + 'px';
+      media.style.height = h + 'px';
       media.style.aspectRatio = 'auto';
       media.style.top = '50%';
       media.style.bottom = 'auto';
       media.style.left = lerp(94, 50, grow) + '%';
       media.style.transform = `translate(${lerp(-100, -50, grow)}%, -50%)`;
+      media.style.borderRadius = lerp(20, 0, grow) + 'px';
     }
-    media.style.borderRadius = lerp(18, 0, grow) + 'px';
     mediaText.classList.toggle('show', textP > 0);
     mediaText.style.opacity = textP;
     header.classList.toggle('hidden', p > .05 && p < .98);
@@ -160,11 +166,11 @@
     addEventListener('resize', queueScrub);
     scrub();
   } else {
-    media.style.cssText = 'position:relative;width:100%;left:0;top:0;transform:none;border-radius:0;height:60vh';
+    media.style.cssText = 'position:relative;width:100%;left:0;top:0;transform:none;border-radius:0;height:60vh;aspect-ratio:auto';
     mediaText.classList.add('show'); mediaText.style.opacity = 1;
   }
 
-  /* ---------- sec5 서비스 호버 배경 스왑 ---------- */
+  /* ---------- sec5 서비스 카드 활성 스왑 (실측: active=흰 배경+scale1.05+마스크 리빌) ---------- */
   const svcItems = $$('#servicesList .listItem');
   const svcBgs = $$('.sec5 .servicesBg');
   svcItems.forEach((li, i) => {
