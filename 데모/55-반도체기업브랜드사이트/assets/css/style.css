@@ -1,0 +1,294 @@
+/* ============================================================
+   REONIX 레오닉스 — 반도체 제조 기업 브랜드 사이트 (데모)
+   레퍼런스 실측: hanvit-ind.com (2026-08-07 브라우저 실측)
+   - 폰트: SUIT + Inter (레퍼런스 Suit/Inter 동일 계열)
+   - ink #27272C · gray #666/#5E5E5E · num #D4D4D4 · line #CCC
+   - bg-light #F9F9F9 · 액센트(절제) #F68931 계열 → 본 데모는 #2B63F6
+   - innerWrap max 1680px · 섹션 상하 154px
+   - containerTitle 24px/500 Inter · subTitle 28px/500 · 히어로 82px/700
+   - 모션: sec2 핀 스크럽(27vw→100vw)·sec4 flex 1→1.4 호버 확장·
+     sec5 호버 배경 스왑 · .ani 리빌(translateY+stagger var(--delay))
+   ============================================================ */
+:root {
+  --ink: #27272C;
+  --black: #000;
+  --gray: #666;
+  --gray-soft: #5E5E5E;
+  --gray-faint: #D4D4D4;
+  --line: #CCC;
+  --bg-light: #F9F9F9;
+  --accent: #2B63F6;
+  --inter: 'Inter', sans-serif;
+  --suit: 'SUIT', 'Pretendard', 'Noto Sans KR', sans-serif;
+  --wrap: 1680px;
+  --sec-pad: clamp(90px, 8vw, 154px);
+  --fz-title: 24px;            /* containerTitle */
+  --fz-sub: clamp(22px, 1.75vw, 28px);  /* containerSubTitle */
+  --header-h: 68px;
+  --ease: cubic-bezier(.33, 1, .48, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { overflow-x: clip; scroll-behavior: smooth; }
+body {
+  font-family: var(--suit); font-size: 14px; color: var(--ink);
+  background: #fff; line-height: 1.6; -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+img, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; border: 0; background: none; cursor: pointer; color: inherit; }
+ul { list-style: none; }
+.font-inter { font-family: var(--inter); }
+.innerWrap { width: min(88%, var(--wrap)); margin: 0 auto; }
+.pcbr { display: block; }
+
+/* ---------- 공통 타이틀 ---------- */
+.containerTitle { font-family: var(--inter); font-size: var(--fz-title); font-weight: 500; color: var(--black); letter-spacing: .01em; }
+.containerSubTitle { font-size: var(--fz-sub); font-weight: 500; color: var(--black); line-height: 1.3; margin-top: 18px; }
+.titleArea { margin-bottom: clamp(36px, 4vw, 64px); }
+
+/* ---------- 리빌 (.ani → .inView) ---------- */
+.ani .containerTitle, .ani .containerSubTitle { opacity: 0; transform: translateY(24px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+.ani .containerSubTitle { transition-delay: .15s; }
+.ani.inView .containerTitle, .ani.inView .containerSubTitle { opacity: 1; transform: none; }
+.st-item { opacity: 0; transform: translateY(28px); transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(var(--delay, 0) * .14s); }
+.inView .st-item, .st-item.inView { opacity: 1; transform: none; }
+
+/* ---------- linkBtn (레퍼런스 문법: 텍스트+원형 아이콘) ---------- */
+.linkBtn { display: inline-flex; align-items: center; gap: 12px; font-size: 14px; letter-spacing: .02em; }
+.linkBtn .iconBox { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; border: 1px solid currentColor; transition: background .3s, transform .3s var(--ease); }
+.linkBtn .iconBox svg { transition: transform .3s var(--ease); }
+.linkBtn:hover .iconBox { transform: translateX(4px); }
+.linkBtn.white { color: #fff; }
+.linkBtn.black { color: var(--ink); }
+.linkBtn.white:hover .iconBox { background: rgba(255,255,255,.16); }
+.linkBtn.black:hover .iconBox { background: rgba(39,39,44,.08); }
+
+/* ---------- 헤더 ---------- */
+#header {
+  position: fixed; inset: 0 0 auto 0; z-index: 100;
+  transition: transform .3s ease, background .35s ease, box-shadow .35s ease;
+}
+#header .head { position: relative; }
+.gnb { display: flex; align-items: center; height: var(--header-h); width: min(96%, var(--wrap)); margin: 0 auto; gap: 40px; }
+.logo { font-family: var(--inter); font-weight: 800; font-size: 21px; letter-spacing: .14em; color: #fff; transition: color .3s; display: flex; align-items: center; gap: 8px; }
+.logo i { width: 10px; height: 10px; background: var(--accent); display: inline-block; border-radius: 2px; }
+.pcNav { margin-left: auto; }
+.depth1List { display: flex; }
+.depth1List > li > a {
+  display: flex; align-items: center; height: var(--header-h); padding: 0 26px;
+  font-size: 15px; font-weight: 500; color: #fff; transition: color .3s; font-family: var(--inter);
+}
+.allMenuBtn { margin-left: 8px; width: 44px; height: 44px; display: grid; place-items: center; gap: 0; }
+.allMenuBtn span { display: block; width: 22px; height: 2px; background: #fff; margin: 2.5px 0; transition: background .3s; }
+#header.solid, #header.scroll, #header.panelOpen { background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,.08); }
+#header.solid .logo, #header.scroll .logo, #header.panelOpen .logo,
+#header.solid .depth1List > li > a, #header.scroll .depth1List > li > a, #header.panelOpen .depth1List > li > a { color: var(--ink); }
+#header.solid .allMenuBtn span, #header.scroll .allMenuBtn span, #header.panelOpen .allMenuBtn span { background: var(--ink); }
+.depth1List > li > a:hover { color: var(--accent) !important; }
+#header.hidden { transform: translateY(-100%); }
+
+/* 서브 패널 (호버 메가 메뉴) */
+#subPanel { overflow: hidden; height: 0; transition: height .4s var(--ease); background: #fff; border-top: 1px solid #eee; }
+.subPanelInner { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 60px; width: min(96%, var(--wrap)); margin: 0 auto; padding: 44px 0 54px; }
+.subSloganTitle { font-family: var(--inter); font-size: 26px; font-weight: 600; color: var(--black); }
+.subSloganText { font-size: 15px; color: var(--gray-soft); margin-top: 12px; line-height: 1.8; max-width: 340px; }
+.subDepth2List li a { display: block; padding: 10px 14px; font-size: 16px; font-weight: 500; color: var(--ink); border-radius: 6px; transition: background .25s, color .25s; }
+.subDepth2List li a:hover, .subDepth2List li.active a { background: var(--bg-light); color: var(--accent); }
+.subDepth3List li a { display: block; padding: 8px 14px; font-size: 14px; color: var(--gray-soft); transition: color .25s; }
+.subDepth3List li a:hover { color: var(--accent); }
+
+/* 전체메뉴 오버레이 */
+.allMenu { position: fixed; inset: 0; z-index: 120; background: #101014; color: #fff; padding: 90px 0 60px; transform: translateY(-100%); transition: transform .55s var(--ease); overflow-y: auto; }
+.allMenu.active { transform: none; }
+.allMenu .closeBtn { position: absolute; top: 20px; right: max(2%, 24px); width: 44px; height: 44px; display: grid; place-items: center; }
+.allMenu .closeBtn span { position: absolute; width: 24px; height: 2px; background: #fff; }
+.allMenu .closeBtn span:first-child { transform: rotate(45deg); }
+.allMenu .closeBtn span:last-child { transform: rotate(-45deg); }
+.allMenuGrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px 40px; width: min(88%, var(--wrap)); margin: 0 auto; }
+.allMenuGrid .d1 > a { font-family: var(--inter); font-size: 20px; font-weight: 600; display: block; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,.18); margin-bottom: 14px; }
+.allMenuGrid .d2 a { display: block; padding: 7px 0; font-size: 14.5px; color: rgba(255,255,255,.66); transition: color .25s; }
+.allMenuGrid .d2 a:hover { color: #fff; }
+
+/* ---------- sec 공통 ---------- */
+.sec { position: relative; }
+
+/* ---------- sec1 히어로 (풀 비디오 + 라인업 타이틀) ---------- */
+.sec1 { height: 100svh; min-height: 560px; overflow: hidden; }
+.sec1 video, .sec1 .heroFallback { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.sec1::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(10, 12, 18, .30), rgba(10, 12, 18, .12) 40%, rgba(10, 12, 18, .38)); }
+.sec1 .innerWrap { position: relative; z-index: 2; height: 100%; display: flex; align-items: flex-end; padding-bottom: 11vh; }
+.sec1Title p { overflow: hidden; }
+.sec1Title span {
+  display: block; color: #fff; font-family: var(--inter);
+  font-size: clamp(38px, 4.9vw, 82px); font-weight: 700; line-height: 1.18; letter-spacing: -0.01em;
+  transform: translateY(110%); transition: transform .9s var(--ease); transition-delay: calc(var(--delay, 0) * .18s);
+}
+.sec1Title.inView span { transform: none; }
+.sec1 .heroSub { color: rgba(255,255,255,.78); font-size: clamp(14px, 1.1vw, 17px); margin-top: 26px; opacity: 0; transform: translateY(16px); transition: opacity .8s var(--ease) .6s, transform .8s var(--ease) .6s; }
+.sec1Title.inView ~ .heroSub, .sec1 .inView .heroSub { opacity: 1; transform: none; }
+.sec1 .scrollHint { position: absolute; z-index: 2; right: max(4%, 40px); bottom: 40px; color: rgba(255,255,255,.65); font-size: 10px; letter-spacing: .3em; writing-mode: vertical-rl; display: flex; align-items: center; gap: 10px; }
+.sec1 .scrollHint::after { content: ''; width: 1px; height: 52px; background: linear-gradient(rgba(255,255,255,.8), transparent); animation: hintDrop 2.2s var(--ease) infinite; }
+@keyframes hintDrop { 0% { transform: scaleY(0); transform-origin: top; } 55% { transform: scaleY(1); transform-origin: top; } 56% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+
+/* ---------- sec2 스테이트먼트 + 핀 스크럽 확장 ---------- */
+.sec2 { height: 280vh; }
+.sec2 .pinStage { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; }
+.sec2 .statement { width: min(88%, var(--wrap)); margin: 0 auto; }
+.sec2 .statement h2 { font-family: var(--inter); font-size: clamp(34px, 3.6vw, 60px); font-weight: 500; line-height: 1.25; color: var(--black); letter-spacing: -0.005em; }
+.sec2 .statement h2 em { font-style: normal; color: var(--accent); }
+.sec2 .mediaBox {
+  position: absolute; top: 50%; left: 94%; transform: translate(-100%, -50%);
+  width: 27vw; aspect-ratio: 16/10; border-radius: 18px; overflow: hidden; will-change: width, height, left, transform;
+}
+.sec2 .mediaBox video, .sec2 .mediaBox img { width: 100%; height: 100%; object-fit: cover; }
+.sec2 .mediaBox .mediaText {
+  position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end;
+  padding: clamp(24px, 5vw, 80px); background: linear-gradient(rgba(8, 10, 16, 0) 45%, rgba(8, 10, 16, .55));
+  opacity: 0; visibility: hidden; transition: opacity .3s;
+}
+.sec2 .mediaBox .mediaText.show { opacity: 1; visibility: visible; }
+.sec2 .mediaText h3 { color: #fff; font-family: var(--inter); font-size: clamp(26px, 2.9vw, 48px); font-weight: 600; line-height: 1.25; }
+.sec2 .mediaText p { color: rgba(255,255,255,.8); font-size: clamp(13px, 1vw, 16px); margin-top: 16px; max-width: 560px; }
+
+/* ---------- sec3 Industries (호버 카드 3) ---------- */
+.sec3 { padding: var(--sec-pad) 0; }
+.industryList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.industryList .listItem { cursor: pointer; }
+.industryList .thumbBox { overflow: hidden; border-radius: 14px; aspect-ratio: 4/3; }
+.industryList .thumbBox img { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
+.industryList .listItem:hover .thumbBox img { transform: scale(1.06); }
+.industryList .textArea { padding: 22px 6px 0; }
+.industryList .contentTitle { font-family: var(--inter); font-size: clamp(19px, 1.5vw, 24px); font-weight: 500; color: var(--black); display: flex; align-items: center; gap: 10px; }
+.industryList .contentTitle::after { content: '→'; font-size: .8em; opacity: 0; transform: translateX(-6px); transition: opacity .3s, transform .3s var(--ease); }
+.industryList .listItem:hover .contentTitle::after { opacity: 1; transform: none; }
+.industryList .contentText { font-size: clamp(14px, 1.05vw, 16.5px); color: var(--gray-soft); margin-top: 10px; line-height: 1.7; }
+
+/* ---------- sec4 Products (flex 확장 5열) ---------- */
+.sec4 { padding-top: var(--sec-pad); }
+.productsList { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); min-height: 560px; }
+.productsList .listItem { flex: 1; padding: 28px; position: relative; transition: flex .45s var(--ease); overflow: hidden; }
+.productsList .listItem + .listItem { border-left: 1px solid var(--line); }
+.productsList .listItem::before { content: ''; position: absolute; inset: 0; background: linear-gradient(160deg, #0E1524, #16264A 60%, #0B1B3E); opacity: 0; transition: opacity .45s; }
+.productsList .itemWrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.productsList .itemNumber { align-self: flex-start; font-family: var(--inter); font-size: 20px; font-weight: 600; color: var(--gray-faint); overflow: hidden; max-height: 30px; transition: max-height .4s, opacity .4s; }
+.productsList .contentTitle { font-family: var(--inter); font-size: clamp(19px, 1.6vw, 27px); font-weight: 500; color: var(--black); text-align: center; margin-top: 56px; min-height: 2.6em; transition: color .4s; }
+.productsList .thumbBox { width: min(78%, 240px); margin-top: 8px; }
+.productsList .thumbBox img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; filter: saturate(.92); transition: transform .5s var(--ease); }
+.productsList .textArea { overflow: hidden; max-height: 0; opacity: 0; text-align: center; transition: max-height .45s var(--ease) .1s, opacity .4s .18s; }
+.productsList .textArea .contentText { margin-top: 34px; color: #fff; font-size: 15px; line-height: 1.7; }
+.productsList .textArea .linkBox { margin-top: 28px; display: flex; justify-content: center; }
+.productsList .listItem:hover, .productsList .listItem.open { flex: 1.45; }
+.productsList .listItem:hover::before, .productsList .listItem.open::before { opacity: 1; }
+.productsList .listItem:hover .itemNumber, .productsList .listItem.open .itemNumber { max-height: 0; opacity: 0; }
+.productsList .listItem:hover .contentTitle, .productsList .listItem.open .contentTitle { color: #fff; }
+.productsList .listItem:hover .textArea, .productsList .listItem.open .textArea { max-height: 260px; opacity: 1; }
+.productsList .listItem:hover .thumbBox img { transform: translateY(-4px); }
+
+/* ---------- sec5 Services (호버 배경 스왑) ---------- */
+.sec5 { margin-top: var(--sec-pad); position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
+.sec5 .servicesBg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transform: scale(1.04); transition: opacity .7s var(--ease), transform 1.2s var(--ease); }
+.sec5 .servicesBg.active { opacity: 1; transform: none; }
+.sec5::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 9, 16, .72), rgba(6, 9, 16, .28) 60%, rgba(6, 9, 16, .12)); }
+.sec5 .innerWrap { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1.3fr; gap: 60px; align-items: center; padding: 90px 0; }
+.sec5 .titleArea { margin: 0; }
+.sec5 .containerTitle, .sec5 .containerSubTitle { color: #fff; }
+.servicesList .listItem { border-bottom: 1px solid rgba(255,255,255,.22); padding: 30px 6px; cursor: pointer; transition: padding .4s var(--ease); }
+.servicesList .listItem:first-child { border-top: 1px solid rgba(255,255,255,.22); }
+.servicesList .contentTitle { color: rgba(255,255,255,.85); font-family: var(--inter); font-size: clamp(20px, 1.7vw, 27px); font-weight: 500; transition: color .3s; display: flex; justify-content: space-between; align-items: center; }
+.servicesList .contentTitle i { font-style: normal; font-size: .75em; opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s; }
+.servicesList .hoverContent { max-height: 0; overflow: hidden; opacity: 0; transition: max-height .45s var(--ease), opacity .4s .1s; }
+.servicesList .hoverContent p { color: rgba(255,255,255,.78); font-size: 15px; line-height: 1.8; padding-top: 14px; max-width: 520px; }
+.servicesList .hoverContent .linkBox { padding: 18px 0 6px; }
+.servicesList .listItem.active .contentTitle { color: #fff; }
+.servicesList .listItem.active .contentTitle i { opacity: 1; transform: none; }
+.servicesList .listItem.active .hoverContent { max-height: 220px; opacity: 1; }
+
+/* ---------- sec6 R&D (좌 영상 · 우 리스트) ---------- */
+.sec6 { padding: var(--sec-pad) 0; }
+.sec6 .containerAll { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(40px, 5vw, 90px); align-items: center; }
+.sec6 .imgBox { border-radius: 16px; overflow: hidden; aspect-ratio: 4/4.6; }
+.sec6 .imgBox video, .sec6 .imgBox img { width: 100%; height: 100%; object-fit: cover; }
+.rdList .listItem { display: flex; gap: 20px; align-items: flex-start; padding: 26px 0; border-bottom: 1px solid #E5E5E5; }
+.rdList .listItem:first-child { border-top: 1px solid #E5E5E5; }
+.rdList .icon { flex: 0 0 auto; width: 46px; height: 46px; border-radius: 12px; background: var(--bg-light); display: grid; place-items: center; color: var(--accent); }
+.rdList .contentTitle { font-size: 18px; font-weight: 600; color: var(--black); }
+.rdList .contentText { font-size: 15px; color: var(--gray-soft); margin-top: 4px; }
+.rdList .listItem { cursor: pointer; transition: padding-left .35s var(--ease); }
+.rdList .listItem:hover { padding-left: 10px; }
+
+/* ---------- sec7 Merit (라이트 그레이 4카드) ---------- */
+.sec7 { background: var(--bg-light); padding: var(--sec-pad) 0; }
+.sec7 .containerAll { display: grid; grid-template-columns: 1fr 2.2fr; gap: clamp(40px, 5vw, 80px); align-items: start; }
+.meritGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.meritGrid .card { background: #fff; border-radius: 14px; padding: 34px 30px 40px; min-height: 230px; display: flex; flex-direction: column; transition: transform .4s var(--ease), box-shadow .4s var(--ease); }
+.meritGrid .card:hover { transform: translateY(-6px); box-shadow: 0 24px 44px -24px rgba(15, 25, 50, .18); }
+.meritGrid .contentTitle { font-size: 19px; font-weight: 600; color: var(--black); }
+.meritGrid .contentText { font-size: 14.5px; color: var(--gray-soft); line-height: 1.75; margin-top: 12px; }
+.meritGrid .tag { margin-top: auto; padding-top: 22px; font-family: var(--inter); font-size: 13px; font-weight: 600; color: var(--gray-faint); letter-spacing: .06em; text-transform: uppercase; }
+.meritGrid .card:hover .tag { color: var(--accent); }
+
+/* ---------- sec8 Careers / Catalog 배너 ---------- */
+.sec8 { padding: var(--sec-pad) 0; }
+.sec8 .bannerGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.sec8 .banner { position: relative; border-radius: 16px; overflow: hidden; min-height: 320px; display: flex; align-items: flex-end; padding: 40px; cursor: pointer; }
+.sec8 .banner .bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 1s var(--ease); }
+.sec8 .banner:hover .bg { transform: scale(1.05); }
+.sec8 .banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(8, 10, 16, .05) 30%, rgba(8, 10, 16, .62)); }
+.sec8 .banner .inner { position: relative; z-index: 2; color: #fff; }
+.sec8 .banner .bTitle { font-family: var(--inter); font-size: 24px; font-weight: 600; }
+.sec8 .banner .bText { font-size: 15px; color: rgba(255,255,255,.82); margin: 10px 0 22px; line-height: 1.7; }
+
+/* ---------- footer ---------- */
+#footer { background: #101014; color: rgba(255,255,255,.62); padding: 60px 0 46px; font-size: 13.5px; }
+#footer .fGrid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: flex-start; }
+#footer .fLogo { font-family: var(--inter); font-weight: 800; font-size: 19px; letter-spacing: .14em; color: #fff; display: flex; align-items: center; gap: 8px; }
+#footer .fLogo i { width: 9px; height: 9px; background: var(--accent); display: inline-block; border-radius: 2px; }
+#footer .fInfo p { margin-top: 6px; line-height: 1.8; }
+#footer .fInfo b { color: rgba(255,255,255,.85); font-weight: 500; margin-right: 8px; }
+#footer .fNote { width: 100%; border-top: 1px solid rgba(255,255,255,.14); margin-top: 30px; padding-top: 22px; font-size: 12px; color: rgba(255,255,255,.4); }
+
+/* ---------- 토스트 ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 36px; z-index: 200; transform: translate(-50%, 90px);
+  background: var(--ink); color: #fff; font-size: 13.5px; letter-spacing: .02em;
+  padding: 14px 26px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: transform .5s var(--ease), opacity .5s;
+}
+.toast.on { transform: translate(-50%, 0); opacity: 1; }
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 1080px) {
+  .subPanelInner { grid-template-columns: 1fr 1fr; }
+  .subSlogan { display: none; }
+  .industryList { grid-template-columns: 1fr; }
+  .industryList .thumbBox { aspect-ratio: 16/9; }
+  .productsList { flex-direction: column; min-height: 0; }
+  .productsList .listItem + .listItem { border-left: 0; border-top: 1px solid var(--line); }
+  .productsList .contentTitle { margin-top: 12px; min-height: 0; }
+  .productsList .listItem { padding: 22px; }
+  .productsList .itemWrap { flex-direction: column; }
+  .sec5 .innerWrap { grid-template-columns: 1fr; gap: 30px; }
+  .sec6 .containerAll { grid-template-columns: 1fr; }
+  .sec6 .imgBox { aspect-ratio: 16/10; }
+  .sec7 .containerAll { grid-template-columns: 1fr; }
+  .allMenuGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 812px) {
+  .pcNav { display: none; }
+  .pcbr { display: inline; }
+  .sec2 { height: 220vh; }
+  .sec2 .mediaBox { top: auto; bottom: 6vh; left: 50%; transform: translateX(-50%); width: 94%; aspect-ratio: 16/10; }
+  .sec2 .statement { padding-bottom: 34vh; }
+  .meritGrid { grid-template-columns: 1fr; }
+  .sec8 .bannerGrid { grid-template-columns: 1fr; }
+  .sec8 .banner { min-height: 240px; padding: 28px; }
+  .productsList .textArea { transition-delay: 0s; }
+  #footer .fGrid { flex-direction: column; }
+  .subPanelInner { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  .sec1Title span { transform: none; }
+  .st-item, .ani .containerTitle, .ani .containerSubTitle { opacity: 1 !important; transform: none !important; }
+}
