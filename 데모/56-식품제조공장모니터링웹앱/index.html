@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko" data-fs="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ONDO 온도 — 스마트 HACCP 모니터링 (데모)</title>
+<meta name="description" content="식품 제조공장 스마트 HACCP 모니터링 SaaS 리뉴얼 데모 — 다크+보라·큰 글씨·신호등(색+아이콘+텍스트)·최소 조작. 모든 데이터는 가상.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B5CF6'/%3E%3Cpath d='M16 6a7 7 0 0 1 7 7c0 5-7 13-7 13S9 18 9 13a7 7 0 0 1 7-7z' fill='none' stroke='%23fff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='13' r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<!-- 푸시 배너 (이탈 시뮬 시 출력) -->
+<div class="pushBanner" id="pushBanner">
+  <div class="appIc">O</div>
+  <div style="flex:1;min-width:0">
+    <b id="pushTitle"></b>
+    <p id="pushBody"></p>
+  </div>
+  <span class="when">now</span>
+</div>
+
+<div class="layout">
+  <!-- ============ 사이드 내비 (최소 조작: 1뎁스 5개) ============ -->
+  <aside class="side">
+    <div class="brand"><span class="mark">O</span><b id="brandName">온도</b></div>
+    <nav id="nav">
+      <button data-v="dash" class="on">
+        <svg width="21" height="21" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.1" y="2.5" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.1" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.1" y="11.1" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span data-i="dashboard"></span>
+      </button>
+      <button data-v="insp">
+        <svg width="21" height="21" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="2.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span data-i="inspect"></span>
+      </button>
+      <button data-v="rep">
+        <svg width="21" height="21" viewBox="0 0 20 20" fill="none"><path d="M4 17V9M10 17V3M16 17v-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span data-i="report"></span>
+      </button>
+      <button data-v="set">
+        <svg width="21" height="21" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="2.6" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.8v2M10 15.2v2M2.8 10h2M15.2 10h2M4.9 4.9l1.4 1.4M13.7 13.7l1.4 1.4M15.1 4.9l-1.4 1.4M6.3 13.7l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span data-i="settings"></span>
+      </button>
+    </nav>
+    <div class="foot">
+      <span data-i="demo_note"></span><br>
+      <a href="mobile.html">📱 모바일 앱 화면 보기 →</a>
+    </div>
+  </aside>
+
+  <!-- ============ 메인 ============ -->
+  <main class="main">
+    <div class="topbar">
+      <span class="fac" data-i="factory"></span>
+      <span class="live"><i></i>LIVE</span>
+      <div class="sp">
+        <button class="chipBtn danger" id="simBtn">⚡ <span data-i="simulate"></span></button>
+        <div class="segGroup" id="langSeg">
+          <button data-lang="ko">한국어</button><button data-lang="en">EN</button><button data-lang="vi">Tiếng Việt</button>
+        </div>
+        <div class="fsGroup" id="fsSeg">
+          <button data-fs="md">A</button><button data-fs="lg">A+</button><button data-fs="xl">A++</button>
+        </div>
+        <button class="chipBtn bell" id="bellBtn" aria-label="알림">
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M10 2.8a5 5 0 0 1 5 5v3l1.6 2.8H3.4L5 10.8v-3a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 16.4a1.9 1.9 0 0 0 3.6 0" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="badge" id="bellBadge" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== 대시보드 ===== -->
+    <section class="view on" id="v-dash">
+      <div class="kpis" id="kpis"></div>
+      <div class="dashGrid">
+        <div>
+          <div class="equipGrid" id="equipGrid"></div>
+          <div class="panel" style="margin-top:16px">
+            <div class="ph"><h3 data-i="map_title"></h3></div>
+            <div class="floorWrap"><div class="floor" id="floor"></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph"><h3 data-i="alerts"></h3></div>
+          <div class="feed" id="feed"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 설비 상세 ===== -->
+    <section class="view" id="v-det">
+      <div class="detHead">
+        <button class="back" id="detBack">← <span data-i="dashboard"></span></button>
+        <h2 class="vTitle" id="detName" style="margin:0"></h2>
+        <span id="detSt"></span>
+        <div class="bigTemp" style="margin-left:auto"><b id="detTemp"></b><small>℃</small></div>
+      </div>
+      <div class="detGrid">
+        <div>
+          <div class="panel">
+            <div class="ph"><h3>24h</h3><div class="sp"><span id="detLim" style="font-size:13.5px;color:var(--ink-faint)"></span></div></div>
+            <div class="chartBox"><canvas id="detChart"></canvas></div>
+            <div class="legend" id="detLegend"></div>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <div class="ph"><h3 data-i="chain"></h3></div>
+            <div class="chain" id="chainBox"></div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="ph"><h3 data-i="ccp_info"></h3></div>
+            <div class="infoRows" id="ccpInfo"></div>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <div class="ph"><h3 data-i="history"></h3></div>
+            <div class="devList" id="devList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 점검 ===== -->
+    <section class="view" id="v-insp">
+      <h2 class="vTitle" data-i="inspect_title"></h2>
+      <div class="panel">
+        <div class="inspList" id="inspList"></div>
+        <div class="inspFoot">
+          <div class="inspProg"><i id="inspBar"></i></div>
+          <span id="inspCount" style="font-family:var(--num);font-weight:700;font-size:14.5px"></span>
+          <button class="chipBtn primary" id="inspSave" disabled><span data-i="save"></span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 리포트 ===== -->
+    <section class="view" id="v-rep">
+      <h2 class="vTitle" data-i="report_title"></h2>
+      <div class="repHead">
+        <button class="chipBtn primary" id="repPdf">🖨 <span data-i="report_dl"></span></button>
+        <button class="chipBtn" id="repCsv">⬇ <span data-i="report_csv"></span></button>
+      </div>
+      <div class="repSheet" id="repSheet"></div>
+    </section>
+
+    <!-- ===== 설정 ===== -->
+    <section class="view" id="v-set">
+      <h2 class="vTitle" data-i="settings"></h2>
+      <div class="setGrid">
+        <div class="panel">
+          <div class="ph"><h3>접근성 · Accessibility</h3></div>
+          <div class="setRows">
+            <div class="setRow">
+              <div class="lab"><b data-i="lang"></b><p>고령자·외국인 근로자 대응 — 화면 전체 즉시 전환</p></div>
+              <div class="segGroup" id="langSeg2"><button data-lang="ko">한국어</button><button data-lang="en">English</button><button data-lang="vi">Tiếng Việt</button></div>
+            </div>
+            <div class="setRow">
+              <div class="lab"><b data-i="font_size"></b><p>큰 글씨 3단계 — 공고 요구 「큰 글씨 가독성」의 실제 구현</p></div>
+              <div class="fsGroup" id="fsSeg2"><button data-fs="md">A</button><button data-fs="lg">A+</button><button data-fs="xl">A++</button></div>
+            </div>
+            <div class="setRow">
+              <div class="lab"><b data-i="cvd"></b><p data-i="cvd_desc"></p></div>
+              <button class="tgl" id="cvdTgl" aria-label="색각 보조 모드"></button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="ph"><h3 data-i="noti"></h3></div>
+            <div class="setRows" id="notiRows"></div>
+          </div>
+          <div class="panel" style="margin-top:16px">
+            <div class="ph"><h3 data-i="users"></h3></div>
+            <table class="roleTable" id="roleTable"></table>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- 복귀 확인 모달 (이탈 → 개선조치 입력 = CCP 개선조치 기록) -->
+<div class="modalBk" id="mAct"><div class="modal">
+  <h3 data-i="act_note"></h3>
+  <p class="desc" id="mActDesc"></p>
+  <textarea id="mActText"></textarea>
+  <div class="btnRow">
+    <button class="chipBtn" id="mActCancel"><span data-i="cancel"></span></button>
+    <button class="chipBtn primary" id="mActSave"><span data-i="act_confirm"></span></button>
+  </div>
+</div></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

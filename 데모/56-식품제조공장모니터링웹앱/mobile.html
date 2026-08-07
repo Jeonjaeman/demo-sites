@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ko" data-fs="md">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ONDO 모바일 앱 — 스마트 HACCP (데모)</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%238B5CF6'/%3E%3Cpath d='M16 6a7 7 0 0 1 7 7c0 5-7 13-7 13S9 18 9 13a7 7 0 0 1 7-7z' fill='none' stroke='%23fff' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='13' r='2.6' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* ===== 모바일 앱 미리보기 레이아웃 (PC: 폰 프레임+가이드 / 모바일: 풀스크린) ===== */
+body { min-height: 100vh; }
+.mWrap { display: grid; grid-template-columns: 1fr 420px; min-height: 100vh; }
+.guide { padding: 48px clamp(24px, 4vw, 64px); }
+.guide .back { color: var(--ink-faint); font-weight: 600; display: inline-flex; gap: 8px; margin-bottom: 30px; }
+.guide .back:hover { color: var(--ink); }
+.guide h1 { font-size: clamp(26px, 2.6vw, 36px); font-weight: 800; letter-spacing: -.02em; line-height: 1.3; }
+.guide h1 em { font-style: normal; color: var(--accent); }
+.guide .sub { color: var(--ink-soft); margin: 14px 0 30px; max-width: 460px; line-height: 1.8; }
+.gList { display: flex; flex-direction: column; gap: 10px; max-width: 460px; }
+.gItem { display: flex; gap: 14px; padding: 16px 18px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; cursor: pointer; transition: border-color .2s, transform .2s; }
+.gItem:hover { border-color: var(--ink-faint); transform: translateX(4px); }
+.gItem.on { border-color: var(--accent); background: rgba(139, 92, 246, .08); }
+.gItem .n { font-family: var(--num); font-weight: 800; color: var(--accent); }
+.gItem b { display: block; font-size: 15.5px; }
+.gItem p { font-size: 13.5px; color: var(--ink-faint); margin-top: 2px; line-height: 1.6; }
+.phoneCol { display: flex; align-items: center; justify-content: center; padding: 40px 20px; position: sticky; top: 0; height: 100vh; }
+.phone {
+  width: 375px; height: 780px; background: #000; border-radius: 44px; padding: 10px;
+  box-shadow: 0 40px 90px -30px rgba(0,0,0,.9), 0 0 0 1.5px #2a2c33;
+  position: relative;
+}
+.phone .notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 118px; height: 26px; background: #000; border-radius: 0 0 16px 16px; z-index: 5; }
+.screen { width: 100%; height: 100%; border-radius: 35px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; position: relative; }
+.statusBar { display: flex; justify-content: space-between; padding: 12px 22px 6px; font-family: var(--num); font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+.appBody { flex: 1; overflow-y: auto; padding: 8px 16px 90px; scrollbar-width: none; }
+.appBody::-webkit-scrollbar { display: none; }
+.appTab { position: absolute; inset: auto 0 0 0; display: flex; background: rgba(15, 16, 17, .96); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 8px 6px calc(10px + 6px); z-index: 4; }
+.appTab button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--ink-faint); padding: 5px 2px; min-height: 48px; }
+.appTab button.on { color: var(--accent); }
+/* 앱 화면 */
+.appTitle { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+.appTitle .mark { width: 30px; height: 30px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); display: grid; place-items: center; font-family: var(--num); font-weight: 800; font-size: 15px; color: #fff; }
+.appTitle b { font-size: 18px; }
+.appTitle .sp { margin-left: auto; display: flex; gap: 6px; }
+.appTitle .langBtn { font-size: 12.5px; font-weight: 700; border: 1px solid var(--line); border-radius: 9px; padding: 0 12px; min-height: 40px; color: var(--ink-soft); }
+.appTitle .langBtn.on { border-color: var(--accent); color: #C4B0FA; }
+.sumRow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.sumTile { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
+.sumTile b { display: block; font-family: var(--num); font-size: 26px; font-weight: 800; }
+.sumTile span { font-size: 12px; color: var(--ink-faint); font-weight: 600; }
+.sumTile.ok b { color: var(--ok); } .sumTile.warn b { color: var(--warn); } .sumTile.bad b { color: var(--bad); }
+.mList { display: flex; flex-direction: column; gap: 9px; }
+.mCard { background: var(--card); border: 1px solid var(--line); border-radius: 13px; padding: 14px 15px; display: flex; align-items: center; gap: 12px; }
+.mCard.bad { border-color: var(--bad); animation: alertPulse 1.4s ease infinite; }
+.mCard .ic { width: 42px; height: 42px; border-radius: 11px; display: grid; place-items: center; flex: 0 0 auto; }
+.mCard .ic.ok { background: var(--ok-bg); color: var(--ok); } .mCard .ic.warn { background: var(--warn-bg); color: var(--warn); } .mCard .ic.bad { background: var(--bad-bg); color: var(--bad); }
+.mCard .info { flex: 1; min-width: 0; }
+.mCard .info b { display: block; font-size: 14.5px; }
+.mCard .info span { font-size: 12px; color: var(--ink-faint); }
+.mCard .val { font-family: var(--num); font-size: 21px; font-weight: 800; text-align: right; }
+.mCard .val small { display: block; font-size: 10.5px; font-weight: 600; letter-spacing: .04em; }
+.mCard .val.ok { color: var(--ok); } .mCard .val.warn { color: var(--warn); } .mCard .val.bad { color: var(--bad); }
+/* 알림 */
+.pushCard { background: var(--card); border: 1px solid var(--line); border-radius: 13px; padding: 13px 14px; display: flex; gap: 11px; margin-bottom: 9px; }
+.pushCard.bad { border-color: var(--bad); }
+.pushCard .ai { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); display: grid; place-items: center; font-family: var(--num); font-weight: 800; font-size: 14px; color: #fff; flex: 0 0 auto; }
+.pushCard b { font-size: 13.5px; display: block; }
+.pushCard p { font-size: 12.5px; color: var(--ink-soft); line-height: 1.55; }
+.pushCard .tt { margin-left: auto; font-size: 11px; color: var(--ink-faint); flex: 0 0 auto; }
+/* 점검 */
+.mInsp .inspRow { padding: 12px 0; gap: 8px; }
+.mInsp .q { font-size: 14px; min-width: 0; width: 100%; }
+.mInsp .triBtns { width: 100%; }
+.mInsp .triBtns button { flex: 1; justify-content: center; padding: 9px 6px; font-size: 12.5px; }
+/* 리포트 */
+.pdfCard { background: var(--card); border: 1px solid var(--line); border-radius: 13px; padding: 14px 15px; display: flex; gap: 12px; align-items: center; margin-bottom: 9px; }
+.pdfCard .pic { width: 40px; height: 48px; border-radius: 7px; background: #fff; color: #c0262d; display: grid; place-items: center; font-family: var(--num); font-weight: 800; font-size: 11px; flex: 0 0 auto; }
+.pdfCard b { font-size: 13.5px; display: block; }
+.pdfCard span { font-size: 12px; color: var(--ink-faint); }
+.pdfCard .share { margin-left: auto; color: var(--accent); flex: 0 0 auto; padding: 8px; }
+/* 공유 시트 */
+.sheet { position: absolute; inset: auto 0 0 0; z-index: 10; background: var(--card-hi); border-radius: 22px 22px 35px 35px; padding: 18px 18px calc(18px + 8px); transform: translateY(105%); transition: transform .45s var(--ease); border-top: 1px solid var(--line); }
+.sheet.on { transform: none; }
+.sheet .grip { width: 40px; height: 4px; border-radius: 3px; background: var(--line); margin: 0 auto 14px; }
+.sheet h4 { font-size: 15px; margin-bottom: 12px; }
+.sheet .apps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.sheet .apps button { display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-soft); padding: 6px 2px; }
+.sheet .apps i { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; font-size: 19px; font-style: normal; background: var(--bg-soft); border: 1px solid var(--line); }
+/* 인앱 푸시 배너 */
+.appPush { position: absolute; top: 46px; left: 10px; right: 10px; z-index: 12; background: rgba(28, 29, 34, .97); border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; display: flex; gap: 10px; transform: translateY(-160%); transition: transform .5s var(--ease); box-shadow: 0 16px 40px -14px rgba(0,0,0,.8); }
+.appPush.on { transform: none; }
+.appPush .ai { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-deep)); display: grid; place-items: center; font-family: var(--num); font-weight: 800; font-size: 13px; color: #fff; flex: 0 0 auto; }
+.appPush b { font-size: 12.5px; display: block; }
+.appPush p { font-size: 11.5px; color: var(--ink-soft); line-height: 1.45; }
+/* 반응형: 실제 모바일에선 프레임 없이 풀스크린 */
+@media (max-width: 900px) {
+  .mWrap { grid-template-columns: 1fr; }
+  .guide { display: none; }
+  .phoneCol { padding: 0; height: auto; position: static; }
+  .phone { width: 100%; height: 100svh; border-radius: 0; padding: 0; box-shadow: none; }
+  .phone .notch { display: none; }
+  .screen { border-radius: 0; }
+}
+</style>
+</head>
+<body>
+<div class="mWrap">
+  <!-- ===== 좌: 가이드 (PC) ===== -->
+  <div class="guide">
+    <a class="back" href="index.html">← 웹 대시보드로</a>
+    <h1><em>ONDO</em> 모바일 앱<br>iOS · Android (데모)</h1>
+    <p class="sub">공고 요구 4가지를 화면으로 구현했습니다 — 실시간 온도 이탈 푸시 알림, 현장도 기반 모바일 최적화 모니터링(Datadog 앱 참고), 신호등 점검(SafetyCulture 앱 참고), 식약처 리포트 PDF 조회·공유. 오른쪽 폰에서 직접 조작해 보세요.</p>
+    <div class="gList" id="gList">
+      <div class="gItem on" data-tab="mon"><span class="n">01</span><div><b>실시간 모니터링</b><p>설비 8대 상태 타일 — 색+아이콘+텍스트 병행 신호등, 5초 라이브 갱신</p></div></div>
+      <div class="gItem" data-tab="alert"><span class="n">02</span><div><b>푸시 알림</b><p>「이탈 발생」 버튼 → OS 푸시 배너 + 알림함 적재 → 탭하면 해당 설비로</p></div></div>
+      <div class="gItem" data-tab="insp"><span class="n">03</span><div><b>신호등 점검</b><p>SafetyCulture식 3버튼 점검 — 전 항목 응답 시 저장 활성화</p></div></div>
+      <div class="gItem" data-tab="pdf"><span class="n">04</span><div><b>PDF 리포트</b><p>식약처 제출용 일일 기록부 — 공유 시트로 외부 전송</p></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 우: 폰 프레임 ===== -->
+  <div class="phoneCol">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <div class="appPush" id="appPush">
+          <div class="ai">O</div>
+          <div style="flex:1;min-width:0"><b id="apTitle"></b><p id="apBody"></p></div>
+        </div>
+        <div class="statusBar"><span>15:02</span><span>5G ▮▮▮</span></div>
+        <div class="appBody" id="appBody"></div>
+        <div class="sheet" id="shareSheet">
+          <div class="grip"></div>
+          <h4>공유 — CCP기록부_0807.pdf</h4>
+          <div class="apps">
+            <button><i>✉️</i>메일</button><button><i>💬</i>메신저</button><button><i>📁</i>드라이브</button><button><i>🖨</i>인쇄</button>
+          </div>
+        </div>
+        <nav class="appTab" id="appTab">
+          <button data-tab="mon" class="on">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2.5" y="2.5" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.1" y="2.5" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="2.5" y="11.1" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/><rect x="11.1" y="11.1" width="6.4" height="6.4" rx="1.6" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span>모니터링</span></button>
+          <button data-tab="alert">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2.8a5 5 0 0 1 5 5v3l1.6 2.8H3.4L5 10.8v-3a5 5 0 0 1 5-5z" stroke="currentColor" stroke-width="1.5"/><path d="M8.2 16.4a1.9 1.9 0 0 0 3.6 0" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span>알림</span></button>
+          <button data-tab="insp">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3.5" y="2.5" width="13" height="15" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M7 7.5h6M7 10.5h6M7 13.5h3.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            <span>점검</span></button>
+          <button data-tab="pdf">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 2.5h7l3.5 3.5v11.5h-10.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 2.5V6h3.5" stroke="currentColor" stroke-width="1.5"/></svg>
+            <span>리포트</span></button>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script>
+(() => {
+  const D = window.ONDO;
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => [...(r || document).querySelectorAll(s)];
+  let LANG = localStorage.getItem('ondo_lang') || 'ko';
+  const t = k => (D.I18N[LANG] || D.I18N.ko)[k] || k;
+  const eqName = eq => eq[LANG] || eq.ko;
+  const zName = z => D.ZONES[z][LANG] || D.ZONES[z].ko;
+
+  const IC = {
+    ok: '<svg width="17" height="17" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.6" stroke="currentColor" stroke-width="1.6"/><path d="M5.2 8.2l2 2 3.6-4" stroke="currentColor" stroke-width="1.6"/></svg>',
+    warn: '<svg width="17" height="17" viewBox="0 0 16 16" fill="none"><path d="M8 2 15 14H1L8 2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6.6v3M8 11.6v.6" stroke="currentColor" stroke-width="1.6"/></svg>',
+    bad: '<svg width="17" height="17" viewBox="0 0 16 16" fill="none"><rect x="2.2" y="2.2" width="11.6" height="11.6" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M5.6 5.6l4.8 4.8M10.4 5.6l-4.8 4.8" stroke="currentColor" stroke-width="1.6"/></svg>'
+  };
+
+  const series = {}; D.EQUIP.forEach(eq => series[eq.id] = D.seriesFor(eq));
+  let SIM = false;
+  const nowTemp = eq => SIM && eq.id === 'e5' ? +(eq.hi + 1.8).toFixed(1) : series[eq.id][series[eq.id].length - 1];
+  const stateOf = eq => D.judge(eq, nowTemp(eq));
+  const pushes = [];
+  let inspState = {};
+
+  const body = $('#appBody');
+  let TAB = 'mon';
+
+  /* ---------- 01 모니터링 (Datadog식 상태 타일) ---------- */
+  const vMon = () => {
+    const states = D.EQUIP.map(stateOf);
+    const n = st => states.filter(s => s === st).length;
+    return `
+      <div class="appTitle"><span class="mark">O</span><b>${t('brand')}</b>
+        <div class="sp">${['ko','en','vi'].map(l => `<button class="langBtn ${l === LANG ? 'on' : ''}" data-lang="${l}">${l === 'ko' ? '한' : l.toUpperCase()}</button>`).join('')}</div>
+      </div>
+      <div class="sumRow">
+        <div class="sumTile ok"><b>${n('ok')}</b><span>${t('st_ok')}</span></div>
+        <div class="sumTile warn"><b>${n('warn')}</b><span>${t('st_warn')}</span></div>
+        <div class="sumTile bad"><b>${n('bad')}</b><span>${t('st_bad')}</span></div>
+      </div>
+      <button class="chipBtn danger" id="mSim" style="width:100%;justify-content:center;margin-bottom:12px">${SIM ? '✓ ' + t('simulating') : '⚡ ' + t('simulate')}</button>
+      <div class="mList">${D.EQUIP.map(eq => { const st = stateOf(eq);
+        return `<div class="mCard ${st}">
+          <div class="ic ${st}">${IC[st]}</div>
+          <div class="info"><b>${eqName(eq)}</b><span>${zName(eq.zone)} · ${eq.ccp}</span></div>
+          <div class="val ${st}">${nowTemp(eq).toFixed(1)}℃<small>${t('st_' + st)}</small></div>
+        </div>`; }).join('')}</div>`;
+  };
+
+  /* ---------- 02 알림 ---------- */
+  const vAlert = () => `
+    <div class="appTitle"><b>${t('alerts')}</b></div>
+    ${pushes.length === 0 ? `<p style="color:var(--ink-faint);font-size:13.5px;text-align:center;padding:40px 10px">${t('all_ok')}<br><span style="font-size:12px">01 화면의 「${t('simulate')}」 버튼을 눌러보세요</span></p>` : ''}
+    ${pushes.map(p => `<div class="pushCard ${p.type}"><div class="ai">O</div>
+      <div style="flex:1;min-width:0"><b>${p.title}</b><p>${p.body}</p></div><span class="tt">${p.time}</span></div>`).join('')}
+    ${D.ALERTS.map(a => `<div class="pushCard"><div class="ai">O</div>
+      <div style="flex:1;min-width:0"><b>${t('brand')}</b><p>${a[LANG] || a.ko}</p></div><span class="tt">${a.time}</span></div>`).join('')}`;
+
+  /* ---------- 03 점검 (SafetyCulture식 신호등) ---------- */
+  const vInsp = () => {
+    const done = Object.keys(inspState).length, total = D.INSPECTION.length;
+    return `
+      <div class="appTitle"><b>${t('inspect_title')}</b></div>
+      <div class="mInsp">${D.INSPECTION.map((q, i) => `
+        <div class="inspRow" style="border-bottom:1px solid var(--line)">
+          <span class="q">${i + 1}. ${q[LANG] || q.ko}</span>
+          <div class="triBtns" data-q="${i}">
+            <button class="ok ${inspState[i] === 'ok' ? 'sel' : ''}">${IC.ok}<span>${t('st_ok')}</span></button>
+            <button class="warn ${inspState[i] === 'warn' ? 'sel' : ''}">${IC.warn}<span>${t('st_warn')}</span></button>
+            <button class="bad ${inspState[i] === 'bad' ? 'sel' : ''}">${IC.bad}<span>${t('st_bad')}</span></button>
+          </div>
+        </div>`).join('')}</div>
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 2px">
+        <div class="inspProg" style="flex:1"><i style="width:${done / total * 100}%"></i></div>
+        <span style="font-family:var(--num);font-weight:700;font-size:13.5px">${done}/${total}</span>
+      </div>
+      <button class="chipBtn primary" id="mInspSave" style="width:100%;justify-content:center" ${done < total ? 'disabled' : ''}>${t('save')}</button>`;
+  };
+
+  /* ---------- 04 리포트 ---------- */
+  const vPdf = () => `
+    <div class="appTitle"><b>${t('report')}</b></div>
+    ${['08-07', '08-06', '08-05', '08-04'].map((d, i) => `
+      <div class="pdfCard"><div class="pic">PDF</div>
+        <div style="flex:1;min-width:0"><b>CCP 기록부 2026-${d}</b><span>${i === 0 ? t('chain_ok') : 'MFDS format · 8 sensors'}</span></div>
+        <button class="share" data-share="1" aria-label="공유">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 12V3M6.5 6L10 2.6 13.5 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10v6.5h12V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>`).join('')}`;
+
+  /* ---------- 렌더·이벤트 ---------- */
+  const render = () => {
+    body.innerHTML = TAB === 'mon' ? vMon() : TAB === 'alert' ? vAlert() : TAB === 'insp' ? vInsp() : vPdf();
+    $$('#appTab button').forEach(b => b.classList.toggle('on', b.dataset.tab === TAB));
+    $$('.gItem').forEach(g => g.classList.toggle('on', g.dataset.tab === TAB));
+  };
+  $('#appTab').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { TAB = b.dataset.tab; render(); } });
+  $('#gList').addEventListener('click', e => { const g = e.target.closest('.gItem'); if (g) { TAB = g.dataset.tab; render(); } });
+
+  body.addEventListener('click', e => {
+    const lang = e.target.closest('[data-lang]');
+    if (lang) { LANG = lang.dataset.lang; localStorage.setItem('ondo_lang', LANG); render(); return; }
+    const sim = e.target.closest('#mSim');
+    if (sim && !SIM) {
+      SIM = true;
+      const eq = D.EQUIP.find(x => x.id === 'e5');
+      pushes.unshift({ type: 'bad', time: '15:02', title: `${t('st_bad')} — ${eqName(eq)}`,
+        body: `${nowTemp(eq)}℃ · CL ${eq.lo}~${eq.hi}℃ · ${t('act_note')}` });
+      $('#apTitle').textContent = `${t('st_bad')} — ${eqName(eq)}`;
+      $('#apBody').textContent = `${nowTemp(eq)}℃ · CL ${eq.lo}~${eq.hi}℃`;
+      $('#appPush').classList.add('on');
+      setTimeout(() => $('#appPush').classList.remove('on'), 4200);
+      render(); return;
+    }
+    const tri = e.target.closest('.triBtns button');
+    if (tri) { const g = tri.closest('.triBtns');
+      inspState[g.dataset.q] = tri.classList.contains('ok') ? 'ok' : tri.classList.contains('warn') ? 'warn' : 'bad';
+      render(); return; }
+    if (e.target.closest('#mInspSave')) { inspState = {}; render(); $('#apTitle').textContent = t('brand'); $('#apBody').textContent = t('inspect_done'); $('#appPush').classList.add('on'); setTimeout(() => $('#appPush').classList.remove('on'), 3000); return; }
+    if (e.target.closest('[data-share]')) { $('#shareSheet').classList.add('on'); return; }
+  });
+  $('#appPush').addEventListener('click', () => { $('#appPush').classList.remove('on'); TAB = 'mon'; render(); });
+  document.addEventListener('click', e => {
+    if ($('#shareSheet').classList.contains('on') && !e.target.closest('#shareSheet') && !e.target.closest('[data-share]'))
+      $('#shareSheet').classList.remove('on');
+  });
+  render();
+})();
+</script>
+</body>
+</html>
