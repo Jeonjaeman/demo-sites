@@ -73,7 +73,7 @@
     const c = {
       id: uid(), createdAt: now(), plate, owner, phone, model, year, fuel,
       km: null, status: "new", assignee: sales[0] ? sales[0].id : null, autoAssigned: true,
-      checklist: null, memo: "", photos: [],
+      checklist: null, memo: "", photos: 0,   // ★ 숫자 — 배열로 두면 (photos||0)+1이 "1" 문자열 연결이 된다
       compare: null,                     // 상담 후 카마트 조회 (계약 필요 — 데모는 모의)
       bids: [], auction: null, round: 1, wishPrice: null, erpLog: [], docs: null,
     };

@@ -109,9 +109,13 @@
   }
   function closeDrawer() { openId = null; $("#dim").classList.remove("on"); $("#drawer").classList.remove("on"); }
   $("#dim").addEventListener("click", closeDrawer);
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && openId) closeDrawer(); });
 
   function drawDrawer() {
     if (!openId) return;
+    // ★ 입력 보호 — 입찰가를 치는 중에 타 바이어 입찰이 도착하면 재렌더로 입력이 날아간다
+    const act = document.activeElement;
+    if (act && $("#drawer").contains(act) && /^(INPUT|TEXTAREA|SELECT)$/.test(act.tagName)) return;
     const st = E.load();
     const c = st.cases.find((x) => x.id === openId);
     if (!c) { closeDrawer(); return; }

@@ -183,9 +183,14 @@
     $("#dim").classList.remove("on"); $("#drawer").classList.remove("on");
   }
   $("#dim").addEventListener("click", closeDrawer);
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && openId) closeDrawer(); });
 
   function drawDrawer() {
     if (!openId) return;
+    // ★ 입력 보호 — 상담 메모를 치는 중에 다른 창의 입찰·1초 틱 저장이 들어오면
+    //   innerHTML 재렌더로 입력이 통째로 날아간다. 드로어 안에 포커스가 있으면 스킵.
+    const act = document.activeElement;
+    if (act && $("#drawer").contains(act) && /^(INPUT|TEXTAREA|SELECT)$/.test(act.tagName)) return;
     const st = E.load();
     const c = st.cases.find((x) => x.id === openId);
     if (!c) { closeDrawer(); return; }
@@ -340,7 +345,8 @@
 
     on("#dAddPhoto", () => {
       const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
-      cc.photos = (cc.photos || 0) + 1; E.save(st); toast("사진 1장 추가 (데모 — 실서비스는 업로드·순서 편집)");
+      cc.photos = (+cc.photos || 0) + 1;   // +강제 — 과거 저장분에 배열이 남아 있어도 숫자로
+      E.save(st); toast("사진 1장 추가 (데모 — 실서비스는 업로드·순서 편집)");
     });
 
     on("#dStart", () => {
@@ -417,7 +423,12 @@
       const left = Math.max(0, +el.dataset.ends - E.now());
       el.childNodes[0].textContent = E.mmss(left);
       el.classList.toggle("warn", left < 3 * 60000 && left > 0);
+      // 실서비스 환산 표기도 같이 갱신 (mm:ss만 돌면 환산 문구가 낡는다)
       const real = el.parentElement && el.parentElement.querySelector(".timer-real");
+      if (real && left > 0) {
+        const ext = (real.textContent.match(/ · 연장 \d+회/) || [""])[0];
+        real.textContent = "실서비스 기준 " + E.realLeft(left) + ext;
+      }
     });
   }, 1000);
 

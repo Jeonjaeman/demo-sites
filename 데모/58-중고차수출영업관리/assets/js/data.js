@@ -32,14 +32,14 @@
           id: "c01", createdAt: now - 18 * M, plate: "12가3456", owner: "김영란", phone: "010-2███-4███",
           model: "그랜저 HG 3.0", year: 2013, km: 148000, fuel: "LPG",
           status: "new", assignee: "s1", autoAssigned: true,
-          checklist: null, memo: "", photos: [], compare: null,
+          checklist: null, memo: "", photos: 0, compare: null,
           bids: [], auction: null, round: 1, wishPrice: null, erpLog: [], docs: null,
         },
         {
           id: "c02", createdAt: now - 55 * M, plate: "78나9012", owner: "박준형", phone: "010-5███-1███",
           model: "스포티지 R 2.0", year: 2015, km: 121000, fuel: "디젤",
           status: "new", assignee: "s2", autoAssigned: true,
-          checklist: null, memo: "", photos: [], compare: null,
+          checklist: null, memo: "", photos: 0, compare: null,
           bids: [], auction: null, round: 1, wishPrice: null, erpLog: [], docs: null,
         },
         /* ② 상담 완료 — 체크리스트·사진·비교견적 입력됨, 입찰 시작 대기 */
