@@ -4,164 +4,224 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Demo Portal | 데모사이트 모음</title>
-<meta name="description" content="제안용 데모사이트 통합 포털 — 각 산업별 데모를 한 곳에서." />
+<meta name="description" content="제안용 데모사이트 통합 포털 — 산업별 데모를 데스크톱·모바일 화면 썸네일 갤러리로 한 곳에서." />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
 <style>
+  /* 레이아웃·그리드 문법 실측 출처: printline.kr/category/homepage (사이드바 260px · 무여백 정사각 그리드 2/3/4열 · 방향 인식 호버 오버레이) */
   :root{
-    --cyan:#36c5f0; --blue:#1f72e6; --blue2:#1559cf; --navy:#0a1120; --navy2:#111c30;
-    --ink:#e8eef9; --muted:#90a0bd; --line:rgba(255,255,255,.08);
-    --grad:linear-gradient(135deg,#36c5f0,#1f72e6 55%,#1559cf);
+    --green:#2ba739; --green-dark:#1f7f2b; --ink:#222222; --gray:#6d6e71;
+    --muted:#767676; --line:#e9ebe9; --line-soft:#f1f3f1; --paper:#fff; --paper-soft:#f7f8f7;
+    --rail:260px; --bar:56px;
+    --ease:cubic-bezier(.22,.61,.36,1);
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:var(--navy);color:var(--ink);
-    background-image:radial-gradient(60% 50% at 80% -10%,rgba(31,114,230,.25),transparent 60%),radial-gradient(50% 40% at 0% 0%,rgba(54,197,240,.16),transparent 55%);}
-  .en{font-family:"Montserrat",sans-serif}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+  html{background:var(--paper)}
+  body{margin:0;min-width:320px;font-family:"Pretendard",system-ui,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+    color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  :focus-visible{outline:3px solid var(--green);outline-offset:3px}
+  .skip{position:absolute;left:-9999px;top:0;z-index:99;padding:12px 18px;background:var(--ink);color:#fff;font-size:13px}
+  .skip:focus{left:0}
 
-  header.top{padding:30px 0;display:flex;align-items:center;justify-content:space-between}
-  .brand{display:flex;align-items:center;gap:12px;font-weight:800}
-  .brand .logo{width:40px;height:40px;border-radius:11px;background:var(--grad);display:grid;place-items:center;color:#fff;font-family:"Montserrat";font-weight:900}
-  .brand small{display:block;color:var(--muted);font-size:11px;letter-spacing:.25em;font-weight:600}
-  header.top a.gh{color:var(--muted);font-size:14px;border:1px solid var(--line);padding:9px 18px;border-radius:999px;text-decoration:none;transition:.2s}
-  header.top a.gh:hover{color:#fff;border-color:rgba(255,255,255,.3)}
+  /* ── 상단 바 (모바일) ── */
+  .topbar{position:fixed;inset:0 0 auto 0;z-index:40;display:none;align-items:center;justify-content:space-between;
+    height:var(--bar);padding:0 16px;border-bottom:1px solid var(--line-soft);background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(12px)}
+  .burger{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 14px;border:1px solid var(--line);
+    background:var(--paper);color:var(--ink);font:700 12px/1 inherit;letter-spacing:.06em;cursor:pointer}
+  .burger i{display:block;width:14px;height:9px;border-top:1.5px solid currentColor;border-bottom:1.5px solid currentColor;position:relative}
+  .burger i::before{content:"";position:absolute;left:0;top:3px;width:14px;height:1.5px;background:currentColor}
 
-  .hero{padding:70px 0 40px;text-align:center}
-  .hero .ey{font-family:"Montserrat";font-weight:800;letter-spacing:.3em;color:var(--cyan);font-size:13px}
-  .hero h1{font-size:clamp(34px,6vw,64px);margin:16px 0 14px;letter-spacing:-.02em;line-height:1.05;word-break:keep-all;overflow-wrap:break-word}
-  .hero h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .hero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto;line-height:1.7;word-break:keep-all;overflow-wrap:break-word}
-  .count{display:inline-flex;gap:8px;margin-top:22px;color:var(--muted);font-size:14px;align-items:center}
-  .count b{color:#fff}
+  /* ── 좌측 레일 ── */
+  .rail{position:fixed;inset:0 auto 0 0;z-index:50;display:flex;flex-direction:column;width:var(--rail);
+    padding:40px 28px;border-right:1px solid var(--line-soft);background:var(--paper);overflow-y:auto}
+  .mark{display:block;margin-bottom:34px}
+  .mark b{display:block;font-size:23px;font-weight:800;letter-spacing:-.045em;line-height:1.1}
+  .mark b i{font-style:normal;color:var(--green)}
+  .mark span{display:block;margin-top:9px;color:var(--muted);font-size:11.5px;line-height:1.6;letter-spacing:.01em}
+  .navhead{margin:0 0 12px;font-size:13px;font-weight:700;letter-spacing:.025em}
+  .nav{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin:0 0 30px}
+  .nav button{display:flex;align-items:baseline;gap:7px;min-height:24px;padding:0;border:0;background:none;cursor:pointer;
+    color:#6b7280;font:400 13px/1.5 inherit;transition:color .18s var(--ease)}
+  .nav button:hover{color:var(--ink)}
+  .nav button:active{color:var(--green-dark)}
+  .nav button em{font-style:normal;font-size:11px;color:#a3a8a3;font-variant-numeric:tabular-nums}
+  .nav button[aria-current="true"]{color:var(--green);font-weight:700}
+  .nav button[aria-current="true"] em{color:var(--green)}
+  .rail .ext{color:#6b7280;font-size:13px;transition:color .18s var(--ease)}
+  .rail .ext:hover{color:var(--ink)}
+  .railfoot{margin-top:auto;padding-top:34px;color:#8b8f8b;font-size:11px;line-height:1.75;word-break:keep-all}
+  .railfoot b{display:block;margin-bottom:6px;color:var(--gray);font-size:11px;font-weight:700;letter-spacing:.09em}
+  .scrim{position:fixed;inset:0;z-index:45;background:rgba(34,34,34,.4);opacity:0;pointer-events:none;transition:opacity .2s var(--ease)}
 
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:30px 0 80px}
-  .card{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;overflow:hidden;
-    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));text-decoration:none;color:inherit;
-    transition:transform .3s cubic-bezier(.22,.61,.36,1),box-shadow .3s,border-color .3s}
-  .card:hover{transform:translateY(-7px);border-color:rgba(54,197,240,.4);box-shadow:0 30px 60px -30px rgba(31,114,230,.6)}
-  .card .thumb{height:148px;display:grid;place-items:center;font-family:"Montserrat";font-weight:900;font-size:30px;color:#fff;position:relative;overflow:hidden}
-  .card .thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent,rgba(10,17,32,.55))}
-  .demo-no{position:absolute;z-index:2;top:12px;left:12px;padding:6px 9px;border:1px solid var(--line);border-radius:999px;
-    color:var(--cyan);background:rgba(10,17,32,.82);font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums}
-  .card .body{display:flex;flex:1;flex-direction:column;padding:22px 22px 24px}
-  .card h3{margin:0 0 7px;font-size:19px;word-break:keep-all;overflow-wrap:break-word}
-  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.6;min-height:42px;word-break:keep-all;overflow-wrap:break-word}
-  .card .meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:16px}
-  .badge{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px}
-  .badge.live{background:rgba(28,155,84,.16);color:#34d27e}
-  .badge.soon{background:rgba(255,255,255,.08);color:var(--muted)}
-  .badge.repo{background:rgba(31,114,230,.16);color:#6fb0ff}
-  .go{font-family:"Montserrat";font-weight:800;font-size:12px;letter-spacing:.08em;color:var(--cyan)}
-  .card.disabled{opacity:.6;pointer-events:none}
-  .card:focus-visible,.tab:focus-visible,header.top a.gh:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}
+  /* ── 본문 ── */
+  main{margin-left:var(--rail)}
+  .pagehead{display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding:30px 40px 20px}
+  .pagehead h1{margin:0;font-size:19px;font-weight:800;letter-spacing:-.03em}
+  .pagehead p{margin:0;color:var(--muted);font-size:12.5px;letter-spacing:.01em}
+  .pagehead p b{color:var(--ink);font-variant-numeric:tabular-nums}
 
-  .tabbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:4px 0 30px}
-  .tab{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);
-    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));
-    color:var(--muted);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s}
-  .tab:hover{color:#fff;border-color:rgba(255,255,255,.25)}
-  .tab.on{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 14px 30px -16px rgba(31,114,230,.8)}
-  .tab .tc{font-size:12px;font-weight:800;background:rgba(0,0,0,.18);padding:1px 8px;border-radius:999px}
-  .tab.on .tc{background:rgba(255,255,255,.22)}
+  /* ── 바둑판 그리드 (여백 0 · 정사각) ── */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid var(--line-soft)}
+  .tile{position:relative;display:block;aspect-ratio:1/1;overflow:hidden;background:var(--paper-soft)}
+  .tile img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease)}
+  .tile:hover img,.tile:focus-visible img{transform:scale(1.035)}
+  .tile:active img{transform:scale(1.012);transition-duration:.18s}
+  /* 첫 화면 진입 리빌 — CSS 애니메이션(fill:both)이라 어떤 상황에도 최종 상태는 노출 */
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .tile.rise{animation:rise .55s var(--ease) both;animation-delay:calc(var(--i,0) * 45ms)}
+  .ov{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;
+    padding:20px;background:rgba(0,0,0,.6);color:#fff;pointer-events:none;
+    transform:translate3d(var(--ox,0),var(--oy,101%),0);transition:transform .42s var(--ease)}
+  .tile.on .ov,.tile:focus-visible .ov{transform:translate3d(0,0,0)}
+  .ov .no{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.14em;color:#8ce09a;font-variant-numeric:tabular-nums}
+  .ov strong{font-size:20px;font-weight:700;line-height:1.375;letter-spacing:-.02em;word-break:keep-all}
+  .ov .sum{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+    color:rgba(255,255,255,.82);font-size:12.5px;line-height:1.65;word-break:keep-all}
+  .ov .go{margin-top:2px;font-size:15px;letter-spacing:.04em}
+  .tile.soon{display:grid;place-items:center;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+    background:var(--paper-soft);color:#a3a8a3;font-size:12.5px;letter-spacing:.02em;cursor:default}
+  .tile.soon span{display:block;text-align:center;line-height:1.7}
+  .tile.soon span b{display:block;margin-bottom:4px;color:var(--gray);font-size:13px}
 
-  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center}
+  footer{padding:34px 40px 56px;color:#8b8f8b;font-size:11.5px;line-height:1.8;word-break:keep-all}
 
-  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:600px){.grid{grid-template-columns:1fr}}
-  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+  @media (min-width:768px){ .grid{grid-template-columns:repeat(3,1fr)} }
+  @media (min-width:1280px){ .grid{grid-template-columns:repeat(4,1fr)} }
+
+  @media (max-width:1023px){
+    .topbar{display:flex}
+    main{margin-left:0;padding-top:var(--bar)}
+    .rail{transform:translateX(-100%);transition:transform .24s var(--ease);box-shadow:0 0 60px rgba(34,34,34,.14)}
+    .rail.open{transform:translateX(0)}
+    .scrim.on{opacity:1;pointer-events:auto}
+    .pagehead{padding:26px 20px 18px}
+    .pagehead p{flex:0 1 auto;min-width:0}
+    .nav{gap:2px}
+    .nav button,.rail .ext{display:flex;min-height:44px;align-items:center}
+    footer{padding:26px 20px 44px}
+  }
+  @media (hover:none){
+    .ov{transform:translate3d(0,0,0);justify-content:flex-end;padding:16px;gap:5px;
+      background:linear-gradient(to top,rgba(0,0,0,.82) 0%,rgba(0,0,0,.34) 48%,rgba(0,0,0,0) 78%)}
+    .ov .sum,.ov .go{display:none}
+    .ov strong{font-size:14px;line-height:1.4}
+    .ov .no{font-size:10px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;scroll-behavior:auto!important}
+    .tile:hover img{transform:none}
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="brand">
-      <span class="logo en">D</span>
-      <span>DEMO PORTAL<small>제안용 데모 모음</small></span>
-    </div>
-    <a class="gh" href="https://github.com/Jeonjaeman" target="_blank" rel="noopener">GitHub ↗</a>
-  </header>
+<a class="skip" href="#grid">본문 바로가기</a>
 
-  <section class="hero">
-    <div class="ey">DEMO SHOWCASE</div>
-    <h1>산업별 <span>데모사이트</span> 모음</h1>
-    <p>각 산업·업종별 제안용 데모를 한 곳에서 모아 봅니다. 새 데모는 이 레포에 폴더로 추가되고, 기존 데모는 각자 배포 주소로 연결됩니다.</p>
-    <div class="count">총 <b id="cnt">0</b>개 공개 데모 · 클릭하면 새 탭에서 열립니다</div>
-  </section>
+<header class="topbar">
+  <a class="mark" href="./" style="margin:0"><b>DEMO<i>PORTAL</i></b></a>
+  <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="rail"><i></i>메뉴</button>
+</header>
+<div class="scrim" id="scrim" hidden></div>
 
-  <section class="tabbar" id="tabbar"></section>
-  <section class="grid" id="grid"></section>
+<aside class="rail" id="rail">
+  <a class="mark" href="./">
+    <b>DEMO<i>PORTAL</i></b>
+    <span>제안용 데모사이트 모음<br />기획 · 디자인 · 개발</span>
+  </a>
 
-  <footer>© 2026 Demo Portal · 본 사이트들은 제안용 데모입니다.</footer>
-</div>
+  <p class="navhead">PORTFOLIO</p>
+  <nav class="nav" id="nav" aria-label="카테고리"></nav>
+
+  <p class="navhead">ABOUT</p>
+  <nav class="nav" aria-label="외부 링크">
+    <a class="ext" href="https://github.com/Jeonjaeman" target="_blank" rel="noopener">GitHub ↗</a>
+  </nav>
+
+  <div class="railfoot">
+    <b>NOTICE</b>
+    본 사이트의 모든 화면은 제안용 데모이며 실제 서비스가 아닙니다. 표시된 수치·상호·인물은 전부 가상입니다.
+    <br /><br />© 2026 Demo Portal
+  </div>
+</aside>
+
+<main>
+  <div class="pagehead">
+    <h1 id="ph">전체</h1>
+    <p>총 <b id="cnt">0</b>개 · 클릭하면 새 탭에서 열립니다</p>
+  </div>
+  <div class="grid" id="grid"></div>
+  <footer>
+    각 데모는 공고 요구사항을 실제 동작으로 구현한 제안용 산출물입니다. 썸네일은 데스크톱·모바일 실제 화면 캡처로 제작했습니다.
+  </footer>
+</main>
 
 <script>
   // 데모 목록 — cat: home(홈페이지·브랜드) / admin(관리자·대시보드) / platform(플랫폼·서비스)
   const DEMOS = [
-    { name:"중고차 수출 영업·바이어 입찰 시스템 — 엑스카로", en:"EXCARO", cat:"platform", desc:"중고차 수출 기업 사내 영업+바이어 입찰 웹(위시켓 2,300만·60일·프라이빗 매칭·과업변경 재등록) — 3표면 전부 동작: 소비자 랜딩(동의 기반 차량조회→접수)/영업팀 어드민(자동배정·상담 체크리스트 6항목·비교견적/폐차기준가·입찰 타이머·임의중지·재입찰·서류 5종·ERP 전송)/바이어 어드민(블라인드 입찰·내 순위만) · ★localStorage+storage 이벤트로 창 간 실시간 연동(영업·바이어 나란히 열면 입찰이 흐름) · ★최대 발견 3: ①국토부 자동차종합정보 API=소유자 제3자 동의+운영 심의 전제(공공데이터포털 15071233)→동의 전 조회 비활성 ②24h 고정 마감=스나이핑으로 낙찰가 하락→소프트클로즈(마감 3h 내 입찰 시 5h 자동연장)+서버 시각 마감 판정(마감 후 입찰 거부 실동작) ③「철저히 비노출」=화면 숨김으론 devtools에 노출→바이어 응답에서 필드 자체 제거(콘솔 확인 가능) · 카마트 B2B 계약 리드타임·알림톡 심사 3일 SMS 폴백·ERP 멱등키+재시도·재입찰 2회 제한 · 디자인: 헤이딜러×ACV Auctions×오토벨 실측 + Produx Design(Awwwards SOTD 26.08.09)×Attio · 견적 3,300,000원/66일 공수표", url:"./데모/58-중고차수출영업관리/index.html", status:"live", g:"linear-gradient(135deg,#0e0e0e,#3a3d45 52%,#d8451c)", here:true },
-    { name:"식품공장 스마트 HACCP 모니터링 웹+앱 — 온도", en:"ONDO", cat:"admin", desc:"식품 제조공장용 모니터링 웹 UI 리뉴얼+모바일 앱 구축(위시켓 1,000만·60일·지원 27명·정부지원과제) — 공고 디자인 요구 문구 그대로: ★다크 테마+보라 포인트(Linear 실측 #08090A·#8B5CF6)·★큰 글씨(A/A+/A++ 3단계 토글 실구현)·★신호등 상태·★최소 조작(이탈→상세→조치 클릭 2회) · ★최대 발견: 신호등 컬러만으론 적록색각이상 근로자가 구분 불가(공고의 접근성 요구와 충돌)→모든 상태 색+아이콘+텍스트 3중 병행+「색각 보조 모드」(청/주황 팔레트 실전환) · ★스마트 HACCP 인증 4대 요건(자동기록·전자기록·위변조 방지·이상 알림) 가시화 — 전자기록 해시 체인 화면·자동기록 KPI·리포트 해시 컬럼 · [웹] 대시보드(설비 8카드 스파크라인·공장 현장도·실시간 알림)/설비 상세(24h 차트 CL 점선·이탈 마킹)/점검/리포트(식약처 기록부 인쇄+CSV BOM)/설정 · [앱 mobile.html] 폰 프레임 4화면 — 실시간 모니터링(Datadog 참고)·푸시 알림(이탈 시뮬→OS 배너)·신호등 점검(SafetyCulture 실측 #6559FF)·PDF 공유 시트 · ★이탈 시뮬레이션 버튼: 푸시→KPI→상세 자동 오픈→개선조치 프리필→복귀+해시 기록 전 흐름 · KO/EN/베트남어 즉시 전환(현장 외국인 인력 언어 구성 근거) · 상태 판정 온도 vs CL 실비교·차트 canvas 자체 구현 · 9월 납기=앱 심사 버퍼 지적(TestFlight 선오픈 제안) · 견적 8,000,000원/65일 역할별 단가 항목별", url:"./데모/56-식품제조공장모니터링웹앱/index.html", status:"live", g:"linear-gradient(135deg,#08090A,#5E6AD2 52%,#8B5CF6)", here:true },
-    { name:"반도체 제조 기업 브랜드 사이트 — 레오닉스", en:"REONIX", cat:"home", desc:"반도체 제조 기업 웹사이트 구축(위시켓 100만·15일·지원 36명) — ★레퍼런스(hanvit-ind.com) 브라우저 전수 실측 후 같은 단락 구성·인터랙션·애니메이션을 가상 반도체 브랜드로 재구현(카피·이미지·코드는 전부 자체 제작, 메인 1페이지) · 8단락: 팹 영상 히어로(라인 마스크 리빌 82px Inter)→★핀 스크럽(웨이퍼 영상 27vw→100vw 풀스크린 확장·오버레이 텍스트·헤더 자동 숨김, GSAP 없이 sticky+진행도 보간 자체 구현)→Industries 3카드→★Products 5열 flex 확장(호버 1→1.45·다크 패널·모바일 탭 오픈)→★Services 풀스크린 배경 스왑→R&D 영상+리스트→Merit 4카드→Careers/Catalog 배너 · GNB: 투명→솔리드·호버 메가 패널(슬로건+2·3뎁스=사이트맵 제안)·전체메뉴 오버레이 · ★메뉴 클릭=이동 없이 「실제 작업 시 반영」 토스트(데모 범위 정직 고지) · 미디어 18종 힉스필드 생성(영상 3편 1440p 압축 311~569KB·뷰포트 밖 자동 정지, 이미지 15장 webp) · 외부 라이브러리 0·reduced-motion 대응 · 스택 지적: 아임웹 코드 위젯=기술지원 제외→자체 구축+서버리스 폼 메일 제안(근거 URL) · 레드팀 4종 통과(rnd-poster 404·백그라운드 탭 스크럽 폴백 교정) · 견적 750,000원/15일 공수표", url:"./데모/55-반도체기업브랜드사이트/index.html", status:"live", g:"linear-gradient(135deg,#0E1524,#16264A 52%,#2B63F6)", here:true },
-    { name:"일본인 대상 K-뷰티 예약 컨시어지 — 미야비 서울", en:"MIYABI", cat:"platform", desc:"방한 일본인 관광객 K뷰티(클리닉·에스테틱·퍼스널컬러·헤어·메이크업) 예약 플랫폼(견적요청 12항 전부 구현) — 일본어 기본+KO 스위처(i18n 사전 구조=영어·번체 확장 준비)·★의료/비의료 분리 동선(외국인환자 유치업 미등록 알선=형사처벌 소지→클리닉은 무료 상담 예약만, 시술 계약·수납은 제휴 의료기관 직접 — 배지·위저드(결제 스텝 제거)·관리자 정산까지 일관)·★리뷰 의료 분기(의료법 56조 치료경험담 광고 금지→비의료만 본문, 의료는 시설 평점만·작성 모달부터 분기)·예약 위저드(캘린더 3개월·슬롯 마감·인원·프리필·검증 차단)·해외카드 사전결제 시뮬(JCB 우선·KRW 결제+JPY 병기·취소 수수료 4단계 실계산 D−일수별 환불액)·회원가입/로그인 탭·마이페이지(예약/이력·영수증 Blob)·여정 플래너(시술 다운타임 배치 경고)·特定商取引法 표기 페이지·LINE 중심 문의 · [관리자] KPI·주간 캘린더(의료/비의료 색 구분)·예약 필터+상태 변경·프로그램 노출/가격 CRUD·고객·정산(해외카드 PG 4.5% 실측 반영)·CSV 3종 · 디자인: L'Oréal Essentiality of Beauty(Awwwards HM) 실측 자간+0.03em·radius 0·세리프 에디토리얼 × Aman Resorts 콰이어트 럭셔리 × Klook JP 예약 문법(모바일 하단 CTA) · 레드팀 4종 통과(회원가입 부재·토스트 i18n·당일 예약 0건·PG 수수료 가정 교정) · 야후재팬=구글 엔진(2027.3까지)→일본 SEO 단일 트랙 · 견적 3,750,000원/75일 항목별", url:"./데모/54-일본K뷰티예약플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#211D18,#7B5F37 52%,#D9C39A)", here:true },
-    { name:"추론형 영어 문법 학습 웹앱+CMS — 아하 문법", en:"AHA", cat:"platform", desc:"질문형(추론형) 영어 문법 학습 웹앱+강사용 CMS(견적요청서 1차 MVP) — ★지정 레퍼런스(netlify 샘플 앱) 20화면 전수 실측 이식(#F4F7FB·네이비·블루 42px/800·오렌지 CTA·카드 r16·760px·선택 게이팅·반말 코칭 카피) · [학생 앱] 공고 학습 흐름 8단계 그대로: 질문→이모지 예시 선택→추론 체인→선택형(★오답 시 1줄 힌트만 제공 후 진행, 문구 그대로)→설명(HUNT)→Aha! 카드→응용 3~4→백지테스트 시트+AHA NOTE 인쇄 · ★재학습 시 선택지 랜덤화(순서 암기 방지)·로그인 없음·PWA(manifest+SW) · [CMS] 공고 폼 전 필드(이모지 팔레트·추론/응용 동적 추가)·게시 즉시 학생 앱 반영·복제·검색·미리보기=학생 화면 새 탭 · 근거: 귀납 문법 학습·인출 연습(백지테스트) 연구 — 세미나 설득 논리 제공 · 레드팀 4종 통과 · 견적 3,200,000원/22일 항목별", url:"./데모/53-학습웹앱/index.html", status:"live", g:"linear-gradient(135deg,#14213D,#1E4FA8 52%,#FF9F1C)", here:true },
-    { name:"행사 부스 모바일 웹 설문 — 콘페티", en:"CONFETTI", cat:"platform", desc:"오프라인 행사 부스 X배너 QR 설문(위시켓 150만·14일·납품 8/17) — 공고 2-1·2-2 전부 실동작 · [설문] 로그인 없이 즉시 진입·★문항 전환 슬라이드 애니메이션+진행바·응답별 최적 폼(라디오=선택 즉시 자동 다음(부스 대기줄 대응)·복수선택·별점 바운스+라벨·200자 카운터)·완료 콘페티+기념품 코드·★제출 8초 후 자동 초기화(공용 기기)·자체 SVG 라인 아이콘 15종(이모지 미사용) · [관리자] 샘플 200+실제 제출 실시간 합산 실집계·★엑셀(.xls SpreadsheetML) 실생성(헤더 서식·한글 무손상)+CSV·★실스캔 QR+인쇄용 PNG 다운로드 · 피크 동시접속=정적 프론트+제출 API 분리 제안(Node·MongoDB·AWS 태그 그대로) · 레드팀 4종 통과(rAF 백그라운드 버그 발견·교정) · 견적 1,500,000원/10일 항목별", url:"./데모/52-행사설문조사/index.html", status:"live", g:"linear-gradient(135deg,#241F18,#b0801a 52%,#FFC933)", here:true },
-    { name:"외국인 고객용 차량 이용가이드 앱 — 키링", en:"KEYRING", cat:"platform", desc:"렌터카 외국인 고객 차종별 이용가이드 모바일 앱(위시켓·협의·80일) — 공고 사용자 스토리 4건 그대로 실동작 · [고객 앱] QR 스캔→차종 가이드 자동 열림(#car= 딥링크)·KO/EN/中/日 자동번역 표시(기계번역 배지+★안전 주의사항 한국어 원문 병기)·비상연락처 탭투콜·주변 지점 지도(★위치 동의 게이트: 동의 시 현위치 거리 정렬/거부 시 목록만, 경로 안내 아님 명시)·기존 상담 채팅 외부 연결 · [관리자] 한국어 원고 등록·수정·삭제→★실제 스캔되는 QR·링크 즉시 발급(수정해도 QR 불변=재인쇄 불필요), 등록 차종 앱 실반영 · 발견: 현위치 지도=위치기반서비스사업 신고 대상·안전 문구 오역=배상 리스크(원문 병기 설계)·순수 웹뷰 스토어 반려→모바일웹+하이브리드 셸 제안·번역 저장 시 1회+캐시 · 레드팀 4종 통과 · 견적 9,000,000원/60일 항목별", url:"./데모/51-외국인고객용차량이용가이드/index.html", status:"live", g:"linear-gradient(135deg,#0D1B3E,#134097 52%,#1B64F2)", here:true },
-    { name:"모델 에이전시 인터랙티브 웹사이트+CMS — 엘랑", en:"ELAN", cat:"home", desc:"모델 에이전시 사이트 리뉴얼(위시켓 800만·60일) — 공고 상세요구 전부 실동작 · ★4페이지 실분리(메인/Models/News/CMS)+커튼 라우팅 · 메인: AI 생성 이미지 기반 image-to-video 실제 mp4 풀스크린 자동재생(폴백 켄번즈)·스크롤 텍스트 페이드아웃·★On set 캠페인 섹션(현장 영상 재생+패럴랙스·줌 스크럽+대형 마퀴가 함께 — 뷰포트 밖 자동 정지)·★Campaign Films 파트(실제 영상 3편 — 호버 미리 재생·클릭 풀사이즈 모달·모델북 폴라 영상 연결) · Models 서브: 그리드 8·비동기 필터·모델북 모달·호버 흑백→컬러+★「색상 반전(invert)」 토글(공고 문구 그대로) · News 서브: 카테고리 탭(bnbindustry.com 실측 이식)·CMS 실연동 · CMS: 에디터 등록→사이트 즉시 반영·노출 토글·배경 영상 교체(150MB 초과 실제 차단·게이지·알림)·수정삭제 · 사전질문 3건 답변(헤드리스 CMS 제안) · 레드팀 4종(디자인·인터랙션·실측 QA·★요구사항 충족=클라이언트 페르소나 15항 대조) · 견적 6,000,000원/40일 항목별", url:"./데모/50-모델에이전시브랜드/index.html", status:"live", g:"linear-gradient(135deg,#0E0E0F,#7a2418 52%,#E33F2B)", here:true },
-    { name:"아이돌 카드 맞추기 미니게임 모바일 UI 시안 — 앙코르", en:"ENCORE", cat:"platform", desc:"아이돌 IP 카드 매칭 미니게임 모바일 웹 UI 디자인 의뢰(크몽·디자인만) — 정적 시안 대신 ★7파트 20화면 전부 눌러보는 시안 뷰어(PC=화면 인덱스+폰 프레임/모바일=실기기 풀스크린) · 게임이 실동작: 3D 카드 플립→매칭 펄스/오답 셰이크→타이머 경고→성공/신기록/타임오버 자동 분기·일시정지·힌트·콘페티 · 포토카드 컬렉션(진행률·등급·홀로그램 스윕)·랭킹·공유 카드 · 디자인: 의뢰자 im-fine.co.kr 실측(블랙·w200 대형 타이포·lh1.0 에디토리얼)+네온 라임 단일 액센트, 가상 그룹 LUMIN 6인 AI 생성(레드팀 검수로 인쇄물 프레임·로고 전량 제거) · 발견: 실존 아이돌 초상=퍼블리시티권 2026.3 첫 시정명령→라이선스 범위 착수 전 확인 제안 · 레드팀 3종(디자인·인터랙션·실측 QA) 통과 · 견적 2,800,000원/10일 항목별 산출", url:"./데모/49-아이돌카드게임/index.html", status:"live", g:"linear-gradient(135deg,#0A0A0B,#5a6b0f 52%,#D7FF3F)", here:true },
-    { name:"픽업트럭 카고 슬라이딩·밴 스토리지 브랜드 — 판도라팩토리", en:"PANDORA", cat:"home", desc:"픽업트럭 슬라이딩베드·캐노피탑·베드렉·밴 스토리지 시스템 제조 브랜드 멀티페이지 사이트 — 홈·소개·제품 3종(슬라이딩베드/밴 스토리지/출시예정)·차량 실측 핏 가이드(vehicle-fit)·FAQ/공지·문의, sitemap/robots까지 실사이트 구조", url:"./데모/48-카고슬라이딩브랜드/index.html", status:"live", g:"linear-gradient(135deg,#141210,#6b4a12 52%,#F5A623)", here:true },
-    { name:"학원 통합 관리 시스템 (출결·수납·성적·알림톡) — 도장", en:"DOJANG", cat:"admin", desc:"학원 출결·수납·성적·학부모알림을 Zapier/Make/노션 없이 자체 시스템 하나로(숨고) · ★핵심 발견을 기능으로 구현: 요청서의 '학생별 노션 공개링크'는 링크 유출·검색엔진 노출·퇴원생 차단불가 리스크→자체 권한분리 리포트로 대체 · [진입 게이트] 출석 체크인·역할별 로그인 분리 — 원장·강사 ID/PW 실검증(Supabase Auth 설계 명시)·학부모는 무로그인 24h 토큰 · [키오스크] 번호 입력/QR 스캔 선택→출석 도장 모션(지각 자동판정)·대시보드 실시간 반영 ·[수납] 결제선생 CSV 매칭 시뮬 — ★동명이인은 자동처리 않고 수동확인 대기(오매칭 사고 구조적 차단) · [성적] 문항유형별 점수·코멘트 입력→추이 그래프+기준미달 유형 오답클리닉 영상 자동배정+알림톡 발송이력 연동 · [권한 3단계 실동작] 원장(전체)↔강사(담당반만)↔학부모(자기 자녀만·상담이력/내부메모 비노출) 역할 전환 시 화면이 실제로 바뀜 · [학부모] 알림톡 링크 진입 시뮬→독립 모바일 UI·토큰 만료 카운트다운·만료/재발송 화면·열람 로그 · [알림톡] 템플릿 3종 미리보기(카카오 심사 3~5영업일 명시)·미등원 자동발송 시뮬·SMS 대체발송 이력 · [통계] 반별·기간별 출석률/평균/수납률/유형별 정답률 실계산+CSV(BOM)·구글시트 백업 시뮬 ·[설정] 지각기준·클리닉 기준점수·발송문구를 원장이 직접 수정→즉시 반영(Zapier의 '내가 조건을 바꾼다'를 월 0원으로) · 발견: 노션 게스트=학생수만큼 유료슬롯·Zapier 월10~15만(연 120~180만) vs 자체DB 월 0원·미성년 개인정보 법정대리인 동의+국외이전 고지·알림톡 템플릿 사전심사 3~5영업일이 실납기 병목 · 견적 3,300,000원(부가세포함)/8주 · 입력 없이 클릭만으로 체험", url:"./데모/47-학원통합관리시스템/index.html", status:"live", g:"linear-gradient(135deg,#17233B,#7a2c20 52%,#C2402E)", here:true },
-    { name:"미용실 설문 디지털화 · 범용 설문 폼 빌더 — 퀼", en:"QUILL", cat:"platform", desc:"아이디헤어(지점 ~100개) 종이 설문지 디지털화(크몽) — 미용실 전용이 아니라 ★어떤 설문이든 만드는 범용 폼 빌더로 구현 · [빌더] 질문 유형 12종(객관식·중복·단답·장문·별점·점수·드롭다운·날짜·연락처·사진·구역·동의블록) 추가/삭제/순서변경/복제/필수 토글·템플릿 5종·테마·미리보기 + ★실시간 법 점검(식별정보 수집인데 동의 없음→경고, 마케팅을 필수 동의에 넣으면→과태료 경고) · [태블릿 응답] 필수/선택 동의 분리·필수 미응답 차단·전화 자동 하이픈·제출 즉시 파기+7초 자동 초기화(공용 태블릿 잔류 차단)·예시로 채우기 · [대시보드] ★권한 3단계 실동작: 역할 전환 시 범위(전체 184건→매장→본인)·연락처/생년월일 마스킹·엑셀 차단이 실제로 바뀜 · 차트(라인·도넛·바 실집계)·필터·드로어·마케팅 동의자만 추출·CSV(BOM)·백업 · ★설문별 자동 요약: 빌더에 저장된 어떤 설문이든 구조를 읽어 질문 유형별 집계(막대·평균·분포·동의율) 자동 생성 · 응답 상세=원본 종이 설문지 뷰(☐/☑ 재현, PC 중앙 모달) · 발견: 종이 설문지의 마케팅 동의 묶음=과태료 소지·공용 태블릿 세션 잔류·퇴사 디자이너 고객 DB 유출·가맹 위탁vs제3자제공 · 마음노트×Tally×GoogleForms / Linear 실측 · 견적 8,800,000원/60일 항목당 비용 산출(잔여 예산은 유지관리·예비비 제안)", url:"./데모/46-미용실설문관리/index.html", status:"live", g:"linear-gradient(135deg,#16150F,#8a2f1f 52%,#E0523D)", here:true },
-    { name:"관리형 스터디카페 홈 + 통합 관리자 — 몰입", en:"MOLIP", cat:"home", desc:"관리형 스터디카페 신규 오픈 홈+데이터 자동화 · ★혼합(하이브리드): 공개 홈(브랜드)+통합 관리자(대시보드)를 표면별로 설계 · [공개 홈] 히어로·②풀블리드 statement·①마우스 카드·요금·가입 신청폼(예시 채우기→자체 적재+구글시트 백업 체험)·비용 비교 진단 · [통합 관리자 admin.html] 회원관리·★출석 슬롯 그리드(좌석×시간, 엑셀 출석표 기반·클릭 O→누적 학습시간 실계산)·주/월/연 학부모 리포트 이메일 preview+발송 시뮬(SPF/DKIM)·요금/공지 편집기 · 발견: 아임웹+구글시트+노션+Make/Zapier 스택은 월 10만+·단일 장애점→통합 자체제작 월 0원(연 113만 절감)·학생=미성년 개인정보 법정대리인 동의·리포트 이메일 도달률·관리형 학원법 경계 · 1차 견적 2,500,000원 · 입력 없이 클릭만으로 체험", url:"./데모/45-관리형스터디카페/index.html", status:"live", g:"linear-gradient(135deg,#221E19,#6e5320 52%,#D89A2E)", here:true },
-    { name:"학부모·교사 교육 콘텐츠 소개·무료체험 — 클래스킷", en:"CLASSKIT", cat:"home", desc:"학부모·교사 대상 교육 콘텐츠(유인물·수업가이드) 시리즈 소개·무료체험(크몽 공고 1단계) · ★무료체험 신청 폼: 이름/연락처/자녀 학년 + 법정대리인 동의 게이트(동의 없이 접수 차단)+즉시 알림(이메일/카톡) 시뮬, 자녀는 학년만 최소수집 · ★콘텐츠 보호·환불 진단: 구매자 워터마크 토글 + 청약철회 불가 고지 토글 → 유출·환불 리스크 실시간 판정(둘 다 켜야 안전) · 시리즈 소개(결제없이·샘플영상)·상담/B2B 문의 분리·관리자 접수 현황·단계별(1/2/3) 견적 · 발견: 만14세미만 자녀정보=법정대리인 동의(미동의 형사처벌)·다운로드콘텐츠 청약철회 제한은 불가고지+무료체험 전제·유인물 유출=워터마크·정부지원 정산 · 아이스크림×티처빌 / Linear×Vercel 실측", url:"./데모/44-교육컨텐츠사이트/index.html", status:"live", g:"linear-gradient(135deg,#241C16,#7a4327 52%,#C4633A)", here:true },
-    { name:"외국인 짐배송·짐보관 예약·운영 — 팩앤플라이", en:"PACK&FLY", cat:"platform", desc:"부산·김해 외국인 짐배송/보관 예약~운영관리 — ★RFQ 15개 화면 전부 동작 구현(고객6·관리자8·제휴점1) · 고객 앱(폰 프레임): 배송/보관 분기→프런트→할증→거점(지도 핀·적재80% 제외)→사이즈 S/M/L, 원거리 +15,000 자동·부산 외→문의 전환, PayPal 4통화 정액, PF번호 비순차, 조회=번호+전화 뒷자리(IDOR 차단)·사진→입고·보관 연장 결제, 4개 언어→통화 연동 · 관리자: 오늘 할 일(목록/지도)·아코디언 현황·상세 드로어(상태 전환·이력)·수기 등록(미확정 허용)·거점(적재율 지도·QR)·통계(이탈 퍼널·CSV)·설정(통화 정액표 원화 실수취 실시간 진단) · 거점 현황판(로그인 없는 전용 링크) · 발견: IDOR·통화 마진역전·tier 충돌·배상한도·당일 실측 · Bounce×RadicalStorage / Linear×Vercel · 견적 화면단위 A~M", url:"./데모/43-외국인짐서비스/index.html", status:"live", g:"linear-gradient(135deg,#161A33,#7a2a1e 52%,#FF5A3C)", here:true },
-    { name:"개인간병 업체 운영 관리 — 케어온", en:"CAREON", cat:"admin", desc:"엑셀로 하던 간병사 배정현황·회비 입금현황을 사무실·외부(모바일)에서 · ★운영 대시보드: 배정 현황(필터·간병비·공석)·회비/정산(수납률·미납 실집계 28만/56만)·준법 검토(가중 게이지) 전부 실연산 · ★역할 전환(사무실 관리자↔외부 간병사): 외부 간병사 화면에서 담당 외 환자 질환·장소·보호자 연락처 마스킹·타 간병사 회비 비공개(민감정보 접근통제) · 준법 필수(유료직업소개 등록·소개vs지휘명령 경계·민감정보) 누락 시 운영불가 판정 · 발견: 간병인 소개+회비=유료직업소개사업(미등록 처벌)·관리감독 개입 시 불법 근로자공급(고발 사례)·2025 간병인 근로자성 인정·환자 건강정보=민감정보 · 케어네이션×케어닥 / Linear×Vercel 실측", url:"./데모/42-개인간병관리시스템/index.html", status:"live", g:"linear-gradient(135deg,#0F1A18,#15574e 52%,#159A8A)", here:true },
-    { name:"모바일웹 → Play 하이브리드 앱 — 랩리", en:"WRAPLY", cat:"platform", desc:"운영 중인 모바일웹을 Android 하이브리드(WebView)로 감싸 Google Play 배포 + FCM 푸시 · ★인터랙티브 폰 프레임: WebView 셸·파일 첨부 시트(onShowFileChooser)·로그인 유지 ON/OFF+앱 재시작(flush 미적용 시 로그아웃 버그 재현)·뒤로가기·오프라인 오류화면·푸시 발송→배너→딥링크 전부 실동작 · Play 심사 진단(항목 토글→통과 가능성 가중 계산·필수 누락 시 반려 판정) · FCM 전환 진단(Legacy 서버키 2024.7 종료 판정→HTTP v1 서비스계정 코드·절차·발송 시뮬) · 리스크 6건(근거 링크) · 발견: 순수 웹뷰=정책4.3 반려·“PHP 수정”이 실은 인증 전면교체·Android13+ 알림권한 미요청 시 푸시 유실·Data Safety/개인정보처리방침 필수 · Median×Firebase / Linear×Vercel 실측", url:"./데모/41-안드로이드웹뷰/index.html", status:"live", g:"linear-gradient(135deg,#0A0C0E,#12321f 52%,#3DDC84)", here:true },
-    { name:"페인트 브랜드 기업 소개 홈 — 휴랩", en:"HUELAB", cat:"home", desc:"친환경 종합도료 브랜드 홈페이지 · 삼화페인트(spsamhwa.com) 실측 기반 프리미엄 에디토리얼(딥틸 #00393c·크림·오렌지팝·Inter 대형 디스플레이) · ★AI 생성 시네마틱 영상 히어로 + 인테리어/시공 이미지 4종(실존 브랜드·로고 없이 생성) · COLOR INSPIRATION(테마 팔레트+색코드) · 제품 라인업(근거 있는 친환경 인증만 ✓ 표시) · 시공사례 갤러리(필터·라이트박스) · 통합검색 · 관리자 제품/시공 CRUD(localStorage) · 발견: 화면색≠실물(메타머리즘→실물 컬러칩 고지)·근거없는 친환경=부당광고·빌더로는 삼화 수준 불가", url:"./데모/40-페인트브랜드홈페이지/index.html", status:"live", g:"linear-gradient(135deg,#00393c,#1f6f72 55%,#ff4e1c)", here:true },
-    { name:"상품권 매입(현금화) 준법 웹 — 핀가드", en:"PINGUARD", cat:"platform", desc:"상품권 매입 서비스 · “회원가입 없이 3초 자동송금”을 그대로 만들면 정보통신망법·특금법·대부업법 위반 → 속도가 아닌 준법(KYC·AML·FDS)으로 재설계 · 신청 흐름에 구매경로 확인(소액결제·카드 구매분 실차단)+본인확인(KYC) 게이트 · 매입률×액면 실시간 견적 · 관리자 이상거래탐지(FDS) 실판정(대량·고액 자동 보류)·전 조건 통과분만 송금·매입률 편집 즉시 재계산 · ★준법 진단 화면(요구 기능별 위법 신호등 3/2/3+근거 법령+대안) · 대법원 판례·정통망법72조 리서치 · 24PIN 실측", url:"./데모/39-상품권매입사이트/index.html", status:"live", g:"linear-gradient(135deg,#0C1626,#1B5CF6 55%,#0CA678)", here:true },
-    { name:"오브젠·잘레시아 통합 기업·IR 홈 (B안·SPECTRUM)", en:"OBZEN B", cat:"home", desc:"합병 통합 IR 홈페이지 · A안(다크 시스템맵)과 전혀 다른 라이트 오로라 방향 — 흩어진 데이터를 오브젠이라는 하나의 렌즈로 모으는 “이클립스” 시그니처 · 라이트 웜 페이퍼 + 인디고→마젠타→앰버 스펙트럼 그라디언트 + 헤비 산세리프×Fraunces 세리프 에디토리얼 · 회사소개·연혁 타임라인(합병 정보)·통합 서비스 아코디언·IR 대형 카운터·뉴스룸(유형 필터+Blob)·실동작 통합검색(/ 단축키)·관리자 CMS(localStorage 실연동)·KO/EN · reveal IO 폴백", url:"./데모/37-오브젠통합웹사이트/index.html", status:"live", g:"linear-gradient(135deg,#4b3bff,#ff3d9a 55%,#ffb020)", here:true },
-    { name:"오브젠·잘레시아 통합 기업·IR 홈 (A안·시스템)", en:"OBZEN A", cat:"home", desc:"합병 통합 IR 홈페이지 · 다크 라이브 시스템 맵으로 고객 데이터×경영 데이터→통합 지능→다음 행동 · 플랫폼 단계·산업별·거버넌스 탭이 선택 영역만 스코프 갱신 · 뉴스·IR 유형 필터+Blob 다운로드·통합검색(/ 단축키)·관리자 CMS·KR/EN · 제품 나열 대신 수집→통합→분석→실행 흐름 재구성 · Palantir×Databricks×Upstage / Microsoft AI×Terminal Industries×LX Hausys 실측", url:"./데모/34-오브젠통합웹사이트/index.html", status:"live", g:"linear-gradient(135deg,#081321,#22B8A7 58%,#0F2861)", here:true },
-    { name:"AI 역사동화 자동생성·PDF 파이프라인", en:"YEODAM", cat:"platform", desc:"여주 관광 플랫폼 본구축 전 PoC · 아이 이름·관광지 입력→맞춤 역사동화+삽화→PDF 전자책까지 실제 파이프라인 · 6단계 소요시간·비용 실측(삽화 병목 실증) · 승인 여주 팩트DB 기반 역사 사실검증 게이트(허위 연도·세종×명성황후 시대불일치 등 환각 검출 시 PDF 발행 차단) · 아동 안전 가드레일·개인정보 로컬미저장 · 저작권 대응 생성이력(문체부 안내서 근거) · 캐릭터 레퍼런스 고정으로 삽화 일관성 · 외부 라이브러리 없이 캔버스→JPEG 실제 PDF 생성(한글 안전) · 힉스필드 삽화 6종 · 리디×핑크퐁×뤼튼 / Partizan(SOTD) 실측", url:"./데모/38-AI역사동화자동화/index.html", status:"live", g:"linear-gradient(135deg,#3a2f22,#b8541f 58%,#b78a2e)", here:true },
-    { name:"배리어프리 장비 대여·반납 키오스크", en:"ALLEND", cat:"platform", desc:"공공기관 장비 대여·반납 배리어프리 키오스크 · 음성안내(TTS)·물리버튼 로빙포커스·고대비·저시력확대·화면낮춤이 실제 동작 · 대여/반납 재고 실연산·관리자 실연동 · KS X 9211 접근성 검증 진단(지급디자인 A/B 토글로 명도대비·글자·터치·타임아웃 실판정)·명도대비 실계산기·디자인/SW/HW 책임분계표로 “지급 디자인대로 구현 시 검증 탈락” 실증 · 접근성=법적강제(장차법 3천만원 벌금)·SW단독 통과불가 발견 · 무인정보단말기UI플랫폼×따릉이×정부24 / Obys(SOTD)×Linear 실측", url:"./데모/33-장비대여반납키오스크/index.html", status:"live", g:"linear-gradient(135deg,#0c1017,#0b57c7 58%,#36c5f0)", here:true },
-    { name:"업비트·빗썸 신규 공지 감지 (1초·파이썬)", en:"ZEROLAG", cat:"admin", desc:"업비트·빗썸 신규 공지를 1초 이내 감지하는 파이썬 스크립트 · 브라우저에서 실제로 도는 폴링 감지 시뮬레이터 · id 기준 중복 제거(OFF 시 재출력 실증)·지수 백오프 장애 복구·거래소 단위 격리(한 곳 장애여도 다른 곳 감지 지속) · “1초 이내 vs 요청 제한” 트레이드오프 표 · 납품 파이썬 코드·config·수용기준 검수 · 가상 시뮬레이션 데이터", url:"./데모/30-업비트빗썸신규공지감지/index.html", status:"live", g:"linear-gradient(135deg,#04120d,#22d3a8 58%,#2f80ed)", here:true },
-    { name:"수입검사실 품질 대시보드 (ETL·상시표출)", en:"QWALL", cat:"admin", desc:"ERP·QMS·엑셀 3개 소스를 ETL로 통합한 품질 대시보드 · 14개 KPI·실패비용·전년 비교, 필터(기간·업체·장치) 실시간 재계산 · ERP-QMS 이중 계상을 오더 매핑 중복 제거로 실증(순 50 vs 원시 94건, 90% 부풀림) · 무인 새로고침 실패 시 stale 경고 · 대형 모니터 다크 풀스크린 상시표출 · 라이선스 비종속 웹 대안 · 대시보드/운영 콘솔 실연동", url:"./데모/29-수입검사실품질대시보드/index.html", status:"live", g:"linear-gradient(135deg,#0a1526,#1f5fd0 58%,#5b9bff)", here:true },
-    { name:"교사 전용 견적·주문 B2B (승인·PDF)", en:"GREENDESK", cat:"admin", desc:"친환경 업사이클 교구 회사의 교사 전용 B2B · 고유번호증 제출→관리자 승인/문자→인원 구간별 강사비·교구 견적 자동계산(실시간 합계·부가세·할인)→직인·문서번호 찍힌 견적서 PDF 실발행(회차 보존, 재발행 2·3차)→주문·예약→진행·청구·결제 기록 · 교사/관리자 백오피스 실연동 · Toss비즈×Stripe Invoicing 참조", url:"./데모/28-견적서자동계산주문관리/index.html", status:"live", g:"linear-gradient(135deg,#0f2b1b,#1f8a4c 58%,#7bd6a0)", here:true },
-    { name:"마케팅 성과 자동 집계 대시보드", en:"ADSUM", cat:"admin", desc:"메타·구글·카카오모먼트·네이버 4채널 + 스마트스토어 실매출 통합 집계 · 매출 기준 3분리(채널합산 360%↔광고기여 248%↔MER 303%)로 ROAS 부풀림 실증 · 수집 방식 토글로 전환 지연 34% 과소집계 재현 · 목표 CPA 4단계 판정(전환 0건 소재 3건·269만원 누락 증명) · 소재 이미지 URL 만료 403 재현 · LLM 페이로드 금액 마스킹 · Airbridge×TripleWhale×Funnel / Dragonfly×TRIONN 수상작 실측", url:"./데모/27-마케팅성과자동집계/index.html", status:"live", g:"linear-gradient(135deg,#08090C,#155DFC 58%,#7F22FE)", here:true },
-    { name:"여성 커뮤니티 + 콘텐츠 큐레이션", en:"HERLOOP", cat:"platform", desc:"외부 콘텐츠 수집으로 초기 데이터를 채우는 여성 전용 커뮤니티 · 노출 방식(링크만/발췌/전문) 전환 시 사용자 화면 미리보기가 실제로 바뀌고 법적 위험도 표시 · 크롤링 글은 본문 필드 자체를 두지 않아 전문 미저장을 데이터 구조로 강제 · 본인확인(성별) 게이트·긴급 신고 즉시 가림·2026.7.1 불법촬영물 이미지 확대 대응 · 루리웹형 게시판 리스트 구조(구분·제목·글쓴이·추천·조회·날짜·공지고정·BEST·정렬·사이드바 위젯) 재현 · 풀블리드 이미지 스테이트먼트+텍스트 애니(애플·삼성 벤치마크) · 화해×오늘의집×커리어리 / 루리웹(구조) 실측", url:"./데모/26-데이터수집여성커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#2C2C2B,#C2557A 58%,#E8A0A8)", here:true },
-    { name:"러시아어권 이주민 주거·생활정보", en:"MOST", cat:"platform", desc:"공인중개사·임대인 역할별 매물 등록과 관리자 승인 · 한/러 생활·법률·비자 정보 · 광고/검증 분리·등록번호/필수광고정보 점검·출처/최종검토일·신고 흐름 등 법적·운영 리스크를 실제 기능으로 구현 · 100vw 풀블리드 이미지 스테이트먼트+마우스 반응 정착 카드+한/러 라인 마스크 애니(애플·삼성 벤치마크) · 서울외국인포털×Rightmove×Daft.ie 실측 디자인 · 힉스필드 비주얼", url:"./데모/24-이주민생활정보/index.html", status:"live", g:"linear-gradient(135deg,#073F35,#0D5B4B 58%,#D85B3F)", here:true },
-    { name:"광융합기업 산업지도", en:"LUMINA", cat:"platform", desc:"위치 기반 기업 탐색 프로토타입 · 줌 레벨 클러스터링(19→168 마커)·8대 분류 커스텀마커·다중필터·현재영역 재검색·2분할↔바텀시트·가상스크롤(DOM 11~15개) · 관리자 지오코딩 3단계 보정·엑셀 일괄·재무 API 커버리지 진단(중소 12.3%) · 과업지시서 100% 검수 vs 15일 충돌 범위구분 제안 · 호갱노노×Airbnb / Linear×Stripe 실측", url:"./데모/25-광융합기업지도/index.html", status:"live", g:"linear-gradient(135deg,#061B31,#533AFD 58%,#584DE4)", here:true },
-    { name:"전국 순회 세미나 예약 플랫폼", en:"SEMINAR56", cat:"platform", desc:"워드프레스 기반 마케팅 세미나 모객·예약 · 56개 지역×회차 정원 자동마감·가상계좌 24h 좌석홀딩·수익계산기·알림톡(심사 반려 사례 포함)·WP관리자 UI 카피 · 페이지 복제 vs CPT 구조 시뮬레이션으로 유지보수 리스크 실증 · 패스트캠퍼스×Luma×탈잉 실측 디자인", url:"./데모/23-마케팅세미나플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#171B1F,#FC1C49 58%,#FF7A96)", here:true },
-    { name:"가족 소통·웰니스 앱 (RN 24화면)", en:"HANSANG", cat:"platform", desc:"성인 자녀와 부모를 하루 1회 공동 미션으로 잇는 가족 웰니스 앱 · RFP 24개 화면 전부 폰프레임 인터랙티브 구현(온보딩·미션 인증·재료 수집→레시피 해제·에이슬립 수면 리포트·걸음 랭킹·설정) · 힉스필드 비주얼", url:"./데모/35-가족소통웰니스앱/index.html", status:"live", g:"linear-gradient(135deg,#2B2118,#E85F1E 58%,#FFB673)", here:true },
-    { name:"22인치 터치 설문 키오스크 2종", en:"NEXA SURVEY", cat:"admin", desc:"행사장 설문 키오스크 2종(4문항 순차 설문·특장점 6탭+실시간 투표 결과) · 실시간 통계 대시보드 · 관리자 로그인+엑셀 다운로드 · 1920×1080 고정형 터치 UI·제스처 차단·동의 모달 · 힉스필드 비주얼", url:"./데모/17-22인치설문웹/index.html", status:"live", g:"linear-gradient(135deg,#0b1220,#22d3ee 58%,#818cf8)", here:true },
-    { no:15, name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결 · 힉스필드 제품 비주얼", url:"./데모/15-쇼핑몰연동핏/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true },
-    { name:"청년-지역 매칭 플랫폼", en:"OUTBOUNDER", cat:"platform", desc:"로컬 일경험 매칭 데모 · 청년 셸(공고탐색·매칭적합도·지원·마이페이지)+관리자 셸(성과대시보드·지원자심사·콘텐츠·파트너리포트) 실연동 폐쇄순환 · 도트맵·카운트업·카드스택 스크롤 연출 · 힉스필드 비주얼", url:"./데모/36-청년지역매칭/index.html", status:"live", g:"linear-gradient(135deg,#0e8c5a,#00b670 55%,#f05519)", here:true },
-    { name:"탐정 법인·사무소 반응형 홈페이지", en:"JEONGDO", cat:"home", desc:"영상 인트로·핀 스크럽·마퀴 등 스크롤 인터랙션 중심 브랜드 홈페이지 · 업무 8분야·7단계 절차·FAQ·상담폼→관리자 접수 연동 · GSAP/Lenis 로컬 번들로 오프라인 완전 동작", url:"./데모/13-탐정법인/index.html", status:"live", g:"linear-gradient(135deg,#000C24,#123C78 58%,#C9A55C)", here:true },
-    { no:12, name:"AI 교수·학습 플랫폼 운영 전환", en:"CAMPUS AI", cat:"platform", desc:"AnythingLLM 기반 교육 플랫폼의 RAG 인용·3역할 권한·보안·재현 배포·복구·인수인계 증거를 한 번에 검수하는 위시캣 제안 데모", url:"https://campus-ai-proofbook-20260716.jeonjaeman9668.chatgpt.site", status:"live", g:"linear-gradient(135deg,#04130f,#37e3a1 58%,#0d7c63)" },
-    { name:"유아동 기질검사 자동 채점·결과지", en:"KIDTEMPO", cat:"admin", desc:"구글폼 응답 → 자동 채점(역채점·가중치·연령/성별 규준표·T점수·백분위) → 8가지 동물유형 판별 → 12페이지 결과지 PDF 자동 생성 · 실제 동작하는 채점 엔진", url:"./데모/10-유아동기질검사/index.html", status:"live", g:"linear-gradient(135deg,#2CC1AE,#12A594 55%,#0B7B70)", here:true },
-    { name:"사내 직원 스케줄링·리소스 관리", en:"VOLTA", cat:"admin", desc:"현장 기술자 221명 스케줄링 백오피스 · Gantt 캘린더(드래그 배정·충돌 감지 3규칙)·가동률 대시보드·휴가 승인·장비/지역·모바일 현장뷰 · 디자인시스템·이메일템플릿", url:"./데모/11-사내직원스케쥴링/proposal.html", status:"live", g:"linear-gradient(135deg,#1b4ee0,#0e8f84)", here:true },
-    { name:"전기설비 내장형 모니터링", en:"VOLTGUARD", cat:"admin", desc:"폐쇄망 전기설비 운영 콘솔 · 실시간 KPI·24시간/7일 부하 추이·상별 부하율·설비 상태·알람 · 1280×1024 산업용 화면 최적화", url:"./데모/09-전기설비내장형웹/index.html", status:"live", g:"linear-gradient(135deg,#182330,#1559cf 58%,#19a6b3)", here:true },
-    { name:"B2B 코칭 프로젝트 관리", en:"BOOSTER", cat:"admin", desc:"코칭·워크숍 프로젝트 관리 + 성과 대시보드 · 5개 권한 분리(관리자/PM/코치/고객사HR/대상자) · 코칭목표합의서·트래킹·부스팅·결과리뷰·PDF/Excel", url:"./데모/08-B2B코칭/index.html", status:"live", g:"linear-gradient(135deg,#6C5CF7,#4331C9)", here:true },
-    { name:"글로벌 의료정보 플랫폼", en:"LUMIÈRE", cat:"platform", desc:"한·일 프리미엄 성형외과·치과 정보·예약 플랫폼 · 한/일 실시간 전환·병원목록/상세·캘린더 예약·병원/최고관리자 · AI 광고영상 히어로(힉스필드)·시네마틱 UI", url:"./데모/07-글로벌의료정보플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#F48FB8,#E85D9E 55%,#A78BFA)", here:true },
-    { name:"전자 기부약정서", en:"PLEDGE", cat:"admin", desc:"대학 발전기금 태블릿 전자약정 PWA · 입력·전자서명·PDF 자동생성·관리자 다운로드", url:"./데모/06-태블릿기부약정서/index.html", status:"live", g:"linear-gradient(135deg,#1a3860,#b58a3c)", here:true },
-    { name:"키워드 분석 플랫폼", en:"PULSE", cat:"admin", desc:"네이버+4대 SNS(인스타·X·유튜브·틱톡) 키워드 통합 분석 BI 대시보드 · 다중검색·추이·인구통계·연관어·엑셀", url:"./데모/05-키워드분석플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#7c6cff,#22d3ee)", here:true },
-    { name:"타겟 키워드 정보관리 백오피스", en:"MISIK", cat:"admin", desc:"맛집 정보 통합 관리 폐쇄형 백오피스 · 로그인/권한·검색/필터·협업·대시보드 + 키워드 자동수집(2차)", url:"./데모/04-타겟키워드자동수집/index.html", status:"live", g:"linear-gradient(135deg,#5046e5,#8b5cf6)", here:true },
-    { name:"플리마켓·행사 셀러 매칭 앱", en:"BOOTHPIN", cat:"platform", desc:"행사 주최자↔셀러 매칭 모바일 앱 · 의뢰자 기능명세서를 화면 18개로 전량 구현(셀러등록·행사만들기·승인/거절·출석QR·지도탐색·참여신청·채팅·등급) · 폰프레임 인터랙티브 · 등급규칙 실계산 진단(서열역전·강등 검증)·PG등록·위치정보법 등 리스크 6건 반영 · 당근×Airbnb×Eventbrite 실측 디자인", url:"./데모/22-행사관리플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#FF8A3D,#FF6600 55%,#1A1C20)", here:true },
-    { name:"교직문화 설문 수집·시각화", en:"CLASSPULSE", cat:"admin", desc:"전국 교원 설문 수집+통계 대시보드 · 응답화면(자동저장·이어하기·1회용토큰)+관리자(발산형 리커트차트·5중 필터·교차분석 히트맵·연도추이·CSV/인쇄) · 응답 1,284건 실제 연산 · 소규모셀 자동 마스킹(n<5)·사후층화 가중 토글 등 리스크 6건 반영 · Typeform×Datawrapper×Metabase 실측 디자인", url:"./데모/21-교사설문시각화/index.html", status:"live", g:"linear-gradient(135deg,#FAF9FB,#007DA0 55%,#509EE3)", here:true },
-    { name:"연구용 실험 챗봇 플랫폼", en:"LABCHAT", cat:"platform", desc:"학술 연구용 대화 실험 MVP · IRB 동의→참가자ID→가변블록 무작위배정(4집단)→ChatGPT UI 스트리밍 챗→완료 · 연구자 콘솔(집단균형·프롬프트 버전관리·대화로그·실제 CSV 반출) · CSV동시성/모델스냅샷/IRB 등 리스크 6건 사전 반영 · ChatGPT×Qualtrics×Prolific 실측 디자인", url:"./데모/20-연구용챗봇/index.html", status:"live", g:"linear-gradient(135deg,#FCFCFC,#601AE5 55%,#0F2BC9)", here:true },
-    { name:"신규 사업자 리드 수집 파이프라인", en:"BIZSEED", cat:"admin", desc:"신규 개업 사업자 자동 수집·연락처 확보·DB 적재 관리 콘솔 · LOCALDATA 인허가 일변동분 기반 6단계 파이프라인·스케줄러·실패코드·엑셀 반출·DB 스키마 정의서 · 두낫콜 대조/마스킹 등 법적 리스크 6건 사전 반영 · Apify×Airbyte×Supabase 디자인", url:"./데모/19-신규사업자데이터수집/index.html", status:"live", g:"linear-gradient(135deg,#020202,#3FCF8E 58%,#6B9FFF)", here:true },
-    { name:"스포츠카드·TCG 통합 커뮤니티", en:"TOPLOADER", cat:"platform", desc:"스포츠카드·원피스·포켓몬 콜렉터 통합 커뮤니티 · 전역 관심사 필터(localStorage)·이중 말머리 게시판·쇼케이스 갤러리·직거래 장터(오픈채팅 연결)·시세 인덱스·관리자+광고 슬롯 · Card Ladder×KREAM×너정다 디자인 · 힉스필드 비주얼", url:"./데모/18-스포츠카드통합커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#0B0E14,#3E7BFF 58%,#FFC24B)", here:true },
-    { name:"영업인 커뮤니티+회사리뷰", en:"SALESUP", cat:"platform", desc:"영업 직군 특화 커뮤니티 · AI 자동답변 Q&A · 회사 별점/익명 리뷰 · 관리자 백오피스", url:"./데모/16-커뮤회사리뷰플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#f45757,#b32020)", here:true },
-    { name:"앱 커뮤니티+광고", en:"MOA", cat:"platform", desc:"앱 커뮤니티 게시판 + 자체 광고 시스템 · 사용자(웹뷰)/관리자/광고주 3화면 · Supabase", url:"./데모/03-커뮤니티광고플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#6d5cf5,#a855f7)", here:true },
-    { name:"창업지원협회", en:"KSSA", cat:"home", desc:"창업지원협회 공식 홈페이지 · 롤링배너·공지/정보·1:1문의·회원·관리자", url:"./데모/02-창업지원협회/index.html", status:"live", g:"linear-gradient(135deg,#1d4ed8,#0a7d5a)", here:true },
-    { name:"운송포탈", en:"HANUL", cat:"platform", desc:"전국 화물 운송 통합 플랫폼 · 운임조회·견적·관리자", url:"./데모/01-운송포탈/index.html", status:"live", g:"linear-gradient(135deg,#1b3a6b,#0f2548)", here:true },
-    { name:"건축자재", en:"HAOS", cat:"home", desc:"HAOS × Sto 건축자재 브랜드 데모", url:"https://jeonjaeman.github.io/haos-demo/", status:"live", g:"linear-gradient(135deg,#5a4636,#2c2118)" },
-    { name:"여성 피트니스", en:"VIVAFIT", cat:"home", desc:"여성 전용 프리미엄 피트니스 브랜드", url:"https://jeonjaeman.github.io/vivafit-demo/", status:"live", g:"linear-gradient(135deg,#7a2f5e,#3a1530)" },
-    { name:"중고 건설장비", en:"JANGIN", cat:"platform", desc:"굴삭기 등 중고 건설장비 거래 플랫폼", url:"https://jeonjaeman.github.io/jangin-demo/", status:"live", g:"linear-gradient(135deg,#6b5a1b,#352b0f)" },
-    { name:"매출·인보이스 관리", en:"GOLD", cat:"admin", desc:"GoldInvoice 매출/정산 관리 서비스", url:"https://jeonjaeman.github.io/goldinvoice/", status:"live", g:"linear-gradient(135deg,#1b5a4a,#0f2c25)" },
-    { name:"보안업체", en:"SECURION", cat:"home", desc:"기업 보안·관제 서비스 브랜드", url:"https://jeonjaeman.github.io/securion-demo/", status:"live", g:"linear-gradient(135deg,#23314f,#141d30)" },
-    { name:"글로벌 투자사(VC) 포트폴리오", en:"HORIZON", cat:"home", desc:"VC 공식 홈페이지 + 포트폴리오 80개사 · 영/국문 로케일별 실제 URL 165페이지 정적생성(hreflang·사이트맵) · 문장형 필터+다축 레일 · 기업이 직접 프로필을 올리는 2단계 권한 CMS(60자 규격·검수승인·실시간 카드 미리보기) · YC 소스분석 기반", url:"./데모/14-글로벌투자사/index.html", status:"live", g:"linear-gradient(135deg,#16140F,#6E6A5C 55%,#FF5100)", here:true },
-    { name:"업무요청 접수", en:"AS", cat:"admin", desc:"AS·업무요청 접수 관리 시스템", url:"https://jeonjaeman.github.io/as-demo/", status:"live", g:"linear-gradient(135deg,#2f4a6b,#172638)" },
+    { name:"중고차 수출 영업·바이어 입찰 시스템 — 엑스카로", en:"EXCARO", cat:"platform", desc:"중고차 수출 기업 사내 영업+바이어 입찰 웹(위시켓 2,300만·60일·프라이빗 매칭·과업변경 재등록) — 3표면 전부 동작: 소비자 랜딩(동의 기반 차량조회→접수)/영업팀 어드민(자동배정·상담 체크리스트 6항목·비교견적/폐차기준가·입찰 타이머·임의중지·재입찰·서류 5종·ERP 전송)/바이어 어드민(블라인드 입찰·내 순위만) · ★localStorage+storage 이벤트로 창 간 실시간 연동(영업·바이어 나란히 열면 입찰이 흐름) · ★최대 발견 3: ①국토부 자동차종합정보 API=소유자 제3자 동의+운영 심의 전제(공공데이터포털 15071233)→동의 전 조회 비활성 ②24h 고정 마감=스나이핑으로 낙찰가 하락→소프트클로즈(마감 3h 내 입찰 시 5h 자동연장)+서버 시각 마감 판정(마감 후 입찰 거부 실동작) ③「철저히 비노출」=화면 숨김으론 devtools에 노출→바이어 응답에서 필드 자체 제거(콘솔 확인 가능) · 카마트 B2B 계약 리드타임·알림톡 심사 3일 SMS 폴백·ERP 멱등키+재시도·재입찰 2회 제한 · 디자인: 헤이딜러×ACV Auctions×오토벨 실측 + Produx Design(Awwwards SOTD 26.08.09)×Attio · 견적 3,300,000원/66일 공수표", url:"./데모/58-중고차수출영업관리/index.html", status:"live", g:"linear-gradient(135deg,#0e0e0e,#3a3d45 52%,#d8451c)", here:true, thumb:"./assets/thumbs/63.webp", sum:"소비자 차량 접수부터 영업팀 상담·비교견적, 해외 바이어 블라인드 입찰까지 세 개의 표면을 하나로 연결한 중고차 수출 영업 관리 시스템입니다. 소프트클로즈 마감과 서류·ERP 전송 흐름을 함께 구현했습니다." },
+    { name:"식품공장 스마트 HACCP 모니터링 웹+앱 — 온도", en:"ONDO", cat:"admin", desc:"식품 제조공장용 모니터링 웹 UI 리뉴얼+모바일 앱 구축(위시켓 1,000만·60일·지원 27명·정부지원과제) — 공고 디자인 요구 문구 그대로: ★다크 테마+보라 포인트(Linear 실측 #08090A·#8B5CF6)·★큰 글씨(A/A+/A++ 3단계 토글 실구현)·★신호등 상태·★최소 조작(이탈→상세→조치 클릭 2회) · ★최대 발견: 신호등 컬러만으론 적록색각이상 근로자가 구분 불가(공고의 접근성 요구와 충돌)→모든 상태 색+아이콘+텍스트 3중 병행+「색각 보조 모드」(청/주황 팔레트 실전환) · ★스마트 HACCP 인증 4대 요건(자동기록·전자기록·위변조 방지·이상 알림) 가시화 — 전자기록 해시 체인 화면·자동기록 KPI·리포트 해시 컬럼 · [웹] 대시보드(설비 8카드 스파크라인·공장 현장도·실시간 알림)/설비 상세(24h 차트 CL 점선·이탈 마킹)/점검/리포트(식약처 기록부 인쇄+CSV BOM)/설정 · [앱 mobile.html] 폰 프레임 4화면 — 실시간 모니터링(Datadog 참고)·푸시 알림(이탈 시뮬→OS 배너)·신호등 점검(SafetyCulture 실측 #6559FF)·PDF 공유 시트 · ★이탈 시뮬레이션 버튼: 푸시→KPI→상세 자동 오픈→개선조치 프리필→복귀+해시 기록 전 흐름 · KO/EN/베트남어 즉시 전환(현장 외국인 인력 언어 구성 근거) · 상태 판정 온도 vs CL 실비교·차트 canvas 자체 구현 · 9월 납기=앱 심사 버퍼 지적(TestFlight 선오픈 제안) · 견적 8,000,000원/65일 역할별 단가 항목별", url:"./데모/56-식품제조공장모니터링웹앱/index.html", status:"live", g:"linear-gradient(135deg,#08090A,#5E6AD2 52%,#8B5CF6)", here:true, thumb:"./assets/thumbs/54.webp", sum:"식품 제조공장의 설비 상태, 온도 이탈, 점검과 HACCP 전자기록을 한 흐름으로 확인하는 모니터링 웹앱입니다. 신호등 상태를 색·아이콘·텍스트로 병행하고, 이탈 알림부터 개선조치와 해시 기록까지 웹과 모바일 화면에 연결했습니다." },
+    { name:"반도체 제조 기업 브랜드 사이트 — 레오닉스", en:"REONIX", cat:"home", desc:"반도체 제조 기업 웹사이트 구축(위시켓 100만·15일·지원 36명) — ★레퍼런스(hanvit-ind.com) 브라우저 전수 실측 후 같은 단락 구성·인터랙션·애니메이션을 가상 반도체 브랜드로 재구현(카피·이미지·코드는 전부 자체 제작, 메인 1페이지) · 8단락: 팹 영상 히어로(라인 마스크 리빌 82px Inter)→★핀 스크럽(웨이퍼 영상 27vw→100vw 풀스크린 확장·오버레이 텍스트·헤더 자동 숨김, GSAP 없이 sticky+진행도 보간 자체 구현)→Industries 3카드→★Products 5열 flex 확장(호버 1→1.45·다크 패널·모바일 탭 오픈)→★Services 풀스크린 배경 스왑→R&D 영상+리스트→Merit 4카드→Careers/Catalog 배너 · GNB: 투명→솔리드·호버 메가 패널(슬로건+2·3뎁스=사이트맵 제안)·전체메뉴 오버레이 · ★메뉴 클릭=이동 없이 「실제 작업 시 반영」 토스트(데모 범위 정직 고지) · 미디어 18종 힉스필드 생성(영상 3편 1440p 압축 311~569KB·뷰포트 밖 자동 정지, 이미지 15장 webp) · 외부 라이브러리 0·reduced-motion 대응 · 스택 지적: 아임웹 코드 위젯=기술지원 제외→자체 구축+서버리스 폼 메일 제안(근거 URL) · 레드팀 4종 통과(rnd-poster 404·백그라운드 탭 스크럽 폴백 교정) · 견적 750,000원/15일 공수표", url:"./데모/55-반도체기업브랜드사이트/index.html", status:"live", g:"linear-gradient(135deg,#0E1524,#16264A 52%,#2B63F6)", here:true, thumb:"./assets/thumbs/53.webp", sum:"반도체 제조 기업의 기술 역량을 영상 히어로, 웨이퍼 핀 스크럽, 산업·제품·서비스·R&D 섹션으로 구성한 브랜드 사이트입니다. 외부 모션 라이브러리 없이 sticky와 스크롤 진행도 보간으로 주요 연출을 구현하고 미디어 재생과 접근성 설정을 함께 고려했습니다." },
+    { name:"일본인 대상 K-뷰티 예약 컨시어지 — 미야비 서울", en:"MIYABI", cat:"platform", desc:"방한 일본인 관광객 K뷰티(클리닉·에스테틱·퍼스널컬러·헤어·메이크업) 예약 플랫폼(견적요청 12항 전부 구현) — 일본어 기본+KO 스위처(i18n 사전 구조=영어·번체 확장 준비)·★의료/비의료 분리 동선(외국인환자 유치업 미등록 알선=형사처벌 소지→클리닉은 무료 상담 예약만, 시술 계약·수납은 제휴 의료기관 직접 — 배지·위저드(결제 스텝 제거)·관리자 정산까지 일관)·★리뷰 의료 분기(의료법 56조 치료경험담 광고 금지→비의료만 본문, 의료는 시설 평점만·작성 모달부터 분기)·예약 위저드(캘린더 3개월·슬롯 마감·인원·프리필·검증 차단)·해외카드 사전결제 시뮬(JCB 우선·KRW 결제+JPY 병기·취소 수수료 4단계 실계산 D−일수별 환불액)·회원가입/로그인 탭·마이페이지(예약/이력·영수증 Blob)·여정 플래너(시술 다운타임 배치 경고)·特定商取引法 표기 페이지·LINE 중심 문의 · [관리자] KPI·주간 캘린더(의료/비의료 색 구분)·예약 필터+상태 변경·프로그램 노출/가격 CRUD·고객·정산(해외카드 PG 4.5% 실측 반영)·CSV 3종 · 디자인: L'Oréal Essentiality of Beauty(Awwwards HM) 실측 자간+0.03em·radius 0·세리프 에디토리얼 × Aman Resorts 콰이어트 럭셔리 × Klook JP 예약 문법(모바일 하단 CTA) · 레드팀 4종 통과(회원가입 부재·토스트 i18n·당일 예약 0건·PG 수수료 가정 교정) · 야후재팬=구글 엔진(2027.3까지)→일본 SEO 단일 트랙 · 견적 3,750,000원/75일 항목별", url:"./데모/54-일본K뷰티예약플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#211D18,#7B5F37 52%,#D9C39A)", here:true, thumb:"./assets/thumbs/52.webp", sum:"방한 일본인 고객이 클리닉과 비의료 K-뷰티 프로그램을 구분해 탐색하고 예약·결제·취소하는 플랫폼입니다. 일본어 기본 UI, 의료·비의료 분기, 수수료·환불 실계산, 마이페이지와 관리자 예약·정산까지 전체 운영 흐름을 구현했습니다." },
+    { name:"추론형 영어 문법 학습 웹앱+CMS — 아하 문법", en:"AHA", cat:"platform", desc:"질문형(추론형) 영어 문법 학습 웹앱+강사용 CMS(견적요청서 1차 MVP) — ★지정 레퍼런스(netlify 샘플 앱) 20화면 전수 실측 이식(#F4F7FB·네이비·블루 42px/800·오렌지 CTA·카드 r16·760px·선택 게이팅·반말 코칭 카피) · [학생 앱] 공고 학습 흐름 8단계 그대로: 질문→이모지 예시 선택→추론 체인→선택형(★오답 시 1줄 힌트만 제공 후 진행, 문구 그대로)→설명(HUNT)→Aha! 카드→응용 3~4→백지테스트 시트+AHA NOTE 인쇄 · ★재학습 시 선택지 랜덤화(순서 암기 방지)·로그인 없음·PWA(manifest+SW) · [CMS] 공고 폼 전 필드(이모지 팔레트·추론/응용 동적 추가)·게시 즉시 학생 앱 반영·복제·검색·미리보기=학생 화면 새 탭 · 근거: 귀납 문법 학습·인출 연습(백지테스트) 연구 — 세미나 설득 논리 제공 · 레드팀 4종 통과 · 견적 3,200,000원/22일 항목별", url:"./데모/53-학습웹앱/index.html", status:"live", g:"linear-gradient(135deg,#14213D,#1E4FA8 52%,#FF9F1C)", here:true, thumb:"./assets/thumbs/51.webp", sum:"학생이 예시에서 문법 원리를 추론하고 선택형 질문, 힌트, 설명, 응용과 백지테스트까지 진행하는 학습 웹앱입니다. 강사용 CMS에서 유닛을 등록·수정·복제·검색하고 게시한 콘텐츠가 학생 화면에 즉시 반영되도록 구성했습니다." },
+    { name:"행사 부스 모바일 웹 설문 — 콘페티", en:"CONFETTI", cat:"platform", desc:"오프라인 행사 부스 X배너 QR 설문(위시켓 150만·14일·납품 8/17) — 공고 2-1·2-2 전부 실동작 · [설문] 로그인 없이 즉시 진입·★문항 전환 슬라이드 애니메이션+진행바·응답별 최적 폼(라디오=선택 즉시 자동 다음(부스 대기줄 대응)·복수선택·별점 바운스+라벨·200자 카운터)·완료 콘페티+기념품 코드·★제출 8초 후 자동 초기화(공용 기기)·자체 SVG 라인 아이콘 15종(이모지 미사용) · [관리자] 샘플 200+실제 제출 실시간 합산 실집계·★엑셀(.xls SpreadsheetML) 실생성(헤더 서식·한글 무손상)+CSV·★실스캔 QR+인쇄용 PNG 다운로드 · 피크 동시접속=정적 프론트+제출 API 분리 제안(Node·MongoDB·AWS 태그 그대로) · 레드팀 4종 통과(rAF 백그라운드 버그 발견·교정) · 견적 1,500,000원/10일 항목별", url:"./데모/52-행사설문조사/index.html", status:"live", g:"linear-gradient(135deg,#241F18,#b0801a 52%,#FFC933)", here:true, thumb:"./assets/thumbs/50.webp", sum:"오프라인 행사 부스의 짧은 대기 흐름에 맞춰 로그인 없이 QR로 진입하고, 응답 유형별 최적 입력과 자동 다음 전환을 제공하는 모바일 설문입니다. 관리자 화면에서 응답을 실시간 집계하고 엑셀·CSV·인쇄용 QR로 내보내도록 구현했습니다." },
+    { name:"외국인 고객용 차량 이용가이드 앱 — 키링", en:"KEYRING", cat:"platform", desc:"렌터카 외국인 고객 차종별 이용가이드 모바일 앱(위시켓·협의·80일) — 공고 사용자 스토리 4건 그대로 실동작 · [고객 앱] QR 스캔→차종 가이드 자동 열림(#car= 딥링크)·KO/EN/中/日 자동번역 표시(기계번역 배지+★안전 주의사항 한국어 원문 병기)·비상연락처 탭투콜·주변 지점 지도(★위치 동의 게이트: 동의 시 현위치 거리 정렬/거부 시 목록만, 경로 안내 아님 명시)·기존 상담 채팅 외부 연결 · [관리자] 한국어 원고 등록·수정·삭제→★실제 스캔되는 QR·링크 즉시 발급(수정해도 QR 불변=재인쇄 불필요), 등록 차종 앱 실반영 · 발견: 현위치 지도=위치기반서비스사업 신고 대상·안전 문구 오역=배상 리스크(원문 병기 설계)·순수 웹뷰 스토어 반려→모바일웹+하이브리드 셸 제안·번역 저장 시 1회+캐시 · 레드팀 4종 통과 · 견적 9,000,000원/60일 항목별", url:"./데모/51-외국인고객용차량이용가이드/index.html", status:"live", g:"linear-gradient(135deg,#0D1B3E,#134097 52%,#1B64F2)", here:true, thumb:"./assets/thumbs/49.webp", sum:"렌터카 외국인 고객이 QR을 스캔해 차종별 이용법, 안전 주의, 비상 연락처와 주변 지점을 확인하는 모바일 가이드입니다. 관리자에서 한국어 원고를 관리하고 차량별 고정 링크와 실제 스캔 가능한 QR을 발급하도록 연결했습니다." },
+    { name:"모델 에이전시 인터랙티브 웹사이트+CMS — 엘랑", en:"ELAN", cat:"home", desc:"모델 에이전시 사이트 리뉴얼(위시켓 800만·60일) — 공고 상세요구 전부 실동작 · ★4페이지 실분리(메인/Models/News/CMS)+커튼 라우팅 · 메인: AI 생성 이미지 기반 image-to-video 실제 mp4 풀스크린 자동재생(폴백 켄번즈)·스크롤 텍스트 페이드아웃·★On set 캠페인 섹션(현장 영상 재생+패럴랙스·줌 스크럽+대형 마퀴가 함께 — 뷰포트 밖 자동 정지)·★Campaign Films 파트(실제 영상 3편 — 호버 미리 재생·클릭 풀사이즈 모달·모델북 폴라 영상 연결) · Models 서브: 그리드 8·비동기 필터·모델북 모달·호버 흑백→컬러+★「색상 반전(invert)」 토글(공고 문구 그대로) · News 서브: 카테고리 탭(bnbindustry.com 실측 이식)·CMS 실연동 · CMS: 에디터 등록→사이트 즉시 반영·노출 토글·배경 영상 교체(150MB 초과 실제 차단·게이지·알림)·수정삭제 · 사전질문 3건 답변(헤드리스 CMS 제안) · 레드팀 4종(디자인·인터랙션·실측 QA·★요구사항 충족=클라이언트 페르소나 15항 대조) · 견적 6,000,000원/40일 항목별", url:"./데모/50-모델에이전시브랜드/index.html", status:"live", g:"linear-gradient(135deg,#0E0E0F,#7a2418 52%,#E33F2B)", here:true, thumb:"./assets/thumbs/48.webp", sum:"모델 에이전시의 영상 중심 메인, 모델 검색·필터, 뉴스와 CMS를 네 개 페이지로 분리했습니다. 스크롤 기반 영상 연출과 커튼 전환을 적용하고, CMS에서 등록·노출·미디어 교체한 콘텐츠가 공개 화면에 즉시 반영되도록 구현했습니다." },
+    { name:"아이돌 카드 맞추기 미니게임 모바일 UI 시안 — 앙코르", en:"ENCORE", cat:"platform", desc:"아이돌 IP 카드 매칭 미니게임 모바일 웹 UI 디자인 의뢰(크몽·디자인만) — 정적 시안 대신 ★7파트 20화면 전부 눌러보는 시안 뷰어(PC=화면 인덱스+폰 프레임/모바일=실기기 풀스크린) · 게임이 실동작: 3D 카드 플립→매칭 펄스/오답 셰이크→타이머 경고→성공/신기록/타임오버 자동 분기·일시정지·힌트·콘페티 · 포토카드 컬렉션(진행률·등급·홀로그램 스윕)·랭킹·공유 카드 · 디자인: 의뢰자 im-fine.co.kr 실측(블랙·w200 대형 타이포·lh1.0 에디토리얼)+네온 라임 단일 액센트, 가상 그룹 LUMIN 6인 AI 생성(레드팀 검수로 인쇄물 프레임·로고 전량 제거) · 발견: 실존 아이돌 초상=퍼블리시티권 2026.3 첫 시정명령→라이선스 범위 착수 전 확인 제안 · 레드팀 3종(디자인·인터랙션·실측 QA) 통과 · 견적 2,800,000원/10일 항목별 산출", url:"./데모/49-아이돌카드게임/index.html", status:"live", g:"linear-gradient(135deg,#0A0A0B,#5a6b0f 52%,#D7FF3F)", here:true, thumb:"./assets/thumbs/47.webp", sum:"아이돌 카드 매칭 미니게임의 7개 파트, 20개 모바일 화면을 실제로 눌러볼 수 있는 시안으로 제작했습니다. 카드 플립, 매칭 판정, 타이머, 일시정지, 성공·신기록·타임오버 분기와 컬렉션·랭킹 화면까지 하나의 인터랙티브 데모로 구성했습니다." },
+    { name:"픽업트럭 카고 슬라이딩·밴 스토리지 브랜드 — 판도라팩토리", en:"PANDORA", cat:"home", desc:"픽업트럭 슬라이딩베드·캐노피탑·베드렉·밴 스토리지 시스템 제조 브랜드 멀티페이지 사이트 — 홈·소개·제품 3종(슬라이딩베드/밴 스토리지/출시예정)·차량 실측 핏 가이드(vehicle-fit)·FAQ/공지·문의, sitemap/robots까지 실사이트 구조", url:"./데모/48-카고슬라이딩브랜드/index.html", status:"live", g:"linear-gradient(135deg,#141210,#6b4a12 52%,#F5A623)", here:true, thumb:"./assets/thumbs/46.webp", sum:"픽업트럭과 밴의 적재 공간 솔루션을 제품군, 실제 설치 이미지, 차종 호환표와 상담 흐름으로 구성한 멀티페이지 브랜드 사이트입니다. 홈, 회사소개, 제품 상세, 지원, 문의까지 실사이트형 정보 구조를 갖추고 반응형으로 제작했습니다." },
+    { name:"학원 통합 관리 시스템 (출결·수납·성적·알림톡) — 도장", en:"DOJANG", cat:"admin", desc:"학원 출결·수납·성적·학부모알림을 Zapier/Make/노션 없이 자체 시스템 하나로(숨고) · ★핵심 발견을 기능으로 구현: 요청서의 '학생별 노션 공개링크'는 링크 유출·검색엔진 노출·퇴원생 차단불가 리스크→자체 권한분리 리포트로 대체 · [진입 게이트] 출석 체크인·역할별 로그인 분리 — 원장·강사 ID/PW 실검증(Supabase Auth 설계 명시)·학부모는 무로그인 24h 토큰 · [키오스크] 번호 입력/QR 스캔 선택→출석 도장 모션(지각 자동판정)·대시보드 실시간 반영 ·[수납] 결제선생 CSV 매칭 시뮬 — ★동명이인은 자동처리 않고 수동확인 대기(오매칭 사고 구조적 차단) · [성적] 문항유형별 점수·코멘트 입력→추이 그래프+기준미달 유형 오답클리닉 영상 자동배정+알림톡 발송이력 연동 · [권한 3단계 실동작] 원장(전체)↔강사(담당반만)↔학부모(자기 자녀만·상담이력/내부메모 비노출) 역할 전환 시 화면이 실제로 바뀜 · [학부모] 알림톡 링크 진입 시뮬→독립 모바일 UI·토큰 만료 카운트다운·만료/재발송 화면·열람 로그 · [알림톡] 템플릿 3종 미리보기(카카오 심사 3~5영업일 명시)·미등원 자동발송 시뮬·SMS 대체발송 이력 · [통계] 반별·기간별 출석률/평균/수납률/유형별 정답률 실계산+CSV(BOM)·구글시트 백업 시뮬 ·[설정] 지각기준·클리닉 기준점수·발송문구를 원장이 직접 수정→즉시 반영(Zapier의 '내가 조건을 바꾼다'를 월 0원으로) · 발견: 노션 게스트=학생수만큼 유료슬롯·Zapier 월10~15만(연 120~180만) vs 자체DB 월 0원·미성년 개인정보 법정대리인 동의+국외이전 고지·알림톡 템플릿 사전심사 3~5영업일이 실납기 병목 · 견적 3,300,000원(부가세포함)/8주 · 입력 없이 클릭만으로 체험", url:"./데모/47-학원통합관리시스템/index.html", status:"live", g:"linear-gradient(135deg,#17233B,#7a2c20 52%,#C2402E)", here:true, thumb:"./assets/thumbs/45.webp", sum:"학원 출결, 수납, 성적, 오답 클리닉과 학부모 알림을 하나의 운영 화면으로 통합했습니다. 원장·강사·학부모 권한에 따라 데이터 범위가 실제로 바뀌며, 동명이인 수납 매칭 보류와 만료되는 학부모 열람 링크까지 운영 위험을 화면으로 구현했습니다." },
+    { name:"미용실 설문 디지털화 · 범용 설문 폼 빌더 — 퀼", en:"QUILL", cat:"platform", desc:"아이디헤어(지점 ~100개) 종이 설문지 디지털화(크몽) — 미용실 전용이 아니라 ★어떤 설문이든 만드는 범용 폼 빌더로 구현 · [빌더] 질문 유형 12종(객관식·중복·단답·장문·별점·점수·드롭다운·날짜·연락처·사진·구역·동의블록) 추가/삭제/순서변경/복제/필수 토글·템플릿 5종·테마·미리보기 + ★실시간 법 점검(식별정보 수집인데 동의 없음→경고, 마케팅을 필수 동의에 넣으면→과태료 경고) · [태블릿 응답] 필수/선택 동의 분리·필수 미응답 차단·전화 자동 하이픈·제출 즉시 파기+7초 자동 초기화(공용 태블릿 잔류 차단)·예시로 채우기 · [대시보드] ★권한 3단계 실동작: 역할 전환 시 범위(전체 184건→매장→본인)·연락처/생년월일 마스킹·엑셀 차단이 실제로 바뀜 · 차트(라인·도넛·바 실집계)·필터·드로어·마케팅 동의자만 추출·CSV(BOM)·백업 · ★설문별 자동 요약: 빌더에 저장된 어떤 설문이든 구조를 읽어 질문 유형별 집계(막대·평균·분포·동의율) 자동 생성 · 응답 상세=원본 종이 설문지 뷰(☐/☑ 재현, PC 중앙 모달) · 발견: 종이 설문지의 마케팅 동의 묶음=과태료 소지·공용 태블릿 세션 잔류·퇴사 디자이너 고객 DB 유출·가맹 위탁vs제3자제공 · 마음노트×Tally×GoogleForms / Linear 실측 · 견적 8,800,000원/60일 항목당 비용 산출(잔여 예산은 유지관리·예비비 제안)", url:"./데모/46-미용실설문관리/index.html", status:"live", g:"linear-gradient(135deg,#16150F,#8a2f1f 52%,#E0523D)", here:true, thumb:"./assets/thumbs/44.webp", sum:"미용실 종이 설문을 디지털화하면서 어떤 설문에도 재사용할 수 있는 폼 빌더로 확장했습니다. 질문 유형 12종, 태블릿 응답, 개인정보 동의 점검, 역할별 데이터 범위와 설문별 자동 집계를 정적 프런트엔드에서 시연합니다." },
+    { name:"관리형 스터디카페 홈 + 통합 관리자 — 몰입", en:"MOLIP", cat:"home", desc:"관리형 스터디카페 신규 오픈 홈+데이터 자동화 · ★혼합(하이브리드): 공개 홈(브랜드)+통합 관리자(대시보드)를 표면별로 설계 · [공개 홈] 히어로·②풀블리드 statement·①마우스 카드·요금·가입 신청폼(예시 채우기→자체 적재+구글시트 백업 체험)·비용 비교 진단 · [통합 관리자 admin.html] 회원관리·★출석 슬롯 그리드(좌석×시간, 엑셀 출석표 기반·클릭 O→누적 학습시간 실계산)·주/월/연 학부모 리포트 이메일 preview+발송 시뮬(SPF/DKIM)·요금/공지 편집기 · 발견: 아임웹+구글시트+노션+Make/Zapier 스택은 월 10만+·단일 장애점→통합 자체제작 월 0원(연 113만 절감)·학생=미성년 개인정보 법정대리인 동의·리포트 이메일 도달률·관리형 학원법 경계 · 1차 견적 2,500,000원 · 입력 없이 클릭만으로 체험", url:"./데모/45-관리형스터디카페/index.html", status:"live", g:"linear-gradient(135deg,#221E19,#6e5320 52%,#D89A2E)", here:true, thumb:"./assets/thumbs/43.webp", sum:"관리형 스터디카페의 고객용 랜딩과 통합 관리자 대시보드를 한 프로젝트로 구성했습니다. 가입 신청부터 회원·출석·좌석·학부모 리포트·CSV 출력까지 연결하고, Canvas 기반 차트와 데이터 집계 로직으로 이용률과 운영 상태가 실제 입력에 따라 변하도록 구현했습니다." },
+    { name:"학부모·교사 교육 콘텐츠 소개·무료체험 — 클래스킷", en:"CLASSKIT", cat:"home", desc:"학부모·교사 대상 교육 콘텐츠(유인물·수업가이드) 시리즈 소개·무료체험(크몽 공고 1단계) · ★무료체험 신청 폼: 이름/연락처/자녀 학년 + 법정대리인 동의 게이트(동의 없이 접수 차단)+즉시 알림(이메일/카톡) 시뮬, 자녀는 학년만 최소수집 · ★콘텐츠 보호·환불 진단: 구매자 워터마크 토글 + 청약철회 불가 고지 토글 → 유출·환불 리스크 실시간 판정(둘 다 켜야 안전) · 시리즈 소개(결제없이·샘플영상)·상담/B2B 문의 분리·관리자 접수 현황·단계별(1/2/3) 견적 · 발견: 만14세미만 자녀정보=법정대리인 동의(미동의 형사처벌)·다운로드콘텐츠 청약철회 제한은 불가고지+무료체험 전제·유인물 유출=워터마크·정부지원 정산 · 아이스크림×티처빌 / Linear×Vercel 실측", url:"./데모/44-교육컨텐츠사이트/index.html", status:"live", g:"linear-gradient(135deg,#241C16,#7a4327 52%,#C4633A)", here:true, thumb:"./assets/thumbs/42.webp", sum:"학부모와 교사를 위한 교육 콘텐츠 소개와 무료체험 전환을 단일 페이지로 구성했습니다. 아동 개인정보의 법정대리인 동의, 다운로드 콘텐츠의 환불 조건, 구매자 워터마크와 유출 대응을 토글·검증·위험 판정 인터랙션으로 구현해 운영 리스크를 화면에서 바로 확인할 수 있습니다." },
+    { name:"외국인 짐배송·짐보관 예약·운영 — 팩앤플라이", en:"PACK&FLY", cat:"platform", desc:"부산·김해 외국인 짐배송/보관 예약~운영관리 — ★RFQ 15개 화면 전부 동작 구현(고객6·관리자8·제휴점1) · 고객 앱(폰 프레임): 배송/보관 분기→프런트→할증→거점(지도 핀·적재80% 제외)→사이즈 S/M/L, 원거리 +15,000 자동·부산 외→문의 전환, PayPal 4통화 정액, PF번호 비순차, 조회=번호+전화 뒷자리(IDOR 차단)·사진→입고·보관 연장 결제, 4개 언어→통화 연동 · 관리자: 오늘 할 일(목록/지도)·아코디언 현황·상세 드로어(상태 전환·이력)·수기 등록(미확정 허용)·거점(적재율 지도·QR)·통계(이탈 퍼널·CSV)·설정(통화 정액표 원화 실수취 실시간 진단) · 거점 현황판(로그인 없는 전용 링크) · 발견: IDOR·통화 마진역전·tier 충돌·배상한도·당일 실측 · Bounce×RadicalStorage / Linear×Vercel · 견적 화면단위 A~M", url:"./데모/43-외국인짐서비스/index.html", status:"live", g:"linear-gradient(135deg,#161A33,#7a2a1e 52%,#FF5A3C)", here:true, thumb:"./assets/thumbs/41.webp", sum:"외국인 짐배송·보관 예약부터 운영자·거점 처리까지 15개 업무 화면을 연결했습니다. 거리·할증·적재율·통화별 요금을 실제 계산하고 예약 조회 보안, 상태 이력, 수기 등록, 통계·CSV를 구현해 전체 운영 흐름을 검증합니다." },
+    { name:"개인간병 업체 운영 관리 — 케어온", en:"CAREON", cat:"admin", desc:"엑셀로 하던 간병사 배정현황·회비 입금현황을 사무실·외부(모바일)에서 · ★운영 대시보드: 배정 현황(필터·간병비·공석)·회비/정산(수납률·미납 실집계 28만/56만)·준법 검토(가중 게이지) 전부 실연산 · ★역할 전환(사무실 관리자↔외부 간병사): 외부 간병사 화면에서 담당 외 환자 질환·장소·보호자 연락처 마스킹·타 간병사 회비 비공개(민감정보 접근통제) · 준법 필수(유료직업소개 등록·소개vs지휘명령 경계·민감정보) 누락 시 운영불가 판정 · 발견: 간병인 소개+회비=유료직업소개사업(미등록 처벌)·관리감독 개입 시 불법 근로자공급(고발 사례)·2025 간병인 근로자성 인정·환자 건강정보=민감정보 · 케어네이션×케어닥 / Linear×Vercel 실측", url:"./데모/42-개인간병관리시스템/index.html", status:"live", g:"linear-gradient(135deg,#0F1A18,#15574e 52%,#159A8A)", here:true, thumb:"./assets/thumbs/40.webp", sum:"엑셀로 관리하던 간병사 배정과 회비·정산 현황을 하나의 운영 화면으로 통합했습니다. 사무실 관리자와 외부 간병사 역할을 전환하면 환자·보호자 정보와 타 간병사 회비가 권한에 맞게 마스킹되며, 필수 준법 조건이 누락되면 운영 불가로 판정하는 데이터 기반 점검 흐름을 구현했습니다." },
+    { name:"모바일웹 → Play 하이브리드 앱 — 랩리", en:"WRAPLY", cat:"platform", desc:"운영 중인 모바일웹을 Android 하이브리드(WebView)로 감싸 Google Play 배포 + FCM 푸시 · ★인터랙티브 폰 프레임: WebView 셸·파일 첨부 시트(onShowFileChooser)·로그인 유지 ON/OFF+앱 재시작(flush 미적용 시 로그아웃 버그 재현)·뒤로가기·오프라인 오류화면·푸시 발송→배너→딥링크 전부 실동작 · Play 심사 진단(항목 토글→통과 가능성 가중 계산·필수 누락 시 반려 판정) · FCM 전환 진단(Legacy 서버키 2024.7 종료 판정→HTTP v1 서비스계정 코드·절차·발송 시뮬) · 리스크 6건(근거 링크) · 발견: 순수 웹뷰=정책4.3 반려·“PHP 수정”이 실은 인증 전면교체·Android13+ 알림권한 미요청 시 푸시 유실·Data Safety/개인정보처리방침 필수 · Median×Firebase / Linear×Vercel 실측", url:"./데모/41-안드로이드웹뷰/index.html", status:"live", g:"linear-gradient(135deg,#0A0C0E,#12321f 52%,#3DDC84)", here:true, thumb:"./assets/thumbs/39.webp", sum:"운영 중인 모바일웹을 재개발 없이 Android WebView 앱으로 전환하는 과정을 제안형 데모로 구현했습니다. 로그인 유지, 파일 첨부, FCM 푸시와 딥링크, 오프라인 재시도, 뒤로가기, Play 심사 진단을 실제 인터랙션으로 구성하고 Legacy FCM에서 HTTP v1으로의 이관 위험까지 함께 설명합니다." },
+    { name:"페인트 브랜드 기업 소개 홈 — 휴랩", en:"HUELAB", cat:"home", desc:"친환경 종합도료 브랜드 홈페이지 · 삼화페인트(spsamhwa.com) 실측 기반 프리미엄 에디토리얼(딥틸 #00393c·크림·오렌지팝·Inter 대형 디스플레이) · ★AI 생성 시네마틱 영상 히어로 + 인테리어/시공 이미지 4종(실존 브랜드·로고 없이 생성) · COLOR INSPIRATION(테마 팔레트+색코드) · 제품 라인업(근거 있는 친환경 인증만 ✓ 표시) · 시공사례 갤러리(필터·라이트박스) · 통합검색 · 관리자 제품/시공 CRUD(localStorage) · 발견: 화면색≠실물(메타머리즘→실물 컬러칩 고지)·근거없는 친환경=부당광고·빌더로는 삼화 수준 불가", url:"./데모/40-페인트브랜드홈페이지/index.html", status:"live", g:"linear-gradient(135deg,#00393c,#1f6f72 55%,#ff4e1c)", here:true, thumb:"./assets/thumbs/38.webp", sum:"친환경 종합도료 브랜드 홈페이지 · 삼화페인트(spsamhwa.com) 실측 기반 프리미엄 에디토리얼(딥틸 #00393c·크림·오렌지팝·Inter 대형 디스플레이) · ★AI 생성 시네마틱 영상 히어로 + 인테리어/시공 이미지 4종(실존 브랜드·로고 없이 생성) · COLOR INSPIRATION(테마 팔레트+색코드)…" },
+    { name:"상품권 매입(현금화) 준법 웹 — 핀가드", en:"PINGUARD", cat:"platform", desc:"상품권 매입 서비스 · “회원가입 없이 3초 자동송금”을 그대로 만들면 정보통신망법·특금법·대부업법 위반 → 속도가 아닌 준법(KYC·AML·FDS)으로 재설계 · 신청 흐름에 구매경로 확인(소액결제·카드 구매분 실차단)+본인확인(KYC) 게이트 · 매입률×액면 실시간 견적 · 관리자 이상거래탐지(FDS) 실판정(대량·고액 자동 보류)·전 조건 통과분만 송금·매입률 편집 즉시 재계산 · ★준법 진단 화면(요구 기능별 위법 신호등 3/2/3+근거 법령+대안) · 대법원 판례·정통망법72조 리서치 · 24PIN 실측", url:"./데모/39-상품권매입사이트/index.html", status:"live", g:"linear-gradient(135deg,#0C1626,#1B5CF6 55%,#0CA678)", here:true, thumb:"./assets/thumbs/37.webp", sum:"상품권 매입 서비스 · “회원가입 없이 3초 자동송금”을 그대로 만들면 정보통신망법·특금법·대부업법 위반 → 속도가 아닌 준법(KYC·AML·FDS)으로 재설계 · 신청 흐름에 구매경로 확인(소액결제·카드 구매분 실차단)+본인확인(KYC) 게이트 · 매입률×액면 실시간 견적 · 관리자 이상거래탐지(FDS) 실판정(대량·…" },
+    { name:"오브젠·잘레시아 통합 기업·IR 홈 (B안·SPECTRUM)", en:"OBZEN B", cat:"home", desc:"합병 통합 IR 홈페이지 · A안(다크 시스템맵)과 전혀 다른 라이트 오로라 방향 — 흩어진 데이터를 오브젠이라는 하나의 렌즈로 모으는 “이클립스” 시그니처 · 라이트 웜 페이퍼 + 인디고→마젠타→앰버 스펙트럼 그라디언트 + 헤비 산세리프×Fraunces 세리프 에디토리얼 · 회사소개·연혁 타임라인(합병 정보)·통합 서비스 아코디언·IR 대형 카운터·뉴스룸(유형 필터+Blob)·실동작 통합검색(/ 단축키)·관리자 CMS(localStorage 실연동)·KO/EN · reveal IO 폴백", url:"./데모/37-오브젠통합웹사이트/index.html", status:"live", g:"linear-gradient(135deg,#4b3bff,#ff3d9a 55%,#ffb020)", here:true, thumb:"./assets/thumbs/35.webp", sum:"합병 통합 IR 홈페이지 · A안(다크 시스템맵)과 전혀 다른 라이트 오로라 방향 — 흩어진 데이터를 오브젠이라는 하나의 렌즈로 모으는 “이클립스” 시그니처 · 라이트 웜 페이퍼 + 인디고→마젠타→앰버 스펙트럼 그라디언트 + 헤비 산세리프×Fraunces 세리프 에디토리얼 · 회사소개·연혁 타임라인(합병 정보)·통합 서…" },
+    { name:"오브젠·잘레시아 통합 기업·IR 홈 (A안·시스템)", en:"OBZEN A", cat:"home", desc:"합병 통합 IR 홈페이지 · 다크 라이브 시스템 맵으로 고객 데이터×경영 데이터→통합 지능→다음 행동 · 플랫폼 단계·산업별·거버넌스 탭이 선택 영역만 스코프 갱신 · 뉴스·IR 유형 필터+Blob 다운로드·통합검색(/ 단축키)·관리자 CMS·KR/EN · 제품 나열 대신 수집→통합→분석→실행 흐름 재구성 · Palantir×Databricks×Upstage / Microsoft AI×Terminal Industries×LX Hausys 실측", url:"./데모/34-오브젠통합웹사이트/index.html", status:"live", g:"linear-gradient(135deg,#081321,#22B8A7 58%,#0F2861)", here:true, thumb:"./assets/thumbs/32.webp", sum:"합병 통합 IR 홈페이지 · 다크 라이브 시스템 맵으로 고객 데이터×경영 데이터→통합 지능→다음 행동 · 플랫폼 단계·산업별·거버넌스 탭이 선택 영역만 스코프 갱신 · 뉴스·IR 유형 필터+Blob 다운로드·통합검색(/ 단축키)·관리자 CMS·KR/EN · 제품 나열 대신 수집→통합→분석→실행 흐름 재구성 · Palan…" },
+    { name:"AI 역사동화 자동생성·PDF 파이프라인", en:"YEODAM", cat:"platform", desc:"여주 관광 플랫폼 본구축 전 PoC · 아이 이름·관광지 입력→맞춤 역사동화+삽화→PDF 전자책까지 실제 파이프라인 · 6단계 소요시간·비용 실측(삽화 병목 실증) · 승인 여주 팩트DB 기반 역사 사실검증 게이트(허위 연도·세종×명성황후 시대불일치 등 환각 검출 시 PDF 발행 차단) · 아동 안전 가드레일·개인정보 로컬미저장 · 저작권 대응 생성이력(문체부 안내서 근거) · 캐릭터 레퍼런스 고정으로 삽화 일관성 · 외부 라이브러리 없이 캔버스→JPEG 실제 PDF 생성(한글 안전) · 힉스필드 삽화 6종 · 리디×핑크퐁×뤼튼 / Partizan(SOTD) 실측", url:"./데모/38-AI역사동화자동화/index.html", status:"live", g:"linear-gradient(135deg,#3a2f22,#b8541f 58%,#b78a2e)", here:true, thumb:"./assets/thumbs/36.webp", sum:"여주 관광 플랫폼 본구축 전 PoC · 아이 이름·관광지 입력→맞춤 역사동화+삽화→PDF 전자책까지 실제 파이프라인 · 6단계 소요시간·비용 실측(삽화 병목 실증) · 승인 여주 팩트DB 기반 역사 사실검증 게이트(허위 연도·세종×명성황후 시대불일치 등 환각 검출 시 PDF 발행 차단) · 아동 안전 가드레일·개인정보…" },
+    { name:"배리어프리 장비 대여·반납 키오스크", en:"ALLEND", cat:"platform", desc:"공공기관 장비 대여·반납 배리어프리 키오스크 · 음성안내(TTS)·물리버튼 로빙포커스·고대비·저시력확대·화면낮춤이 실제 동작 · 대여/반납 재고 실연산·관리자 실연동 · KS X 9211 접근성 검증 진단(지급디자인 A/B 토글로 명도대비·글자·터치·타임아웃 실판정)·명도대비 실계산기·디자인/SW/HW 책임분계표로 “지급 디자인대로 구현 시 검증 탈락” 실증 · 접근성=법적강제(장차법 3천만원 벌금)·SW단독 통과불가 발견 · 무인정보단말기UI플랫폼×따릉이×정부24 / Obys(SOTD)×Linear 실측", url:"./데모/33-장비대여반납키오스크/index.html", status:"live", g:"linear-gradient(135deg,#0c1017,#0b57c7 58%,#36c5f0)", here:true, thumb:"./assets/thumbs/31.webp", sum:"공공기관 장비 대여·반납 배리어프리 키오스크 · 음성안내(TTS)·물리버튼 로빙포커스·고대비·저시력확대·화면낮춤이 실제 동작 · 대여/반납 재고 실연산·관리자 실연동 · KS X 9211 접근성 검증 진단(지급디자인 A/B 토글로 명도대비·글자·터치·타임아웃 실판정)·명도대비 실계산기·디자인/SW/HW 책임분계표로 “지…" },
+    { name:"업비트·빗썸 신규 공지 감지 (1초·파이썬)", en:"ZEROLAG", cat:"admin", desc:"업비트·빗썸 신규 공지를 1초 이내 감지하는 파이썬 스크립트 · 브라우저에서 실제로 도는 폴링 감지 시뮬레이터 · id 기준 중복 제거(OFF 시 재출력 실증)·지수 백오프 장애 복구·거래소 단위 격리(한 곳 장애여도 다른 곳 감지 지속) · “1초 이내 vs 요청 제한” 트레이드오프 표 · 납품 파이썬 코드·config·수용기준 검수 · 가상 시뮬레이션 데이터", url:"./데모/30-업비트빗썸신규공지감지/index.html", status:"live", g:"linear-gradient(135deg,#04120d,#22d3a8 58%,#2f80ed)", here:true, thumb:"./assets/thumbs/30.webp", sum:"업비트·빗썸 신규 공지를 1초 이내 감지하는 파이썬 스크립트 · 브라우저에서 실제로 도는 폴링 감지 시뮬레이터 · id 기준 중복 제거(OFF 시 재출력 실증)·지수 백오프 장애 복구·거래소 단위 격리(한 곳 장애여도 다른 곳 감지 지속) · “1초 이내 vs 요청 제한” 트레이드오프 표 · 납품 파이썬 코드·confi…" },
+    { name:"수입검사실 품질 대시보드 (ETL·상시표출)", en:"QWALL", cat:"admin", desc:"ERP·QMS·엑셀 3개 소스를 ETL로 통합한 품질 대시보드 · 14개 KPI·실패비용·전년 비교, 필터(기간·업체·장치) 실시간 재계산 · ERP-QMS 이중 계상을 오더 매핑 중복 제거로 실증(순 50 vs 원시 94건, 90% 부풀림) · 무인 새로고침 실패 시 stale 경고 · 대형 모니터 다크 풀스크린 상시표출 · 라이선스 비종속 웹 대안 · 대시보드/운영 콘솔 실연동", url:"./데모/29-수입검사실품질대시보드/index.html", status:"live", g:"linear-gradient(135deg,#0a1526,#1f5fd0 58%,#5b9bff)", here:true, thumb:"./assets/thumbs/29.webp", sum:"ERP·QMS·엑셀 3개 소스를 ETL로 통합한 품질 대시보드 · 14개 KPI·실패비용·전년 비교, 필터(기간·업체·장치) 실시간 재계산 · ERP-QMS 이중 계상을 오더 매핑 중복 제거로 실증(순 50 vs 원시 94건, 90% 부풀림) · 무인 새로고침 실패 시 stale 경고 · 대형 모니터 다크 풀스크린 상시…" },
+    { name:"교사 전용 견적·주문 B2B (승인·PDF)", en:"GREENDESK", cat:"admin", desc:"친환경 업사이클 교구 회사의 교사 전용 B2B · 고유번호증 제출→관리자 승인/문자→인원 구간별 강사비·교구 견적 자동계산(실시간 합계·부가세·할인)→직인·문서번호 찍힌 견적서 PDF 실발행(회차 보존, 재발행 2·3차)→주문·예약→진행·청구·결제 기록 · 교사/관리자 백오피스 실연동 · Toss비즈×Stripe Invoicing 참조", url:"./데모/28-견적서자동계산주문관리/index.html", status:"live", g:"linear-gradient(135deg,#0f2b1b,#1f8a4c 58%,#7bd6a0)", here:true, thumb:"./assets/thumbs/28.webp", sum:"친환경 업사이클 교구 회사의 교사 전용 B2B · 고유번호증 제출→관리자 승인/문자→인원 구간별 강사비·교구 견적 자동계산(실시간 합계·부가세·할인)→직인·문서번호 찍힌 견적서 PDF 실발행(회차 보존, 재발행 2·3차)→주문·예약→진행·청구·결제 기록 · 교사/관리자 백오피스 실연동 · Toss비즈×Stripe Inv…" },
+    { name:"마케팅 성과 자동 집계 대시보드", en:"ADSUM", cat:"admin", desc:"메타·구글·카카오모먼트·네이버 4채널 + 스마트스토어 실매출 통합 집계 · 매출 기준 3분리(채널합산 360%↔광고기여 248%↔MER 303%)로 ROAS 부풀림 실증 · 수집 방식 토글로 전환 지연 34% 과소집계 재현 · 목표 CPA 4단계 판정(전환 0건 소재 3건·269만원 누락 증명) · 소재 이미지 URL 만료 403 재현 · LLM 페이로드 금액 마스킹 · Airbridge×TripleWhale×Funnel / Dragonfly×TRIONN 수상작 실측", url:"./데모/27-마케팅성과자동집계/index.html", status:"live", g:"linear-gradient(135deg,#08090C,#155DFC 58%,#7F22FE)", here:true, thumb:"./assets/thumbs/27.webp", sum:"메타·구글·카카오모먼트·네이버 4채널 + 스마트스토어 실매출 통합 집계 · 매출 기준 3분리(채널합산 360%↔광고기여 248%↔MER 303%)로 ROAS 부풀림 실증 · 수집 방식 토글로 전환 지연 34% 과소집계 재현 · 목표 CPA 4단계 판정(전환 0건 소재 3건·269만원 누락 증명) · 소재 이미지 URL…" },
+    { name:"여성 커뮤니티 + 콘텐츠 큐레이션", en:"HERLOOP", cat:"platform", desc:"외부 콘텐츠 수집으로 초기 데이터를 채우는 여성 전용 커뮤니티 · 노출 방식(링크만/발췌/전문) 전환 시 사용자 화면 미리보기가 실제로 바뀌고 법적 위험도 표시 · 크롤링 글은 본문 필드 자체를 두지 않아 전문 미저장을 데이터 구조로 강제 · 본인확인(성별) 게이트·긴급 신고 즉시 가림·2026.7.1 불법촬영물 이미지 확대 대응 · 루리웹형 게시판 리스트 구조(구분·제목·글쓴이·추천·조회·날짜·공지고정·BEST·정렬·사이드바 위젯) 재현 · 풀블리드 이미지 스테이트먼트+텍스트 애니(애플·삼성 벤치마크) · 화해×오늘의집×커리어리 / 루리웹(구조) 실측", url:"./데모/26-데이터수집여성커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#2C2C2B,#C2557A 58%,#E8A0A8)", here:true, thumb:"./assets/thumbs/26.webp", sum:"외부 콘텐츠 수집으로 초기 데이터를 채우는 여성 전용 커뮤니티 · 노출 방식(링크만/발췌/전문) 전환 시 사용자 화면 미리보기가 실제로 바뀌고 법적 위험도 표시 · 크롤링 글은 본문 필드 자체를 두지 않아 전문 미저장을 데이터 구조로 강제 · 본인확인(성별) 게이트·긴급 신고 즉시 가림·2026.7.1 불법촬영물 이미지…" },
+    { name:"러시아어권 이주민 주거·생활정보", en:"MOST", cat:"platform", desc:"공인중개사·임대인 역할별 매물 등록과 관리자 승인 · 한/러 생활·법률·비자 정보 · 광고/검증 분리·등록번호/필수광고정보 점검·출처/최종검토일·신고 흐름 등 법적·운영 리스크를 실제 기능으로 구현 · 100vw 풀블리드 이미지 스테이트먼트+마우스 반응 정착 카드+한/러 라인 마스크 애니(애플·삼성 벤치마크) · 서울외국인포털×Rightmove×Daft.ie 실측 디자인 · 힉스필드 비주얼", url:"./데모/24-이주민생활정보/index.html", status:"live", g:"linear-gradient(135deg,#073F35,#0D5B4B 58%,#D85B3F)", here:true, thumb:"./assets/thumbs/24.webp", sum:"공인중개사·임대인 역할별 매물 등록과 관리자 승인 · 한/러 생활·법률·비자 정보 · 광고/검증 분리·등록번호/필수광고정보 점검·출처/최종검토일·신고 흐름 등 법적·운영 리스크를 실제 기능으로 구현 · 서울외국인포털×Rightmove×Daft.ie 실측 디자인 · 힉스필드 비주얼" },
+    { name:"광융합기업 산업지도", en:"LUMINA", cat:"platform", desc:"위치 기반 기업 탐색 프로토타입 · 줌 레벨 클러스터링(19→168 마커)·8대 분류 커스텀마커·다중필터·현재영역 재검색·2분할↔바텀시트·가상스크롤(DOM 11~15개) · 관리자 지오코딩 3단계 보정·엑셀 일괄·재무 API 커버리지 진단(중소 12.3%) · 과업지시서 100% 검수 vs 15일 충돌 범위구분 제안 · 호갱노노×Airbnb / Linear×Stripe 실측", url:"./데모/25-광융합기업지도/index.html", status:"live", g:"linear-gradient(135deg,#061B31,#533AFD 58%,#584DE4)", here:true, thumb:"./assets/thumbs/25.webp", sum:"위치 기반 기업 탐색 프로토타입 · 줌 레벨 클러스터링(19→168 마커)·8대 분류 커스텀마커·다중필터·현재영역 재검색·2분할↔바텀시트·가상스크롤(DOM 11~15개) · 관리자 지오코딩 3단계 보정·엑셀 일괄·재무 API 커버리지 진단(중소 12.3%) · 과업지시서 100% 검수 vs 15일 충돌 범위구분 제안 ·…" },
+    { name:"전국 순회 세미나 예약 플랫폼", en:"SEMINAR56", cat:"platform", desc:"워드프레스 기반 마케팅 세미나 모객·예약 · 56개 지역×회차 정원 자동마감·가상계좌 24h 좌석홀딩·수익계산기·알림톡(심사 반려 사례 포함)·WP관리자 UI 카피 · 페이지 복제 vs CPT 구조 시뮬레이션으로 유지보수 리스크 실증 · 패스트캠퍼스×Luma×탈잉 실측 디자인", url:"./데모/23-마케팅세미나플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#171B1F,#FC1C49 58%,#FF7A96)", here:true, thumb:"./assets/thumbs/23.webp", sum:"워드프레스 기반 마케팅 세미나 모객·예약 · 56개 지역×회차 정원 자동마감·가상계좌 24h 좌석홀딩·수익계산기·알림톡(심사 반려 사례 포함)·WP관리자 UI 카피 · 페이지 복제 vs CPT 구조 시뮬레이션으로 유지보수 리스크 실증 · 패스트캠퍼스×Luma×탈잉 실측 디자인" },
+    { name:"가족 소통·웰니스 앱 (RN 24화면)", en:"HANSANG", cat:"platform", desc:"성인 자녀와 부모를 하루 1회 공동 미션으로 잇는 가족 웰니스 앱 · RFP 24개 화면 전부 폰프레임 인터랙티브 구현(온보딩·미션 인증·재료 수집→레시피 해제·에이슬립 수면 리포트·걸음 랭킹·설정) · 힉스필드 비주얼", url:"./데모/35-가족소통웰니스앱/index.html", status:"live", g:"linear-gradient(135deg,#2B2118,#E85F1E 58%,#FFB673)", here:true, thumb:"./assets/thumbs/33.webp", sum:"성인 자녀와 부모를 하루 1회 공동 미션으로 잇는 가족 웰니스 앱 · RFP 24개 화면 전부 폰프레임 인터랙티브 구현(온보딩·미션 인증·재료 수집→레시피 해제·에이슬립 수면 리포트·걸음 랭킹·설정) · 힉스필드 비주얼" },
+    { name:"22인치 터치 설문 키오스크 2종", en:"NEXA SURVEY", cat:"admin", desc:"행사장 설문 키오스크 2종(4문항 순차 설문·특장점 6탭+실시간 투표 결과) · 실시간 통계 대시보드 · 관리자 로그인+엑셀 다운로드 · 1920×1080 고정형 터치 UI·제스처 차단·동의 모달 · 힉스필드 비주얼", url:"./데모/17-22인치설문웹/index.html", status:"live", g:"linear-gradient(135deg,#0b1220,#22d3ee 58%,#818cf8)", here:true, thumb:"./assets/thumbs/17.webp", sum:"행사장 설문 키오스크 2종(4문항 순차 설문·특장점 6탭+실시간 투표 결과) · 실시간 통계 대시보드 · 관리자 로그인+엑셀 다운로드 · 1920×1080 고정형 터치 UI·제스처 차단·동의 모달 · 힉스필드 비주얼" },
+    { no:15, name:"AI 사이즈·핏 추천 커머스", en:"FORME", cat:"platform", desc:"패션 커머스 전면 실구동 데모 · 상품 탐색·검색·카테고리 필터·찜·로그인·AI 체형 기반 사이즈 추천·장바구니·결제·주문 내역까지 연결 · 힉스필드 제품 비주얼", url:"./데모/15-쇼핑몰연동핏/index.html", status:"live", g:"linear-gradient(135deg,#17201B,#486354 58%,#D96B52)", here:true, thumb:"./assets/thumbs/15.webp", sum:"상품 탐색·검색·필터·찜·로그인부터 AI 체형 기반 사이즈 추천, 장바구니, 결제, 주문 내역까지 연결한 패션 커머스 데모입니다. 별도 프레임워크 없이 클라이언트 상태와 화면 전환을 구성해 정적 호스팅 환경에서도 전체 구매 흐름을 시연할 수 있습니다." },
+    { name:"청년-지역 매칭 플랫폼", en:"OUTBOUNDER", cat:"platform", desc:"로컬 일경험 매칭 데모 · 청년 셸(공고탐색·매칭적합도·지원·마이페이지)+관리자 셸(성과대시보드·지원자심사·콘텐츠·파트너리포트) 실연동 폐쇄순환 · 도트맵·카운트업·카드스택 스크롤 연출 · 힉스필드 비주얼", url:"./데모/36-청년지역매칭/index.html", status:"live", g:"linear-gradient(135deg,#0e8c5a,#00b670 55%,#f05519)", here:true, thumb:"./assets/thumbs/34.webp", sum:"청년의 지역 일경험 탐색·지원·마이페이지와 운영자의 지원자 심사·성과 대시보드·콘텐츠 관리를 두 개의 SPA 셸로 구성했습니다. 같은 브라우저 저장소를 통해 청년과 관리자 흐름이 연결되는 폐쇄순환 데모를 구현했습니다." },
+    { name:"탐정 법인·사무소 반응형 홈페이지", en:"JEONGDO", cat:"home", desc:"영상 인트로·핀 스크럽·마퀴 등 스크롤 인터랙션 중심 브랜드 홈페이지 · 업무 8분야·7단계 절차·FAQ·상담폼→관리자 접수 연동 · GSAP/Lenis 로컬 번들로 오프라인 완전 동작", url:"./데모/13-탐정법인/index.html", status:"live", g:"linear-gradient(135deg,#000C24,#123C78 58%,#C9A55C)", here:true, thumb:"./assets/thumbs/13.webp", sum:"영상 인트로, 핀 스크럽, 마퀴, Reveal 등 스크롤 인터랙션을 중심으로 탐정 법인의 전문성을 전달하는 반응형 브랜드 사이트입니다. 업무 분야, 처리 절차, FAQ, 상담 접수와 관리자 화면을 연결하고 UI·컴포넌트·모션 책임을 분리했습니다." },
+    { no:12, name:"AI 교수·학습 플랫폼 운영 전환", en:"CAMPUS AI", cat:"platform", desc:"AnythingLLM 기반 교육 플랫폼의 RAG 인용·3역할 권한·보안·재현 배포·복구·인수인계 증거를 한 번에 검수하는 위시캣 제안 데모", url:"https://campus-ai-proofbook-20260716.jeonjaeman9668.chatgpt.site", status:"live", g:"linear-gradient(135deg,#04130f,#37e3a1 58%,#0d7c63)", thumb:"./assets/thumbs/12.webp", sum:"교육용 AI 플랫폼을 실제 운영 단계로 전환할 때 필요한 RAG 인용, 세 가지 역할 권한, 보안과 감사 기준을 한 화면에서 검토하도록 만든 제안 데모입니다. 배포 재현성, 백업·복구, 인수인계 증거까지 포함해 단순 기능 시연보다 운영 검수에 초점을 맞췄습니다." },
+    { name:"유아동 기질검사 자동 채점·결과지", en:"KIDTEMPO", cat:"admin", desc:"구글폼 응답 → 자동 채점(역채점·가중치·연령/성별 규준표·T점수·백분위) → 8가지 동물유형 판별 → 12페이지 결과지 PDF 자동 생성 · 실제 동작하는 채점 엔진", url:"./데모/10-유아동기질검사/index.html", status:"live", g:"linear-gradient(135deg,#2CC1AE,#12A594 55%,#0B7B70)", here:true, thumb:"./assets/thumbs/10.webp", sum:"설문 응답을 역채점·가중치·연령·성별 규준표로 계산하고 T점수와 백분위, 동물 유형을 판별하는 검사 운영 데모입니다. 응답 관리, 채점 설정, 규준 관리, 결과 보고서까지 업무 단계를 멀티페이지로 분리했습니다." },
+    { name:"사내 직원 스케줄링·리소스 관리", en:"VOLTA", cat:"admin", desc:"현장 기술자 221명 스케줄링 백오피스 · Gantt 캘린더(드래그 배정·충돌 감지 3규칙)·가동률 대시보드·휴가 승인·장비/지역·모바일 현장뷰 · 디자인시스템·이메일템플릿", url:"./데모/11-사내직원스케쥴링/proposal.html", status:"live", g:"linear-gradient(135deg,#1b4ee0,#0e8f84)", here:true, thumb:"./assets/thumbs/11.webp", sum:"현장 기술자 스케줄, 휴가, 장비·지역 배정과 가동률을 통합한 운영 백오피스입니다. 프레임워크 없이 뷰 모듈과 상태를 분리하고 드래그 배정과 충돌 감지 규칙을 시연하도록 구성했습니다." },
+    { name:"전기설비 내장형 모니터링", en:"VOLTGUARD", cat:"admin", desc:"폐쇄망 전기설비 운영 콘솔 · 실시간 KPI·24시간/7일 부하 추이·상별 부하율·설비 상태·알람 · 1280×1024 산업용 화면 최적화", url:"./데모/09-전기설비내장형웹/index.html", status:"live", g:"linear-gradient(135deg,#182330,#1559cf 58%,#19a6b3)", here:true, thumb:"./assets/thumbs/09.webp", sum:"폐쇄망 전기설비 환경을 가정해 KPI, 24시간·7일 부하 추이, 상별 부하율, 설비 상태와 알람을 한 화면에서 확인하는 내장형 콘솔입니다. 외부 런타임 의존성을 줄이고 로컬 데이터와 Canvas 차트로 산업용 모니터 해상도에 맞춘 운영 화면을 구현했습니다." },
+    { name:"B2B 코칭 프로젝트 관리", en:"BOOSTER", cat:"admin", desc:"코칭·워크숍 프로젝트 관리 + 성과 대시보드 · 5개 권한 분리(관리자/PM/코치/고객사HR/대상자) · 코칭목표합의서·트래킹·부스팅·결과리뷰·PDF/Excel", url:"./데모/08-B2B코칭/index.html", status:"live", g:"linear-gradient(135deg,#6C5CF7,#4331C9)", here:true, thumb:"./assets/thumbs/08.webp", sum:"코칭·워크숍 프로젝트, 관리자·PM·코치·고객사 HR·대상자 권한, 목표 합의와 성과 리뷰를 연결한 B2B 업무 플랫폼입니다. 프로젝트·코치·진단·트래킹·리포트를 개별 페이지로 구성해 실제 운영 흐름을 빠르게 시연할 수 있도록 했습니다." },
+    { name:"글로벌 의료정보 플랫폼", en:"LUMIÈRE", cat:"platform", desc:"한·일 프리미엄 성형외과·치과 정보·예약 플랫폼 · 한/일 실시간 전환·병원목록/상세·캘린더 예약·병원/최고관리자 · AI 광고영상 히어로(힉스필드)·시네마틱 UI", url:"./데모/07-글로벌의료정보플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#F48FB8,#E85D9E 55%,#A78BFA)", here:true, thumb:"./assets/thumbs/07.webp", sum:"한국·일본 이용자를 위한 병원 탐색, 상세 정보, 예약 캘린더와 병원·최고관리자 화면을 구성한 의료정보 플랫폼입니다. 다국어 모듈과 시네마틱 모션을 결합하고 상용 지도·로그인 연계 지점은 데모 범위와 구분했습니다." },
+    { name:"전자 기부약정서", en:"PLEDGE", cat:"admin", desc:"대학 발전기금 태블릿 전자약정 PWA · 입력·전자서명·PDF 자동생성·관리자 다운로드", url:"./데모/06-태블릿기부약정서/index.html", status:"live", g:"linear-gradient(135deg,#1a3860,#b58a3c)", here:true, thumb:"./assets/thumbs/06.webp", sum:"대학 발전기금 약정 정보를 태블릿에서 입력하고 전자서명, PDF 생성, 관리자 조회·다운로드로 이어지는 전자약정 PWA입니다. 서비스 워커와 앱 매니페스트를 포함해 현장 접수 환경을 고려한 오프라인 친화적 흐름을 구성했습니다." },
+    { name:"키워드 분석 플랫폼", en:"PULSE", cat:"admin", desc:"네이버+4대 SNS(인스타·X·유튜브·틱톡) 키워드 통합 분석 BI 대시보드 · 다중검색·추이·인구통계·연관어·엑셀", url:"./데모/05-키워드분석플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#7c6cff,#22d3ee)", here:true, thumb:"./assets/thumbs/05.webp", sum:"검색과 주요 소셜 채널의 키워드를 통합해 추이, 인구통계, 연관어를 분석하는 BI 대시보드입니다. 다중 검색, 필터·정렬과 내보내기 흐름을 클라이언트 데이터로 구현해 분석 화면을 빠르게 시연합니다." },
+    { name:"타겟 키워드 정보관리 백오피스", en:"MISIK", cat:"admin", desc:"맛집 정보 통합 관리 폐쇄형 백오피스 · 로그인/권한·검색/필터·협업·대시보드 + 키워드 자동수집(2차)", url:"./데모/04-타겟키워드자동수집/index.html", status:"live", g:"linear-gradient(135deg,#5046e5,#8b5cf6)", here:true, thumb:"./assets/thumbs/04.webp", sum:"맛집 키워드와 업체 정보를 검색·필터·협업·관리하는 폐쇄형 백오피스입니다. 로그인과 권한, 대시보드, 정보 검수 흐름을 구성하고 키워드 자동수집 단계로 확장 가능한 구조를 시연합니다." },
+    { name:"플리마켓·행사 셀러 매칭 앱", en:"BOOTHPIN", cat:"platform", desc:"행사 주최자↔셀러 매칭 모바일 앱 · 의뢰자 기능명세서를 화면 18개로 전량 구현(셀러등록·행사만들기·승인/거절·출석QR·지도탐색·참여신청·채팅·등급) · 폰프레임 인터랙티브 · 등급규칙 실계산 진단(서열역전·강등 검증)·PG등록·위치정보법 등 리스크 6건 반영 · 당근×Airbnb×Eventbrite 실측 디자인", url:"./데모/22-행사관리플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#FF8A3D,#FF6600 55%,#1A1C20)", here:true, thumb:"./assets/thumbs/22.webp", sum:"행사 주최자↔셀러 매칭 모바일 앱 · 의뢰자 기능명세서를 화면 18개로 전량 구현(셀러등록·행사만들기·승인/거절·출석QR·지도탐색·참여신청·채팅·등급) · 폰프레임 인터랙티브 · 등급규칙 실계산 진단(서열역전·강등 검증)·PG등록·위치정보법 등 리스크 6건 반영 · 당근×Airbnb×Eventbrite 실측 디자인" },
+    { name:"교직문화 설문 수집·시각화", en:"CLASSPULSE", cat:"admin", desc:"전국 교원 설문 수집+통계 대시보드 · 응답화면(자동저장·이어하기·1회용토큰)+관리자(발산형 리커트차트·5중 필터·교차분석 히트맵·연도추이·CSV/인쇄) · 응답 1,284건 실제 연산 · 소규모셀 자동 마스킹(n<5)·사후층화 가중 토글 등 리스크 6건 반영 · Typeform×Datawrapper×Metabase 실측 디자인", url:"./데모/21-교사설문시각화/index.html", status:"live", g:"linear-gradient(135deg,#FAF9FB,#007DA0 55%,#509EE3)", here:true, thumb:"./assets/thumbs/21.webp", sum:"전국 교원 설문 수집+통계 대시보드 · 응답화면(자동저장·이어하기·1회용토큰)+관리자(발산형 리커트차트·5중 필터·교차분석 히트맵·연도추이·CSV/인쇄) · 응답 1,284건 실제 연산 · 소규모셀 자동 마스킹(n<5)·사후층화 가중 토글 등 리스크 6건 반영 · Typeform×Datawrapper×Metabase 실…" },
+    { name:"연구용 실험 챗봇 플랫폼", en:"LABCHAT", cat:"platform", desc:"학술 연구용 대화 실험 MVP · IRB 동의→참가자ID→가변블록 무작위배정(4집단)→ChatGPT UI 스트리밍 챗→완료 · 연구자 콘솔(집단균형·프롬프트 버전관리·대화로그·실제 CSV 반출) · CSV동시성/모델스냅샷/IRB 등 리스크 6건 사전 반영 · ChatGPT×Qualtrics×Prolific 실측 디자인", url:"./데모/20-연구용챗봇/index.html", status:"live", g:"linear-gradient(135deg,#FCFCFC,#601AE5 55%,#0F2BC9)", here:true, thumb:"./assets/thumbs/20.webp", sum:"학술 연구용 대화 실험 MVP · IRB 동의→참가자ID→가변블록 무작위배정(4집단)→ChatGPT UI 스트리밍 챗→완료 · 연구자 콘솔(집단균형·프롬프트 버전관리·대화로그·실제 CSV 반출) · CSV동시성/모델스냅샷/IRB 등 리스크 6건 사전 반영 · ChatGPT×Qualtrics×Prolific 실측 디자인" },
+    { name:"신규 사업자 리드 수집 파이프라인", en:"BIZSEED", cat:"admin", desc:"신규 개업 사업자 자동 수집·연락처 확보·DB 적재 관리 콘솔 · LOCALDATA 인허가 일변동분 기반 6단계 파이프라인·스케줄러·실패코드·엑셀 반출·DB 스키마 정의서 · 두낫콜 대조/마스킹 등 법적 리스크 6건 사전 반영 · Apify×Airbyte×Supabase 디자인", url:"./데모/19-신규사업자데이터수집/index.html", status:"live", g:"linear-gradient(135deg,#020202,#3FCF8E 58%,#6B9FFF)", here:true, thumb:"./assets/thumbs/19.webp", sum:"신규 개업 사업자 자동 수집·연락처 확보·DB 적재 관리 콘솔 · LOCALDATA 인허가 일변동분 기반 6단계 파이프라인·스케줄러·실패코드·엑셀 반출·DB 스키마 정의서 · 두낫콜 대조/마스킹 등 법적 리스크 6건 사전 반영 · Apify×Airbyte×Supabase 디자인" },
+    { name:"스포츠카드·TCG 통합 커뮤니티", en:"TOPLOADER", cat:"platform", desc:"스포츠카드·원피스·포켓몬 콜렉터 통합 커뮤니티 · 전역 관심사 필터(localStorage)·이중 말머리 게시판·쇼케이스 갤러리·직거래 장터(오픈채팅 연결)·시세 인덱스·관리자+광고 슬롯 · Card Ladder×KREAM×너정다 디자인 · 힉스필드 비주얼", url:"./데모/18-스포츠카드통합커뮤니티/index.html", status:"live", g:"linear-gradient(135deg,#0B0E14,#3E7BFF 58%,#FFC24B)", here:true, thumb:"./assets/thumbs/18.webp", sum:"스포츠카드·원피스·포켓몬 콜렉터 통합 커뮤니티 · 전역 관심사 필터(localStorage)·이중 말머리 게시판·쇼케이스 갤러리·직거래 장터(오픈채팅 연결)·시세 인덱스·관리자+광고 슬롯 · Card Ladder×KREAM×너정다 디자인 · 힉스필드 비주얼" },
+    { name:"영업인 커뮤니티+회사리뷰", en:"SALESUP", cat:"platform", desc:"영업 직군 특화 커뮤니티 · AI 자동답변 Q&A · 회사 별점/익명 리뷰 · 관리자 백오피스", url:"./데모/16-커뮤회사리뷰플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#f45757,#b32020)", here:true, thumb:"./assets/thumbs/16.webp", sum:"영업 직군 특화 커뮤니티, AI 자동답변 Q&A, 회사 별점·익명 리뷰를 결합한 서비스 데모입니다. 백엔드 없이도 검색, 필터, 모달, 좋아요, 리뷰 작성과 관리자 검수·모니터링 흐름을 시연합니다." },
+    { name:"앱 커뮤니티+광고", en:"MOA", cat:"platform", desc:"앱 커뮤니티 게시판 + 자체 광고 시스템 · 사용자(웹뷰)/관리자/광고주 3화면 · Supabase", url:"./데모/03-커뮤니티광고플랫폼/index.html", status:"live", g:"linear-gradient(135deg,#6d5cf5,#a855f7)", here:true, thumb:"./assets/thumbs/03.webp", sum:"앱 커뮤니티 게시판과 자체 광고 운영을 사용자 웹뷰, 광고주, 관리자 세 역할로 분리한 데모입니다. 현재 실행 코드는 정적 프런트와 로컬 데이터 중심이며, 향후 Supabase·배치 연동을 수용할 수 있도록 운영 화면을 나눴습니다." },
+    { name:"창업지원협회", en:"KSSA", cat:"home", desc:"창업지원협회 공식 홈페이지 · 롤링배너·공지/정보·1:1문의·회원·관리자", url:"./데모/02-창업지원협회/index.html", status:"live", g:"linear-gradient(135deg,#1d4ed8,#0a7d5a)", here:true, thumb:"./assets/thumbs/02.webp", sum:"창업지원협회 공식 홈페이지에 협회 소개, 공지·정보 게시판, 회원, 1:1 문의와 관리자 기능을 결합했습니다. 공통 인터랙션과 도메인별 스크립트를 분리해 멀티페이지 운영 구조를 명확히 했습니다." },
+    { name:"운송포탈", en:"HANUL", cat:"platform", desc:"전국 화물 운송 통합 플랫폼 · 운임조회·견적·관리자", url:"./데모/01-운송포탈/index.html", status:"live", g:"linear-gradient(135deg,#1b3a6b,#0f2548)", here:true, thumb:"./assets/thumbs/01.webp", sum:"전국 화물 운송 서비스, 운임 조회, 견적 접수, 게시판과 관리자 화면을 연결한 기업형 반응형 물류 포털입니다." },
+    { name:"건축자재", en:"HAOS", cat:"home", desc:"HAOS × Sto 건축자재 브랜드 데모", url:"https://jeonjaeman.github.io/haos-demo/", status:"live", g:"linear-gradient(135deg,#5a4636,#2c2118)", thumb:"./assets/thumbs/56.webp", sum:"건축자재 브랜드 소개, 제품, 시공 레퍼런스, 텍스처와 상담·지원 콘텐츠를 분리한 멀티페이지 브랜드 사이트입니다. 각 페이지별 스타일과 인터랙션 모듈을 분리해 콘텐츠 확장과 정적 배포에 맞췄습니다." },
+    { name:"여성 피트니스", en:"VIVAFIT", cat:"home", desc:"여성 전용 프리미엄 피트니스 브랜드", url:"https://jeonjaeman.github.io/vivafit-demo/", status:"live", g:"linear-gradient(135deg,#7a2f5e,#3a1530)", thumb:"./assets/thumbs/61.webp", sum:"여성 전용 프리미엄 피트니스의 브랜드, 프로그램, 시설과 상담 전환을 한 페이지에 구성했습니다. 히어로 영상과 이미지 자산을 중심으로 모바일에서도 일관된 브랜드 경험을 제공하도록 제작했습니다." },
+    { name:"중고 건설장비", en:"JANGIN", cat:"platform", desc:"굴삭기 등 중고 건설장비 거래 플랫폼", url:"https://jeonjaeman.github.io/jangin-demo/", status:"live", g:"linear-gradient(135deg,#6b5a1b,#352b0f)", thumb:"./assets/thumbs/62.webp", sum:"굴삭기 등 중고 건설장비의 작업 사례와 매물·서비스 정보를 탐색하고 문의로 전환하는 랜딩형 거래 데모입니다. 서버 의존성 없이 필터, 갤러리 라이트박스와 데이터 렌더링을 단일 페이지에 구현했습니다." },
+    { name:"매출·인보이스 관리", en:"GOLD", cat:"admin", desc:"GoldInvoice 매출/정산 관리 서비스", url:"https://jeonjaeman.github.io/goldinvoice/", status:"live", g:"linear-gradient(135deg,#1b5a4a,#0f2c25)", thumb:"./assets/thumbs/58.webp", sum:"주문, 매출, 정산, 세금계산서와 인보이스 현황을 한 화면에서 관리하는 대시보드 데모입니다. Tailwind CSS와 Chart.js, 목업 데이터를 사용해 백엔드 없이도 주요 업무 지표와 처리 흐름을 시연합니다." },
+    { name:"보안업체", en:"SECURION", cat:"home", desc:"기업 보안·관제 서비스 브랜드", url:"https://jeonjaeman.github.io/securion-demo/", status:"live", g:"linear-gradient(135deg,#23314f,#141d30)", thumb:"./assets/thumbs/59.webp", sum:"기업 보안 컨설팅, 관제, 취약점 진단과 대응 역량을 전달하는 반응형 브랜드 사이트입니다. 스크롤 섹션과 CTA, 문의 폼을 단일 정적 페이지에 구성해 GitHub Pages에서 바로 홍보할 수 있도록 했습니다." },
+    { name:"글로벌 투자사(VC) 포트폴리오", en:"HORIZON", cat:"home", desc:"VC 공식 홈페이지 + 포트폴리오 80개사 · 영/국문 로케일별 실제 URL 165페이지 정적생성(hreflang·사이트맵) · 문장형 필터+다축 레일 · 기업이 직접 프로필을 올리는 2단계 권한 CMS(60자 규격·검수승인·실시간 카드 미리보기) · YC 소스분석 기반", url:"./데모/14-글로벌투자사/index.html", status:"live", g:"linear-gradient(135deg,#16140F,#6E6A5C 55%,#FF5100)", here:true, thumb:"./assets/thumbs/14.webp", sum:"80개 포트폴리오 기업과 영문·국문 로케일을 정적 생성하고 canonical, hreflang, 사이트맵까지 함께 산출한 VC 공식 홈페이지입니다. 필터·탐색 인터랙션과 기업이 프로필을 등록·미리보기·검수하는 데모 CMS를 바닐라 JavaScript로 구성했습니다." },
+    { name:"업무요청 접수", en:"AS", cat:"admin", desc:"AS·업무요청 접수 관리 시스템", url:"https://jeonjaeman.github.io/as-demo/", status:"live", g:"linear-gradient(135deg,#2f4a6b,#172638)", thumb:"./assets/thumbs/60.webp", sum:"제품 AS와 사내 업무요청을 접수하고 조회·상태 추적·관리자 처리로 이어지는 관리형 웹앱 데모입니다. 정적 배포 환경에서 탭 전환, 파일 업로드 UI와 상태 워크플로우를 클라이언트에서 시연하도록 구성했습니다." },
     { name:"회사제품 소개", en:"SOON", cat:"home", desc:"준비 중인 데모입니다", url:"#", status:"soon", g:"linear-gradient(135deg,#2a3344,#1a2130)" }
   ];
 
-  // 카테고리 탭
   const CATS = [
     { key:"all", label:"전체" },
     { key:"home", label:"홈페이지" },
@@ -171,11 +231,13 @@
   let activeCat = "all";
 
   const grid = document.getElementById("grid");
-  const tabbar = document.getElementById("tabbar");
-  const badgeHtml = (s)=> s==="live" ? '<span class="badge live">● LIVE</span>'
-    : s==="repo" ? '<span class="badge repo">GitHub</span>'
-    : '<span class="badge soon">준비중</span>';
-  const goHtml = (s)=> s==="soon" ? '' : '<span class="go">OPEN ↗</span>';
+  const nav = document.getElementById("nav");
+  const ph = document.getElementById("ph");
+  const rail = document.getElementById("rail");
+  const scrim = document.getElementById("scrim");
+  const burger = document.getElementById("burger");
+
+  const esc = (s)=> String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
   const inCat = (d)=> activeCat==="all" || d.cat===activeCat;
   const demoNo = (d)=>{
     if(Number.isInteger(d.no)) return d.no;
@@ -183,11 +245,12 @@
     return match ? Number(match[1]) : null;
   };
 
-  function renderTabs(){
-    tabbar.innerHTML = CATS.map(c=>{
-      const n = c.key==="all" ? DEMOS.length : DEMOS.filter(d=>d.cat===c.key).length;
-      const selected = c.key===activeCat;
-      return `<button type="button" class="tab ${selected?'on':''}" data-cat="${c.key}" aria-pressed="${selected}">${c.label} <span class="tc">${n}</span></button>`;
+  function renderNav(){
+    nav.innerHTML = CATS.map(c=>{
+      const live = DEMOS.filter(d=>d.status!=="soon");
+      const n = c.key==="all" ? live.length : live.filter(d=>d.cat===c.key).length;
+      const on = c.key===activeCat;
+      return `<button type="button" data-cat="${c.key}" aria-current="${on}">${c.label} <em>${n}</em></button>`;
     }).join("");
   }
 
@@ -195,7 +258,7 @@
   const CAT_RANK = { home:0, platform:1, admin:2 };
   const catRank = (d)=> CAT_RANK[d.cat]===undefined ? 9 : CAT_RANK[d.cat];
   function renderGrid(){
-    grid.innerHTML = DEMOS.filter(inCat).sort((a,b)=>{
+    const list = DEMOS.filter(inCat).sort((a,b)=>{
       const an = demoNo(a), bn = demoNo(b);
       if(an!==null && bn!==null) return an-bn;
       if(an!==null) return -1;
@@ -203,33 +266,81 @@
       const sa = a.status==="soon"?1:0, sb = b.status==="soon"?1:0;
       if(sa!==sb) return sa-sb;
       return catRank(a)-catRank(b);
-    }).map(d=>{
-      const tag = d.status==="soon" ? "div" : "a";
-      const attrs = d.status==="soon" ? 'class="card disabled"'
-        : `class="card" href="${d.url}" target="_blank" rel="noopener"`;
+    });
+    grid.innerHTML = list.map(d=>{
+      if(d.status==="soon" || !d.thumb){
+        return `<div class="tile soon"><span><b>${esc(d.name)}</b>준비 중입니다</span></div>`;
+      }
       const no = demoNo(d);
-      const numberHtml = no===null ? "" : `<span class="demo-no">No. ${String(no).padStart(2,"0")}</span>`;
-      return `<${tag} ${attrs}>
-        <div class="thumb" style="background:${d.g}">${numberHtml}<span style="position:relative;z-index:1">${d.en}</span></div>
-        <div class="body">
-          <h3>${d.name}</h3>
-          <p>${d.desc}</p>
-          <div class="meta">${badgeHtml(d.status)}${goHtml(d.status)}</div>
-        </div>
-      </${tag}>`;
+      const noHtml = no===null ? "" : `<em class="no">NO. ${String(no).padStart(2,"0")}</em>`;
+      const sum = d.sum ? `<span class="sum">${esc(d.sum)}</span>` : "";
+      return `<a class="tile" href="${esc(d.url)}" target="_blank" rel="noopener" aria-label="${esc(d.name)} — 새 탭에서 열기">
+        <img src="${esc(d.thumb)}" width="900" height="900" loading="lazy" decoding="async" alt="${esc(d.name)} 데스크톱·모바일 대표 화면" />
+        <span class="ov">${noHtml}<strong>${esc(d.name)}</strong>${sum}<span class="go">→</span></span>
+      </a>`;
     }).join("");
+    document.getElementById("cnt").textContent = list.filter(d=>d.status!=="soon").length;
+    ph.textContent = (CATS.find(c=>c.key===activeCat)||CATS[0]).label;
+    bindTiles();
+    rise();
   }
 
-  tabbar.addEventListener("click", (e)=>{
+  // 첫 화면 타일만 순차 등장 — 아래쪽 타일은 스크롤하면 이미 그려져 있다
+  function rise(){
+    if(matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+    const cols = Math.round(grid.offsetWidth / (grid.firstElementChild?.offsetWidth || 1)) || 4;
+    grid.querySelectorAll(".tile").forEach((el, i)=>{
+      if(i >= cols * 2) return;
+      el.style.setProperty("--i", i);
+      el.classList.add("rise");
+    });
+  }
+
+  // 방향 인식 호버 오버레이 — 마우스가 들어온 변에서 슬라이드 인, 나간 변으로 슬라이드 아웃
+  const OFF = { l:["-101%","0"], r:["101%","0"], t:["0","-101%"], b:["0","101%"] };
+  function edgeOf(e, el){
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    return Math.abs(x) > Math.abs(y) ? (x>0?"r":"l") : (y>0?"b":"t");
+  }
+  function setOff(el, d){
+    const v = OFF[d] || OFF.b;
+    el.style.setProperty("--ox", v[0]);
+    el.style.setProperty("--oy", v[1]);
+  }
+  function bindTiles(){
+    grid.querySelectorAll("a.tile").forEach(el=>{
+      el.addEventListener("mouseenter", (e)=>{ setOff(el, edgeOf(e, el)); void el.offsetWidth; el.classList.add("on"); });
+      el.addEventListener("mouseleave", (e)=>{ setOff(el, edgeOf(e, el)); el.classList.remove("on"); });
+    });
+  }
+
+  function closeRail(){
+    rail.classList.remove("open");
+    scrim.classList.remove("on"); scrim.hidden = true;
+    burger.setAttribute("aria-expanded","false");
+  }
+  burger.addEventListener("click", ()=>{
+    const open = rail.classList.toggle("open");
+    scrim.hidden = !open;
+    requestAnimationFrame(()=> scrim.classList.toggle("on", open));
+    burger.setAttribute("aria-expanded", String(open));
+  });
+  scrim.addEventListener("click", closeRail);
+  document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeRail(); });
+
+  nav.addEventListener("click", (e)=>{
     const b = e.target.closest("[data-cat]"); if(!b) return;
     activeCat = b.getAttribute("data-cat");
-    renderTabs(); renderGrid();
-    tabbar.querySelector(`[data-cat="${activeCat}"]`)?.focus();
+    renderNav(); renderGrid();
+    nav.querySelector(`[data-cat="${activeCat}"]`)?.focus();
+    closeRail();
+    window.scrollTo({ top:0, behavior:"smooth" });
   });
 
-  renderTabs();
+  renderNav();
   renderGrid();
-  document.getElementById("cnt").textContent = DEMOS.filter(d=>d.status!=="soon").length;
 </script>
 </body>
 </html>
