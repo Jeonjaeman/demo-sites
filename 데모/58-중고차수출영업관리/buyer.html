@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>바이어 어드민 — EXCARO 엑스카로</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="admin">
+  <aside class="side">
+    <a class="l-logo" href="index.html">EX<em>CARO</em></a>
+    <div class="role" id="roleBox"><b>김현수</b>글로벌모터스 (리비아)</div>
+    <nav class="snav" id="snav">
+      <button data-v="open" class="on">입찰 가능 <span class="cnt hot" id="cOpen"></span></button>
+      <button data-v="mine">내가 입찰한 차량 <span class="cnt" id="cMine"></span></button>
+    </nav>
+    <div class="foot">
+      바이어 전환(데모):
+      <select id="whoami" style="margin-top:6px;width:100%;padding:6px;border-radius:6px;background:#1c1c1b;color:#eee;border:1px solid #333"></select>
+      <div style="margin-top:10px">제안 검토용 데모 · 데이터 가상<br>
+      <a href="sales.html" target="_blank">영업팀 어드민</a>과 나란히 열면 실시간 연동이 보입니다</div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="m-head">
+      <h1 id="vTitle">입찰 가능 차량</h1>
+      <span class="sub" id="vSub"></span>
+      <div class="right"><span class="sub">입찰가는 마감 전까지 수정 가능 · 타 바이어 입찰가는 비공개</span></div>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<div class="drawer-dim" id="dim"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script>
+(function () {
+  "use strict";
+  const E = Excaro;
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => [].slice.call((r || document).querySelectorAll(s));
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const toast = (m) => { const t = $("#toast"); t.textContent = m; t.classList.add("on");
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2800); };
+
+  let me = "b1", view = "open", openId = null;
+
+  /* 바이어 전환 (로그인 시뮬) */
+  (function initWho() {
+    const st = E.load();
+    $("#whoami").innerHTML = st.buyers.map((b) => `<option value="${b.id}">${b.name} — ${b.company}</option>`).join("");
+    $("#whoami").addEventListener("change", (e) => {
+      me = e.target.value;
+      const b = st.buyers.find((x) => x.id === me);
+      $("#roleBox").innerHTML = `<b>${esc(b.name)}</b>${esc(b.company)}`;
+      render();
+    });
+  })();
+
+  function render() {
+    const st = E.load();
+    const open = st.cases.filter((c) => E.auctionOpen(c));
+    const mine = st.cases.filter((c) => c.bids.some((b) => b.buyer === me));
+    $("#cOpen").textContent = open.length; $("#cOpen").style.display = open.length ? "" : "none";
+    $("#cMine").textContent = mine.length;
+    $("#vTitle").textContent = view === "open" ? "입찰 가능 차량" : "내가 입찰한 차량";
+
+    const list = view === "open" ? open : mine;
+    $("#vSub").textContent = list.length + "대";
+
+    $("#view").innerHTML = list.length ? `<div class="lot-grid">${list.map((c) => {
+      const v = E.buyerView(c);              // ★ 서버가 잘라낸 응답만 사용
+      const left = E.auctionOpen(c) ? E.auctionLeft(c) : 0;
+      const rank = E.myRank(c, me);
+      const myBid = c.bids.find((b) => b.buyer === me);
+      return `<article class="lot" data-id="${c.id}">
+        <div class="lp">차량 사진 ${v.photos || 0}장
+          ${E.auctionOpen(c)
+            ? `<span class="tchip ${left < 3 * 60000 ? "hot" : ""}" data-ends="${c.auction.endsAt}">${E.mmss(left)}</span>`
+            : `<span class="tchip">마감</span>`}
+        </div>
+        <div class="lb">
+          <b>${esc(v.model)}</b>
+          <div class="meta">${v.year} · ${v.km ? (v.km / 10000).toFixed(1) + "만km" : "주행 미확인"} · ${esc(v.fuel)} · ${esc(v.plateMasked)}${v.round > 1 ? " · " + v.round + "차 입찰" : ""}</div>
+          <div class="foot">
+            ${myBid ? `<span class="chip st-done">내 입찰 ${E.won(myBid.amount)}</span>` : '<span class="chip st-live"><span class="dot"></span>입찰 대기</span>'}
+            ${rank ? `<span class="rank" style="color:${rank.rank === 1 ? "var(--ok)" : "var(--warn)"}">
+              현재 ${rank.rank}위 / ${rank.of}명</span>` : ""}
+          </div>
+        </div>
+      </article>`;
+    }).join("")}</div>` : `<div class="empty">${view === "open" ? "지금 입찰 가능한 차량이 없습니다 — 영업팀이 입찰을 시작하면 알림톡이 옵니다" : "아직 입찰한 차량이 없습니다"}</div>`;
+
+    $$(".lot").forEach((el) => el.addEventListener("click", () => openDrawer(el.dataset.id)));
+  }
+
+  /* ---------- 상세 ---------- */
+  function openDrawer(id) {
+    openId = id; drawDrawer();
+    $("#dim").classList.add("on"); $("#drawer").classList.add("on");
+  }
+  function closeDrawer() { openId = null; $("#dim").classList.remove("on"); $("#drawer").classList.remove("on"); }
+  $("#dim").addEventListener("click", closeDrawer);
+
+  function drawDrawer() {
+    if (!openId) return;
+    const st = E.load();
+    const c = st.cases.find((x) => x.id === openId);
+    if (!c) { closeDrawer(); return; }
+    const v = E.buyerView(c);                 // ★ 이 화면은 v만 사용한다
+    console.info("[EXCARO demo] 바이어 API 응답(모의) — 고객정보·비교견적·폐차견적 필드 자체가 없습니다:", v);
+    const left = E.auctionOpen(c) ? E.auctionLeft(c) : 0;
+    const myBid = c.bids.find((b) => b.buyer === me);
+    const rank = E.myRank(c, me);
+    const ck = v.checklist || {};
+    const CK = [["accident", "사고 유무"], ["flood", "침수 이력"], ["drive", "구동 방식"],
+      ["ac", "에어컨"], ["sunroof", "썬루프"], ["options", "기타 옵션"]];
+
+    $("#drawer").innerHTML = `
+      <div class="d-head">
+        <h2>${esc(v.model)} <span style="font-weight:600;color:var(--muted);font-size:13px">${esc(v.plateMasked)}</span></h2>
+        ${E.auctionOpen(c) ? '<span class="chip st-live"><span class="dot"></span>입찰 진행 중</span>' : '<span class="chip st-sent">마감</span>'}
+        <button class="x" id="dClose">✕</button>
+      </div>
+      <div class="d-body">
+        <div class="d-sec">
+          <div class="info-grid">
+            <div class="ig"><span>연식</span><b>${v.year}</b></div>
+            <div class="ig"><span>주행거리</span><b>${v.km ? (v.km / 10000).toFixed(1) + "만km" : "미확인"}</b></div>
+            <div class="ig"><span>연료</span><b>${esc(v.fuel)}</b></div>
+          </div>
+        </div>
+        <div class="d-sec"><h3>차량 사진 (${v.photos || 0}장)</h3>
+          <div class="photos">${Array.from({ length: Math.min(v.photos || 0, 8) }).map((_, i) => `<div class="ph">사진 ${i + 1}</div>`).join("") || '<div class="empty" style="grid-column:1/-1;padding:16px">등록된 사진이 없습니다</div>'}</div>
+        </div>
+        <div class="d-sec"><h3>영업팀 확인 체크리스트</h3>
+          <div class="check-grid">${CK.map(([k, label]) => `<div class="ig" style="background:var(--bg);border-radius:8px;padding:10px 12px">
+            <span style="display:block;font-size:11px;color:var(--muted);font-weight:700">${label}</span><b>${esc(ck[k] || "—")}</b></div>`).join("")}</div>
+          ${v.memo ? `<p style="margin-top:10px;font-size:13px;color:var(--ink-soft);background:var(--bg);border-radius:8px;padding:10px 12px">${esc(v.memo)}</p>` : ""}
+        </div>
+        <div class="d-sec">
+          <div class="blocked-note"><span class="ic">🔒</span>
+            <div><b>고객정보 · 비교견적 · 폐차견적은 제공되지 않습니다.</b><br>
+            화면에서 가린 게 아니라 서버 응답에 필드 자체가 없습니다 —
+            개발자도구 콘솔에서 이 차량의 응답 객체를 확인해 보세요.</div></div>
+        </div>
+        <div class="d-sec"><h3>입찰 ${rank ? `<span class="badge">현재 ${rank.rank}위 / ${rank.of}명</span>` : ""}</h3>
+          ${E.auctionOpen(c) ? `
+            <div class="cc" style="border-color:var(--accent);margin-bottom:12px">
+              <span>남은 시간 ${c.auction.extended ? "· 연장 " + c.auction.extended + "회" : ""}</span>
+              <b class="timer" data-ends="${c.auction.endsAt}" style="font-size:24px">${E.mmss(left)}</b>
+              <small>실서비스 기준 ${E.realLeft(left)} · 마감 3시간 내 입찰 시 5시간 자동 연장</small>
+            </div>
+            <div class="field"><label>입찰가 (만원) — 타 바이어 금액은 공개되지 않습니다</label>
+              <input id="bAmt" inputmode="numeric" value="${myBid ? myBid.amount : (v.round > 1 ? "" : "")}" placeholder="예: 560"></div>
+            <div class="field" style="margin-top:10px"><label>바이어 메모 (선택)</label>
+              <input id="bMemo" value="${esc(myBid ? myBid.memo : "")}" placeholder="예: 리비아 9월 선적분"></div>
+            <button class="btn btn-accent" id="bSubmit" style="margin-top:12px;width:100%;height:44px">
+              ${myBid ? "입찰가 수정" : "입찰 제출"}</button>
+            ${myBid ? '<p style="margin-top:8px;font-size:12px;color:var(--muted)">마감 전까지 몇 번이든 수정할 수 있습니다</p>' : ""}
+          ` : `<div class="empty" style="padding:18px">입찰이 마감되었습니다${myBid ? " — 내 최종 입찰 " + E.won(myBid.amount) : ""}</div>`}
+        </div>
+      </div>`;
+
+    $("#dClose").addEventListener("click", closeDrawer);
+    const btn = $("#bSubmit");
+    if (btn) btn.addEventListener("click", () => {
+      const amt = +$("#bAmt").value;
+      if (!amt || amt < 10) { toast("입찰가를 만원 단위 숫자로 입력해 주세요"); return; }
+      const st2 = E.load();
+      const r = E.placeBid(st2, c.id, me, amt, $("#bMemo").value.trim());
+      if (!r.ok) { toast(r.reason === "closed" ? "이미 마감된 입찰입니다 — 서버 시각 기준으로 거부되었습니다" : "입찰 처리에 실패했습니다"); render(); drawDrawer(); return; }
+      E.save(st2);
+      toast(r.extended ? "입찰 완료 — 마감 임박 입찰이라 마감이 5시간 연장되었습니다 (스나이핑 방지)" : "입찰이 접수되었습니다 — 순위는 내 순위만 표시됩니다");
+    });
+  }
+
+  /* 내비 */
+  $$("#snav button").forEach((b) => b.addEventListener("click", () => {
+    $$("#snav button").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); view = b.dataset.v; render();
+  }));
+
+  /* 타이머 틱 */
+  setInterval(() => {
+    $$(".timer[data-ends], .tchip[data-ends]").forEach((el) => {
+      const left = Math.max(0, +el.dataset.ends - E.now());
+      el.childNodes[0].textContent = E.mmss(left);
+      if (left <= 0) { render(); if (openId) drawDrawer(); }
+    });
+  }, 1000);
+
+  document.addEventListener("excaro:change", () => { render(); if (openId) drawDrawer(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

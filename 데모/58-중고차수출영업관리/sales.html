@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>영업팀 어드민 — EXCARO 엑스카로</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<div class="admin">
+  <aside class="side">
+    <a class="l-logo" href="index.html">EX<em>CARO</em></a>
+    <div class="role"><b>강태호 팀장</b>영업팀 · 팀장 권한</div>
+    <nav class="snav" id="snav">
+      <button data-v="all" class="on">전체 현황 <span class="cnt" id="cAll"></span></button>
+      <button data-v="new">신규 접수 <span class="cnt hot" id="cNew"></span></button>
+      <button data-v="ready">입찰 전 <span class="cnt" id="cReady"></span></button>
+      <button data-v="live">입찰 진행 <span class="cnt hot" id="cLive"></span></button>
+      <button data-v="nego">협의·확정 <span class="cnt" id="cNego"></span></button>
+      <button data-v="done">완료 <span class="cnt" id="cDone"></span></button>
+      <button data-v="logs">발송 로그</button>
+    </nav>
+    <div class="foot">
+      제안 검토용 데모 · 데이터 전부 가상<br>
+      실서비스: 마감 판정은 서버 시각 기준<br>
+      <a href="buyer.html" target="_blank">바이어 어드민을 새 창으로 열어</a>
+      입찰을 넣어보면 이 화면에 실시간 반영됩니다
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="m-head">
+      <h1 id="vTitle">전체 현황</h1>
+      <span class="sub" id="vSub"></span>
+      <div class="right">
+        <!-- 공고 2-2 "영업직원 마이페이지" — 담당 필터로 내 건만 상태별 관리 -->
+        <select id="whoFilter" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px;background:var(--surface)">
+          <option value="all">담당자 전체 (팀장 뷰)</option>
+        </select>
+        <span class="sub">데모 배속: 실서비스 24시간 = 데모 24분</span>
+        <button class="btn btn-ghost btn-sm" onclick="Excaro.reset()">데모 초기화</button>
+      </div>
+    </div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<!-- 상세 드로어 -->
+<div class="drawer-dim" id="dim"></div>
+<aside class="drawer" id="drawer"></aside>
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script>
+(function () {
+  "use strict";
+  const E = Excaro;
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => [].slice.call((r || document).querySelectorAll(s));
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const toast = (m) => { const t = $("#toast"); t.textContent = m; t.classList.add("on");
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2800); };
+
+  let view = "all", openId = null, who = "all";
+
+  /* 담당자 필터 초기화 — 영업직원은 자기 건만 (마이페이지) */
+  (function () {
+    const st0 = Excaro.load();
+    const sel = $("#whoFilter");
+    st0.staff.filter((s) => s.role === "sales").forEach((s) => {
+      const o = document.createElement("option");
+      o.value = s.id; o.textContent = s.name + " (내 건만)";
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", () => { who = sel.value; render(); });
+  })();
+
+  const GROUP = {
+    all: null,
+    new: ["new", "assigned"],
+    ready: ["consulted"],
+    live: ["bidding"],
+    nego: ["renegotiate", "confirmed"],
+    done: ["sent"],
+  };
+  const TITLE = { all: "전체 현황", new: "신규 접수", ready: "입찰 전 (상담 완료)",
+    live: "입찰 진행 중", nego: "협의·확정", done: "ERP 전송 완료", logs: "발송 로그" };
+
+  function staffName(st, id) { const s = st.staff.find((x) => x.id === id); return s ? s.name : "미배정"; }
+  function buyerName(st, id) { const b = st.buyers.find((x) => x.id === id); return b ? b.name : id; }
+
+  /* ---------- 목록 렌더 ---------- */
+  function render() {
+    const st = E.load();
+    // 사이드 카운트
+    const cnt = (keys) => st.cases.filter((c) => keys.includes(c.status)).length;
+    $("#cAll").textContent = st.cases.length;
+    $("#cNew").textContent = cnt(GROUP.new); $("#cNew").style.display = cnt(GROUP.new) ? "" : "none";
+    $("#cReady").textContent = cnt(GROUP.ready);
+    $("#cLive").textContent = cnt(GROUP.live); $("#cLive").style.display = cnt(GROUP.live) ? "" : "none";
+    $("#cNego").textContent = cnt(GROUP.nego);
+    $("#cDone").textContent = cnt(GROUP.done);
+    $("#vTitle").textContent = TITLE[view];
+
+    if (view === "logs") return renderLogs(st);
+
+    let list = GROUP[view] ? st.cases.filter((c) => GROUP[view].includes(c.status)) : st.cases;
+    if (who !== "all") list = list.filter((c) => c.assignee === who);   // 마이페이지: 내 담당 건만
+    $("#vSub").textContent = list.length + "건" + (who !== "all" ? " · " + staffName(st, who) + " 담당" : "");
+
+    const kpis = view !== "all" ? "" : (function () {
+      const live = st.cases.filter((c) => c.status === "bidding");
+      const bidsToday = st.cases.reduce((n, c) => n + c.bids.length, 0);
+      const confirmedAmt = st.cases.filter((c) => c.finalBid && ["confirmed", "sent"].includes(c.status))
+        .reduce((n, c) => n + c.finalBid.amount, 0);
+      return `<div class="kpis">
+        <div class="kpi"><div class="k">진행 중 케이스</div><div class="v">${st.cases.filter((c) => c.status !== "sent").length}<small>건</small></div></div>
+        <div class="kpi hot"><div class="k">입찰 진행 중</div><div class="v">${live.length}<small>건</small></div></div>
+        <div class="kpi"><div class="k">누적 입찰</div><div class="v">${bidsToday}<small>건</small></div></div>
+        <div class="kpi"><div class="k">확정 매입액</div><div class="v">${confirmedAmt.toLocaleString()}<small>만원</small></div></div>
+      </div>`;
+    })();
+
+    const rows = list.map((c) => {
+      const stt = E.STATUS[c.status];
+      const t = E.topBid(c);
+      const left = E.auctionOpen(c) ? E.auctionLeft(c) : 0;
+      return `<tr data-id="${c.id}">
+        <td class="car"><b>${esc(c.model)}</b><span>${esc(c.plate)} · ${c.year} · ${c.km ? (c.km / 10000).toFixed(1) + "만km" : "주행 미확인"} · ${esc(c.fuel)}</span></td>
+        <td><span class="chip ${stt.cls}"><span class="dot"></span>${stt.ko}${c.round > 1 ? " · " + c.round + "차" : ""}</span></td>
+        <td>${esc(staffName(st, c.assignee))}${c.autoAssigned ? ' <span style="font-size:10.5px;color:var(--muted)">자동배정</span>' : ""}</td>
+        <td class="num">${c.compare ? E.won(c.compare.market) : "—"}</td>
+        <td>${
+          c.status === "bidding"
+            ? `<span class="timer ${left < 3 * 60000 ? "warn" : ""}" data-ends="${c.auction.endsAt}">${E.mmss(left)}</span>
+               <span class="timer-real">실서비스 기준 ${E.realLeft(left)}${c.auction.extended ? " · 연장 " + c.auction.extended + "회" : ""}</span>`
+            : t ? `<span class="num">${E.won(t.amount)}</span><span class="timer-real">최고 입찰 · ${esc(buyerName(st, t.buyer))}</span>` : "—"
+        }</td>
+      </tr>`;
+    }).join("");
+
+    $("#view").innerHTML = kpis + `<div class="panel">
+      <div class="p-head"><h2>${TITLE[view]}</h2><span class="sub">행을 누르면 상세·처리</span></div>
+      ${list.length ? `<table class="tbl">
+        <thead><tr><th>차량</th><th>상태</th><th>담당</th><th>비교견적</th><th>입찰</th></tr></thead>
+        <tbody>${rows}</tbody></table>` : `<div class="empty">해당 상태의 케이스가 없습니다</div>`}
+    </div>`;
+
+    $$("#view tbody tr").forEach((tr) => tr.addEventListener("click", () => openDrawer(tr.dataset.id)));
+  }
+
+  function renderLogs(st) {
+    $("#vSub").textContent = "알림톡 심사 승인 전에는 SMS로 자동 폴백됩니다";
+    $("#view").innerHTML = `<div class="panel">
+      <div class="p-head"><h2>발송 로그</h2>
+        <div class="right"><label style="font-size:12px;display:flex;gap:6px;align-items:center">
+          <input type="checkbox" id="tglAlim" ${st.alimtalkReady ? "checked" : ""}> 알림톡 템플릿 심사 승인됨
+        </label></div></div>
+      ${st.logs.length ? st.logs.map((l) => `<div class="log-row">
+        <time>${E.hhmm(l.at)}</time>
+        <span class="ch chip ${l.channel === "알림톡" ? "st-done" : "st-ready"}">${l.channel}</span>
+        <p><b>[${esc(l.kind)}] ${esc(l.to)}</b> — ${esc(l.msg)}</p></div>`).join("")
+      : '<div class="empty">발송 이력이 없습니다</div>'}
+    </div>
+    <p style="font-size:12px;color:var(--muted);line-height:1.7">알림톡은 카카오 템플릿 사전 심사(영업일 최대 3일)를
+      통과해야 발송됩니다. 심사 전·반려 시에도 안내가 끊기지 않도록 SMS 폴백을 기본 탑재했습니다.</p>`;
+    $("#tglAlim").addEventListener("change", (e) => {
+      const s2 = E.load(); s2.alimtalkReady = e.target.checked; E.save(s2);
+      toast(e.target.checked ? "이후 발송은 알림톡으로 나갑니다" : "SMS 폴백으로 전환되었습니다");
+    });
+  }
+
+  /* ---------- 상세 드로어 ---------- */
+  function openDrawer(id) {
+    openId = id; drawDrawer();
+    $("#dim").classList.add("on"); $("#drawer").classList.add("on");
+  }
+  function closeDrawer() {
+    openId = null;
+    $("#dim").classList.remove("on"); $("#drawer").classList.remove("on");
+  }
+  $("#dim").addEventListener("click", closeDrawer);
+
+  function drawDrawer() {
+    if (!openId) return;
+    const st = E.load();
+    const c = st.cases.find((x) => x.id === openId);
+    if (!c) { closeDrawer(); return; }
+    const stt = E.STATUS[c.status];
+    const t = E.topBid(c);
+    const left = E.auctionOpen(c) ? E.auctionLeft(c) : 0;
+
+    const assignSel = `<select id="dAssign" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:13px">
+      ${st.staff.filter((s) => s.role === "sales").map((s) =>
+        `<option value="${s.id}" ${s.id === c.assignee ? "selected" : ""}>${s.name}</option>`).join("")}
+    </select>`;
+
+    const ck = c.checklist;
+    const CK_FIELDS = [["accident", "사고 유무", ["무", "유"]], ["flood", "침수 이력", ["무", "유"]],
+      ["drive", "구동 방식", ["정상", "이상"]], ["ac", "에어컨", ["정상", "고장"]],
+      ["sunroof", "썬루프", ["무", "유"]], ["options", "기타 옵션", null]];
+
+    const checklistHtml = c.status === "new" || c.status === "assigned" || !ck
+      ? `<div class="check-grid">${CK_FIELDS.map(([k, label, opts]) => `<div class="field"><label>${label}</label>${
+          opts ? `<select data-ck="${k}">${opts.map((o) => `<option>${o}</option>`).join("")}</select>`
+               : `<input data-ck="${k}" placeholder="예: 네비·열선">`}</div>`).join("")}
+        </div>
+        <div class="field" style="margin-top:10px"><label>주행거리 (km)</label><input id="dKm" inputmode="numeric" placeholder="예: 148000" value="${c.km || ""}"></div>
+        <div class="field" style="margin-top:10px"><label>상담 메모</label><textarea id="dMemo" rows="2" placeholder="차주 특이사항·차량 상태 메모">${esc(c.memo)}</textarea></div>
+        <button class="btn btn-ink" id="dSaveConsult" style="margin-top:12px">상담 저장 → 비교견적 산출</button>`
+      : `<div class="check-grid">${CK_FIELDS.map(([k, label]) =>
+          `<div class="ig" style="background:var(--bg);border-radius:8px;padding:10px 12px"><span style="display:block;font-size:11px;color:var(--muted);font-weight:700">${label}</span><b>${esc(ck[k])}</b></div>`).join("")}
+        </div>
+        ${c.memo ? `<p style="margin-top:10px;font-size:13px;color:var(--ink-soft);background:var(--bg);border-radius:8px;padding:10px 12px">${esc(c.memo)}</p>` : ""}`;
+
+    const photosHtml = `<div class="photos">
+      ${Array.from({ length: c.photos || 0 }).map((_, i) => `<div class="ph">사진 ${i + 1}</div>`).join("")}
+      <button class="ph add" id="dAddPhoto">+ 사진 추가</button>
+    </div>
+    <p style="margin-top:8px;font-size:11.5px;color:var(--muted)">바이어에게는 사진·체크리스트·메모만 노출됩니다 (고객정보·견적가 제외)</p>`;
+
+    const compareHtml = c.compare ? `<div class="compare-cards">
+        <div class="cc hl"><span>비교견적 (시세 기준가)</span><b>${E.won(c.compare.market)}</b><small>카마트 API — 데모는 모의 산출 · B2B 계약 필요</small></div>
+        <div class="cc"><span>폐차기준가 (하한선)</span><b>${E.won(c.compare.scrap)}</b><small>이 아래로 내려가면 폐차가 유리</small></div>
+      </div>` : `<p style="font-size:13px;color:var(--muted)">상담 저장 시 자동 산출됩니다</p>`;
+
+    let auctionHtml = "";
+    if (c.status === "consulted") {
+      auctionHtml = `<button class="btn btn-accent" id="dStart">바이어 입찰 시작 (24시간)</button>
+        <p style="margin-top:8px;font-size:12px;color:var(--muted)">바이어 ${st.buyers.length}명에게 알림이 발송됩니다 ·
+        마감 3시간 내 입찰이 들어오면 5시간 자동 연장(스나이핑 방지)</p>`;
+    } else if (c.status === "bidding") {
+      auctionHtml = `<div class="cc" style="border-color:var(--accent)">
+          <span>남은 시간 ${c.auction.extended ? "· 소프트클로즈 연장 " + c.auction.extended + "회" : ""}</span>
+          <b class="timer" data-ends="${c.auction.endsAt}" style="font-size:26px">${E.mmss(left)}</b>
+          <small>실서비스 기준 ${E.realLeft(left)} · 마감 판정은 서버 시각</small>
+        </div>
+        <div style="margin-top:12px">${bidsHtml(st, c)}</div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-danger" id="dStop">입찰 중지 → 현재 최고가 확정</button>
+          <button class="btn btn-ghost btn-sm" id="dSimBid" style="height:38px">모의 입찰 넣어보기</button>
+        </div>`;
+    } else if (c.status === "renegotiate") {
+      auctionHtml = `${bidsHtml(st, c)}
+        <div class="cc" style="margin-top:12px;border-color:#6d28d9;background:#f8f5fe">
+          <span>낙찰가 vs 차주 희망가</span>
+          <b>${E.won(c.finalBid && c.finalBid.amount)} <small style="font-size:13px;color:var(--muted)">/ 희망 ${E.won(c.wishPrice)}</small></b>
+          <small>${c.wishPrice && c.finalBid && c.wishPrice > c.finalBid.amount ? "희망가 미달 — 협의 또는 재입찰" : "협의 가능 범위"}</small>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-ink" id="dConfirm">이 가격으로 매입 확정</button>
+          <button class="btn btn-ghost" id="dRebid">${c.round >= 2 ? "재입찰 한도 도달 (2회)" : "희망가 협의 후 재입찰"}</button>
+        </div>
+        ${c.round >= 2 ? '<p style="margin-top:8px;font-size:12px;color:var(--warn)">재입찰은 2회로 제한합니다 — 무한 재입찰은 바이어 이탈을 부릅니다</p>' : ""}`;
+    } else if (c.status === "confirmed") {
+      const docs = c.docs || {};
+      auctionHtml = `${t ? `<div class="cc hl"><span>확정 매입가</span><b>${E.won(c.finalBid.amount)}</b><small>${esc(buyerName(st, c.finalBid.buyer))} 낙찰</small></div>` : ""}
+        <h3 style="font-size:13px;font-weight:800;margin:16px 0 8px">수출 서류 추적 <span style="font-weight:600;color:var(--muted)">— 건별 파일링(세무·환급 대비)</span></h3>
+        <div class="check-grid">${Object.keys(docs).map((k) => `
+          <label style="display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;cursor:pointer">
+            <input type="checkbox" data-doc="${k}" ${docs[k] ? "checked" : ""}> ${k}</label>`).join("")}
+        </div>
+        <button class="btn btn-accent" id="dErp" style="margin-top:14px" ${Object.values(docs).every(Boolean) ? "" : "disabled"}>
+          ERP/플로우로 전송</button>
+        <button class="btn btn-ghost btn-sm" id="dErpFail" style="margin-left:6px;height:38px">전송 실패 시뮬레이션</button>
+        ${Object.values(docs).every(Boolean) ? "" : '<p style="margin-top:8px;font-size:12px;color:var(--muted)">서류 5종이 모두 확인되어야 전송할 수 있습니다</p>'}`;
+    } else if (c.status === "sent") {
+      auctionHtml = `<div class="cc hl"><span>확정 매입가</span><b>${E.won(c.finalBid && c.finalBid.amount)}</b><small>ERP 전송 완료</small></div>`;
+    }
+
+    const erpLogHtml = c.erpLog && c.erpLog.length ? `<div class="d-sec"><h3>ERP 전송 이력 <span class="badge">멱등키 ${esc(c.erpKey || "EXC-" + c.id.toUpperCase())}</span></h3>
+      ${c.erpLog.map((l) => `<div class="log-row" style="padding:8px 0">
+        <time>${E.hhmm(l.at)}</time>
+        <span class="chip ${l.ok ? "st-done" : "st-ready"}">${l.ok ? "성공" : "재시도"}</span>
+        <p>${esc(l.msg)}</p></div>`).join("")}
+      <p style="font-size:11.5px;color:var(--muted)">같은 멱등키 재전송 시 ERP가 중복을 거부합니다 — 이중 등록 방지</p></div>` : "";
+
+    $("#drawer").innerHTML = `
+      <div class="d-head">
+        <h2>${esc(c.model)} <span style="font-weight:600;color:var(--muted);font-size:13px">${esc(c.plate)}</span></h2>
+        <span class="chip ${stt.cls}"><span class="dot"></span>${stt.ko}</span>
+        <button class="x" id="dClose">✕</button>
+      </div>
+      <div class="d-body">
+        <div class="d-sec">
+          <div class="info-grid">
+            <div class="ig"><span>소유자</span><b>${esc(c.owner)}</b></div>
+            <div class="ig"><span>연락처</span><b>${esc(c.phone)}</b></div>
+            <div class="ig"><span>접수</span><b>${E.hhmm(c.createdAt)}</b></div>
+            <div class="ig"><span>연식</span><b>${c.year}</b></div>
+            <div class="ig"><span>연료</span><b>${esc(c.fuel)}</b></div>
+            <div class="ig"><span>담당 ${c.autoAssigned ? "(자동배정)" : ""}</span><b>${assignSel}</b></div>
+          </div>
+        </div>
+        <div class="d-sec"><h3>전화상담 체크리스트</h3>${checklistHtml}</div>
+        <div class="d-sec"><h3>차량 사진 <span style="font-weight:600;color:var(--muted)">(${c.photos || 0}장)</span></h3>${photosHtml}</div>
+        <div class="d-sec"><h3>견적 기준가</h3>${compareHtml}</div>
+        <div class="d-sec"><h3>바이어 입찰</h3>${auctionHtml}</div>
+        ${erpLogHtml}
+      </div>`;
+
+    bindDrawer(c);
+  }
+
+  function bidsHtml(st, c) {
+    if (!c.bids.length) return '<div class="empty" style="padding:18px">아직 입찰이 없습니다 — 바이어 어드민에서 입찰해 보세요</div>';
+    const sorted = c.bids.slice().sort((a, b) => b.amount - a.amount || a.at - b.at);
+    return sorted.map((b, i) => {
+      const by = st.buyers.find((x) => x.id === b.buyer) || {};
+      return `<div class="bid-row ${i === 0 ? "top" : ""}">
+        ${i === 0 ? '<span class="crown">👑</span>' : `<span style="width:13px;text-align:center;font-size:12px;color:var(--muted)">${i + 1}</span>`}
+        <div class="who"><b>${esc(by.name)}</b><span>${esc(by.company || "")}${b.revised ? " · 수정 " + b.revised + "회" : ""}</span></div>
+        <span class="amt">${E.won(b.amount)}</span>
+      </div>`;
+    }).join("");
+  }
+
+  function bindDrawer(c) {
+    $("#dClose").addEventListener("click", closeDrawer);
+    const on = (sel, fn) => { const el = $(sel); if (el) el.addEventListener("click", fn); };
+
+    const sel = $("#dAssign");
+    if (sel) sel.addEventListener("change", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      cc.assignee = sel.value; cc.autoAssigned = false;
+      if (cc.status === "new") cc.status = "assigned";
+      E.save(st); toast("담당자를 변경했습니다 (팀장 수동 지정)");
+    });
+
+    on("#dSaveConsult", () => {
+      const ckv = {};
+      $$("[data-ck]").forEach((el) => ckv[el.dataset.ck] = el.value || "-");
+      const st = E.load();
+      E.saveConsult(st, c.id, ckv, $("#dMemo").value, +($("#dKm").value || 0));
+      E.save(st); toast("상담 저장 — 비교견적·폐차기준가를 산출했습니다");
+    });
+
+    on("#dAddPhoto", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      cc.photos = (cc.photos || 0) + 1; E.save(st); toast("사진 1장 추가 (데모 — 실서비스는 업로드·순서 편집)");
+    });
+
+    on("#dStart", () => {
+      const st = E.load(); E.startAuction(st, c.id, 24); E.save(st);
+      toast(`입찰 시작 — 바이어 ${E.load().buyers.length}명에게 발송 (발송 로그 확인)`);
+    });
+
+    on("#dStop", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      const t = E.topBid(cc);
+      if (!t) { toast("입찰이 없어 중지하면 상담 상태로 돌아갑니다"); }
+      E.stopAuction(st, c.id); E.save(st);
+      if (t) toast(`입찰 중지 — ${E.won(t.amount)} 최고가로 확정, 고객 협의 단계로 이동`);
+    });
+
+    on("#dSimBid", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      const t = E.topBid(cc); const base = t ? t.amount : (cc.compare ? cc.compare.market - 60 : 300);
+      const b = st.buyers[Math.floor(Math.random() * st.buyers.length)];
+      const r = E.placeBid(st, c.id, b.id, base + 5 + Math.floor(Math.random() * 18), "");
+      E.save(st);
+      toast(r.extended ? "모의 입찰 — 마감 임박 입찰이라 5시간 자동 연장됐습니다" : "모의 입찰이 들어왔습니다");
+    });
+
+    on("#dConfirm", () => {
+      const st = E.load(); E.confirmPurchase(st, c.id); E.save(st);
+      toast("매입 확정 — 수출 서류 추적을 시작합니다");
+    });
+
+    on("#dRebid", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      if (cc.round >= 2) { toast("재입찰은 2회까지입니다 — 희망가 조정 협의를 권장"); return; }
+      const wish = prompt("차주 희망가(만원)를 입력하세요", cc.wishPrice || "");
+      if (!wish) return;
+      E.rebid(st, c.id, +wish); E.save(st);
+      toast("재입찰 시작 (" + E.load().cases.find((x) => x.id === c.id).round + "차) — 바이어에게 재발송");
+    });
+
+    $$("[data-doc]").forEach((el) => el.addEventListener("change", () => {
+      const st = E.load(); const cc = st.cases.find((x) => x.id === c.id);
+      cc.docs[el.dataset.doc] = el.checked; E.save(st);
+    }));
+
+    on("#dErp", () => {
+      const st = E.load(); E.erpSend(st, c.id, false); E.save(st);
+      toast("ERP 전송 성공 — 수신 확인 (200)");
+    });
+    on("#dErpFail", () => {
+      const st = E.load(); E.erpSend(st, c.id, true); E.save(st);
+      toast("전송 실패 — 같은 멱등키로 자동 재시도 대기열에 등록됐습니다");
+    });
+  }
+
+  /* ---------- 내비 ---------- */
+  $$("#snav button").forEach((b) => b.addEventListener("click", () => {
+    $$("#snav button").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on"); view = b.dataset.v; render();
+  }));
+
+  /* ---------- 타이머 틱 (1초) + 마감 자동 처리 ---------- */
+  setInterval(() => {
+    let dirty = false;
+    const st = E.load();
+    st.cases.forEach((c) => {
+      if (c.status === "bidding" && c.auction && !c.auction.stopped && E.auctionLeft(c) <= 0) {
+        const t = E.topBid(c);
+        if (t) { c.status = "renegotiate"; c.finalBid = t; }
+        else { c.status = "consulted"; c.auction = null; }
+        dirty = true;
+      }
+    });
+    if (dirty) { E.save(st); return; }
+    $$(".timer[data-ends]").forEach((el) => {
+      const left = Math.max(0, +el.dataset.ends - E.now());
+      el.childNodes[0].textContent = E.mmss(left);
+      el.classList.toggle("warn", left < 3 * 60000 && left > 0);
+      const real = el.parentElement && el.parentElement.querySelector(".timer-real");
+    });
+  }, 1000);
+
+  /* 다른 창(바이어·랜딩) 변경 실시간 반영 */
+  document.addEventListener("excaro:change", () => { render(); drawDrawer(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EXCARO 엑스카로 — 내 차, 수출로 더 높게 | 무료 수출 견적</title>
+<meta name="description" content="차량번호만 남기면 전담 1명이 연락드립니다. 해외 바이어 24시간 입찰로 내 차의 수출 최고가를 확인하세요.">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="landing">
+
+<div class="demo-note">
+  <span><b>제안 검토용 데모</b> — 데이터는 전부 가상입니다</span>
+  <a class="btn" href="sales.html">영업팀 어드민 →</a>
+  <a class="btn" href="buyer.html">바이어 어드민 →</a>
+</div>
+
+<header class="l-nav" id="lnav">
+  <div class="shell">
+    <a class="l-logo" href="#">EX<em>CARO</em></a>
+    <nav>
+      <a href="#quote">무료 견적</a>
+      <a href="#process">진행 과정</a>
+    </nav>
+    <a class="btn btn-accent" href="#quote">내 차 수출가 확인</a>
+  </div>
+</header>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-media"><img src="assets/img/hero.webp" alt="" onerror="this.style.display='none'"></div>
+  <div class="shell hero-copy">
+    <p class="eyebrow">USED CAR EXPORT · BUYER AUCTION</p>
+    <h1>
+      <span class="ln"><span>국내에서 안 쳐주는 내 차,</span></span>
+      <span class="ln"><span>해외 바이어는</span></span>
+      <span class="ln"><span>다르게 봅니다.</span></span>
+    </h1>
+    <p class="sub">연식 오래된 차, 주행거리 많은 차, LPG·디젤 차량일수록 수출 수요가 높습니다.
+      전담 상담사 1명이 차량 상태를 확인하고, 해외 바이어 입찰로 최고가를 받아냅니다.</p>
+    <div class="hero-stats">
+      <div class="rv"><b data-count="4200">0</b><span>누적 수출 대수</span></div>
+      <div class="rv"><b data-count="12">0</b><span>수출 대상국</span></div>
+      <div class="rv"><b data-count="24">0</b><span>시간 · 바이어 입찰</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 조회 + 접수 -->
+<section class="quote-band" id="quote">
+  <div class="shell quote-grid">
+    <div class="quote-copy rv">
+      <h2>차량번호 하나로<br>수출 견적이 시작됩니다</h2>
+      <p>입력하신 정보로 차량을 확인한 뒤, <b style="color:#fff">담당자 딱 1명</b>이 전화드립니다.
+        여러 업체에서 전화가 쏟아지는 일은 없습니다.</p>
+      <ul class="trust-list">
+        <li><span class="tick">✓</span><div><b>전화 1통 원칙</b> — 접수 즉시 전담 상담사가 배정되고, 그 담당자만 연락합니다</div></li>
+        <li><span class="tick">✓</span><div><b>소유자 동의 기반 조회</b> — 차량 정보는 국토교통부 자동차종합정보를 소유자 본인 동의로만 조회합니다</div></li>
+        <li><span class="tick">✓</span><div><b>해외 바이어 24시간 입찰</b> — 한 명이 부르는 값이 아니라, 여러 바이어의 경쟁 입찰가를 받습니다</div></li>
+        <li><span class="tick">✓</span><div><b>개인정보 비공개</b> — 바이어에게는 차량 정보만 제공되며 연락처·성함은 절대 전달되지 않습니다</div></li>
+      </ul>
+    </div>
+
+    <div class="quote-card rv" id="quoteCard">
+      <h3>무료 수출 견적 받기</h3>
+      <p class="hint">30초면 됩니다 · 상담료 없음</p>
+      <div class="field">
+        <label for="fPlate">차량번호</label>
+        <input id="fPlate" value="12가 3456" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="fOwner">소유자 성함</label>
+        <input id="fOwner" value="김영란" autocomplete="off">
+      </div>
+      <label class="consent">
+        <input type="checkbox" id="fConsent">
+        <span>본인은 위 차량의 소유자로서, 수출 견적 산정을 위해 국토교통부 자동차종합정보
+          조회 및 개인정보(차량번호·성명·연락처) 수집·이용에 동의합니다.
+          <b style="color:#ddd">보관 기간: 상담 종료 후 90일, 이후 파기.</b></span>
+      </label>
+      <button class="btn btn-accent" id="btnLookup" disabled>차량 확인하기</button>
+
+      <div class="vres" id="vres">
+        <div class="vhead"><span>국토교통부 자동차종합정보 (데모 — 모의 응답)</span><span id="vTime"></span></div>
+        <div class="vbody">
+          <div><span>차명</span><b id="vModel">—</b></div>
+          <div><span>연식</span><b id="vYear">—</b></div>
+          <div><span>사용연료</span><b id="vFuel">—</b></div>
+          <div><span>차종</span><b id="vType">—</b></div>
+        </div>
+        <div style="padding:0 16px 16px">
+          <div class="field">
+            <label for="fPhone" style="color:#b9b9b6">연락처 — 전담 상담사 1명만 연락드립니다</label>
+            <input id="fPhone" value="010-2345-6789" inputmode="tel">
+          </div>
+          <button class="btn btn-accent" id="btnSubmit" style="width:100%;margin-top:12px;height:46px">
+            무료 수출 문의 접수
+          </button>
+        </div>
+      </div>
+
+      <p class="law-note">차량 정보 조회는 「자동차관리법」상 자동차종합정보 제공 서비스를 이용하며,
+        소유자 본인의 제3자 정보제공 동의가 있는 경우에만 가능합니다. 동의 없이 타인 차량은
+        조회되지 않습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 프로세스 -->
+<section class="process" id="process">
+  <div class="shell">
+    <h2 class="rv">접수부터 매입까지,<br>4단계면 끝납니다</h2>
+    <div class="steps">
+      <div class="step rv"><span class="no">01</span><h3>접수 · 전담 배정</h3>
+        <p>차량번호를 남기면 전담 상담사 1명이 자동 배정됩니다. 다른 곳에서 전화 올 일이 없습니다.</p></div>
+      <div class="step rv"><span class="no">02</span><h3>전화 상담 · 상태 확인</h3>
+        <p>사고·침수 여부 등 6가지 체크리스트로 상태를 기록하고, 시세 기준가를 산정합니다.</p></div>
+      <div class="step rv"><span class="no">03</span><h3>바이어 24시간 입찰</h3>
+        <p>해외 바이어들이 경쟁 입찰합니다. 좋은 가격이 나오면 그 자리에서 조기 확정도 가능합니다.</p></div>
+      <div class="step rv"><span class="no">04</span><h3>매입 확정 · 서류 대행</h3>
+        <p>최고가로 확정되면 말소등록·수출신고까지 저희가 처리합니다. 차만 넘겨주시면 됩니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="l-foot">
+  <div class="shell">
+    <div class="row">
+      <b style="color:#b9b9b6">EXCARO 엑스카로</b>
+      <span>제안 검토용 데모 — 모든 수치·업체·차량번호는 가상입니다</span>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span>개인정보 처리방침</span><span>자동차매매업 등록번호 (표기 예정)</span>
+      <span>통신판매업 신고 (표기 예정)</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script>
+(function () {
+  "use strict";
+  const $ = (s) => document.querySelector(s);
+  const toast = (m) => { const t = $("#toast"); t.textContent = m; t.classList.add("on");
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("on"), 2600); };
+
+  /* 내비 스크롤 */
+  addEventListener("scroll", () => {
+    $("#lnav").classList.toggle("scrolled", scrollY > 40);
+  }, { passive: true });
+
+  /* 백그라운드 탭·프리렌더에서 CSS 애니메이션·rAF가 멈춰 히어로 텍스트가
+     중간 상태로 고정될 수 있다 → 일정 시간 후 종료 상태를 강제한다 */
+  setTimeout(function () {
+    document.querySelectorAll(".hero h1 .ln span").forEach(function (el) { el.style.transform = "none"; });
+  }, 1600);
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) document.querySelectorAll(".hero h1 .ln span").forEach(function (el) { el.style.transform = "none"; });
+  });
+
+  /* 스크롤 리빌 + 카운트업 */
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add("in"); io.unobserve(e.target);
+    const b = e.target.querySelector("[data-count]") || (e.target.matches("[data-count]") ? e.target : null);
+    if (b) countUp(b);
+  }), { threshold: .2 });
+  document.querySelectorAll(".rv").forEach((el) => io.observe(el));
+  function countUp(el) {
+    const to = +el.dataset.count, t0 = performance.now();
+    const fin = () => { el.textContent = to.toLocaleString("ko-KR") + (to >= 100 ? "+" : ""); };
+    if (document.hidden) { fin(); return; }          // rAF가 멈추는 상태면 즉시 최종값
+    const step = (t) => {
+      const p = Math.min(1, (t - t0) / 1100), e2 = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(to * e2).toLocaleString("ko-KR") + (to >= 100 ? "+" : "");
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+    setTimeout(fin, 1400);                           // 어떤 경우든 최종값 보장
+  }
+
+  /* ── 동의 없이는 조회 불가 (국토부 API가 소유자 동의 기반이므로 UI에서 강제) ── */
+  const consent = $("#fConsent"), btnLookup = $("#btnLookup");
+  consent.addEventListener("change", () => { btnLookup.disabled = !consent.checked; });
+
+  /* 조회 — 모의 국토부 응답 */
+  const MOCK = {
+    "12가3456": { model: "그랜저 HG 3.0", year: "2013", fuel: "LPG", type: "대형 승용" },
+    "78나9012": { model: "스포티지 R 2.0", year: "2015", fuel: "디젤", type: "SUV" },
+  };
+  let found = null;
+  btnLookup.addEventListener("click", () => {
+    const plate = $("#fPlate").value.replace(/\s/g, "");
+    const owner = $("#fOwner").value.trim();
+    if (!plate || !owner) { toast("차량번호와 소유자 성함을 입력해 주세요"); return; }
+    found = MOCK[plate] || { model: "차량 확인됨 (상담 시 상세 확인)", year: "—", fuel: "—", type: "—" };
+    $("#vModel").textContent = found.model; $("#vYear").textContent = found.year;
+    $("#vFuel").textContent = found.fuel; $("#vType").textContent = found.type;
+    $("#vTime").textContent = new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" });
+    $("#vres").classList.add("on");
+    toast("차량이 확인되었습니다 — 연락처를 남기면 접수가 완료됩니다");
+  });
+
+  /* 접수 → 공유 저장소에 신규 건 생성 (영업팀 어드민 신규 리스트에 뜬다) */
+  $("#btnSubmit").addEventListener("click", () => {
+    const phone = $("#fPhone").value.trim();
+    if (!/^01[016789][-\s]?\d{3,4}[-\s]?\d{4}$/.test(phone)) { toast("연락처 형식을 확인해 주세요"); return; }
+    const st = Excaro.load();
+    const c = Excaro.submitLead(st, {
+      plate: $("#fPlate").value.trim(), owner: $("#fOwner").value.trim(),
+      phone: phone.replace(/(\d{3})[-\s]?(\d)\d{2,3}[-\s]?(\d)\d{3}/, "$1-$2███-$3███"),
+      model: found ? found.model : "미확인", year: found && found.year !== "—" ? +found.year : 2015,
+      fuel: found ? found.fuel : "—",
+    });
+    const who = st.staff.find((s) => s.id === c.assignee);
+    Excaro.save(st);
+    $("#vres").classList.remove("on");
+    toast(`접수 완료 — 담당 상담사 ${who ? who.name : ""}님이 곧 연락드립니다 (영업팀 어드민에서 확인해 보세요)`);
+  });
+})();
+</script>
+</body>
+</html>
