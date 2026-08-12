@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CELLFAB 관리자 — 심사·상수·엔진 검증</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* 관리자 전용 — Linear 토큰 골격 (본체 style.css 상속) */
+.adm { display: grid; grid-template-columns: 230px minmax(0,1fr); min-height: calc(100vh - 60px); }
+.anav { border-right: 1px solid var(--line1); padding: 18px 12px; background: var(--bg1); }
+.anav button { display: flex; align-items: center; gap: 9px; width: 100%; height: 42px; padding: 0 13px; border-radius: 8px; text-align: left; font-size: 13.5px; font-weight: 600; color: var(--ink3); transition: all .1s ease-out; margin-bottom: 2px; }
+.anav button:hover { background: var(--bg2); color: var(--ink1); }
+.anav button.on { background: var(--accent); color: #fff; }
+.anav .badge { margin-left: auto; font-family: var(--mono); font-size: 10px; font-weight: 700; background: var(--danger); color: #fff; padding: 2px 8px; border-radius: 9999px; }
+.anav button.on .badge { background: #fff; color: var(--accent); }
+.amain { padding: 26px 30px 80px; min-width: 0; }
+.aview { display: none; }
+.aview.on { display: block; animation: vIn .3s var(--ease-out); }
+.atitle { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.asub { font-size: 13px; color: var(--ink4); margin: 4px 0 20px; max-width: 760px; line-height: 1.6; }
+.q-card { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 14px; padding: 16px 24px; min-height: 117px; border: 1px solid var(--line1); border-radius: 12px; box-shadow: var(--sh1); margin-bottom: 12px; background: var(--bg0); }
+.q-card .top { font-family: var(--mono); font-size: 11.5px; color: var(--ink4); }
+.q-card h3 { font-size: 15px; font-weight: 700; margin: 4px 0; }
+.q-card .iss { font-size: 12.5px; color: var(--warn); line-height: 1.6; }
+.q-card .iss.danger { color: var(--danger); }
+.q-acts { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.gold-row { display: grid; grid-template-columns: 110px minmax(0,1fr) 90px; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line2); font-size: 13px; align-items: center; }
+.gold-row .eng { font-family: var(--mono); font-size: 11px; color: var(--ink4); }
+.gold-row .res { font-family: var(--mono); font-size: 12px; text-align: right; font-weight: 700; }
+.gold-row .res.pass { color: var(--ok); } .gold-row .res.fail { color: var(--danger); }
+.sd { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.state-map { display: flex; flex-wrap: wrap; gap: 8px; }
+.state-map .st { padding: 8px 14px; border: 1px solid var(--line1); border-radius: 9999px; font-size: 12.5px; font-weight: 600; cursor: pointer; transition: all .2s var(--ease-std); }
+.state-map .st.cur { background: var(--accent); color: #fff; border-color: var(--accent); }
+.state-map .st.allow { border-color: var(--ok); color: var(--ok); }
+.state-map .st.deny { opacity: .38; cursor: not-allowed; }
+.crbar { height: 10px; border-radius: 9999px; background: var(--bg2); overflow: hidden; margin: 8px 0 6px; }
+.crbar i { display: block; height: 100%; background: var(--accent); border-radius: 9999px; transition: width .5s var(--ease-out); }
+@media (max-width: 900px) {
+  .adm { grid-template-columns: 1fr; }
+  .anav { display: flex; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line1); padding: 8px 10px; scrollbar-width: none; }
+  .anav button { width: auto; white-space: nowrap; margin-bottom: 0; }
+  .amain { padding: 18px 14px 60px; }
+  .sd { grid-template-columns: 1fr; }
+  .q-card { grid-template-columns: 1fr; }
+  .q-acts { flex-direction: row; }
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="index.html">CELL<b>FAB</b><small>ADMIN</small></a>
+    <div style="flex:1"></div>
+    <a href="index.html" class="btn ghost sm">고객 포털 →</a>
+  </div>
+</header>
+
+<div class="adm">
+  <nav class="anav" id="anav">
+    <button data-v="review" class="on">심사 큐 <span class="badge">3</span></button>
+    <button data-v="pay">입금·홀드 관리</button>
+    <button data-v="const">상수·버전 (소급 방지)</button>
+    <button data-v="verify">계산 엔진 검증</button>
+    <button data-v="state">상태 전이·CR</button>
+    <button data-v="secure">기술보호</button>
+  </nav>
+  <main class="amain">
+
+    <section class="aview on" id="av-review">
+      <div class="atitle">심사 큐</div>
+      <div class="asub">자동 산출가는 「심사 전 잠정가」 — 공정 엔지니어의 수동 판정은 Xometry·Protolabs도 쓰는 업계 정석입니다. 회신 SLA 24h.
+        개인 담당자명은 마스킹(국내 B2B 관행), 재료 조성은 <b>심사 목적 열람만 허용·열람 즉시 감사 로그</b>에 남습니다.</div>
+      <div id="reviewList"></div>
+    </section>
+
+    <section class="aview" id="av-pay">
+      <div class="atitle">입금·홀드 관리</div>
+      <div class="asub">수기 입금 확인의 공백은 「홀드 + 만료(TTL)」로 관리합니다 — 즉시 확정하면 미입금 고객이 슬롯을 점거하고, 안 잡으면 입금 고객이 슬롯을 잃습니다.
+        인보이스 발행 후 7일 내 입금 미확인 건은 세금계산서 공급시기 특례(부가세법 17조)가 깨질 수 있어 별도 경고합니다.</div>
+      <div class="panel"><div class="panel-hd"><span>입금 대기 — 홀드 만료 임박 순</span><span class="meta">ttl</span></div>
+        <div class="twrap"><table class="tb"><thead><tr><th>케이스</th><th>금액</th><th>인보이스 발행</th><th>홀드 만료</th><th>세금계산서</th><th></th></tr></thead>
+        <tbody id="payBody"></tbody></table></div></div>
+    </section>
+
+    <section class="aview" id="av-const">
+      <div class="atitle">상수·버전 관리 — 소급 방지 검증</div>
+      <div class="asub">단가 변경은 UPDATE가 아니라 <b>새 버전 INSERT</b>입니다 (Stripe: "create a new price to keep the existing price as an immutable record").
+        아래에서 활물질 단가를 바꿔 보세요 — 신규 견적만 바뀌고 <b>기존 케이스는 견적 시점 스냅샷 그대로</b>임을 나란히 보여줍니다.</div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-bd" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:13.5px;font-weight:700">NMC622 단가 (원/kg)</label>
+        <input type="number" id="priceInput" value="85000" step="1000" style="width:150px">
+        <button class="btn pri sm" id="applyPrice">새 버전으로 적용</button>
+        <span class="pill mono" id="curVer">활성: v12 (2026-08-01 09:00)</span>
+      </div></div>
+      <div class="sd">
+        <div class="panel"><div class="panel-hd"><span>신규 케이스 견적 (활성 버전)</span><span class="meta">live</span></div>
+          <div class="panel-bd"><div class="price-big" id="newQuote">—</div>
+          <div class="hint" style="margin-top:8px">표준 케이스: NMC 양면 250mm × 420m · 수율 85%</div></div></div>
+        <div class="panel"><div class="panel-hd"><span>기존 케이스 CF-2608-014 (v12 스냅샷)</span><span class="meta">frozen</span></div>
+          <div class="panel-bd"><div class="price-big" id="oldQuote">28,400,000<small> 원</small></div>
+          <div class="hint" style="margin-top:8px" id="oldNote">상수 v12 · 엔진 v1.0.0 · #7a3f19c2 — 단가를 바꿔도 이 값은 변하지 않습니다</div></div></div>
+      </div>
+      <div class="panel" style="margin-top:14px"><div class="panel-hd"><span>버전 이력 (불변 행 — archive만 가능)</span><span class="meta">immutable</span></div>
+        <div class="twrap"><table class="tb"><thead><tr><th>버전</th><th>활성화 시각 (record time)</th><th>활물질 단가</th><th>상태</th></tr></thead>
+        <tbody id="verBody"></tbody></table></div></div>
+    </section>
+
+    <section class="aview" id="av-verify">
+      <div class="atitle">계산 엔진 검증 — 공고 「제안 요청 사항」에 대한 답</div>
+      <div class="asub">검증(수식이 의도대로 도는가)과 타당성(수식이 현실과 맞는가)을 분리합니다 — 미확정 5건 확정 전에는 검증만 가능하고, 그래서 발주처가 "셀 계산 검수의 선행 조건"이라 쓴 것입니다.
+        아래 골든 케이스와 불변식 검사는 <b>지금 이 브라우저에서 실제로 실행됩니다.</b> 인수 기준 제안: 기존 엑셀 견적 실물 N건과 원 단위 일치.</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn pri" id="runGolden">▶ 골든 케이스 전체 실행</button>
+        <button class="btn sec" id="runInv">▶ 불변식 4종 × 랜덤 500회</button>
+        <span class="pill mono" id="verifyStat">대기</span>
+      </div>
+      <div class="panel"><div class="panel-hd"><span>골든 케이스 — 엔진별 정상·경계·이상</span><span class="meta" id="goldenMeta">${'—'}</span></div>
+        <div id="goldenList"></div></div>
+    </section>
+
+    <section class="aview" id="av-state">
+      <div class="atitle">상태 전이 · 변경요청(CR)</div>
+      <div class="asub">케이스 12상태 — 현재 상태에서 <b>허용된 전이만 활성화</b>되고 불법 전이는 DB 트리거가 거부합니다(앱 우회 경로 포함).
+        12상태는 실제로는 진행×결제 2축의 곱이라, 직교 분해하면 관리 전이가 30칸 이하로 줍니다 — 구현 시 이 구조를 제안합니다.</div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-hd"><span>전이 시뮬레이터 — 현재: <b id="curState">입금 대기</b></span><span class="meta">클릭 = 전이 시도</span></div>
+        <div class="panel-bd state-map" id="stateMap"></div></div>
+      <div class="panel"><div class="panel-hd"><span>변경요청(CR) — Draft 명세 대응</span><span class="meta">범위 분쟁 예방</span></div>
+        <div class="panel-bd">
+          <div style="font-size:13px;font-weight:700">무상 변경 허용량 <span class="mono" id="crUsed">3 / 10일</span></div>
+          <div class="crbar"><i id="crBar" style="width:30%"></i></div>
+          <div class="hint">요청 → 영향분석 회신(7영업일) → 서면 승인 후 착수. 미승인 CR은 착수하지 않습니다.</div>
+          <div class="twrap" style="margin-top:12px"><table class="tb"><thead><tr><th>CR</th><th>내용</th><th>영향</th><th>상태</th></tr></thead>
+          <tbody id="crBody"></tbody></table></div>
+        </div></div>
+    </section>
+
+    <section class="aview" id="av-secure">
+      <div class="atitle">기술보호</div>
+      <div class="asub">고객 설계(조성·치수·용량)는 전형적 영업비밀이고, 그 「비밀관리성」은 <b>받은 쪽(플랫폼)의 관리 수준</b>으로도 판정됩니다.
+        Ni 함량 80% 초과 양극재는 국가핵심기술 지정 범위와 겹칠 수 있어(산업기술보호법 10·11조) 자동 플래그 + 해외 계정 차단 + 별도 심사로 처리합니다.</div>
+      <div class="panel" style="margin-bottom:14px"><div class="panel-hd"><span>국가핵심기술 검토 큐</span><span class="meta">법 11조 — 국외 이전 승인</span></div>
+        <div class="panel-bd">
+          <div class="kv"><span class="k">CF-2608-019 · Ni83 하이니켈</span><span class="v" style="color:var(--danger)">플래그 — 해외 계정 접근 차단됨</span></div>
+          <div class="kv"><span class="k">데이터 저장 리전</span><span class="v">국내 고정 (해외 계정엔 요약 리포트만)</span></div>
+          <div class="kv"><span class="k">국외 반출 이력</span><span class="v">0건</span></div>
+        </div></div>
+      <div class="panel"><div class="panel-hd"><span>접근 통제 — 조성 마스킹·열람 로그</span><span class="meta">영업비밀 관리성</span></div>
+        <div class="panel-bd">
+          <div class="kv"><span class="k">심사 담당의 조성 열람</span><span class="v">허용 (심사 목적) — 열람 즉시 로그</span></div>
+          <div class="kv"><span class="k">전체 관리자의 조성 열람</span><span class="v">마스킹 <span class="mono">LiNi●Co●Mn●O₂</span></span></div>
+          <div class="kv"><span class="k">고객의 자기 케이스 열람 이력 조회</span><span class="v" style="color:var(--ok)">제공 — 신뢰 장치</span></div>
+          <div class="kv"><span class="k">NDA 미체결 계정</span><span class="v">상세 사양 입력 폼 잠금</span></div>
+        </div></div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="ftr"><div class="shell"><b>CELLFAB 관리자</b> — 데모. 전 수치·케이스 가상.</div></footer>
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/engine.js?v=1.0.2"></script>
+<script src="assets/js/data.js?v=1.0.2"></script>
+<script src="assets/js/admin.js?v=1.0.2"></script>
+</body>
+</html>

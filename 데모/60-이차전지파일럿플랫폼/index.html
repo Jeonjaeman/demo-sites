@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CELLFAB 셀팹 — 이차전지 파일럿 제조 주문 플랫폼</title>
+<meta name="description" content="전극·셀 파일럿 제조를 온라인으로 — 실시간 설계 도면·자동 배치 계산·슬롯 예약까지">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="#" onclick="APP.go('home');return false;">CELL<b>FAB</b><small>PILOT LINE</small></a>
+    <nav class="gnb" id="gnb">
+      <button data-v="home" class="on">소개</button>
+      <button data-v="electrode">전극 케이스</button>
+      <button data-v="cell">셀 케이스</button>
+      <button data-v="slots">생산 슬롯</button>
+      <button data-v="cases">내 케이스</button>
+    </nav>
+    <div class="hdr-right">
+      <span class="pill mono">demo — ㈜셀팹랩(가상)</span>
+      <button class="btn pri sm" onclick="APP.go('electrode')">새 케이스 시작</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ══ 랜딩 ══ -->
+  <section class="view on shell" id="view-home">
+    <div class="hero">
+      <div class="eyebrow">BATTERY PILOT MANUFACTURING · ORDER PLATFORM</div>
+      <h1 id="heroH1">이메일 견적 왕복 없이,<br>전극·셀 파일럿 주문을 화면에서 끝냅니다</h1>
+      <p>재료 조성과 치수를 입력하면 축척 도면·배치 수·가격이 실시간으로 계산되고, 심사·결제·생산 슬롯까지 한 흐름으로 이어집니다. 배터리 위탁 제조 업계는 아직 전부 이메일 문의 방식입니다 — 이 플랫폼이 첫 선례가 됩니다.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn pri" onclick="APP.go('electrode')">전극 견적 체험 (프리필)</button>
+        <button class="btn sec" onclick="APP.go('cell')">셀 견적 체험</button>
+      </div>
+      <div class="badge-strip">
+        <span>ISO 9001</span><span>IATF 16949</span><span>UN38.3 시험 연계</span><span>드라이룸 −40℃ DP</span><span>산업기술보호 심사 절차 운영</span>
+      </div>
+    </div>
+
+    <div class="spec-grid rv">
+      <div class="spec"><div class="k">coater max web</div><div class="v">300<small> mm</small></div><div class="d">총 호일 폭 초과 시 입력 즉시 경고 + 레인 분할 해법 제시</div></div>
+      <div class="spec"><div class="k">active material</div><div class="v">1–10<small> kg</small></div><div class="d">배치 사이징은 투입 활물질 질량 기준 — 업계 문법 그대로</div></div>
+      <div class="spec"><div class="k">lead time</div><div class="v">최단 8<small> 주</small></div><div class="d">자재 도착(생산 10영업일 전)을 캘린더가 자동 반영</div></div>
+      <div class="spec"><div class="k">review sla</div><div class="v">24<small> h</small></div><div class="d">자동 산출가는 「심사 전 잠정가」 — 회신 기한을 명시합니다</div></div>
+    </div>
+
+    <div class="sect rv">
+      <h2>주문 흐름 6단계</h2>
+      <div class="sub">Xometry·Protolabs가 확립한 「자동 견적 + 조건부 수동 심사」 2트랙을 배터리 파일럿에 맞게 치환했습니다. 수동 심사는 타협이 아니라 업계 정석입니다.</div>
+      <div class="flow6">
+        <div class="f"><div class="n">01</div><div class="t">스펙 입력</div><div class="d">조성·치수 → 실시간 도면·잠정가</div></div>
+        <div class="f"><div class="n">02</div><div class="t">제출·심사</div><div class="d">공정 엔지니어 수동 심사 · 24h 회신</div></div>
+        <div class="f"><div class="n">03</div><div class="t">인보이스</div><div class="d">개별생산 동의 → PDF 발행 · 유효 14일</div></div>
+        <div class="f"><div class="n">04</div><div class="t">입금·슬롯 확정</div><div class="d">홀드 기한 내 입금 → 슬롯 잠금</div></div>
+        <div class="f"><div class="n">05</div><div class="t">자재·생산</div><div class="d">자재 입고(10영업일 전) → 착수</div></div>
+        <div class="f"><div class="n">06</div><div class="t">출하·리포트</div><div class="d">검사 성적 · 공정 데이터 리포트</div></div>
+      </div>
+    </div>
+
+    <div class="sect rv">
+      <h2>파일럿 vs 양산 — 무엇이 다른가</h2>
+      <div class="sub">파일럿 제조는 소량·다품종이 본질입니다. 계획수율이 50~95%까지 흔들리는 구간이라, 견적 화면이 수율 민감도를 함께 보여줍니다.</div>
+      <div class="twrap"><table class="cmp">
+        <thead><tr><th style="width:180px"></th><th>파일럿 (본 서비스)</th><th>양산 이관 시</th></tr></thead>
+        <tbody>
+          <tr><td>목적</td><td>설계 검증·시제 셀 확보</td><td>원가·수율 최적화</td></tr>
+          <tr><td>로트 규모</td><td>활물질 1~10kg · 셀 수십~수백</td><td>연속 생산</td></tr>
+          <tr><td>계획수율</td><td>50~95% (민감도 화면 제공)</td><td>95%+</td></tr>
+          <tr><td>가격 구조</td><td>슬롯 일단가 + 자재 실비 + 배치 고정비</td><td>단가 계약</td></tr>
+          <tr><td>데이터</td><td>전 공정 파라미터 리포트 제공</td><td>MES 연동(범위 밖)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <!-- ══ 전극 케이스 인테이크 ══ -->
+  <section class="view shell" id="view-electrode">
+    <div class="intake">
+      <aside class="rail" id="railE"></aside>
+      <div class="form-col" id="formE"></div>
+      <aside class="live-panel" id="liveE"></aside>
+    </div>
+  </section>
+
+  <!-- ══ 셀 케이스 ══ -->
+  <section class="view shell" id="view-cell">
+    <div class="intake">
+      <aside class="rail" id="railC"></aside>
+      <div class="form-col" id="formC"></div>
+      <aside class="live-panel" id="liveC"></aside>
+    </div>
+  </section>
+
+  <!-- ══ 생산 슬롯 ══ -->
+  <section class="view shell" id="view-slots">
+    <h2 style="font-size:26px;font-weight:700;margin-bottom:6px">생산 슬롯 캘린더</h2>
+    <p style="font-size:14px;color:var(--ink3);max-width:720px;margin-bottom:22px">
+      라인 1·2는 <b>하나의 캘린더를 공유</b>합니다(설비 공유 예외) — 중복 예약 차단의 기준은 라인이 아니라 캘린더입니다.
+      빗금 구간은 자재 조달(10영업일)+리드타임 때문에 예약이 열리지 않은 주입니다. 슬롯은 5일 연속 블록 단위입니다.</p>
+    <div class="panel"><div class="panel-bd twrap"><div class="cal-grid" id="calGrid"></div></div></div>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn sec" id="raceBtn">⚡ 동시 예약 시뮬레이션 — 두 고객이 같은 슬롯을 동시에 누르면</button>
+      <span style="font-size:12.5px;color:var(--ink4);align-self:center">DB EXCLUDE 제약(캘린더 단위) — 한쪽만 성공하고 다른 쪽은 즉시 안내를 받습니다</span>
+    </div>
+  </section>
+
+  <!-- ══ 내 케이스 ══ -->
+  <section class="view shell" id="view-cases">
+    <div id="caseArea"></div>
+  </section>
+</main>
+
+<footer class="ftr">
+  <div class="shell">
+    <b>CELLFAB 셀팹</b> — 이차전지 파일럿 제조 주문 플랫폼 데모 · 본 화면의 기업·수치·케이스는 <b>전부 가상</b>입니다.
+    계산 공식은 공개 업계 자료 기준이며 상수는 가정값입니다(미확정 5건은 화면에 배지로 표기).<br>
+    사업자 정보 표시 슬롯: ㈜셀팹랩(가상) · 대표 — · 사업자등록번호 — · 통신판매업 신고 — (관할 지자체 사전 질의 후 확정) · 관리자: <a href="admin.html">admin.html →</a>
+  </div>
+</footer>
+
+<!-- 개별생산 동의 모달 (E-2: 별도 고지 + 독립 체크) -->
+<div class="mback" id="consentModal">
+  <div class="modal">
+    <h3>개별 생산 주문 확인</h3>
+    <p>본 주문은 귀사의 사양에 따라 <b>개별적으로 생산</b>되며, 자재 발주 및 생산 착수 후에는 취소·환불이 제한됩니다.
+    취소 시 환불액은 요청 접수 시각 기준 티어로 산정되며, 생산 착수 후에는 환불이 불가합니다.</p>
+    <label class="chk"><input type="checkbox" id="consentChk">
+      위 내용을 확인했으며 개별 생산 조건에 동의합니다. <span style="color:var(--ink4);font-weight:400">(약관 동의와 별개의 독립 동의 — 동의 시각·문구 버전이 기록됩니다)</span></label>
+    <div class="acts">
+      <button class="btn ghost" id="consentCancel">취소</button>
+      <button class="btn pri" id="consentOk">동의하고 인보이스 발행</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script src="assets/js/engine.js?v=1.0.2"></script>
+<script src="assets/js/data.js?v=1.0.2"></script>
+<script src="assets/js/app.js?v=1.0.2"></script>
+</body>
+</html>
