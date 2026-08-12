@@ -4,171 +4,198 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>FANPIT 팬핏 — 스포츠 라이브 스코어 & 커뮤니티</title>
-<meta name="description" content="실시간 스코어와 경기별 응원방, 자유게시판을 하나로 — 스포츠 라이브 커뮤니티 플랫폼 데모">
+<meta name="description" content="실시간 스코어·경기별 응원방·자유게시판을 하나로 — 스포츠 라이브 커뮤니티 플랫폼 데모">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<!-- ══ 헤더 ══ -->
 <header class="hdr">
   <div class="hdr-in">
-    <a class="logo" href="#" onclick="FPAPP.go('board');return false;">FAN<b>PIT</b> <small>LIVE</small></a>
+    <a class="logo" href="#" onclick="FPAPP.go('board');return false;">FAN<b>PIT</b> <span class="meta-label">live</span></a>
     <nav class="gnb" id="gnb">
       <button data-view="board" class="on">라이브 스코어</button>
       <button data-view="community">자유게시판</button>
       <button data-view="my">마이페이지</button>
-      <button data-view="risk">검토 항목</button>
+      <button data-view="review">검토 항목</button>
     </nav>
     <div class="hdr-right">
-      <span class="hdr-live-count"><i class="pulse"></i>LIVE <b id="liveCount">5</b></span>
+      <span class="live-chip"><span class="tick">●</span> 라이브 (<b id="liveCount">5</b>)</span>
       <button class="login-btn" id="loginBtn">로그인</button>
       <div class="avatar" onclick="FPAPP.go('my')" title="마이페이지">승</div>
     </div>
   </div>
 </header>
 
-<!-- ══ 라이브 티커 ══ -->
-<div class="ticker-wrap" aria-hidden="true">
-  <div class="ticker" id="ticker"></div>
-</div>
-
 <main>
-  <!-- ══ 뷰: 스코어보드 ══ -->
+  <!-- ══ 스코어보드 — FotMob 3단 그리드 308/632/308 ══ -->
   <section class="view on shell" id="view-board">
-    <div class="board-head">
-      <div class="sport-tabs" id="sportTabs"></div>
-      <div class="date-strip" id="dateStrip"></div>
+    <div class="grid3">
+      <aside class="card lnav-card">
+        <div class="card-hd"><span>종목 · 리그</span><span class="meta-label">nav</span></div>
+        <div class="lnav" id="lnav"></div>
+      </aside>
+      <div>
+        <div class="chips" id="statusChips">
+          <button class="chip on" data-f="all">전체</button>
+          <button class="chip live-f" data-f="live">라이브 (<span id="chipLiveN">5</span>)</button>
+          <button class="chip" data-f="upcoming">예정</button>
+          <button class="chip" data-f="finished">종료</button>
+          <div class="date-nav">
+            <button id="dPrev" aria-label="이전 날짜">‹</button>
+            <span class="cur">26.08.12 (수)</span>
+            <button id="dNext" aria-label="다음 날짜">›</button>
+          </div>
+        </div>
+        <div id="boardList"></div>
+      </div>
+      <aside class="side-col">
+        <div class="card">
+          <div class="card-hd"><span>커뮤니티 HOT</span><span class="meta-label">02. talk</span></div>
+          <div id="hotList"></div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div class="card-hd"><span>클린 응원방</span><span class="meta-label">policy</span></div>
+          <div class="side-note">
+            도박·홍보 메시지는 <b>정규화 필터</b>가 우회 표기(공백·숫자 삽입·자모 분리)까지 복원해 자동 차단합니다.
+            신고는 <b>24시간 내</b> 처리 — 처리 큐는 관리자 화면에서 확인할 수 있습니다.
+          </div>
+        </div>
+      </aside>
     </div>
-    <div id="boardList"></div>
   </section>
 
-  <!-- ══ 뷰: 경기 상세 ══ -->
+  <!-- ══ 경기 상세 ══ -->
   <section class="view shell" id="view-detail">
-    <button class="back-btn" onclick="FPAPP.go('board')">← 스코어보드로</button>
+    <button class="back" onclick="FPAPP.go('board')">← 스코어보드</button>
     <div id="detailWrap"></div>
   </section>
 
-  <!-- ══ 뷰: 자유게시판 ══ -->
+  <!-- ══ 자유게시판 ══ -->
   <section class="view shell" id="view-community">
-    <div class="board-toolbar">
-      <div class="cat-tabs" id="catTabs">
-        <button data-cat="all" class="on">전체</button>
-        <button data-cat="분석">분석글</button>
-        <button data-cat="자유">자유</button>
+    <div class="btb">
+      <button class="chip on" data-cat="all">전체</button>
+      <button class="chip" data-cat="분석">분석글</button>
+      <button class="chip" data-cat="자유">자유</button>
+      <div class="viewpoint" id="viewpoint" title="같은 게시판을 역할별 시점으로 — 임시조치(정보통신망법 44조의2) 시야 차이">
+        <button data-vp="fan" class="on">팬</button>
+        <button data-vp="author">작성자</button>
+        <button data-vp="admin">운영자</button>
       </div>
-      <button class="write-btn" onclick="FPAPP.toast('데모에서는 작성 폼을 생략했습니다 — 실제 구축 시 에디터·이미지 첨부 포함')">✏️ 글쓰기</button>
     </div>
     <div id="postArea"></div>
   </section>
 
-  <!-- ══ 뷰: 마이페이지 ══ -->
+  <!-- ══ 마이페이지 ══ -->
   <section class="view shell" id="view-my">
     <div class="my-grid" id="myWrap"></div>
   </section>
 
-  <!-- ══ 뷰: 검토 항목 ══ -->
-  <section class="view shell" id="view-risk">
-    <div class="risk-intro rv">
-      <div class="eyebrow">PRE-BUILD REVIEW</div>
-      <h2>요구사항대로 만들면<br>어디서 문제가 생기는가</h2>
-      <p>공고를 그대로 구현하기 전에 확인해야 할 지점 4곳을 리서치로 찾았고, 각각의 대안을 이 데모 안에 실제 동작하는 기능으로 구현했습니다.</p>
+  <!-- ══ 검토 항목 ══ -->
+  <section class="view shell" id="view-review">
+    <div class="risk-head rv">
+      <span class="meta-label">01. pre-build review</span>
+      <h2>요구사항대로 만들면<br>어디서 부러지는가</h2>
+      <p>리서치로 확인한 지점 — API 과금 구조 오해, 도박 홍보의 형사 리스크, 임시조치 법정 절차, 스토어 심사 요건, 렌더링 스택의 검색 유입 —
+        을 전부 아래에서 <b style="color:var(--ink)">직접 조작 가능한 기능</b>으로 구현했습니다. 관리자 화면에는 처리 큐·부하 시뮬레이션·심사 체크리스트가 있습니다.</p>
     </div>
 
-    <div class="risk-cards">
-      <div class="risk-card rv">
-        <div class="no">RISK 01</div>
-        <h3>Sportradar와 API-Football은 가격이 500배 차이납니다</h3>
-        <p>공고에 병기된 두 API 중 Sportradar는 견적제로 월 수천 달러~1만 달러 이상, API-Football은 월 $19~39입니다. 어떤 API를 계약하느냐가 총예산(2,500만 원)보다 큰 연간 비용 변수가 될 수 있습니다.</p>
-        <div class="fix">→ 이 데모의 대응: <b>아래 API 비용 시뮬레이터</b>로 동시접속 규모별 요금제를 실계산</div>
+    <!-- A-1·A-2·A-3·D-1: API 예산 시뮬레이터 -->
+    <div class="sim rv">
+      <h3>API 예산 시뮬레이터 — 과금은 유저 수가 아니라 「경기 수 × 폴링 주기」로 결정됩니다</h3>
+      <div class="sub">공고의 "Redis 캐싱으로 과금 방지"는 성립하지 않습니다. 캐시는 유저 수에 대한 방어이고, 상류 API 호출량은 유저가 0명이어도 동일합니다.
+        리그를 고르고 폴링 주기를 움직여 보세요. 요금(API-Sports 공개 요금 예시, 2026.08)·커버리지·계약 리드타임까지 실계산됩니다.</div>
+      <div class="prov-tabs" id="provTabs">
+        <button data-p="apisports" class="on">API-Sports</button>
+        <button data-p="sportradar">Sportradar</button>
+        <button data-p="domestic">국내 공식기록사</button>
       </div>
-      <div class="risk-card rv">
-        <div class="no">RISK 02</div>
-        <h3>이용자가 API를 직접 부르는 구조면 과금이 동접에 비례해 폭발합니다</h3>
-        <p>라이브 데이터는 15초 간격 갱신입니다. 클라이언트 폴링 구조면 동접 1만 명 기준 하루 수백만 요청이 발생합니다. 서버가 한 번만 폴링하고 Redis에 얹어 WebSocket으로 뿌리면 동접과 무관하게 하루 약 5,800회로 고정됩니다.</p>
-        <div class="fix">→ 이 데모의 대응: 관리자 <b>API 모니터링 화면</b>에 폴링 파이프라인·캐시 히트율 구현</div>
-      </div>
-      <div class="risk-card rv">
-        <div class="no">RISK 03</div>
-        <h3>커뮤니티 기능만 넣으면 iOS 심사(가이드라인 1.2)에서 리젝됩니다</h3>
-        <p>UGC 앱은 ① 부적절 콘텐츠 필터 ② 신고 기능 ③ <b>이용자 차단</b> ④ 신고 24시간 내 처리를 모두 갖춰야 App Store 심사를 통과합니다. 공고에는 신고·블라인드만 있고 차단이 빠져 있습니다.</p>
-        <div class="fix">→ 이 데모의 대응: 응원방 <b>신고·차단 버튼</b>, 마이페이지 <b>차단 목록</b>, 관리자 <b>24h SLA 처리 큐</b></div>
-      </div>
-      <div class="risk-card rv">
-        <div class="no">RISK 04</div>
-        <h3>스포츠 커뮤니티는 불법 도박 스팸의 1순위 표적입니다</h3>
-        <p>KISA 집계 기준 전체 스팸 문자의 43%가 도박 관련입니다. 스포츠 응원방·게시판은 개장 직후부터 사설 토토 홍보가 유입되며, 계정 차단만으로는 재가입을 막을 수 없어 자동 필터가 필수입니다.</p>
-        <div class="fix">→ 이 데모의 대응: 응원방에 <b>금칙어 자동 블라인드</b>가 실시간 동작 (관리자에서 사전 편집 가능)</div>
-      </div>
-    </div>
-
-    <div class="sim-box rv">
-      <h3>API 비용 시뮬레이터 — 아키텍처가 요금제를 결정합니다</h3>
-      <div class="sub">API-Football 공개 요금(2026.08, VAT 별도) 기준 · 라이브 15초 갱신 · 1인 평균 시청 2시간 가정 · 아래 수치는 전부 실시간 계산입니다</div>
-      <div class="sim-ctrl">
-        <label for="simRange">동시 접속자</label>
-        <input type="range" id="simRange" min="100" max="50000" step="100" value="10000">
-        <span class="val" id="simVal">10,000명</span>
-      </div>
-      <div class="sim-compare">
-        <div class="sim-col bad">
-          <h4>✕ 클라이언트 직접 폴링 (그대로 만들면)</h4>
-          <div class="sim-num" id="simBadNum">—</div>
-          <div class="sim-line" id="simBadLine"></div>
-          <div class="plan-verdict over" id="simBadVerdict"></div>
-        </div>
-        <div class="sim-col good">
-          <h4>✓ 서버 1회 폴링 + Redis 캐시 + WebSocket (제안 구조)</h4>
-          <div class="sim-num" id="simGoodNum">—</div>
-          <div class="sim-line" id="simGoodLine"></div>
-          <div class="plan-verdict ok" id="simGoodVerdict"></div>
+      <div class="sim-grid">
+        <div class="lg-check" id="lgCheck"></div>
+        <div class="sim-out">
+          <div class="sim-ctrl">
+            <label>폴링 주기</label>
+            <input type="range" id="pollRange" min="0" max="3" step="1" value="1">
+            <span class="val" id="pollVal">15초</span>
+            <label class="switch"><input type="checkbox" id="redisToggle" checked> Redis 캐시</label>
+          </div>
+          <div class="sim-nums" id="simNums"></div>
+          <div>
+            <div class="quota" id="quotaWrap"><i id="quotaBar"></i></div>
+            <div class="quota-lbl"><span id="quotaTxt"></span><span id="planTxt"></span></div>
+          </div>
+          <div class="verdict" id="simVerdict"></div>
+          <div class="verdict warn" id="leadVerdict" style="display:none"></div>
         </div>
       </div>
     </div>
 
-    <div class="checklist rv">
-      <h3>App Store 심사 대응 체크리스트 (가이드라인 1.2 — 이 데모에서 확인 가능)</h3>
-      <div class="check-item"><span class="ok">✓</span><span class="desc"><b>부적절 콘텐츠 필터</b> — 응원방·게시판에 금칙어 자동 블라인드 동작 (응원방에서 직접 확인)</span></div>
-      <div class="check-item"><span class="ok">✓</span><span class="desc"><b>신고 기능</b> — 채팅 메시지·게시글에 신고 버튼, 신고 즉시 관리자 큐 적재</span></div>
-      <div class="check-item"><span class="ok">✓</span><span class="desc"><b>이용자 차단</b> — 채팅에서 차단하면 해당 이용자 메시지가 즉시 숨김 + 마이페이지 차단 목록</span></div>
-      <div class="check-item"><span class="ok">✓</span><span class="desc"><b>24시간 내 처리</b> — 관리자 신고 큐에 경과 시간 SLA 타이머 표기, 임박 건 강조</span></div>
-      <div class="check-item"><span class="ok">✓</span><span class="desc"><b>운영 연락처 게시</b> — 푸터에 운영 문의 채널 상시 노출</span></div>
+    <!-- A-4: 렌더링 방식 비교 -->
+    <div class="sim rv">
+      <h3>렌더링 방식 비교 — Flutter 하나로 웹까지 덮으면 "PC 웹" 요구가 무의미해집니다</h3>
+      <div class="sub">커뮤니티는 검색 유입이 생명입니다. 같은 경기 화면을 SSR HTML과 캔버스 렌더로 나란히 두고, <b style="color:var(--ink)">검색 크롤러 시점</b>을 켜 보세요.</div>
+      <label class="switch" style="margin-bottom:12px"><input type="checkbox" id="crawlerToggle"> 검색 크롤러 시점으로 보기</label>
+      <div class="render-cmp">
+        <div class="render-col">
+          <h4><span>A. 웹 = Next.js SSR (제안)</span><span class="meta-label">html 46kb</span></h4>
+          <div class="render-view" id="ssrView"></div>
+        </div>
+        <div class="render-col">
+          <h4><span>B. 웹 = Flutter Web 캔버스</span><span class="meta-label">js 1.8mb+</span></h4>
+          <div class="render-view" id="canvasView"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C-3: 권리침해 신고 창구 -->
+    <div class="sim rv">
+      <h3>권리침해 신고 창구 — 선수·구단 등 비이용자를 위한 접수 폼</h3>
+      <div class="sub">선수협은 법률대리인을 통해 악성 게시물에 실제 고소를 진행하고 있습니다. 로그인 없이 접수 가능해야 하며,
+        접수 즉시 관리자 임시조치 큐에 「제3자 요청」 라인으로 적재됩니다. (제출해 보세요 — 관리자 화면 큐에 실제로 추가됩니다)</div>
+      <div class="rights-form">
+        <input id="rfName" value="법무법인 ○○ (구단 대리)" aria-label="요청자">
+        <input id="rfUrl" value="fanpit.example/post/p4" aria-label="대상 URL">
+        <textarea id="rfBody" rows="3">해당 게시물은 소속 선수에 대한 허위 사실을 포함하고 있어 명예훼손 소지가 있습니다. 임시조치를 요청합니다.</textarea>
+        <button id="rfSubmit">권리침해 신고 접수</button>
+      </div>
     </div>
   </section>
 </main>
 
-<!-- ══ 푸터 ══ -->
 <footer class="ftr">
-  <div class="ftr-in">
-    <b>FANPIT 팬핏</b> — 스포츠 라이브 스코어 & 커뮤니티 플랫폼 데모<br>
-    본 화면의 리그·팀·선수·기록·이용자·채팅은 <b>전부 가상 데이터</b>이며 실존 단체·인물과 무관합니다.
-    라이브 갱신은 데모용 시뮬레이터로 재현했습니다. · 운영 문의: contact@fanpit.example (데모)<br>
-    관리자 화면: <a href="admin.html" style="color:var(--accent)">admin.html →</a>
+  <div class="shell">
+    <b>FANPIT 팬핏</b> — 스포츠 라이브 스코어 & 커뮤니티 플랫폼 데모 ·
+    리그·팀·선수·이용자·수치는 <b>전부 가상</b>이며 실존 단체·인물과 무관합니다. 라이브 갱신은 데모 시뮬레이터입니다.<br>
+    운영 문의: contact@fanpit.example (Apple 1.2 ④ 공개 연락 수단) · 권리침해 신고: 검토 항목 탭 · 관리자: <a href="admin.html">admin.html →</a>
   </div>
 </footer>
 
-<!-- ══ 로그인 모달 (이메일 + 소셜 — 공고 2-1 요건) ══ -->
-<div class="modal-back" id="loginModal">
+<!-- 로그인 모달 (이메일+소셜, B-4 연령 게이트) -->
+<div class="mback" id="loginModal">
   <div class="modal">
-    <button class="modal-x" id="loginClose">✕</button>
-    <div class="modal-logo">FAN<b>PIT</b></div>
-    <p class="modal-sub">스포츠가 시작되는 곳 — 3초 만에 시작하세요</p>
-    <div class="social-btns">
-      <button class="social kakao" data-social="카카오">카카오로 계속하기</button>
-      <button class="social google" data-social="Google">Google로 계속하기</button>
-      <button class="social apple" data-social="Apple">Apple로 계속하기</button>
+    <button class="x" id="loginClose">✕</button>
+    <div class="mlogo">FAN<b>PIT</b></div>
+    <p class="msub">스포츠가 시작되는 곳 — 3초 만에 시작하세요</p>
+    <div class="socials">
+      <button class="kakao" data-social="카카오">카카오로 계속하기</button>
+      <button class="google" data-social="Google">Google로 계속하기</button>
+      <button class="apple" data-social="Apple">Apple로 계속하기</button>
     </div>
-    <div class="modal-div"><span>또는 이메일로</span></div>
-    <input class="modal-input" id="loginEmail" type="email" value="fan@fanpit.example" autocomplete="off">
-    <input class="modal-input" id="loginPw" type="password" value="demo1234" autocomplete="off">
-    <button class="modal-submit" id="loginSubmit">이메일로 로그인</button>
-    <p class="modal-note">데모 환경 — 어떤 버튼을 눌러도 체험 계정으로 로그인됩니다. 실제 구축 시 OAuth 2.0(카카오·구글·애플) + JWT 세션을 웹·앱이 공유합니다.</p>
+    <div class="mdiv">또는 이메일로 (Apple 4.8 대체 로그인)</div>
+    <input id="loginEmail" type="email" value="fan@fanpit.example" autocomplete="off" aria-label="이메일">
+    <input id="loginBirth" value="1994-03-15" aria-label="생년월일" title="생년월일 — 만 14세 미만 판별">
+    <button class="go" id="loginGo">이메일로 시작하기</button>
+    <div id="minorBranch"></div>
+    <p class="note">데모 — 어떤 버튼이든 체험 계정으로 진행됩니다.
+      <button id="tryMinor">14세 미만으로 체험 →</button><br>
+      소셜 로그인은 생년월일을 주지 않으므로 실제 구축 시 최초 1회 연령 확인 단계가 붙습니다 (개인정보 보호법 22조의2).</p>
   </div>
 </div>
 
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="toasts" id="toasts"></div>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/filter.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>

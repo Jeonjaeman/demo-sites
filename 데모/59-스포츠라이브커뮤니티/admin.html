@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FANPIT 관리자 — 통합 백오피스</title>
+<title>FANPIT 관리자 — 1인 운영 백오피스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/admin.css">
@@ -12,133 +12,167 @@
 
 <header class="hdr">
   <div class="hdr-in">
-    <a class="logo" href="index.html">FAN<b>PIT</b> <small>ADMIN</small></a>
+    <a class="logo" href="index.html">FAN<b>PIT</b> <span class="meta-label">admin</span></a>
     <div style="flex:1"></div>
     <div class="hdr-right">
-      <span class="hdr-live-count"><i class="pulse"></i>LIVE 경기 <b>5</b></span>
-      <a href="index.html" style="font-size:12.5px;font-weight:700;color:var(--ink-2);border:1px solid var(--line-2);padding:7px 14px;border-radius:8px">사용자 화면 →</a>
+      <span class="live-chip"><span class="tick">●</span> 라이브 (5)</span>
+      <a href="index.html" class="login-btn" style="display:inline-flex;align-items:center">사용자 화면 →</a>
     </div>
   </div>
 </header>
 
-<div class="adm-layout">
-  <nav class="adm-nav" id="admNav">
-    <button data-v="dash" class="on">📊 대시보드</button>
-    <button data-v="users">👥 회원 관리</button>
-    <button data-v="reports">🚨 신고 처리 <span class="badge" id="navReportN">4</span></button>
-    <button data-v="filter">🛡 스팸 필터</button>
-    <button data-v="api">🔌 API 모니터링</button>
+<div class="adm">
+  <nav class="anav" id="anav">
+    <button data-v="queue" class="on">오늘 처리할 것 <span class="badge" id="qBadge">6</span></button>
+    <button data-v="temp">임시조치 관리</button>
+    <button data-v="users">회원 관리</button>
+    <button data-v="dash">통계 대시보드</button>
+    <button data-v="api">API 모니터링</button>
+    <button data-v="load">부하 시뮬레이션</button>
+    <button data-v="store">스토어 심사 체크</button>
   </nav>
 
-  <main class="adm-main">
+  <main class="amain">
 
-    <!-- ══ 대시보드 ══ -->
-    <section class="adm-view on" id="adm-dash">
-      <div class="adm-title">대시보드</div>
-      <div class="adm-sub">2026.08.12 (수) 20:41 기준 · 데이터는 전부 가상입니다</div>
-      <div class="kpi-grid">
-        <div class="kpi"><div class="k">오늘 방문자 (DAU)</div><div class="v" data-count="48213">0</div><div class="d up">▲ 12.4% vs 지난주 수요일</div></div>
-        <div class="kpi"><div class="k">현재 동시 접속</div><div class="v" data-count="12847">0</div><div class="d up">라이브 5경기 진행 중</div></div>
-        <div class="kpi"><div class="k">오늘 신규 가입</div><div class="v" data-count="1092">0</div><div class="d up">▲ 소셜 로그인 74%</div></div>
-        <div class="kpi"><div class="k">미처리 신고</div><div class="v" data-count="17">0</div><div class="d warn">SLA 24h — 2건 임박</div></div>
+    <!-- ══ 오늘 처리할 것 (C-2: 관리자 홈 = 큐) ══ -->
+    <section class="aview on" id="av-queue">
+      <div class="atitle">오늘 처리할 것</div>
+      <div class="asub">관리자 홈은 통계가 아니라 <b>처리 큐</b>입니다 — 운영자 1인이 Apple 1.2의 「24시간 내 조치」를 지키려면
+        자동으로 걸러진 것 위에서 사람이 볼 것만 남겨야 합니다. SLA 잔여 시간이 적을수록 붉게 표시됩니다.</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">auto blocked today</div><div class="v" data-c="142">0</div><div class="d up">필터가 자동 처리 — 사람 개입 0</div></div>
+        <div class="kpi"><div class="k">needs human</div><div class="v" id="needHuman">6</div><div class="d warn">아래 큐 — 24h SLA</div></div>
+        <div class="kpi"><div class="k">sla imminent</div><div class="v" id="slaWarn">1</div><div class="d warn">잔여 6h 미만</div></div>
+        <div class="kpi"><div class="k">third-party req</div><div class="v" id="thirdN">1</div><div class="d up">권리침해 신고 창구 접수분</div></div>
       </div>
-      <div class="panel-grid">
-        <div class="panel">
-          <h3>최근 7일 방문자 추이 <span class="hint">단위: 명</span></h3>
-          <canvas class="chart" id="trafficChart"></canvas>
+      <div class="panel"><div class="panel-hd"><span>처리 큐 — 자동 홀드 · 이용자 신고 · 제3자 요청</span><span class="meta-label">sla 24h</span></div>
+        <div id="queueList"></div></div>
+    </section>
+
+    <!-- ══ 임시조치 (B-2) ══ -->
+    <section class="aview" id="av-temp">
+      <div class="atitle">임시조치 관리</div>
+      <div class="asub">정보통신망법 44조의2 — 임시조치는 <b>30일 이내</b>, 작성자 통지·이의신청 절차가 법정 요건입니다.
+        30일이 지난 건은 「만료 — 재게시 대기」로 자동 이동합니다. 이의신청이 있는 건은 우선 검토하세요.</div>
+      <div class="panel"><div class="panel-hd"><span>임시조치 중인 게시물</span><span class="meta-label">44조의2</span></div>
+        <div class="twrap"><table class="tb">
+          <thead><tr><th>게시물</th><th>작성자</th><th>발단</th><th>경과</th><th>이의신청</th><th>처리</th></tr></thead>
+          <tbody id="tempBody"></tbody></table></div></div>
+    </section>
+
+    <!-- ══ 회원 관리 (C-5·B-4) ══ -->
+    <section class="aview" id="av-users">
+      <div class="atitle">회원 관리</div>
+      <div class="asub">계정 단위 정지는 재가입으로 우회됩니다 — <b>기기 지문·IP 대역·행동 패턴으로 묶은 동일인 의심 그룹</b>을 일괄 처리하고,
+        신규 계정에는 점진적 신뢰 정책(링크 제한 등)을 적용합니다.</div>
+      <div class="panel"><div class="panel-hd"><span>동일인 의심 그룹</span><span class="meta-label">c-5</span></div>
+        <div class="panel-bd" id="sgroups"></div></div>
+      <div class="panel"><div class="panel-hd"><span>신규 계정 신뢰 정책</span><span class="meta-label">progressive trust</span></div>
+        <div class="panel-bd" style="display:flex;gap:22px;flex-wrap:wrap">
+          <label class="switch"><input type="checkbox" id="polLink" checked> 가입 24h 내 링크 게시 차단</label>
+          <label class="switch"><input type="checkbox" id="polRate" checked> 신규 계정 게시 한도 5건/일</label>
+          <label class="switch"><input type="checkbox" id="polDM"> DM 유도 문구 자동 홀드</label>
         </div>
-        <div class="panel">
-          <h3>경기별 동시 접속 TOP <span class="hint">응원방 채팅 수 포함</span></h3>
-          <div class="tbl-wrap"><table class="tbl" style="min-width:0">
+        <div class="panel-bd" style="padding-top:0"><span class="meta-label" id="polEffect"></span></div></div>
+      <div class="panel"><div class="panel-hd"><span>보호자 동의 대기 (14세 미만 — 개인정보 보호법 22조의2)</span><span class="meta-label">b-4</span></div>
+        <div class="twrap"><table class="tb">
+          <thead><tr><th>닉네임</th><th>생년월</th><th>상태</th><th>처리</th></tr></thead>
+          <tbody id="minorBody"></tbody></table></div></div>
+    </section>
+
+    <!-- ══ 통계 대시보드 ══ -->
+    <section class="aview" id="av-dash">
+      <div class="atitle">통계 대시보드</div>
+      <div class="asub">2026.08.12 (수) 기준 · 전부 가상 데이터</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">dau</div><div class="v" data-c="48213">0</div><div class="d up">▲ 12.4% vs 지난주</div></div>
+        <div class="kpi"><div class="k">concurrent</div><div class="v" data-c="12847">0</div><div class="d up">라이브 5경기</div></div>
+        <div class="kpi"><div class="k">new signup</div><div class="v" data-c="1092">0</div><div class="d up">소셜 74%</div></div>
+        <div class="kpi"><div class="k">chat / min</div><div class="v" data-c="8420">0</div><div class="d up">경기 종료 직후 피크</div></div>
+      </div>
+      <div class="split">
+        <div class="panel"><div class="panel-hd"><span>최근 7일 방문자</span><span class="meta-label">unit: visitors</span></div>
+          <div class="panel-bd"><canvas class="chart" id="trafficCv"></canvas></div></div>
+        <div class="panel"><div class="panel-hd"><span>경기별 동시 접속</span><span class="meta-label">top</span></div>
+          <div class="twrap"><table class="tb" style="min-width:0">
             <thead><tr><th>경기</th><th style="text-align:right">동접</th><th style="text-align:right">채팅/분</th></tr></thead>
-            <tbody id="topMatchBody"></tbody>
-          </table></div>
-        </div>
+            <tbody id="topBody"></tbody></table></div></div>
       </div>
     </section>
 
-    <!-- ══ 회원 관리 ══ -->
-    <section class="adm-view" id="adm-users">
-      <div class="adm-title">회원 / 게시글 관리</div>
-      <div class="adm-sub">누적 신고가 많은 계정이 위로 정렬됩니다 · 블라인드·차단은 즉시 반영(데모)</div>
-      <div class="panel">
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>닉네임</th><th>가입일</th><th style="text-align:right">게시글</th><th style="text-align:right">누적 신고</th><th>상태</th><th>처리</th></tr></thead>
-          <tbody id="userBody"></tbody>
-        </table></div>
-      </div>
-      <div class="panel">
-        <h3>블라인드 게시글 <span class="hint">자동 필터 + 운영자 수동 처리 내역</span></h3>
-        <div class="tbl-wrap"><table class="tbl">
-          <thead><tr><th>제목</th><th>작성자</th><th>사유</th><th>상태</th><th>처리</th></tr></thead>
-          <tbody id="blindBody"></tbody>
-        </table></div>
-      </div>
-    </section>
-
-    <!-- ══ 신고 처리 ══ -->
-    <section class="adm-view" id="adm-reports">
-      <div class="adm-title">신고 처리 큐</div>
-      <div class="adm-sub">App Store 가이드라인 1.2 — 신고는 <b style="color:var(--ink)">24시간 내</b> 처리해야 앱이 스토어에서 내려가지 않습니다. 경과 시간이 SLA에 가까울수록 붉게 표시됩니다.</div>
-      <div class="panel" id="reportQueue"></div>
-    </section>
-
-    <!-- ══ 스팸 필터 ══ -->
-    <section class="adm-view" id="adm-filter">
-      <div class="adm-title">스팸 필터 (금칙어)</div>
-      <div class="adm-sub">스포츠 커뮤니티는 불법 도박 홍보의 1순위 표적입니다 (KISA: 전체 스팸의 43%가 도박 관련). 여기서 금칙어를 추가하면 <b style="color:var(--ink)">응원방·게시판 필터에 즉시 반영</b>됩니다(데모: 같은 브라우저 저장소 공유).</div>
-      <div class="panel">
-        <h3>금칙어 사전 <span class="hint" id="wordCount"></span></h3>
-        <div class="word-chips" id="wordChips"></div>
-        <div class="word-add">
-          <input id="wordInput" placeholder="금칙어 추가 (예: 총판)" maxlength="20">
-          <button id="wordAdd">추가</button>
-        </div>
-      </div>
-      <div class="panel">
-        <h3>자동 감지 로그 <span class="hint">실시간 — 최근 감지 순</span></h3>
-        <div class="filter-log" id="filterLog"></div>
-      </div>
-    </section>
-
-    <!-- ══ API 모니터링 ══ -->
-    <section class="adm-view" id="adm-api">
-      <div class="adm-title">외부 API 연동 모니터링</div>
-      <div class="adm-sub">서버 1회 폴링 → Redis 캐시 → WebSocket 배포 구조 · 이용자가 아무리 늘어도 API 호출량은 폴링 스케줄에만 비례합니다</div>
-      <div class="stale-banner" id="staleBanner">⚠ 외부 API 응답 지연 — 마지막 성공 수신 데이터를 캐시로 서빙 중입니다 (이용자 화면에는 「몇 초 전 데이터」 배지 표시)</div>
-      <div class="panel">
-        <h3>오늘 호출량 / 쿼터 <span class="hint" id="apiPlanLbl"></span></h3>
-        <div class="quota-wrap">
-          <div class="quota-bar"><i id="quotaBar"></i></div>
-          <div class="quota-lbl"><span>사용 <b id="quotaUsed">0</b> / 7,500 요청</span><span>잔여 <b id="quotaLeft">0</b></span></div>
-        </div>
-        <div class="api-stats">
-          <div class="api-stat"><div class="k">캐시 히트율</div><div class="v g" id="cacheHit">0%</div></div>
-          <div class="api-stat"><div class="k">평균 응답(캐시)</div><div class="v" id="avgLat">0ms</div></div>
-          <div class="api-stat"><div class="k">WebSocket 연결</div><div class="v" id="wsConn">0</div></div>
-          <div class="api-stat"><div class="k">오늘 장애</div><div class="v" id="apiErr">0건</div></div>
-        </div>
-        <button class="sim-fail" id="simFail">⚡ 장애 상황 시뮬레이션 — API가 멈추면 화면이 어떻게 되는지 보기</button>
-      </div>
-      <div class="panel">
-        <h3>폴링 파이프라인 <span class="hint">스케줄러 상태</span></h3>
-        <div class="tbl-wrap"><table class="tbl">
+    <!-- ══ API 모니터링 (A-1·B-3) ══ -->
+    <section class="aview" id="av-api">
+      <div class="atitle">API 모니터링</div>
+      <div class="asub">서버 1곳이 폴링 → Redis → WebSocket 배포. <b>상류 호출량은 유저 수와 무관</b>하게 폴링 스케줄로만 결정됩니다.
+        장애 시에는 마지막 캐시를 서빙하고 이용자 화면에 「N초 전 데이터」 배지를 띄웁니다.</div>
+      <div class="stale" id="stale">⚠ 외부 API 응답 지연 — 마지막 성공 수신 캐시를 서빙 중 (이용자 화면: 「데이터 기준 N초 전」 배지 표시)</div>
+      <div class="panel"><div class="panel-hd"><span>오늘 호출량 / 쿼터</span><span class="meta-label" id="planLbl"></span></div>
+        <div class="panel-bd">
+          <div class="quota-bar"><i id="aQuota"></i></div>
+          <div class="qlbl"><span>사용 <b id="aUsed">0</b> / 7,500</span><span>잔여 <b id="aLeft">0</b></span></div>
+          <div class="astats">
+            <div class="astat"><div class="k">cache hit</div><div class="v g" id="aHit">—</div></div>
+            <div class="astat"><div class="k">resp (cached)</div><div class="v" id="aLat">—</div></div>
+            <div class="astat"><div class="k">ws connections</div><div class="v" id="aWs">—</div></div>
+            <div class="astat"><div class="k">incidents</div><div class="v" id="aErr">0</div></div>
+          </div>
+          <button class="act" id="failBtn">⚡ 장애 시뮬레이션 — API가 멈추면 무슨 일이 일어나는지</button>
+        </div></div>
+      <div class="panel"><div class="panel-hd"><span>폴링 파이프라인</span><span class="meta-label">scheduler</span></div>
+        <div class="twrap"><table class="tb">
           <thead><tr><th>엔드포인트</th><th>주기</th><th style="text-align:right">오늘 호출</th><th>상태</th></tr></thead>
-          <tbody id="pollBody"></tbody>
-        </table></div>
-      </div>
+          <tbody id="pollBody"></tbody></table></div></div>
+      <div class="panel"><div class="panel-hd"><span>수집 방식 (B-3)</span><span class="meta-label">legal</span></div>
+        <div class="panel-bd">
+          <label class="switch"><input type="checkbox" id="crawlToggle"> 크롤링 수집 모드 (공식 API 대신)</label>
+          <div class="crawl-warn" id="crawlWarn"><b>법적 경고</b> — 대법원 2021도1533: 개별 소재라도 「반복적·체계적 복제로 상당한 부분을 복제한 것과 같은 결과」면
+            데이터베이스제작자 권리 침해입니다. 라이브 스코어를 15초 주기로 시즌 내내 수집하는 것은 정확히 이 기준에 걸릴 소지가 큽니다.
+            공식 API 계약이 유일하게 안전한 경로입니다.</div>
+        </div></div>
+    </section>
+
+    <!-- ══ 부하 시뮬레이션 (C-1) ══ -->
+    <section class="aview" id="av-load">
+      <div class="atitle">부하 시뮬레이션 — 경기 종료 직후 5분</div>
+      <div class="asub">응원방 비용은 동접이 아니라 <b>팬아웃(메시지 × 접속자)</b>입니다. 득점 순간을 눌러 보세요.
+        느린 클라이언트를 끊지 않으면(백프레셔 미적용) 밀린 메시지가 메모리에 쌓여 노드가 죽습니다 — 실제 보고된 장애 패턴입니다.</div>
+      <div class="panel"><div class="panel-bd">
+        <div class="load-ctrl">
+          <label>동시 접속</label>
+          <input type="range" id="loadRange" min="1000" max="100000" step="1000" value="20000">
+          <span class="val" id="loadVal">20,000</span>
+          <button class="goal-btn" id="goalBtn">⚽ 득점 이벤트 발생</button>
+          <label class="switch"><input type="checkbox" id="dropToggle" checked> 느린 클라이언트 드롭(백프레셔)</label>
+        </div>
+        <div class="astats">
+          <div class="astat"><div class="k">fan-out / event</div><div class="v" id="fanout">—</div></div>
+          <div class="astat"><div class="k">nodes needed</div><div class="v" id="nodeN">—</div></div>
+          <div class="astat"><div class="k">backlog memory</div><div class="v" id="memV">0 MB</div></div>
+          <div class="astat"><div class="k">status</div><div class="v" id="loadStat" style="font-size:13px;line-height:1.4">대기</div></div>
+        </div>
+        <div class="meta-label" style="margin:8px 0 4px">websocket nodes (1 node ≈ 20k conn)</div>
+        <div class="nodes" id="nodes"></div>
+        <canvas class="chart" id="memCv" style="height:120px"></canvas>
+      </div></div>
+    </section>
+
+    <!-- ══ 스토어 심사 체크 (A-5·B-5) ══ -->
+    <section class="aview" id="av-store">
+      <div class="atitle">스토어 심사 체크리스트</div>
+      <div class="asub">신규 앱 첫 제출의 약 40%가 리젝되고, UGC 앱은 그 1순위 유형입니다. 아래 체크는 <b>이 데모의 실제 구현 여부와 연동</b>됩니다 —
+        기능을 끄면 체크가 실제로 풀리고 예상 리젝 사유가 나타납니다. 8주차에 등록을 배치한 일정은 리젝 1회면 무너집니다.</div>
+      <div class="panel"><div class="panel-hd"><span>Apple 1.2 · 4.8 / Google Play UGC / 국내법</span><span class="meta-label" id="storeScore"></span></div>
+        <div id="storeList"></div></div>
     </section>
 
   </main>
 </div>
 
-<footer class="ftr">
-  <div class="ftr-in"><b>FANPIT 관리자</b> — 데모. 모든 수치·계정·신고 내역은 가상입니다.</div>
-</footer>
-
-<div class="toast-wrap" id="toastWrap"></div>
+<footer class="ftr"><div class="shell"><b>FANPIT 관리자</b> — 데모. 모든 수치·계정·신고 내역은 가상입니다.</div></footer>
+<div class="toasts" id="toasts"></div>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/filter.js"></script>
 <script src="assets/js/admin.js"></script>
 </body>
 </html>
