@@ -54,8 +54,8 @@ https://jeonjaeman.github.io/demo-sites/adring/admin/
 ────────────────────────────────────────
 [2] 유사 프로젝트
 
-역경매·블라인드 입찰 (소프트클로즈 마감)
-https://jeonjaeman.github.io/demo-sites/excaro/
+국세청 API·데이터 파이프라인 (사업자 검증 실무)
+https://jeonjaeman.github.io/demo-sites/bizseed/
 실운영 구축 (권한 분리 · 계약~운영 완료)
 https://jeonjaeman.github.io/dojang-live/
 예약·매칭 동시성 (정원 홀드·상태 전이)
