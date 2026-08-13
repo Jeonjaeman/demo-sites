@@ -643,19 +643,35 @@ preview_start {name} → javascript_tool로 기능 직접 호출 검증
    { name:"한글명", en:"BRAND", cat:"platform|admin|home", desc:"핵심기능·차별점·디자인출처", 
      url:"./데모/NN-한글폴더/index.html", status:"live", g:"linear-gradient(...)", here:true },
    ```
-2. **ASCII 별칭 폴더** — **루트에** `/영문명/index.html`을 만들어 `../데모/NN-한글폴더/`로 리다이렉트
+2. **★ 썸네일·프린트라인 포트폴리오 산출물** — 썸네일과 포트폴리오 양식은
+   **`프린트라인 포트폴리오/` 폴더의 기존 사례(예: 63-중고차수출영업관리)와 `DESIGN.md`를 그대로 따른다.**
+   임의 스타일로 썸네일을 만들지 않는다.
+   - `프린트라인 포트폴리오/<다음번호>-<한글폴더명>/`을 만들고 그 안에:
+     `NN_PRINTLINE_<브랜드>_썸네일.html`(공유 `../printline-portfolio.css` 사용, 사례별 임의 토큰 금지)
+     · 같은 이름 `.png`(1080×1080) · `pages.json`(sourceFolder·code·rootUrl·description 등 기존 스키마 그대로)
+     · `스크린샷/01-index.png`(1440×900) · `모바일스크린샷/01-index-mobile-375.png`(375×812)
+   - 캡처는 헤드리스 크롬: 로컬 서버를 띄우고
+     `chrome --headless=new --hide-scrollbars --window-size=W,H --virtual-time-budget=9000 --screenshot=<ASCII 임시경로> <URL>`
+     — **한글 경로에 직접 저장하면 실패**하므로 ASCII 임시 경로에 찍고 복사한다. 썸네일 PNG는
+     썸네일 HTML을 같은 방법(1080×1080)으로 렌더 캡처한다.
+   - **포털 카드 썸네일 `assets/thumbs/NN.webp`는 이 썸네일 PNG를 900×900으로 리사이즈해 만든다**
+     (Pillow, quality 84 · 100KB 이하). 포털은 `thumb`가 없으면 「준비 중」 타일로 렌더되므로
+     DEMOS 항목에 `thumb` 필드를 반드시 넣는다.
+   - 프린트라인 포트폴리오 폴더는 gitignore(로컬 보관)이고, 커밋 대상은 `assets/thumbs/NN.webp`와
+     루트 `index.html`뿐이다. 프린트라인 번호는 데모 번호와 별개의 연번(63=데모58, 64=데모59, 65=데모60 …)이다.
+3. **ASCII 별칭 폴더** — **루트에** `/영문명/index.html`을 만들어 `../데모/NN-한글폴더/`로 리다이렉트
    - 관리자 화면이 있으면 `/영문명/admin/index.html`도 생성 (`../../데모/NN-…/admin.html`)
    - **별칭이 공개 URL입니다.** 지원서에는 항상 별칭만 씁니다 — 한글 경로는 폼에서 잘립니다
    - 폴더 위치가 바뀌면 별칭의 `canonical`·`meta refresh`·`location.replace` **3곳을 모두** 고칩니다
-3. **launch.json** — 포트 추가. **다음 사용 포트: 8087부터 내림차순** (8088~8099 사용 중)
-4. **커밋·푸시**
+4. **launch.json** — 포트 추가. **다음 사용 포트: 8087부터 내림차순** (8088~8099 사용 중)
+5. **커밋·푸시**
    ```
    feat(폴더명): 한 줄 설명 — 레퍼런스A×B×C 디자인, /별칭 별칭
    
    Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
    ```
    - **해당 폴더 + 루트 index.html + 별칭 폴더만** staging (다른 미완성 작업 건드리지 않기)
-5. **배포 확인** — Pages 200 확인 (until 루프로 대기, 한글 경로는 URL 인코딩)
+6. **배포 확인** — Pages 200 확인 (until 루프로 대기, 한글 경로는 URL 인코딩)
 
 **★ 폴더를 옮기거나 이름을 바꿀 때**
 
