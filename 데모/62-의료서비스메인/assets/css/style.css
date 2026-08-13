@@ -1,0 +1,190 @@
+/* ═══════════════════════════════════════════════════════════
+   MEDIQ 메디크 — AI 의료 서비스 메인 페이지 디자인 시안 (가상 브랜드)
+   도메인 실측: Lunit(잉크 #233232·teal #00C9EA 1액센트·stat 68/80·섹션 120px·본문 w300)
+     Viz.ai(FDA 개수를 히어로 카피에·반면교사: 근거 수치를 이미지로 박음→텍스트 필수)
+     VUNO(#102135 다크 2막 구조·국문 본문 20/35=1.75·자간 normal·®/™ 전수·사업자 전문)
+   디자인 실측: Alethia(Awwwards SOTD 26.08.05·7.34 — ls −0.05em·Mono 라벨)
+     Mosby's Files(SOTD 26.08.13·7.23 — cubic-bezier(.33,1,.68,1) .65s)
+     삼성서울병원 영문(GDWEB 선정작 26.08.03 — 마스크 리빌 (.785,.135,.15,.86)/.5s ·
+       스크롤 리빌 transform .8s (.23,1,.32,1) + opacity .4s (2:1) · 4px spacing · 섹션 160/120)
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --ink: #102135; --ink2: #233232; --paper: #f5f4f2; --surface: #eff0f4;
+  --line: #cfd6d7; --mute: #787a7f; --white: #ffffff;
+  --accent: #00c9ea; --accent-lt: #40e2de; --trust: #1428a0;
+  --alert: #ff5321; --ok: #56c14d; --warn: #ffc205;
+  --section-y: 120px; --section-y-lg: 160px;
+  --container: 1320px; --gutter: 40px;
+  --r-xs: 4px; --r-sm: 8px; --r-md: 20px; --r-lg: 24px; --r-xl: 30px; --r-pill: 100px;
+  --sh1: 0 2px 4px rgba(16,33,53,.10); --sh2: 0 8px 16px rgba(16,33,53,.16);
+  --e-reveal: cubic-bezier(.23,1,.32,1); --e-fade: cubic-bezier(0,0,.58,1);
+  --e-mask: cubic-bezier(.785,.135,.15,.86); --e-card: cubic-bezier(.33,1,.68,1);
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { overflow-x: clip; scroll-behavior:smooth; }
+body { background:var(--white); color:var(--ink2); font-family:'Pretendard Variable',Pretendard,-apple-system,system-ui,'Segoe UI',sans-serif; font-size:20px; line-height:1.75; -webkit-font-smoothing:antialiased; word-break:keep-all; }
+a { color:inherit; text-decoration:none; } button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;} ul,ol{list-style:none;}
+::selection { background:var(--accent); color:var(--ink); }
+.mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.eyebrow { font-family:var(--mono); font-size:13px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
+.shell { max-width:var(--container); margin:0 auto; padding:0 var(--gutter); }
+.section { padding:var(--section-y) 0; }
+.section.lg { padding:var(--section-y-lg) 0; }
+
+/* 헤더 */
+.hdr { position:fixed; inset:0 0 auto; z-index:100; transition:background .3s, box-shadow .3s; }
+.hdr.solid { background:rgba(255,255,255,.94); backdrop-filter:blur(12px); box-shadow:0 1px 0 var(--line); }
+.hdr-in { max-width:var(--container); margin:0 auto; padding:0 var(--gutter); height:76px; display:flex; align-items:center; gap:28px; }
+.logo { font-weight:800; font-size:22px; letter-spacing:-.02em; color:#fff; transition:color .3s; }
+.logo b { color:var(--accent); }
+.hdr.solid .logo { color:var(--ink); }
+.gnb { display:flex; gap:26px; flex:1; justify-content:center; }
+.gnb a { font-size:15px; font-weight:600; color:rgba(255,255,255,.8); transition:color .2s; }
+.hdr.solid .gnb a { color:var(--mute); }
+.gnb a:hover { color:var(--accent); }
+.hdr .cta { height:44px; padding:0 22px; border-radius:var(--r-pill); background:var(--accent); color:var(--ink); font-weight:700; font-size:14px; display:inline-flex; align-items:center; transition:transform .2s var(--e-card), filter .2s; }
+.hdr .cta:hover { filter:brightness(1.08); transform:translateY(-1px); }
+
+/* 디자인 근거 토글 (시안 전용 장치) */
+.note-toggle { position:fixed; right:22px; bottom:22px; z-index:120; height:46px; padding:0 18px; border-radius:var(--r-pill); background:var(--ink); color:#fff; font-weight:700; font-size:13px; box-shadow:var(--sh2); display:inline-flex; align-items:center; gap:8px; transition:transform .2s var(--e-card); }
+.note-toggle:hover { transform:translateY(-2px); }
+.note-toggle.on { background:var(--trust); }
+.dnote { display:none; position:absolute; z-index:50; max-width:300px; background:var(--trust); color:#fff; font-size:12px; line-height:1.6; padding:10px 14px; border-radius:var(--r-sm); box-shadow:var(--sh2); font-weight:500; letter-spacing:0; }
+.dnote b { color:var(--accent-lt); }
+body.notes .dnote { display:block; animation:nIn .3s var(--e-card); }
+@keyframes nIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+
+/* ── 히어로 (풀블리드 이미지 + 마스크 리빌) ── */
+.hero { position:relative; min-height:100vh; display:flex; align-items:center; background:var(--ink); overflow:hidden; }
+.hero .bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:.92; transform:scale(1.04); will-change:transform; }
+.hero .veil { position:absolute; inset:0; background:linear-gradient(100deg, rgba(16,33,53,.92) 20%, rgba(16,33,53,.55) 55%, rgba(16,33,53,.25)); }
+.hero-in { position:relative; z-index:2; max-width:var(--container); margin:0 auto; padding:150px var(--gutter) 90px; width:100%; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:60px; align-items:center; }
+.hero h1 { font-size:clamp(44px,5.8vw,84px); font-weight:300; line-height:1.1; letter-spacing:-.035em; color:#fff; }
+.hero h1 b { font-weight:600; color:var(--accent-lt); }
+.hero h1 .ln { display:block; overflow:hidden; }
+.hero h1 .ln span { display:inline-block; clip-path:inset(0 0 100% 0); animation:maskUp .5s var(--e-mask) forwards; }
+@keyframes maskUp { to { clip-path:inset(0 0 -10% 0); } }
+.hero .lead { font-size:20px; line-height:1.75; color:rgba(255,255,255,.78); max-width:560px; margin:26px 0 34px; font-weight:300; }
+.hero .lead b { color:#fff; font-weight:500; }
+.hero .actions { display:flex; gap:12px; flex-wrap:wrap; }
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; height:56px; padding:0 30px; border-radius:var(--r-pill); font-weight:700; font-size:15px; transition:transform .2s var(--e-card), filter .2s, background .2s; }
+.btn.pri { background:var(--accent); color:var(--ink); }
+.btn.pri:hover { filter:brightness(1.1); transform:translateY(-2px); }
+.btn.ghost { border:1px solid rgba(255,255,255,.35); color:#fff; }
+.btn.ghost:hover { border-color:var(--accent-lt); color:var(--accent-lt); }
+/* 규제 3모드 스위치 */
+.mode-switch { display:inline-flex; border:1px solid rgba(255,255,255,.25); border-radius:var(--r-pill); overflow:hidden; margin-bottom:26px; backdrop-filter:blur(6px); }
+.mode-switch button { height:40px; padding:0 18px; font-size:13px; font-weight:700; color:rgba(255,255,255,.65); transition:all .2s; }
+.mode-switch button.on { background:var(--accent); color:var(--ink); }
+.reg-note { font-family:var(--mono); font-size:11.5px; color:rgba(255,255,255,.55); margin-top:14px; letter-spacing:0; }
+/* 제품 UI 목업 (인물 대신 제품이 주인공 — F5) */
+.viewer { background:rgba(10,22,38,.82); border:1px solid rgba(64,226,222,.25); border-radius:var(--r-md); box-shadow:var(--sh2); overflow:hidden; backdrop-filter:blur(8px); }
+.viewer-hd { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(255,255,255,.08); }
+.viewer-hd .t { font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--accent-lt); }
+.viewer-hd .st { font-size:11px; font-weight:700; color:var(--ok); }
+.viewer-bd { padding:18px; }
+canvas#scanCv { width:100%; height:230px; display:block; border-radius:var(--r-sm); }
+.viewer-row { display:flex; justify-content:space-between; font-size:12.5px; color:rgba(255,255,255,.7); padding:9px 2px 0; }
+.viewer-row .v { font-family:var(--mono); color:#fff; }
+.viewer-row .v.hl { color:var(--accent-lt); font-weight:700; }
+.viewer-foot { padding:10px 18px 14px; font-size:10.5px; color:rgba(255,255,255,.45); border-top:1px dashed rgba(255,255,255,.12); line-height:1.6; }
+
+/* ── 신뢰 스트립 (2모드 · 각주 슬롯) ── */
+.strip { background:var(--white); }
+.strip-head { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:44px; flex-wrap:wrap; }
+.strip-head h2 { font-size:clamp(32px,3.8vw,56px); font-weight:400; line-height:1.2; letter-spacing:-.03em; color:var(--ink); }
+.seg { display:inline-flex; border:1px solid var(--line); border-radius:var(--r-pill); overflow:hidden; }
+.seg button { height:40px; padding:0 18px; font-size:13px; font-weight:700; color:var(--mute); transition:all .2s; }
+.seg button.on { background:var(--ink); color:#fff; }
+.stats { display:grid; grid-template-columns:repeat(4,1fr); gap:80px; }
+.stat .n { font-size:68px; font-weight:400; line-height:1.18; letter-spacing:-.01em; color:var(--ink); font-variant-numeric:tabular-nums; }
+.stat .n small { font-size:26px; color:var(--accent); font-weight:500; }
+.stat .l { font-size:19px; color:var(--ink2); margin-top:4px; }
+.stat .src { font-family:var(--mono); font-size:11px; color:var(--mute); margin-top:10px; line-height:1.6; letter-spacing:0; border-top:1px solid var(--line); padding-top:8px; }
+.certs { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; }
+.cert { border:1px solid var(--line); border-radius:var(--r-sm); padding:22px; }
+.cert .k { font-family:var(--mono); font-size:12px; font-weight:700; color:var(--trust); letter-spacing:.04em; }
+.cert .t { font-size:17px; font-weight:700; color:var(--ink); margin:8px 0 4px; }
+.cert .d { font-size:13.5px; color:var(--mute); line-height:1.6; }
+.foot-rule { font-size:12.5px; color:var(--mute); margin-top:26px; line-height:1.7; }
+
+/* ── 기능 카드 (상태 뱃지 4종 — F4) ── */
+.features { background:var(--paper); }
+.f-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+.fcard { background:var(--white); border-radius:var(--r-md); padding:30px 28px; box-shadow:var(--sh1); transition:transform .65s var(--e-card), box-shadow .65s var(--e-card); position:relative; }
+.fcard:hover { transform:translateY(-6px); box-shadow:var(--sh2); }
+.fcard .num { font-family:var(--mono); font-size:12px; color:var(--accent); font-weight:700; }
+.fcard h3 { font-size:24px; font-weight:600; line-height:1.3; letter-spacing:-.02em; color:var(--ink); margin:12px 0 8px; }
+.fcard h3 small { font-family:var(--mono); font-size:12px; color:var(--mute); font-weight:400; letter-spacing:0; }
+.fcard p { font-size:15px; line-height:1.7; color:var(--ink2); }
+.rbadge { display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; padding:4px 11px; border-radius:var(--r-xs); margin-top:16px; }
+.rbadge.ok { background:#e9f7ee; color:#2c8a3d; } .rbadge.pending { background:#fff6dd; color:#8a6b00; }
+.rbadge.research { background:var(--surface); color:var(--mute); } .rbadge.wellness { background:#e8f5fd; color:#1e6fa8; }
+
+/* ── 풀블리드 단락 (② 필수 · 패럴랙스) ── */
+.band { position:relative; min-height:78vh; display:flex; align-items:center; overflow:hidden; background:var(--ink); }
+.band .bg { position:absolute; inset:-12% 0; background-size:cover; background-position:center; will-change:transform; }
+.band .veil { position:absolute; inset:0; background:linear-gradient(0deg, rgba(16,33,53,.88), rgba(16,33,53,.35) 60%); }
+.band-in { position:relative; z-index:2; max-width:var(--container); margin:0 auto; padding:110px var(--gutter); width:100%; }
+.band h2 { font-size:clamp(36px,4.4vw,64px); font-weight:300; line-height:1.15; letter-spacing:-.03em; color:#fff; max-width:760px; }
+.band h2 b { font-weight:600; color:var(--accent-lt); }
+.band p { font-size:19px; line-height:1.8; color:rgba(255,255,255,.75); max-width:620px; margin-top:22px; font-weight:300; }
+
+/* ── 근거 (⑤ 텍스트 스크럽) ── */
+.evidence .scrub { font-size:clamp(28px,3.4vw,48px); font-weight:400; line-height:1.45; letter-spacing:-.02em; max-width:1000px; }
+.evidence .scrub span { color:var(--line); transition:color .3s var(--e-fade); }
+.evidence .scrub span.lit { color:var(--ink); }
+.papers { margin-top:56px; display:grid; grid-template-columns:1fr 1fr; gap:0 60px; }
+.paper { display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px 0; border-top:1px solid var(--line); }
+.paper .y { font-family:var(--mono); font-size:13px; color:var(--mute); }
+.paper .t { font-size:16px; font-weight:600; color:var(--ink); line-height:1.5; }
+.paper .j { font-size:13px; color:var(--mute); margin-top:3px; }
+
+/* ── 파트너 3단 (F7) ── */
+.partners { background:var(--paper); }
+.p-cols { display:grid; grid-template-columns:1.2fr .8fr; gap:60px; align-items:start; }
+.logo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.plogo { height:84px; background:var(--white); border-radius:var(--r-sm); display:grid; place-items:center; font-weight:800; font-size:17px; letter-spacing:-.01em; color:var(--ink); box-shadow:var(--sh1); }
+.plogo.pending { background:transparent; border:1px dashed var(--line); color:var(--mute); box-shadow:none; font-size:12px; font-weight:600; }
+.p-alt .row { display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); font-size:16px; }
+.p-alt .row .v { font-family:var(--mono); font-weight:700; color:var(--ink); }
+.p-note { font-size:12.5px; color:var(--mute); margin-top:18px; line-height:1.7; }
+
+/* ── 디자인 명세 (접근성 실측표 — F9, 검수 기준) ── */
+.spec { }
+.spec-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+.sp { border:1px solid var(--line); border-radius:var(--r-sm); padding:20px; }
+.sp .chip { width:100%; height:52px; border-radius:var(--r-xs); margin-bottom:14px; display:flex; align-items:center; padding:0 14px; font-size:14px; font-weight:700; }
+.sp .k { font-family:var(--mono); font-size:12px; color:var(--mute); letter-spacing:0; }
+.sp .ratio { font-family:var(--mono); font-size:19px; font-weight:700; margin-top:4px; }
+.sp .ratio.pass { color:#2c8a3d; } .sp .ratio.na { color:var(--alert); }
+.sp .use { font-size:12.5px; color:var(--mute); margin-top:6px; line-height:1.55; }
+
+/* ── 푸터 (사사·사업자 전문 — F6·VUNO 문법) ── */
+.ftr { background:var(--ink); color:rgba(255,255,255,.6); padding:70px 0 60px; }
+.ftr .grants { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:30px; }
+.ftr .grant { border:1px solid rgba(255,255,255,.18); border-radius:var(--r-xs); padding:10px 16px; font-size:12px; line-height:1.5; }
+.ftr .grant b { color:#fff; display:block; font-size:12.5px; }
+.ftr .sasa { font-size:13px; line-height:1.8; color:rgba(255,255,255,.75); background:rgba(255,255,255,.06); border-radius:var(--r-sm); padding:16px 20px; margin-bottom:30px; }
+.ftr .sasa b { color:var(--accent-lt); }
+.ftr .biz { font-size:12px; line-height:1.9; border-top:1px solid rgba(255,255,255,.12); padding-top:24px; }
+.ftr .biz b { color:rgba(255,255,255,.85); }
+
+/* ── 리빌 (SMC 2:1 비율) ── */
+.rv { opacity:0; transform:translateY(28px); transition:transform .8s var(--e-reveal), opacity .4s var(--e-fade); }
+.rv.in { opacity:1; transform:none; }
+.toasts { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; align-items:center; }
+.toast { background:var(--ink); color:#fff; font-size:13px; font-weight:600; padding:12px 20px; border-radius:10px; box-shadow:var(--sh2); animation:nIn .3s var(--e-card); max-width:min(560px,92vw); letter-spacing:0; }
+
+@media (max-width:960px) {
+  :root { --section-y:72px; --section-y-lg:96px; --gutter:20px; }
+  .hero-in { grid-template-columns:1fr; padding:120px var(--gutter) 60px; gap:40px; }
+  .stats { grid-template-columns:1fr 1fr; gap:36px; }
+  .p-cols { grid-template-columns:1fr; gap:36px; }
+  .papers { grid-template-columns:1fr; }
+  .gnb { display:none; }
+  .stat .n { font-size:48px; }
+  body { font-size:17px; }
+}
+@media (prefers-reduced-motion:reduce){ *,*::before,*::after{ animation-duration:.01ms!important; transition-duration:.01ms!important; } .hero .bg,.band .bg{ transform:none!important; } }

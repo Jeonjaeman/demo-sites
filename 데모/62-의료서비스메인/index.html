@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDIQ 메디크 — AI 의료 서비스 메인 페이지 디자인 시안</title>
+<meta name="description" content="AI 의료 서비스 메인 페이지 리뉴얼 시안 — 신뢰를 색이 아니라 증거의 배치로 만드는 설계 (가상 브랜드 데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="hdr" id="hdr">
+  <div class="hdr-in">
+    <a class="logo" href="#top">MED<b>IQ</b></a>
+    <nav class="gnb">
+      <a href="#features">주요 기능</a><a href="#band">특장점</a><a href="#evidence">임상 근거</a><a href="#partners">파트너</a><a href="#spec">디자인 명세</a>
+    </nav>
+    <a class="cta" href="#partners">도입 문의</a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- ══ 히어로: 제품이 주인공 (F5 — AI 인물 금지 대응) ══ -->
+  <section class="hero">
+    <div class="bg" id="heroBg" style="background-image:url('assets/img/hero.webp')"></div>
+    <div class="veil"></div>
+    <div class="hero-in">
+      <div>
+        <div class="mode-switch" id="modeSwitch">
+          <button data-m="samd" class="on">의료기기(SaMD)형</button>
+          <button data-m="clinic">의료기관형</button>
+          <button data-m="wellness">웰니스형</button>
+        </div>
+        <h1 id="heroTitle"></h1>
+        <p class="lead" id="heroLead"></p>
+        <div class="actions">
+          <a class="btn pri" href="#features">주요 기능 보기</a>
+          <a class="btn ghost" href="#evidence">임상 근거</a>
+        </div>
+        <div class="reg-note" id="regNote"></div>
+        <div class="dnote" style="margin-top:18px;position:relative;max-width:420px"><b>설계 근거 (F1)</b> — 같은 AI 의료라도 의료기관은 의료법 56조, SaMD는 의료기기법·디지털의료제품법을 받아 쓸 수 있는 카피가 정반대입니다. 서비스 정체가 확정되면 이 스위치의 한 모드로 고정합니다.</div>
+      </div>
+      <div>
+        <div class="viewer">
+          <div class="viewer-hd"><span class="t">MEDIQ READER · CHEST CT</span><span class="st mono">● LIVE ANALYSIS</span></div>
+          <div class="viewer-bd">
+            <canvas id="scanCv"></canvas>
+            <div class="viewer-row"><span>병변 후보 검출</span><span class="v hl" id="vDetect">3영역</span></div>
+            <div class="viewer-row"><span>분석 소요</span><span class="v" id="vTime">14.2s</span></div>
+            <div class="viewer-row"><span>판독 우선순위 제안</span><span class="v">긴급 재정렬</span></div>
+          </div>
+          <div class="viewer-foot">화면은 시안 제작용 모의 데이터입니다 · 본 화면의 시각 자료는 실제 환자 영상이 아니며, AI 생성 인물 이미지를 사용하지 않았습니다 (2026.5 의료기기법 개정 대응)</div>
+        </div>
+        <div class="dnote" style="position:relative;margin-top:14px"><b>설계 근거 (F5)</b> — 히어로에 흰 가운 인물 대신 제품 UI를 세웠습니다. 생성형 AI 가짜 전문가 광고 금지 개정안(2026.5 국회 통과, 공포 6개월 후 시행)에 걸리지 않는 유일한 안전한 방향입니다.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 신뢰 스트립 (F8 — 2모드) ══ -->
+  <section class="section strip" id="trust">
+    <div class="shell">
+      <div class="strip-head rv">
+        <div>
+          <div class="eyebrow">02 · Evidence First</div>
+          <h2>신뢰는 형용사가 아니라<br><b style="font-weight:600;color:var(--trust)">검증 가능한 숫자</b>로 만듭니다</h2>
+        </div>
+        <div class="seg" id="trustSeg">
+          <button data-t="num" class="on">지표 보유 시</button>
+          <button data-t="cert">지표 없는 초기</button>
+        </div>
+      </div>
+      <div id="trustBody"></div>
+      <p class="foot-rule rv">모든 수치에는 출처·기준일 각주가 강제됩니다 — 각주가 비면 숫자를 게재할 수 없는 구조가 의료광고 규제(의료법 56조 과장 금지) 대응입니다. "정확도 99%" "국내 유일" 류의 무근거 표현은 이 시안의 카피 시스템에서 사용이 차단됩니다.</p>
+      <div class="dnote" style="position:relative;margin-top:10px;max-width:520px"><b>설계 근거 (F8)</b> — Lunit·Viz.ai는 숫자(논문 700+·FDA 50+)로, VUNO는 인증 배지로 신뢰를 만듭니다. 초기 기업은 쓸 숫자가 없으므로 두 모드를 모두 설계했습니다. Viz.ai가 근거 수치를 이미지로 박아 검색·낭독이 불가한 것을 반면교사로, 전부 실제 텍스트+카운트업입니다.</div>
+    </div>
+  </section>
+
+  <!-- ══ 주요 기능 (F4 — 상태 뱃지) ══ -->
+  <section class="section features" id="features">
+    <div class="shell">
+      <div class="eyebrow rv">03 · Core Features</div>
+      <h2 class="rv" style="font-size:clamp(32px,3.8vw,56px);font-weight:400;line-height:1.2;letter-spacing:-.03em;color:var(--ink);margin:10px 0 44px">주요 기능 — 허가 상태를<br>숨기지 않고 병기합니다</h2>
+      <div class="f-grid">
+        <div class="fcard rv"><div class="num">01</div><h3>흉부 CT 판독 보조 <small>MEDIQ-CT™</small></h3><p>병변 후보를 검출해 판독 우선순위를 제안합니다. 최종 판단은 영상의학과 전문의가 수행합니다.</p><span class="rbadge ok">식약처 허가 완료 · 제허 26-000호(예시)</span></div>
+        <div class="fcard rv"><div class="num">02</div><h3>흉부 X-ray 스크리닝 <small>MEDIQ-CXR™</small></h3><p>다기관 검진 환경의 대량 판독 워크플로에 맞춘 스크리닝 보조 기능입니다.</p><span class="rbadge pending">식약처 심사 중 (허가 전 임상 사용 불가)</span></div>
+        <div class="fcard rv"><div class="num">03</div><h3>예후 예측 리서치 <small>MEDIQ-PROG</small></h3><p>연구 협력 기관 대상의 예후 예측 모델입니다. 임상 진단 목적으로 제공되지 않습니다.</p><span class="rbadge research">연구용 (Research Use Only)</span></div>
+        <div class="fcard rv"><div class="num">04</div><h3>건강 기록 리포트 <small>MEDIQ Care</small></h3><p>검진 결과를 이해하기 쉬운 리포트로 정리합니다. 의료행위·진단이 아닌 정보 제공 서비스입니다.</p><span class="rbadge wellness">비의료 웰니스 (의료기기 아님)</span></div>
+      </div>
+      <div class="dnote" style="position:relative;margin-top:18px;max-width:520px"><b>설계 근거 (F4)</b> — 허가 없이 "진단"을 표방하면 의료기기법 위반입니다. Lunit도 미승인 품목에 "510(k) pending"을 병기합니다. 상태 뱃지 4종이 카피의 동사(진단→판독 보조)까지 결정합니다.</div>
+    </div>
+  </section>
+
+  <!-- ══ 풀블리드 단락 (② · 패럴랙스) ══ -->
+  <section class="band" id="band">
+    <div class="bg" id="bandBg" style="background-image:url('assets/img/band.webp')"></div>
+    <div class="veil"></div>
+    <div class="band-in">
+      <div class="eyebrow rv" style="color:var(--accent-lt)">04 · In the Reading Room</div>
+      <h2 class="rv" style="margin-top:14px">판독실의 새벽 2시,<br>놓치기 쉬운 순간에 <b>한 번 더 보는 눈</b></h2>
+      <p class="rv">MEDIQ는 의료진을 대체하지 않습니다. 판독량이 몰리는 시간, 피로가 쌓이는 순간에 우선순위를 다시 정렬하고 놓침의 가능성을 줄이는 — 보조하는 기술입니다.</p>
+    </div>
+  </section>
+
+  <!-- ══ 임상 근거 (⑤ 텍스트 스크럽) ══ -->
+  <section class="section lg evidence" id="evidence">
+    <div class="shell">
+      <div class="eyebrow rv">05 · Clinical Evidence</div>
+      <p class="scrub" id="scrub" style="margin-top:18px">임상 검증은 마케팅이 아니라 제품의 일부입니다. 모든 성능 주장은 피어리뷰 논문과 다기관 검증 데이터로만 말하고, 출처 없는 숫자는 이 페이지에 실리지 않습니다.</p>
+      <div class="papers">
+        <div class="paper rv"><span class="y">2026</span><div><div class="t">다기관 흉부 CT 병변 검출 성능 검증 연구 (가상)</div><div class="j">Journal of Medical AI · 전향적 · n=2,847</div></div></div>
+        <div class="paper rv"><span class="y">2025</span><div><div class="t">판독 우선순위 재정렬이 응급 소견 보고 시간에 미치는 영향 (가상)</div><div class="j">Radiology Workflow Studies · 후향적 · 3개 기관</div></div></div>
+        <div class="paper rv"><span class="y">2025</span><div><div class="t">스크리닝 환경 위음성 감소 효과 분석 (가상)</div><div class="j">Clinical Imaging Research · n=11,203</div></div></div>
+        <div class="paper rv"><span class="y">2024</span><div><div class="t">AI 보조 판독의 관찰자 간 변이 감소 연구 (가상)</div><div class="j">Diagnostic AI Letters</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 파트너 3단 (F7) ══ -->
+  <section class="section partners" id="partners">
+    <div class="shell">
+      <div class="eyebrow rv">06 · Partners</div>
+      <h2 class="rv" style="font-size:clamp(32px,3.8vw,56px);font-weight:400;line-height:1.2;letter-spacing:-.03em;color:var(--ink);margin:10px 0 44px">함께 검증하는 기관</h2>
+      <div class="p-cols">
+        <div>
+          <div class="logo-grid rv">
+            <div class="plogo">한빛대학교병원</div>
+            <div class="plogo">서봄의료재단</div>
+            <div class="plogo">미래영상의학센터</div>
+            <div class="plogo pending">게재 협의 중</div>
+            <div class="plogo pending">게재 협의 중</div>
+            <div class="plogo pending">게재 협의 중</div>
+          </div>
+          <p class="p-note">로고는 게재 동의가 확보된 기관만 컬러로 노출합니다 (상표 무단 사용 방지) · 기관명은 전부 가상입니다</p>
+        </div>
+        <div class="p-alt rv">
+          <div class="row"><span>도입·검증 협력 기관</span><span class="v" data-count="14">0</span></div>
+          <div class="row"><span>누적 분석 건수</span><span class="v" data-count="182400">0</span></div>
+          <div class="row"><span>협력 지역</span><span class="v">수도권 · 영남 · 호남</span></div>
+          <div class="row"><span>연구 협약(MOU)</span><span class="v" data-count="6">0</span></div>
+          <p class="p-note">로고를 확보하지 못한 시점에도 섹션이 성립하도록 — 기관 유형·규모·지역을 숫자로 대체하는 3단 구조입니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 디자인 명세 (F9 — 검수 기준) ══ -->
+  <section class="section spec" id="spec">
+    <div class="shell">
+      <div class="eyebrow rv">07 · Design Spec — 검수 기준</div>
+      <h2 class="rv" style="font-size:clamp(32px,3.8vw,56px);font-weight:400;line-height:1.2;letter-spacing:-.03em;color:var(--ink);margin:10px 0 16px">명도 대비 실측표</h2>
+      <p class="rv" style="font-size:16px;color:var(--mute);max-width:680px;margin-bottom:36px">의료기관 웹은 접근성(KWCAG 4.5:1)이 법적 의무입니다. 이 표가 곧 시안의 검수 체크리스트입니다 — 사후 수정 비용(평균 200~500만 원)을 시안 단계에서 0원으로 만듭니다.</p>
+      <div class="spec-grid">
+        <div class="sp rv"><div class="chip" style="background:#fff;color:#233232;border:1px solid var(--line)">본문 Ink on White</div><div class="k">#233232 / #FFFFFF</div><div class="ratio pass">13.9 : 1 ✓</div><div class="use">본문 20px — AA·AAA 충족</div></div>
+        <div class="sp rv"><div class="chip" style="background:#102135;color:#fff">White on Navy</div><div class="k">#FFFFFF / #102135</div><div class="ratio pass">16.9 : 1 ✓</div><div class="use">히어로·풀블리드 헤드라인</div></div>
+        <div class="sp rv"><div class="chip" style="background:#fff;color:#1428a0;border:1px solid var(--line)">Trust on White</div><div class="k">#1428A0 / #FFFFFF</div><div class="ratio pass">10.9 : 1 ✓</div><div class="use">인증·규제 배지 텍스트</div></div>
+        <div class="sp rv"><div class="chip" style="background:#102135;color:#40e2de">Teal-lt on Navy</div><div class="k">#40E2DE / #102135</div><div class="ratio pass">9.1 : 1 ✓</div><div class="use">다크 위 강조 텍스트</div></div>
+        <div class="sp rv"><div class="chip" style="background:#fff;color:#00c9ea;border:1px solid var(--line)">Teal on White</div><div class="k">#00C9EA / #FFFFFF</div><div class="ratio na">2.3 : 1 ✕ 텍스트 금지</div><div class="use">액센트 teal은 화이트 위에서 장식·아이콘 전용 — 본문 텍스트 사용 금지 규칙</div></div>
+        <div class="sp rv"><div class="chip" style="background:#eff0f4;color:#787a7f">Mute on Surface</div><div class="k">#787A7F / #EFF0F4</div><div class="ratio pass">4.6 : 1 ✓</div><div class="use">캡션 15px 이상에서 사용</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ══ 푸터 (F6 사사 · VUNO 사업자 전문) ══ -->
+<footer class="ftr">
+  <div class="shell">
+    <div class="grants rv">
+      <div class="grant"><b>보건복지부</b>보건의료데이터 활용 R&D</div>
+      <div class="grant"><b>과학기술정보통신부</b>AI 바우처 지원사업</div>
+      <div class="grant"><b>한국연구재단</b>기초연구사업</div>
+    </div>
+    <div class="sasa rv"><b>연구개발 성과 표기(사사)</b> — 이 성과는 정부(과학기술정보통신부)의 재원으로 한국연구재단의 지원을 받아 수행된 연구임 (No. RS-2026-00000000 · 과제번호 슬롯). 지원기관 로고·과제번호는 전문기관 CI 규정에 맞춰 교체합니다.</div>
+    <div class="biz rv">
+      <b>㈜메디크(가상)</b> · 대표이사 — · 사업자등록번호 000-00-00000 · 서울특별시 강남구 — · Tel — · 제품 문의 product@mediq.example · 언론 press@mediq.example<br>
+      MEDIQ® 및 MEDIQ-CT™는 상표 등록 슬롯입니다 (Reg. KIPO 표기 자리) · 본 페이지는 <b>디자인 시안 데모</b>로 모든 기관·수치·허가번호는 가상입니다 ·
+      의료기관 자체 홈페이지는 사전심의 대상이 아니나 의료법 56조 금지 규정을 준수해 카피를 작성했습니다 · 이미지에 AI 생성 인물을 사용하지 않았습니다
+    </div>
+  </div>
+</footer>
+
+<button class="note-toggle" id="noteToggle">💡 디자인 근거 보기</button>
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/app.js?v=2"></script>
+</body>
+</html>
