@@ -1,478 +1,141 @@
-/* ============================================================
-   HERLOOP — 커뮤니티 프론트 (데모)
-   ============================================================ */
+/* HERLOOP — 피드(노출 4단 실전환)·상세(스티키 레일·원문 상태)·댓글 */
+'use strict';
+const APP = (() => {
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-const $  = (s, el = document) => el.querySelector(s);
-const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-
-const S = {
-  cat: '전체',
-  view: 'feed',        // feed | own | ext
-  sort: 'new',         // new | rec | view
-  open: null,          // 펼친 글 id
-  gate: null,          // 게이트 종류
-  gateStep: 1,
-  repTarget: null,
-  repReason: null,
-  blinded: new Set(),
-};
-
-function toast(msg, type = '') {
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  el.innerHTML = msg;
-  $('#toasts').appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = '.35s'; setTimeout(() => el.remove(), 350); }, 3400);
-}
-
-function observeReveal() {
-  const targets = $$('.rv:not(.in)');
-  if (!targets.length) return;
-
-  // 이미 뷰포트 안에 있는 요소는 즉시 표시 — 탭이 백그라운드면 IO 콜백이 지연되므로 폴백
-  const showIfVisible = el => {
-    const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight * 1.05 && r.bottom > 0) { el.classList.add('in'); return true; }
-    return false;
-  };
-  const io = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { threshold: .06 });
-
-  targets.forEach(el => { if (!showIfVisible(el)) io.observe(el); });
-}
-
-/* ============================================================
-   피드
-   ============================================================ */
-function filtered() {
-  return POSTS.filter(p => {
-    if (S.blinded.has(p.id)) return false;
-    if (S.view === 'own' && p.type !== 'own') return false;
-    if (S.view === 'ext' && p.type !== 'ext') return false;
-    if (S.cat !== '전체' && p.cat !== S.cat) return false;
-    return true;
-  });
-}
-
-/* 조회수 — 하드코딩 없이 추천·댓글·제목에서 결정적으로 파생 */
-function views(p) { return p.like * 9 + p.cmt * 23 + p.title.length * 11 + 60; }
-
-function sortPosts(list) {
-  const s = S.sort || 'new';
-  if (s === 'rec') return list.slice().sort((a, b) => b.like - a.like);
-  if (s === 'view') return list.slice().sort((a, b) => views(b) - views(a));
-  return list; // 최신 = 원본 순서
-}
-
-const NOTICES = [
-  { ico: '🛡', t: '허루프는 본인확인을 거친 회원만 글을 쓸 수 있습니다', d: '성별·연령대만 확인하고 이름·연락처는 저장하지 않습니다. 서로 안심하고 이야기하기 위한 최소한의 장치입니다.' },
-  { ico: '🔗', t: '읽을거리는 외부 글의 제목과 짧은 발췌만 보여 드립니다', d: '본문 전체를 가져오지 않고 원문 링크로 연결합니다 — 원 저작자의 권리를 지키기 위해서입니다.' },
-];
-
-function renderFeed() {
-  const list = sortPosts(filtered());
-  const ownN = POSTS.filter(p => p.type === 'own' && !S.blinded.has(p.id)).length;
-  const maxLike = Math.max(1, ...POSTS.filter(p => !S.blinded.has(p.id)).map(p => p.like));
-  const bestCut = Math.max(180, maxLike * 0.55);
-
-  const rows = list.length
-    ? list.map(p => row(p, bestCut)).join('')
-    : `<tr class="brow-empty"><td colspan="6"><div class="empty"><span class="ei">🌱</span>이 카테고리에는 아직 글이 없어요. 첫 글을 남겨 보시겠어요?</div></td></tr>`;
-
-  $('#feed').innerHTML = `
-    <table class="board">
-      <colgroup><col class="cg-div"><col class="cg-subj"><col class="cg-auth"><col class="cg-rec"><col class="cg-view"><col class="cg-date"></colgroup>
-      <thead><tr><th>구분</th><th class="th-subj">제목</th><th>글쓴이</th><th>추천</th><th>조회</th><th>날짜</th></tr></thead>
-      <tbody>${NOTICES.map(noticeRow).join('')}${rows}</tbody>
-    </table>`;
-
-  $('#ownCnt').textContent = ownN;
-  renderSide();
-  bindCards();
-}
-
-function noticeRow(n) {
-  return `<tr class="brow notice">
-    <td class="c-div"><span class="tag-notice">공지</span></td>
-    <td class="c-subj"><span class="subj subj-notice">${n.ico} ${n.t}</span><div class="c-sub">${n.d}</div></td>
-    <td class="c-auth">허루프</td><td class="c-rec">–</td><td class="c-view">–</td><td class="c-date">고정</td>
-  </tr>`;
-}
-
-function row(p, bestCut) {
-  const isExt = p.type === 'ext';
-  const opened = S.open === p.id;
-  const best = p.like >= bestCut;
-  const who = isExt ? p.src : p.author;
-  const av = isExt ? '' : `<span class="av av-sm" style="background:${p.ac}">${p.av}</span>`;
-  const v = views(p);
-  return `
-  <tr class="brow ${isExt ? 'ext' : 'own'} ${best ? 'best' : ''} ${opened ? 'open' : ''}" data-id="${p.id}">
-    <td class="c-div"><span class="div ${isExt ? 'div-ext' : ''}">${isExt ? '🔗 ' + p.src : p.cat}</span></td>
-    <td class="c-subj">
-      <a class="subj" data-open="${p.id}">${p.title}</a>${p.cmt ? ` <span class="rcmt">[${p.cmt}]</span>` : ''}${isExt ? ` <span class="tag-ext">링크</span>` : ''}${best ? ` <span class="tag-best">BEST</span>` : ''}
-      <div class="c-sub">${isExt ? '출처 ' + p.host : who} · ${p.time} · 추천 ${p.like} · 조회 ${v}</div>
-    </td>
-    <td class="c-auth">${av}<span class="au-n">${who}</span></td>
-    <td class="c-rec ${best ? 'hot' : ''}">${p.like}</td>
-    <td class="c-view">${v}</td>
-    <td class="c-date">${p.time}</td>
-  </tr>${opened ? detailRow(p, isExt) : ''}`;
-}
-
-function detailRow(p, isExt) {
-  return `<tr class="brow-detail"><td colspan="6"><div class="detail">
-    ${isExt
-      ? `<p class="d-excerpt">${p.excerpt}</p>
-         <a class="outlink" href="javascript:void(0)" onclick="goOut('${p.host}')">🔗 원문은 <span class="host">${p.host}</span> 에서 확인하세요 <span class="arw">→</span></a>`
-      : `<div class="d-body">${p.body}</div>`}
-    <div class="d-foot">
-      <button class="act ${p.liked ? 'on' : ''}" data-like="${p.id}">${p.liked ? '♥' : '♡'} 추천 ${p.like}</button>
-      <button class="act" data-open="${p.id}">💬 댓글 ${p.cmt}</button>
-      <button class="act rep" data-rep="${p.id}">🚩 신고</button>
-    </div>
-    ${comments(p)}
-  </div></td></tr>`;
-}
-
-function renderSide() {
-  const best = POSTS.filter(p => !S.blinded.has(p.id)).slice().sort((a, b) => b.like - a.like).slice(0, 5);
-  const tags = CATS.filter(c => c !== '전체');
-  $('#boardSide').innerHTML = `
-    <div class="wgt">
-      <div class="wgt-h">🔥 실시간 인기글</div>
-      <ol class="best-list">
-        ${best.map((p, i) => `<li><span class="rk ${i < 3 ? 'rk-hot' : ''}">${i + 1}</span><a class="bl-a" data-open="${p.id}">${p.title}</a><span class="bl-n">${p.like}</span></li>`).join('')}
-      </ol>
-    </div>
-    <div class="wgt">
-      <div class="wgt-h"># 인기 태그</div>
-      <div class="tagcloud">${tags.map(t => `<button class="tagc" onclick="setCat('${t}')">#${t}</button>`).join('')}</div>
-    </div>
-    <div class="wgt guide-wgt">
-      <div class="wgt-h">🐳 허루프 이용 안내</div>
-      <ul class="guide-pts">
-        <li><b>여성 전용</b> · 본인확인(성별·연령대)을 거친 회원만 글·댓글을 남깁니다. 이름·연락처는 저장하지 않습니다.</li>
-        <li><b>읽을거리</b> · 외부 글은 제목 + 짧은 발췌 + 원문 링크만. 본문은 복제하지 않습니다.</li>
-        <li><b>긴급 신고 즉시 가림</b> · 신상 노출·성적 괴롭힘·불법촬영물 의심은 검토 전에 먼저 가려집니다.</li>
-      </ul>
-    </div>`;
-}
-
-function comments(p) {
-  const list = COMMENTS[p.id] || [];
-  return `
-  <div class="cmts">
-    ${list.map(c => `
-      <div class="cmt">
-        <span class="av" style="background:${c.c}">${c.av}</span>
-        <div class="cmt-b">
-          <div class="who">${c.who}<span>${c.t}</span></div>
-          <p>${c.txt}</p>
-        </div>
-      </div>`).join('') || '<p class="faint" style="font-size:13px;padding:6px 0">첫 댓글을 남겨 보세요.</p>'}
-    <div class="cmt-write">
-      <input placeholder="${ME.verified ? '따뜻한 댓글을 남겨 주세요' : '댓글을 쓰려면 본인확인이 필요해요'}"
-        ${ME.verified ? '' : 'readonly'} data-cmt="${p.id}">
-      <button class="btn btn-p btn-sm" data-cmtsend="${p.id}">등록</button>
-    </div>
-  </div>`;
-}
-
-function bindCards() {
-  $$('[data-like]').forEach(b => b.onclick = () => {
-    if (!ME.verified) return openGate('verify', '좋아요를 누르려면');
-    const p = POSTS.find(x => x.id === b.dataset.like);
-    p.liked = !p.liked; p.like += p.liked ? 1 : -1;
-    renderFeed();
-  });
-  $$('[data-open]').forEach(b => b.onclick = () => {
-    S.open = S.open === b.dataset.open ? null : b.dataset.open;
-    renderFeed();
-  });
-  $$('[data-rep]').forEach(b => b.onclick = () => openReport(b.dataset.rep));
-  $$('[data-cmt]').forEach(i => i.onclick = () => { if (!ME.verified) openGate('verify', '댓글을 쓰려면'); });
-  $$('[data-cmtsend]').forEach(b => b.onclick = () => {
-    if (!ME.verified) return openGate('verify', '댓글을 쓰려면');
-    const inp = $(`[data-cmt="${b.dataset.cmtsend}"]`);
-    const v = inp.value.trim();
-    if (!v) return toast('댓글 내용을 입력해 주세요', 'err');
-    const id = b.dataset.cmtsend;
-    (COMMENTS[id] = COMMENTS[id] || []).push({ who: ME.nick, av: ME.av, c: ME.color, txt: v, t: '방금' });
-    POSTS.find(p => p.id === id).cmt++;
-    renderFeed();
-    toast('💬 댓글이 등록되었습니다', 'ok');
-  });
-}
-
-function goOut(host) {
-  toast(`🔗 <b>${host}</b> 원문으로 이동합니다<br><span style="font-size:11.5px;opacity:.85">본문을 복제하지 않고 링크로 연결합니다 (저작권 대응)</span>`);
-}
-
-/* ============================================================
-   본인확인 게이트 (핵심 제안)
-   ============================================================ */
-function openGate(kind, why = '') {
-  S.gate = kind; S.gateStep = 1; S.gateWhy = why;
-  renderGate();
-  $('#gate').classList.add('show');
-}
-function closeGate() { $('#gate').classList.remove('show'); }
-
-function renderGate() {
-  const box = $('#gateBody');
-  if (S.gate === 'write' && !ME.verified) { S.gate = 'verify'; S.gateWhy = '글을 쓰려면'; }
-
-  if (S.gate === 'verify') {
-    if (S.gateStep === 1) {
-      box.innerHTML = `
-        <h2>${S.gateWhy} 본인확인이 필요해요</h2>
-        <p class="sub">허루프는 <b>여성만 참여하는 공간</b>입니다.<br>
-          이 확인이 있어야 서로 안심하고 이야기할 수 있어요.</p>
-        <div class="steps"><span class="step on"></span><span class="step"></span><span class="step"></span></div>
-
-        <div class="gate-note" style="margin-top:18px">
-          🔒 <b>수집 항목</b> — 성별, 생년(연령대)만 확인하고 <b>이름·연락처는 저장하지 않습니다.</b><br>
-          확인 결과는 <b>가입 여부 판단에만</b> 쓰이며, 프로필에는 닉네임만 표시됩니다.
-        </div>
-
-        <label class="check-row" style="margin-top:16px">
-          <input type="checkbox" id="ag1">
-          <span><b>본인확인 서비스 이용</b>에 동의합니다 (성별·연령대 확인 목적)</span>
-        </label>
-        <label class="check-row">
-          <input type="checkbox" id="ag2">
-          <span><b>커뮤니티 이용규칙</b>에 동의합니다 — 신상 노출, 성적 괴롭힘, 캡처 유출은 즉시 이용 정지됩니다</span>
-        </label>
-
-        <button class="btn btn-p btn-full" style="margin-top:8px" onclick="gateNext()">동의하고 본인확인</button>
-        <button class="btn btn-l btn-full" style="margin-top:8px;height:42px;font-size:14px" onclick="closeGate()">나중에 하기</button>`;
-    } else if (S.gateStep === 2) {
-      box.innerHTML = `
-        <h2>휴대폰 본인확인</h2>
-        <p class="sub">통신사 본인확인 서비스로 확인합니다.</p>
-        <div class="steps"><span class="step on"></span><span class="step on"></span><span class="step"></span></div>
-
-        <div class="pass-box" style="margin-top:18px">
-          <div class="pass-logo">PASS</div>
-          <b>통신사 인증 앱으로 이동합니다</b>
-          <p>이름·생년월일·성별을 통신사가 확인해<br>결과만 허루프로 전달합니다</p>
-        </div>
-
-        <div class="fld">
-          <label>닉네임 <span class="req">*</span></label>
-          <input type="text" id="gNick" placeholder="커뮤니티에서 쓸 이름" maxlength="12" value="루프01">
-          <p class="hint">실명은 쓰지 마세요. 다른 회원에게는 닉네임만 보입니다.</p>
-        </div>
-
-        <button class="btn btn-p btn-full" onclick="gateNext()">본인확인 진행</button>`;
-    } else {
-      box.innerHTML = `
-        <div class="done-ico">✓</div>
-        <h2 style="text-align:center">확인이 완료되었어요</h2>
-        <p class="sub" style="text-align:center">이제 글을 쓰고 댓글을 남길 수 있습니다.</p>
-        <div class="steps"><span class="step on"></span><span class="step on"></span><span class="step on"></span></div>
-
-        <div class="gate-note" style="margin-top:20px">
-          ✓ 저장된 정보 — <b>성별(여성), 연령대(30대), 닉네임</b><br>
-          ✕ 저장하지 않은 정보 — 이름, 생년월일, 휴대폰 번호, 통신사
-        </div>
-
-        <button class="btn btn-p btn-full" style="margin-top:16px" onclick="closeGate();renderMe();renderFeed()">시작하기</button>`;
-    }
+  function toast(msg, warn) {
+    const el = document.createElement('div');
+    el.className = 'toast' + (warn ? ' warn' : '');
+    el.textContent = msg;
+    $('#toasts').appendChild(el);
+    setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 3200);
+    setTimeout(() => el.remove(), 3600);
   }
 
-  else if (S.gate === 'write') {
-    box.innerHTML = `
-      <h2>글쓰기</h2>
-      <p class="sub">여기서 나눈 이야기는 회원에게만 보여요.</p>
-      <div class="fld" style="margin-top:16px">
-        <label>카테고리</label>
-        <select id="wCat">${CATS.filter(c => c !== '전체').map(c => `<option>${c}</option>`).join('')}</select>
-      </div>
-      <div class="fld">
-        <label>제목 <span class="req">*</span></label>
-        <input type="text" id="wTitle" placeholder="어떤 이야기인가요?">
-      </div>
-      <div class="fld">
-        <label>내용 <span class="req">*</span></label>
-        <textarea class="write-area" id="wBody" placeholder="편하게 적어 주세요"></textarea>
-      </div>
-      <div class="gate-note" style="background:var(--warn-soft);border-color:#F3E0B8;color:#8A5A0B">
-        ⚠️ 실명·주소·직장처럼 <b>본인을 특정할 수 있는 정보</b>는 적지 마세요. 다른 회원의 신상도 마찬가지입니다.
-      </div>
-      <button class="btn btn-p btn-full" style="margin-top:14px" onclick="submitPost()">올리기</button>`;
+  function go(v) {
+    $$('.view').forEach(x => x.classList.remove('on'));
+    $('#view-' + v).classList.add('on');
+    $$('#gnb button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    window.scrollTo({ top: 0 });
   }
 
-  else if (S.gate === 'report') {
-    box.innerHTML = `
-      <h2>신고하기</h2>
-      <p class="sub">확인 후 조치하고 결과를 알려 드립니다.</p>
-      <div class="rep-opts" style="margin-top:16px">
-        ${REPORT_REASONS.map(r => `
-          <label class="rep-opt ${r.urgent ? 'urgent' : ''} ${S.repReason === r.id ? 'on' : ''}" onclick="pickReason('${r.id}')">
-            <input type="radio" name="rep" ${S.repReason === r.id ? 'checked' : ''}>
-            <span>${r.label}${r.urgent ? ' <b style="color:var(--bad);font-size:11px">긴급</b>' : ''}</span>
-          </label>`).join('')}
-      </div>
-      <div class="gate-note" style="margin-top:14px">
-        🛡 <b>긴급 사유</b>(개인정보 노출·성적 괴롭힘·불법촬영물 의심)로 신고하면
-        <b>검토 전에 먼저 가려집니다.</b> 피해가 커지기 전에 멈추는 것이 우선이기 때문입니다.
-      </div>
-      <button class="btn btn-p btn-full" style="margin-top:14px" onclick="submitReport()">신고 접수</button>`;
+  /* ══ 노출 방식 4단 (R3) ══ */
+  let mode = 'excerpt';
+  function renderExpose() {
+    const m = HL.EXPOSE_MODES[mode];
+    $('#exposeRisk').innerHTML = `법적 위험 <span class="risk-tag ${m.risk}">${m.riskLabel}</span>`;
+    $('#exposeNote').innerHTML = m.note;
+    $('#exposeLaw').innerHTML = m.law.map(([k, v]) => `<span>· ${esc(k)}: <b>${esc(v)}</b></span>`).join('');
   }
-}
-
-function gateNext() {
-  if (S.gateStep === 1) {
-    if (!$('#ag1').checked || !$('#ag2').checked) return toast('두 항목 모두 동의가 필요합니다', 'err');
-    S.gateStep = 2; renderGate();
-  } else if (S.gateStep === 2) {
-    const n = $('#gNick').value.trim();
-    if (!n) return toast('닉네임을 입력해 주세요', 'err');
-    ME.nick = n; ME.av = n[0];
-    toast('📱 통신사 인증 창이 열립니다 (데모에서는 즉시 완료)');
-    setTimeout(() => {
-      ME.verified = true;
-      S.gateStep = 3; renderGate();
-    }, 700);
+  function crawledBody(c) {
+    if (mode === 'link') return `<a class="outlink">↗ 원문에서 읽기 — ${esc(c.src)}</a>`;
+    if (mode === 'excerpt') return `${esc(c.excerpt)}… <a class="outlink">↗ 원문 계속 읽기</a>`;
+    if (mode === 'summary') return `<b style="color:var(--ink2)">[AI 요약]</b> ${esc(c.summary)}<br><span class="summary-warn">⚠ 요약 완성도에 비례해 원문 대체 위험 상승</span>`;
+    return `${esc(c.full)}`;
   }
-}
 
-function submitPost() {
-  const t = $('#wTitle').value.trim(), b = $('#wBody').value.trim();
-  if (!t) return toast('제목을 입력해 주세요', 'err');
-  if (!b) return toast('내용을 입력해 주세요', 'err');
-  POSTS.unshift({
-    id: 'p' + Date.now(), type: 'own', src: null, cat: $('#wCat').value,
-    author: ME.nick, av: ME.av, ac: ME.color,
-    title: t, body: b, time: '방금', like: 0, cmt: 0, liked: false,
-  });
-  closeGate(); renderFeed();
-  toast('✅ 글이 올라갔습니다', 'ok');
-}
-
-function openReport(id) {
-  if (!ME.verified) return openGate('verify', '신고하려면');
-  S.repTarget = id; S.repReason = null;
-  openGate('report');
-}
-function pickReason(rid) { S.repReason = rid; renderGate(); }
-
-function submitReport() {
-  if (!S.repReason) return toast('신고 사유를 선택해 주세요', 'err');
-  const r = REPORT_REASONS.find(x => x.id === S.repReason);
-  closeGate();
-  if (r.urgent) {
-    S.blinded.add(S.repTarget);
-    renderFeed();
-    toast(`🛡 <b>${r.label}</b> 신고 접수 — <b>즉시 가림 처리</b>했습니다<br><span style="font-size:11.5px;opacity:.85">운영자 검토 후 결과를 알려 드립니다</span>`, 'warn');
-  } else {
-    toast(`신고가 접수되었습니다 — ${r.label}`, 'ok');
-  }
-}
-
-/* ============================================================
-   상단 · 탭
-   ============================================================ */
-function renderMe() {
-  $('#meBox').innerHTML = ME.verified
-    ? `<span class="me"><span class="av" style="background:${ME.color}">${ME.av}</span>${ME.nick}
-         <span class="verified">✓ 확인됨</span></span>`
-    : `<button class="btn btn-l btn-sm" onclick="openGate('verify','시작하려면')">본인확인</button>`;
-}
-
-function setView(v) {
-  S.view = v; S.open = null;
-  $$('.hd-nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  renderFeed();
-}
-function setCat(c) {
-  S.cat = c; S.open = null;
-  $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.c === c));
-  renderFeed();
-}
-function setSort(s) {
-  S.sort = s;
-  $$('#sortSeg .so').forEach(b => b.classList.toggle('on', b.dataset.s === s));
-  renderFeed();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  $('#tabs').innerHTML = CATS.map(c =>
-    `<button class="tab ${c === '전체' ? 'on' : ''}" data-c="${c}" onclick="setCat('${c}')">${c}</button>`).join('');
-  $$('.hd-nav button').forEach(b => b.onclick = () => setView(b.dataset.v));
-  $$('#sortSeg .so').forEach(b => b.onclick = () => setSort(b.dataset.s));
-  $('#writeBtn').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
-
-  // 주제 카드 → 게시판 카테고리 바로가기 (그래픽 단락과 게시판 연결)
-  const goBoard = cat => {
-    setCat(cat);
-    const b = $('.board-wrap');
-    if (b) b.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-  $$('.topic[data-cat]').forEach(el => {
-    el.onclick = () => goBoard(el.dataset.cat);
-    el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goBoard(el.dataset.cat); } };
-  });
-  $('#gate').addEventListener('click', e => { if (e.target.id === 'gate') closeGate(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGate(); });
-  $('#fab').onclick = () => ME.verified ? openGate('write') : openGate('verify', '글을 쓰려면');
-  renderMe();
-  renderFeed();
-});
-
-/* ============================================================
-   지침 섹션: 텍스트 애니메이션 · 패럴랙스 · 마우스 반응 틸트 · 리빌
-   (독립 IIFE — 기존 .rv/.in 리빌과 분리)
-   ============================================================ */
-(function () {
-  var qa = function (s, r) { return [].slice.call((r || document).querySelectorAll(s)); };
-  var reduceM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  qa('[data-split]').forEach(function (el) {
-    var words = el.textContent.trim().split(/\s+/);
-    el.innerHTML = words.map(function (w, i) {
-      return '<span class="w"><i style="transition-delay:' + Math.min(i * 55, 480) + 'ms">' + w + '</i></span>';
-    }).join(' ');
-  });
-
-  var parallaxEls = qa('[data-parallax]');
-  var run = function () {
-    var vh = window.innerHeight || document.documentElement.clientHeight;
-    qa('.g-reveal:not(.is-visible), .mask:not(.is-visible), .words:not(.is-visible)').forEach(function (el) {
-      var r = el.getBoundingClientRect();
-      if (r.top < vh * 0.92 && r.bottom > 0) el.classList.add('is-visible');
+  /* ══ 피드 ══ */
+  function renderFeed() {
+    const cards = [];
+    // 회원 글 + 크롤링 카드 교차 배치
+    const seq = [HL.CRAWLED[0], HL.MEMBER[0], HL.CRAWLED[1], HL.CRAWLED[2], HL.MEMBER[1], HL.CRAWLED[3]];
+    seq.forEach(item => {
+      if (item.src) { // 크롤링 카드
+        if (!item.alive) {
+          cards.push(`<div class="fcard crawled">
+            <div class="who"><span class="avt" style="background:var(--line);color:var(--ink3)">↗</span>
+              <div><div class="nick">${esc(item.src)}</div><div class="sub1">수집 콘텐츠 · ${esc(item.time)}</div></div></div>
+            <div class="img-wrap"><div class="img" style="display:grid;place-items:center;color:var(--ink4);font-size:13px">원문 삭제 감지(404)<br>— 카드 비공개 처리</div>
+              <span class="chip err src-badge">원문 삭제 · 댓글 보존</span></div>
+            <div class="body" style="color:var(--ink4)">원문이 삭제되어 콘텐츠를 더 이상 노출하지 않습니다. 이 카드에 달린 우리 커뮤니티의 댓글 ${item.cmts}개는 보존됩니다.</div>
+            <div class="acts"><button>🤍 ${item.likes}</button><button>💬 ${item.cmts}</button><button>🔖</button></div>
+          </div>`);
+          return;
+        }
+        cards.push(`<div class="fcard crawled" data-id="${item.id}">
+          <div class="who"><span class="avt" style="background:var(--info);">↗</span>
+            <div><div class="nick">${esc(item.src)}</div><div class="sub1">수집 콘텐츠 · ${esc(item.time)} · noindex</div></div></div>
+          <div class="img-wrap">${mode === 'link' ? '' : `<img class="img" src="${item.img}" alt="">`}<span class="chip info src-badge">출처 ${esc(item.src)}</span></div>
+          <div class="body"><b style="color:var(--ink1)">${esc(item.title)}</b><br>${crawledBody(item)}</div>
+          <div class="acts"><button>🤍 ${item.likes}</button><button data-open="${item.id}">💬 ${item.cmts}</button><button>🔖 스크랩</button></div>
+        </div>`);
+      } else { // 회원 글
+        cards.push(`<div class="fcard" data-id="${item.id}">
+          <div class="who"><span class="avt">${esc(item.nick[0])}</span>
+            <div><div class="nick">${esc(item.nick)}</div><div class="sub1">${esc(item.sub)}</div></div>
+            <button class="btn out" style="margin-left:auto;height:30px;font-size:12px" onclick="APP.toast('팔로우 — 회원 글은 검색 색인 대상입니다 (자체 콘텐츠)')">팔로우</button></div>
+          <div class="img-wrap"><img class="img" src="${item.img}" alt=""><span class="chip rose src-badge">회원 글 · index</span></div>
+          <div class="body">${esc(item.body)}</div>
+          <div class="acts"><button>🤍 ${item.likes}</button><button data-open="${item.id}">💬 ${item.cmts}</button><button>🔖 스크랩</button></div>
+          <div class="cmt"><span class="n">${esc(item.topCmt[0])}</span><span>${esc(item.topCmt[1])}</span></div>
+        </div>`);
+      }
     });
-    parallaxEls.forEach(function (el) {
-      var wrap = el.closest('.hlstate-bg') || el.parentElement;
-      var r = wrap.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) return;
-      var prog = (r.top + r.height / 2 - vh / 2) / vh;
-      el.style.transform = 'translateY(' + (-prog * 58).toFixed(1) + 'px) scale(1.16)';
-    });
-  };
-  window.addEventListener('scroll', run, { passive: true });
-  window.addEventListener('resize', run);
-  window.addEventListener('load', run);
-  run();
-
-  if (!reduceM && window.matchMedia('(hover:hover)').matches) {
-    qa('.topic').forEach(function (el) {
-      el.addEventListener('pointermove', function (e) {
-        var r = el.getBoundingClientRect();
-        var px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
-        el.classList.add('tilting');
-        el.style.setProperty('--ry', ((px - .5) * 9) + 'deg');
-        el.style.setProperty('--rx', ((.5 - py) * 9) + 'deg');
-        el.style.setProperty('--mx', (px * 100) + '%');
-        el.style.setProperty('--my', (py * 100) + '%');
-      });
-      el.addEventListener('pointerleave', function () {
-        el.classList.remove('tilting');
-        el.style.setProperty('--ry', '0deg'); el.style.setProperty('--rx', '0deg');
-      });
-    });
+    $('#feedGrid').innerHTML = cards.join('');
+    $$('#feedGrid [data-open]').forEach(b => b.onclick = () => { openDetail(b.dataset.open); });
+    $$('#feedGrid .fcard[data-id]').forEach(c => c.onclick = e => { if (!e.target.closest('button')) openDetail(c.dataset.id); });
   }
+  $$('#exposeSeg button').forEach(b => b.onclick = () => {
+    mode = b.dataset.m;
+    $$('#exposeSeg button').forEach(x => x.classList.toggle('on', x === b));
+    renderExpose(); renderFeed();
+    toast({link:'링크만 — 가장 안전, 체류 최소', excerpt:'발췌+링크 — 대법원 인용 4요건에 가장 안전한 기본값', summary:'AI 요약 — 잘할수록 원문 대체 위험이 올라갑니다', full:'전문 게재 — 건당 배상 판례가 있는 구간입니다 (금지 권고)'}[mode], mode === 'full');
+  });
+
+  /* ══ 상세 ══ */
+  function openDetail(id) {
+    const c = HL.CRAWLED.find(x => x.id === id);
+    const m = HL.MEMBER.find(x => x.id === id);
+    const item = c || m || HL.MEMBER[0];
+    const isCrawled = !!c;
+    $('#detailWrap').innerHTML = `
+      <div class="body-col">
+        ${isCrawled
+          ? `<div style="display:flex;gap:8px;margin-bottom:12px"><span class="chip info">수집 콘텐츠 — 출처 ${esc(item.src)}</span><span class="chip mute">noindex — 검색 미색인</span></div>
+             <h1>${esc(item.title)}</h1>
+             <div class="meta"><span>${esc(item.time)}</span><span>노출 방식: ${HL.EXPOSE_MODES[mode].label}</span></div>
+             <div class="origin-box ${item.alive ? '' : 'dead'}">
+               ${item.alive
+                 ? `<b>원문 안내</b> — 이 카드는 ${esc(item.src)}의 콘텐츠를 ${HL.EXPOSE_MODES[mode].label} 방식으로 소개합니다. 전체 내용은 원문에서 확인하세요. <a class="outlink" style="color:var(--info);font-weight:700">↗ ${esc(item.origin)}</a>`
+                 : `<b>원문 삭제 감지</b> — 크롤러가 404를 확인해 본문 노출을 중단했습니다. 아래 우리 커뮤니티 댓글은 보존됩니다.`}
+             </div>
+             <div class="content">${item.alive ? crawledBody(item) : '<p style="color:var(--ink4)">(본문 비공개)</p>'}</div>`
+          : `<div style="display:flex;gap:8px;margin-bottom:12px"><span class="chip rose">회원 글</span><span class="chip ok">검색 색인 대상</span></div>
+             <div class="who" style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+               <span class="avt" style="width:36px;height:36px;border-radius:100%;background:linear-gradient(135deg,var(--primary),#f0a5c0);color:#fff;display:grid;place-items:center;font-weight:700">${esc(item.nick[0])}</span>
+               <div><div style="font-weight:700;color:var(--ink1)">${esc(item.nick)}</div><div style="font-size:12px;color:var(--ink3)">${esc(item.sub)} · ${esc(item.time)}</div></div></div>
+             <img src="${item.img}" alt="" style="width:100%;border-radius:0;display:block;margin-bottom:16px">
+             <div class="content"><p>${esc(item.body)}</p></div>`}
+        <div class="report-row">
+          <button onclick="APP.toast('신고 접수 — 유형(불법촬영물/저작권/혐오·비방) 선택 후 관리자 큐 적재. 불법촬영물 의심은 최우선 처리됩니다')">신고하기</button>
+          <button onclick="APP.toast('이 작성자의 글이 더 이상 보이지 않습니다 — 차단 목록에서 해제 가능', true)">차단</button>
+        </div>
+        <div class="cmt-box">
+          <div style="font-size:16px;color:var(--ink1);font-weight:700;margin-bottom:6px">댓글 <span class="mono">${item.cmts || item.cmts === 0 ? item.cmts : 0}</span></div>
+          <div class="cmt-item"><span class="avt">소</span><div><span class="n">소소살림</span> <span class="ts">2026-08-13 10:22:41</span><div class="t">정보 감사해요. 저장해둡니다!</div></div></div>
+          <div class="cmt-item"><span class="avt">달</span><div><span class="n">달빛서재</span> <span class="ts">2026-08-13 09:58:03</span><div class="t">${isCrawled ? '원문도 읽고 왔는데 여기 댓글이 더 유익하네요' : '따라해봐야겠어요'}</div></div></div>
+          <div class="cmt-input"><input id="cmtIn" placeholder="댓글을 남겨보세요 (커뮤니티 가치는 우리 댓글에 쌓입니다)"><button class="btn pri" id="cmtBtn">등록</button></div>
+        </div>
+      </div>
+      <div class="rail">
+        <button onclick="APP.toast('좋아요')">🤍<span class="n">${item.likes}</span></button>
+        <button onclick="document.getElementById('cmtIn').focus()">💬<span class="n">${item.cmts}</span></button>
+        <button onclick="APP.toast('스크랩 — 마이페이지에 저장')">🔖<span class="n">스크랩</span></button>
+        <button onclick="APP.toast('링크 복사')">🔗<span class="n">공유</span></button>
+      </div>`;
+    $('#cmtBtn').onclick = () => {
+      const v = $('#cmtIn').value.trim(); if (!v) return;
+      toast('댓글 등록 — 크롤링 카드의 댓글도 우리 DB에 저장되며 원문 삭제 시에도 보존됩니다');
+      $('#cmtIn').value = '';
+    };
+    go('detail');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    $$('#gnb button').forEach(b => b.onclick = () => { if (b.dataset.v === 'detail') openDetail('c1'); else go(b.dataset.v); });
+    renderExpose(); renderFeed();
+  });
+  return { go, toast };
 })();

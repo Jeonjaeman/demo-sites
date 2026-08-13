@@ -3,50 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>허루프 관리자 — HERLOOP</title>
+<title>HERLOOP 크롤러 관리자 — 1인 운영 백오피스</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%232C2C2B'/><circle cx='50' cy='50' r='22' fill='none' stroke='%23C2557A' stroke-width='7'/><circle cx='50' cy='50' r='7' fill='%23C2557A'/></svg>">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+<style>
+/* MUI Dashboard 템플릿 실측 문법: 사이드바 240 bg #f5f6fa · AppBar 53 · KPI 카드 r8+1px 보더 · Chip h20 tonal */
+.adm{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100vh - 53px);}
+.abar{position:sticky;top:0;z-index:100;height:53px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 20px;gap:16px;}
+.anav{border-right:1px solid var(--line);padding:14px 10px;background:#f5f6fa;}
+.anav button{display:flex;align-items:center;gap:8px;width:100%;height:40px;padding:0 12px;border-radius:var(--r8);text-align:left;font-size:13px;font-weight:500;color:var(--ink2);transition:all .15s var(--ease);margin-bottom:2px;}
+.anav button:hover{background:#ebeef4;}
+.anav button.on{background:var(--primary);color:#fff;font-weight:700;}
+.anav .badge{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:700;background:var(--danger);color:#fff;padding:2px 7px;border-radius:var(--pill);}
+.anav button.on .badge{background:#fff;color:var(--primary);}
+.amain{padding:20px 24px 80px;min-width:0;background:var(--bg);}
+.aview{display:none;} .aview.on{display:block;animation:vIn .3s var(--ease);}
+.atitle{font-size:24px;font-weight:600;line-height:36px;color:#0b0e14;letter-spacing:-.05em;}
+.asub{font-size:13px;color:#47536b;margin:2px 0 16px;max-width:780px;line-height:1.6;}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-bottom:14px;}
+.kpi{background:#fff;border:1px solid rgba(194,201,214,.4);border-radius:var(--r8);padding:16px;}
+.kpi .k{font-size:12px;font-weight:600;color:#47536b;}
+.kpi .v{font-family:var(--mono);font-size:26px;font-weight:700;color:#0b0e14;margin-top:6px;line-height:1.1;}
+.kpi .d{font-size:11.5px;margin-top:6px;}
+.gate-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+.gate-row:last-child{border-bottom:0;}
+.gate-row .sw{appearance:none;width:36px;height:20px;background:#c8ccd6;border-radius:var(--pill);position:relative;cursor:pointer;transition:background .2s;flex:0 0 36px;margin-top:2px;}
+.gate-row .sw::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s var(--ease);}
+.gate-row .sw:checked{background:var(--ok);}
+.gate-row .sw:checked::after{transform:translateX(16px);}
+.gate-row .t{font-size:13.5px;font-weight:700;color:var(--ink1);}
+.gate-row .d{font-size:12px;color:var(--ink3);margin-top:2px;}
+.gate-warn{background:#fff0f0;border:1px solid #fdcece;border-radius:var(--r8);padding:11px 14px;font-size:12.5px;color:var(--danger);font-weight:600;margin-top:12px;display:none;line-height:1.6;}
+.gate-warn.show{display:block;}
+.loglines{font-family:var(--mono);font-size:11.5px;line-height:1.9;background:#0b0e14;color:#c9d4e3;border-radius:var(--r8);padding:14px 16px;max-height:260px;overflow-y:auto;}
+.loglines .ok{color:#7ee2a8;} .loglines .warn{color:#f5d76e;} .loglines .err{color:#ff8d8d;}
+.simrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;}
+.simrow label{font-weight:700;color:var(--ink2);min-width:120px;}
+.simrow input[type=range]{flex:1;min-width:140px;accent-color:var(--primary);}
+.simrow .val{font-family:var(--mono);font-weight:700;color:var(--primary);min-width:88px;}
+.verdict{font-size:12.5px;font-weight:700;padding:10px 14px;border-radius:var(--r8);line-height:1.6;}
+.verdict.ok{background:var(--ok-tint);color:var(--ok);}
+.verdict.bad{background:#fff0f0;color:var(--danger);}
+.ms{display:grid;grid-template-columns:78px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid var(--line);}
+.ms:last-child{border-bottom:0;}
+.ms .d{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--primary);}
+.ms .t{font-size:14px;font-weight:700;color:var(--ink1);}
+.ms .n{font-size:12.5px;color:var(--ink3);margin-top:3px;line-height:1.6;}
+.manual h4{font-size:14px;font-weight:700;color:var(--ink1);margin:16px 0 6px;}
+.manual ol{padding-left:20px;list-style:decimal;font-size:13px;color:var(--ink2);line-height:1.9;}
+.manual .tip{background:var(--info-tint);border-radius:var(--r8);padding:10px 14px;font-size:12.5px;margin-top:8px;line-height:1.6;}
+@media(max-width:900px){.adm{grid-template-columns:1fr;}.anav{display:flex;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px 10px;scrollbar-width:none;}.anav button{width:auto;white-space:nowrap;margin-bottom:0;}.amain{padding:16px 14px 60px;}}
+</style>
 </head>
 <body>
-<div class="adm">
-  <aside class="adm-side">
-    <a class="logo" href="index.html">
-      <span class="logo-mk">◍</span>
-      <span><b>허루프</b><small>ADMIN</small></span>
-    </a>
-    <div class="adm-cap">운영</div>
-    <nav class="adm-nav">
-      <button class="on" data-p="dash"><span>📊</span>대시보드</button>
-      <button data-p="crawl"><span>🤖</span>크롤링 설정</button>
-      <button data-p="reports"><span>🛡</span>신고 처리<span class="n" id="repBadge">2</span></button>
-      <button data-p="members"><span>👤</span>회원 관리</button>
-    </nav>
-    <div class="adm-cap">착수 전 정리</div>
-    <nav class="adm-nav">
-      <button data-p="expose"><span>⚖️</span>노출 방식</button>
-      <button data-p="risks"><span>⚠️</span>검토 항목</button>
-    </nav>
-    <div class="adm-foot">
-      원 공고<br>
-      <a href="공고.txt">공고.txt</a><br><br>
-      <a href="index.html">← 커뮤니티로</a>
-    </div>
-  </aside>
-
-  <main class="adm-main">
-    <div class="adm-top">
-      <h1 id="aTitle">대시보드</h1>
-      <span class="crumb" id="aCrumb"></span>
-      <div class="r"><span class="pill p-brand">본인확인 전용 커뮤니티</span></div>
-    </div>
-    <div class="adm-body" id="admBody"></div>
-  </main>
+<div class="abar">
+  <a class="logo" href="index.html">HER<b>LOOP</b> <span class="mono" style="font-size:10px;color:var(--ink4)">CRAWLER ADMIN</span></a>
+  <div style="flex:1"></div>
+  <a href="index.html" class="btn out">커뮤니티 화면 →</a>
 </div>
 
-<div class="toasts" id="toasts"></div>
+<div class="adm">
+  <nav class="anav" id="anav">
+    <button data-v="crawl" class="on">크롤링 관리</button>
+    <button data-v="delay">딜레이 계산기</button>
+    <button data-v="content">콘텐츠·회원 관리 <span class="badge">3</span></button>
+    <button data-v="policy">정책 판정기</button>
+    <button data-v="plan">일정·매뉴얼</button>
+  </nav>
+  <main class="amain">
 
-<script src="assets/js/data.js"></script>
-<script src="assets/js/admin.js"></script>
+    <!-- ══ 크롤링 관리 (2-1·2-3 + R1·R2) ══ -->
+    <section class="aview on" id="av-crawl">
+      <div class="atitle">크롤링 관리</div>
+      <div class="asub">D+14 「크롤링 스크립트 테스트」 체크포인트에서 이 화면을 그대로 시연합니다. <b>준법 게이트 4종이 전부 켜져야 수집이 시작</b>됩니다 — 대법원 2021도1533은 접근권한을 기술적 보호조치·약관 등 객관적 사정으로 판단합니다.</div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">오늘 수집</div><div class="v" id="kToday">20</div><div class="d" style="color:var(--ok)">신규 20 · 중복 스킵 75</div></div>
+        <div class="kpi"><div class="k">다음 자동 실행</div><div class="v" id="kNext">36:40</div><div class="d" style="color:#47536b">1시간 주기 · 뷰티노트(가상)</div></div>
+        <div class="kpi"><div class="k">본문 원문 보관</div><div class="v" style="color:var(--ok)">0건</div><div class="d" style="color:#47536b">발췌 3줄만 저장 — 건당 배상 리스크 차단 (잡코리아 4.5억 판례)</div></div>
+        <div class="kpi"><div class="k">에러 (24h)</div><div class="v" id="kErr">7</div><div class="d" style="color:var(--warn)">404×3 · 429×2 · 파싱 1 · 403 1</div></div>
+      </div>
+      <div class="panel"><div class="panel-hd"><span>준법 수집 게이트</span><span class="meta">2021도1533 · 4/4 필수</span></div>
+        <div class="panel-bd" id="gateList"></div>
+        <div class="panel-bd" style="padding-top:0">
+          <button class="btn pri" id="runNow">▶ 지금 수집 실행</button>
+          <div class="gate-warn" id="gateWarn"></div>
+        </div></div>
+      <div class="panel"><div class="panel-hd"><span>수집 로그 — 실시간</span><span class="meta">append</span></div>
+        <div class="panel-bd"><div class="loglines" id="logLines"></div></div></div>
+      <div class="panel"><div class="panel-hd"><span>에러 유형별 자동 대응</span><span class="meta">2-3 에러 로그</span></div>
+        <div class="twrap"><table class="tb"><thead><tr><th>유형</th><th>24h</th><th>자동 대응</th></tr></thead><tbody id="errBody"></tbody></table></div></div>
+      <div class="panel"><div class="panel-hd"><span>SEO 색인 정책 (R4)</span><span class="meta">noindex</span></div>
+        <div class="panel-bd">
+          <div class="kv"><span class="k">회원 작성 글</span><span class="v"><span class="chip ok">index</span> 검색 유입의 원천</span></div>
+          <div class="kv"><span class="k">크롤링 카드</span><span class="v"><span class="chip mute">noindex</span> Google 스팸 정책(scaled content) 대응 — 크롤링 콘텐츠로 SEO를 얻는 전략은 성립하지 않습니다</span></div>
+          <div class="kv"><span class="k">사이트맵 포함</span><span class="v mono">회원 글 128건만</span></div>
+        </div></div>
+    </section>
+
+    <!-- ══ 딜레이 계산기 (3-1 × 2-1 충돌 — R5) ══ -->
+    <section class="aview" id="av-delay">
+      <div class="atitle">딜레이 계산기 — 1시간 주기가 성립하는가</div>
+      <div class="asub">공고는 <b>1시간 주기 수집</b>과 <b>딜레이 필수</b>를 동시에 요구합니다. 소·중규모 사이트의 정중한 간격(10~15초)이면 회차당 처리량에 상한이 생깁니다 — 슬라이더를 움직이면 실계산됩니다.</div>
+      <div class="panel"><div class="panel-bd">
+        <div class="simrow"><label>요청 간격</label><input type="range" id="dGap" min="1" max="15" value="10"><span class="val" id="dGapV">10초</span></div>
+        <div class="simrow"><label>동시 연결</label><input type="range" id="dConc" min="1" max="3" value="1"><span class="val" id="dConcV">1</span></div>
+        <div class="simrow"><label>회차당 신규 글(예상)</label><input type="range" id="dNew" min="10" max="600" step="10" value="120"><span class="val" id="dNewV">120건</span></div>
+        <div class="kpis" style="margin-top:14px">
+          <div class="kpi"><div class="k">회차 최대 요청 (60분)</div><div class="v" id="dMax">—</div><div class="d" style="color:#47536b">목록+상세 2단 요청 기준</div></div>
+          <div class="kpi"><div class="k">처리 가능 신규 글</div><div class="v" id="dCap">—</div><div class="d" style="color:#47536b">회차당 상한</div></div>
+          <div class="kpi"><div class="k">예상 소요</div><div class="v" id="dTime">—</div><div class="d" style="color:#47536b">이번 회차 기준</div></div>
+        </div>
+        <div class="verdict" id="dVerdict"></div>
+        <p style="font-size:12px;color:var(--ink3);margin-top:10px;line-height:1.7">robots.txt에 Crawl-delay가 있으면 간격 하한이 그 값으로 잠깁니다(표준 아님 — Google 미준수·Bing 준수). 429/5xx 수신 시 백오프 ×2와 Retry-After를 준수합니다.</p>
+      </div></div>
+    </section>
+
+    <!-- ══ 콘텐츠·회원 (2-3 + R7·R8) ══ -->
+    <section class="aview" id="av-content">
+      <div class="atitle">콘텐츠·회원 관리</div>
+      <div class="asub">숨김/삭제는 자유재량이 아니라 절차입니다 — 권리침해 주장 건은 <b>임시조치 30일</b>(정보통신망법 44조의2, 통지·공시 의무)을 탑니다. 원저작 플랫폼의 삭제 요청도 같은 흐름입니다.</div>
+      <div class="panel"><div class="panel-hd"><span>신고 처리 큐</span><span class="meta">불법촬영물 의심 = 최우선</span></div>
+        <div class="panel-bd" id="reportList"></div></div>
+      <div class="panel"><div class="panel-hd"><span>회원 관리</span><span class="meta">2-3</span></div>
+        <div class="twrap"><table class="tb">
+          <thead><tr><th>닉네임</th><th>가입</th><th>글/댓글</th><th>신고 누적</th><th>상태</th><th>처리</th></tr></thead>
+          <tbody id="userBody"></tbody></table></div></div>
+    </section>
+
+    <!-- ══ 정책 판정기 (R6·R7) ══ -->
+    <section class="aview" id="av-policy">
+      <div class="atitle">정책 판정기</div>
+      <div class="asub">기존 분석의 미결 사항을 계산되는 화면으로 닫았습니다.</div>
+      <div class="panel"><div class="panel-hd"><span>불법촬영물 사전조치 의무 판정 (2026.7.1 이미지 확대 시행)</span><span class="meta">r6</span></div>
+        <div class="panel-bd">
+          <div class="simrow"><label>연 매출</label><input type="range" id="pRev" min="0" max="50" value="2"><span class="val" id="pRevV">2억</span></div>
+          <div class="simrow"><label>일평균 이용자</label><input type="range" id="pUsr" min="0" max="30" value="1"><span class="val" id="pUsrV">1만 명</span></div>
+          <div class="verdict" id="pVerdict"></div>
+          <p style="font-size:12px;color:var(--ink3);margin-top:8px">기준: 매출 10억 이상 또는 일평균 10만 명 이상(약 80개사) · 2026.12.31까지 계도기간. 미만이어도 신고 접수·삭제 체계는 필수(이 화면의 신고 큐).</p>
+        </div></div>
+      <div class="panel"><div class="panel-hd"><span>가입 정책 3안 비교 (R7 — 인권위 의견표명 리스크)</span><span class="meta">전환 시뮬</span></div>
+        <div class="panel-bd">
+          <div class="seg" id="joinSeg">
+            <button data-j="gate">① 전면 성별 게이트</button>
+            <button data-j="open">② 게이트 없음+신고 강화</button>
+            <button data-j="badge" class="on">③ 선택적 인증 배지 (권고)</button>
+          </div>
+          <div id="joinOut" style="margin-top:14px"></div>
+        </div></div>
+    </section>
+
+    <!-- ══ 일정·매뉴얼 (신규 [주요 일정]·[산출물] 대응) ══ -->
+    <section class="aview" id="av-plan">
+      <div class="atitle">마일스톤 · 운영 매뉴얼</div>
+      <div class="asub">재등록 공고에 새로 들어온 두 블록에 대한 답 — <b>일정은 체크포인트별 산출물</b>로, <b>매뉴얼은 별도 PDF가 아니라 화면 안</b>에. 담당자 1인이 화면을 떠나지 않고 운영할 수 있어야 합니다.</div>
+      <div class="panel"><div class="panel-hd"><span>마일스톤 (공고 [주요 일정] 그대로)</span><span class="meta">45일</span></div>
+        <div class="panel-bd" id="msList"></div></div>
+      <div class="panel"><div class="panel-hd"><span>운영 매뉴얼 — 화면 내장 (공고 [산출물] 대응)</span><span class="meta">1인 운영</span></div>
+        <div class="panel-bd manual">
+          <h4>1. 크롤러가 멈췄을 때</h4>
+          <ol><li>「크롤링 관리」에서 마지막 로그 확인 — 403이면 대상 정책 변경(협의 필요), 429면 자동 백오프 대기</li><li>준법 게이트 4종이 전부 켜져 있는지 확인 — 하나라도 꺼지면 수집이 서지 않습니다</li><li>[지금 수집 실행]으로 수동 1회 — 로그에 신규/중복이 찍히면 정상</li></ol>
+          <h4>2. 새 대상 사이트를 추가할 때</h4>
+          <ol><li>robots.txt를 먼저 확인(자동) — Disallow 경로는 수집에서 제외됩니다</li><li>딜레이 계산기에서 간격을 정하고 1시간 주기 성립 여부 확인 — 불가면 증분 수집으로</li><li>첫 회차는 10건 시범 수집 후 파싱 결과 검수</li></ol>
+          <h4>3. 원저작자가 삭제를 요청했을 때</h4>
+          <ol><li>신고 큐의 「저작권(제3자)」 유형으로 접수 — 즉시 카드 비공개(임시조치)</li><li>30일 카운트다운 동안 통지·공시가 자동 발송됩니다</li><li>만료 시 재게시/영구삭제를 선택 — 처리 이력이 방어 근거로 남습니다</li></ol>
+          <div class="tip">💡 이 매뉴얼은 관리자 화면 안에 있습니다 — 소스 코드와 함께 인수되며, 문구 수정도 관리자가 직접 할 수 있는 구조로 구현합니다.</div>
+        </div></div>
+    </section>
+
+  </main>
+</div>
+<footer class="ftr"><div class="shell"><b>HERLOOP 크롤러 관리자</b> — 데모 · 전 수치·플랫폼 가상</div></footer>
+<div class="toasts" id="toasts"></div>
+<script src="assets/js/data.js?v=2"></script>
+<script src="assets/js/admin.js?v=2"></script>
 </body>
 </html>
