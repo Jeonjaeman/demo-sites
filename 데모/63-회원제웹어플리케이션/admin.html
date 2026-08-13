@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>INCIRCLE 관리자 — 백오피스 (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+<style>
+/* 관리자 전용 — 절제 모션(강도표: 약) */
+body{background:var(--bg-soft)}
+.adm{max-width:var(--inner);margin:0 auto;display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding:24px 0 80px;align-items:start}
+.adm>main{min-width:0}
+.anav{position:sticky;top:84px;display:flex;flex-direction:column;gap:2px}
+.anav button{display:flex;align-items:center;gap:8px;text-align:left;font-size:14px;font-weight:600;letter-spacing:-.02em;
+  color:var(--ink-sub);padding:10px 12px;border-radius:var(--r);transition:background var(--t1) var(--ease),color var(--t1) var(--ease)}
+.anav button:hover{background:#eef0f3}
+.anav button.on{background:var(--ink-strong);color:#fff;font-weight:700}
+.anav .abadge{margin-left:auto;font-size:11px;font-weight:800;background:var(--danger);color:#fff;border-radius:var(--pill);padding:1px 7px}
+.apanel{display:none}.apanel.on{display:block}
+.acard{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:20px 22px;margin-bottom:16px}
+.acard>h3{font-size:15px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
+.acard>.asub{font-size:13px;color:var(--ink-sub);line-height:1.6;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.kpi span{font-size:12px;font-weight:700;color:var(--ink-muted)}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.kpi b.warn{color:var(--warn)} .kpi b.dang{color:var(--danger)} .kpi b.ok{color:var(--success)}
+.kpi .ksub{font-size:11px;color:var(--ink-muted);margin-top:2px;display:block}
+.atable{width:100%;border-collapse:collapse;font-size:13px}
+.atable th{text-align:left;font-size:12px;font-weight:700;color:var(--ink-muted);padding:8px 10px;border-bottom:1px solid var(--line-strong)}
+.atable td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+.atable tr:hover td{background:var(--bg-soft)}
+.pillb{display:inline-flex;font-size:11px;font-weight:700;border-radius:var(--pill);padding:3px 9px}
+.pillb.warn{background:var(--warn-soft);color:var(--warn)} .pillb.ok{background:var(--success-soft);color:var(--success)}
+.pillb.dang{background:var(--danger-soft);color:var(--danger)} .pillb.mut{background:var(--bg-soft);color:var(--ink-sub)}
+.sbtn{font-size:12px;font-weight:700;padding:6px 12px;border-radius:var(--r);border:1px solid var(--line-strong);color:var(--ink-sub);
+  transition:background var(--t1) var(--ease),color var(--t1) var(--ease),border-color var(--t1) var(--ease)}
+.sbtn:hover{border-color:var(--ink-muted)}
+.sbtn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.sbtn.pri:hover{background:#0d6fdb}
+.sbtn.dang{color:var(--danger);border-color:#eab8b8}
+.sbtn.dang:hover{background:var(--danger-soft)}
+.sbtn:disabled{opacity:.45;cursor:not-allowed}
+/* 권한 매트릭스 */
+.matrix{display:grid;grid-template-columns:110px repeat(4,1fr);gap:0;border:1px solid var(--line-strong);border-radius:8px;overflow:hidden;font-size:12px}
+.matrix .mh{background:var(--bg-soft);font-weight:700;color:var(--ink-sub);padding:9px 10px;border-bottom:1px solid var(--line-strong)}
+.matrix .mb{padding:8px 10px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);display:flex;align-items:center;gap:6px}
+.matrix .mname{font-weight:700;border-left:0;color:var(--ink-strong)}
+.matrix select{font-family:inherit;font-size:12px;font-weight:600;padding:4px 6px;border:1px solid var(--line-strong);border-radius:var(--r);background:var(--bg)}
+.mpreview{margin-top:14px;background:var(--bg-soft);border-radius:8px;padding:14px 16px}
+.mpreview h4{font-size:12px;font-weight:700;color:var(--ink-muted);margin-bottom:8px}
+.mpreview .brow{display:flex;gap:6px;flex-wrap:wrap}
+.mpreview .bchip{font-size:12px;font-weight:700;padding:5px 12px;border-radius:var(--pill);background:var(--bg);border:1px solid var(--line-strong)}
+.mpreview .bchip.off{opacity:.35;text-decoration:line-through}
+/* 신고 상태머신 */
+.stages{display:flex;gap:0;margin:10px 0 4px}
+.stage{flex:1;text-align:center;font-size:11px;font-weight:700;color:var(--ink-muted);position:relative;padding-top:16px}
+.stage::before{content:"";position:absolute;top:4px;left:calc(50% - 4px);width:8px;height:8px;border-radius:50%;background:var(--line-strong)}
+.stage::after{content:"";position:absolute;top:7px;left:calc(50% + 6px);right:calc(-50% + 6px);height:2px;background:var(--line-strong)}
+.stage:last-child::after{display:none}
+.stage.done{color:var(--success)} .stage.done::before{background:var(--success)}
+.stage.now{color:var(--accent)} .stage.now::before{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dd{font-size:12px;font-weight:800;color:var(--warn)}
+.dd.urgent{color:var(--danger)}
+/* 진단·시뮬 */
+.simrow{display:flex;gap:20px;flex-wrap:wrap;align-items:end;margin-bottom:14px}
+.simrow label{font-size:12px;font-weight:700;color:var(--ink-sub)}
+.simrow input[type=range]{width:180px;display:block;margin-top:6px;accent-color:var(--accent)}
+.simrow output{font-size:13px;font-weight:800;color:var(--ink-strong)}
+.bars{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.bar{display:grid;grid-template-columns:190px 1fr 86px;gap:12px;align-items:center;font-size:13px}
+.bar .bl{font-weight:600;color:var(--ink-sub)}
+.bar .bt{height:22px;background:var(--bg-soft);border-radius:var(--r);overflow:hidden}
+.bar .bt i{display:block;height:100%;border-radius:var(--r);width:0;transition:width var(--t3) var(--ease);background:var(--accent)}
+.bar.bad .bt i{background:var(--danger)}
+.bar .bv{font-weight:800;text-align:right;font-variant-numeric:tabular-nums}
+.codepair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.codepair .rls-sql{font-size:11.5px}
+.cp-head{font-size:12px;font-weight:800;margin-bottom:6px}
+.cp-head.bad{color:var(--danger)} .cp-head.good{color:var(--success)}
+/* 자가진단 */
+.audit{display:flex;flex-direction:column;gap:8px}
+.aitem{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.aitem .arow{display:flex;align-items:center;gap:10px;font-size:13px}
+.aitem .arow b{flex:1;font-weight:700}
+.aitem .fix{display:none;margin-top:10px;font-size:12px;color:var(--ink-sub);line-height:1.6;border-top:1px dashed var(--line-strong);padding-top:8px}
+.aitem.openfix .fix{display:block}
+.score-ring{font-size:34px;font-weight:800;letter-spacing:-.02em}
+/* 토글 스위치 */
+.sw{position:relative;width:40px;height:22px;flex:none;cursor:pointer}
+.sw input{opacity:0;width:0;height:0}
+.sw i{position:absolute;inset:0;background:var(--line-strong);border-radius:var(--pill);transition:background var(--t1) var(--ease)}
+.sw i::before{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform var(--t1) var(--ease)}
+.sw input:checked+i{background:var(--success)}
+.sw input:checked+i::before{transform:translateX(18px)}
+/* 로그 */
+.logf{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.api-panel{background:#111318;color:#c9d4e3;border-radius:8px;padding:14px 16px;font-family:Consolas,monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;overflow-x:auto}
+.api-panel .hl{color:#ff9d9d}
+.api-panel .ok{color:#8fd48f}
+.tracein{display:flex;gap:8px;margin-bottom:12px}
+.tracein input{flex:1;font-family:Consolas,monospace;font-size:13px;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--r)}
+.manual{font-size:13px;line-height:1.75;color:var(--ink-sub)}
+.manual h4{font-size:13px;font-weight:800;color:var(--ink-strong);margin:14px 0 4px}
+.manual ol{padding-left:18px}
+@media (max-width:1080px){ .adm{grid-template-columns:1fr} .anav{position:static;flex-direction:row;overflow-x:auto} .anav button{white-space:nowrap} .kpis{grid-template-columns:1fr 1fr} .codepair{grid-template-columns:1fr} .matrix{grid-template-columns:96px repeat(4,1fr);font-size:11px} #maskWrap{grid-template-columns:1fr!important} }
+@media (max-width:720px){ .kpis{grid-template-columns:1fr 1fr} .bar{grid-template-columns:120px 1fr 70px}
+  .acard{overflow-x:auto} /* 표·매트릭스·상태머신은 카드 내부 스크롤 — 페이지 가로 스크롤 금지 */
+  .matrix{grid-template-columns:88px repeat(4,minmax(84px,1fr));min-width:540px}
+  .atable{min-width:520px} .stages{min-width:420px} }
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="gnb-in">
+    <a class="logo" href="./">IN<b>CIRCLE</b> <span style="font-size:13px;font-weight:600;color:var(--ink-muted)">관리자</span></a>
+    <span class="gnb-note">demo — 전 데이터 가상 · 개인정보는 마스킹 뷰 경유</span>
+    <span class="gnb-sp"></span>
+    <a class="gnb-link" href="./">← 커뮤니티</a>
+  </div>
+</header>
+
+<div class="adm">
+  <nav class="anav" id="anav">
+    <button class="on" data-tab="today">오늘 할 일 <span class="abadge">4</span></button>
+    <button data-tab="perm">권한 매트릭스</button>
+    <button data-tab="member">신고·회원</button>
+    <button data-tab="sec">보안·RLS 진단</button>
+    <button data-tab="infra">인프라·활동 로그</button>
+  </nav>
+
+  <main>
+    <!-- ① 오늘 할 일 -->
+    <section class="apanel on" id="tab-today">
+      <div class="kpis">
+        <div class="kpi"><span>승인 대기</span><b class="warn" id="kPending">3</b><span class="ksub" id="kOver">24시간 초과 1건 — SLA 경고</span></div>
+        <div class="kpi"><span>신고 처리 중</span><b class="dang">3</b><span class="ksub">임시조치 만료 임박 D-25</span></div>
+        <div class="kpi"><span>소셜로그인 검수</span><b class="warn">2건 진행</b><span class="ksub">네이버 미신청 · 카카오 비즈앱 대기</span></div>
+        <div class="kpi"><span>이번 주 새 글</span><b class="ok" data-count="23">0</b><span class="ksub">전주 대비 +5</span></div>
+      </div>
+      <div class="acard">
+        <h3>가입 승인 큐 — 24시간 SLA</h3>
+        <p class="asub">승인 대기는 이탈 1순위 구간입니다. 대기 시간이 24시간을 넘으면 붉게 표시됩니다.
+        초대 링크로 들어온 신청자는 추천인이 함께 표시되며 자동 승인 규칙을 걸 수 있습니다.</p>
+        <table class="atable"><thead><tr><th>신청자</th><th>경로</th><th>추천인</th><th>대기</th><th></th></tr></thead>
+        <tbody id="approveQ"></tbody></table>
+      </div>
+      <div class="acard">
+        <h3>공지사항 CMS</h3>
+        <p class="asub">발행 즉시 커뮤니티 라운지 상단에 고정됩니다. 예약 발행을 선택하면 지정 시각에 자동 게시됩니다.</p>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input id="cmsTitle" value="9월 정기 모임 일정 안내" style="font-family:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid var(--line-strong);border-radius:var(--r)">
+          <textarea id="cmsBody" rows="3" style="font-family:inherit;font-size:13px;line-height:1.6;padding:10px 12px;border:1px solid var(--line-strong);border-radius:var(--r);resize:vertical">9월 정기 모임은 둘째 주 토요일로 확정되었습니다. 발제 신청은 멤버 전용 게시판에서 받습니다.</textarea>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="radio" name="cmsWhen" value="now" checked style="accent-color:var(--accent)"> 즉시 발행</label>
+            <label style="font-size:13px;display:flex;align-items:center;gap:6px"><input type="radio" name="cmsWhen" value="res" style="accent-color:var(--accent)"> 예약 <input type="datetime-local" id="cmsAt" value="2026-08-18T09:00" style="font-family:inherit;font-size:12px;padding:5px 8px;border:1px solid var(--line-strong);border-radius:var(--r)"></label>
+            <span style="flex:1"></span>
+            <button class="sbtn pri" id="cmsPub">발행</button>
+          </div>
+        </div>
+        <table class="atable" style="margin-top:12px"><thead><tr><th>상태</th><th>제목</th><th>발행</th><th>고정</th></tr></thead>
+        <tbody id="cmsRows">
+          <tr><td><span class="pillb ok">게시 중</span></td><td>인서클 커뮤니티 이용 안내 — 등급과 게시판</td><td>08.01</td><td><span class="pillb mut">라운지 상단</span></td></tr>
+        </tbody></table>
+      </div>
+      <div class="acard">
+        <h3>운영 매뉴얼 — 화면 안에서 봅니다</h3>
+        <p class="asub">담당자가 1인이므로 매뉴얼은 별도 문서가 아니라 처리 화면 옆에 둡니다. (산출물 「관리자 운영 매뉴얼」의 형태 제안)</p>
+        <div class="manual">
+          <h4>매일 아침 5분</h4>
+          <ol><li>승인 큐 — 24시간 초과 건부터 처리(거절 시 사유 선택 → 자동 통보)</li>
+          <li>신고 큐 — D-3 이내 만료 임박 건 확인</li><li>검수 상태 — 반려 알림이 있으면 체크리스트 항목 보완</li></ol>
+          <h4>매월 1회</h4>
+          <ol><li>활동 로그 점검(법정 월 1회 정기 점검) — 「인프라·활동 로그」 탭의 점검 버튼</li>
+          <li>보안 자가진단 8항목 재실행</li></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② 권한 매트릭스 -->
+    <section class="apanel" id="tab-perm">
+      <div class="acard">
+        <h3>권한 매트릭스 — 게시판 6종 × 액션 4종의 최소 등급</h3>
+        <p class="asub">"권한 3단계"는 숫자 하나가 아니라 이 <b>72칸</b>으로 정의됩니다. 값을 바꾸면 아래 미리보기가 즉시 갱신됩니다.
+        (0 = 전체 공개 · 9 = 운영진 전용)</p>
+        <div class="matrix" id="matrix"></div>
+        <div class="mpreview">
+          <h4>미리보기 — <select id="pvGrade" style="font-size:12px;font-weight:700;padding:2px 6px;border:1px solid var(--line-strong);border-radius:4px">
+            <option value="1">1등급</option><option value="2" selected>2등급</option><option value="3">3등급</option></select> 회원이 지금 보는 게시판</h4>
+          <div class="brow" id="pvBoards"></div>
+        </div>
+      </div>
+      <div class="acard">
+        <h3>자동 승급 규칙 — 지금 분포에 적용하면</h3>
+        <p class="asub">국내 커뮤니티 표준 문법(가입기간 + 방문 + 활동량). 규칙을 바꾸면 승급 대상이 실제로 다시 계산됩니다.</p>
+        <div class="simrow">
+          <label>가입 후 <input type="range" id="ruleDays" min="0" max="60" step="1" value="14"><output id="ruleDaysOut">14일</output></label>
+          <label>방문 <input type="range" id="ruleVisits" min="0" max="30" step="1" value="5"><output id="ruleVisitsOut">5회</output></label>
+          <label>글+댓글 <input type="range" id="rulePosts" min="0" max="30" step="1" value="3"><output id="rulePostsOut">3건</output></label>
+        </div>
+        <p style="font-size:14px" id="ruleResult"></p>
+      </div>
+    </section>
+
+    <!-- ③ 신고·회원 -->
+    <section class="apanel" id="tab-member">
+      <div class="acard">
+        <h3>신고 처리 큐 — 정보통신망법 제44조의2 절차 그대로</h3>
+        <p class="asub">블라인드는 버튼 하나가 아니라 <b>조치 → 양측 통지 → 게시판 공시 → 30일 기간 → 만료 분기</b>가 한 세트입니다.
+        단계를 건너뛸 수 없게 만들었습니다.</p>
+        <div id="reportQ"></div>
+      </div>
+      <div class="acard">
+        <h3>회원 목록 — 서버측 마스킹 대조</h3>
+        <p class="asub">마스킹의 1순위 수혜자는 관리자 화면입니다. 클라이언트 마스킹은 화면만 가리고
+        <b>네트워크 응답에는 원문이 실려 옵니다</b> — 우측 응답 패널에서 직접 비교해 보세요. 해제는 사유 입력 후 활동 로그에 남습니다.</p>
+        <div class="ptabs" style="margin-bottom:12px">
+          <button class="ptab on" data-mask="server">서버측 마스킹 (뷰 경유)</button>
+          <button class="ptab" data-mask="client">클라이언트 마스킹 (대조군)</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 340px;gap:14px" id="maskWrap">
+          <table class="atable"><thead><tr><th>ID</th><th>닉네임</th><th>등급</th><th>연락처</th><th>이메일</th><th></th></tr></thead>
+          <tbody id="memberRows"></tbody></table>
+          <div><p class="cp-head" id="apiHead">GET /rest/v1/members_masked — 실제 응답</p>
+          <div class="api-panel" id="apiPanel"></div></div>
+        </div>
+      </div>
+      <div class="acard">
+        <h3>탈퇴 처리 시뮬레이터 — 약관에 정할 3안</h3>
+        <p class="asub">3등급 자료 제공자 「세줄요약」이 탈퇴한다고 가정합니다. 안을 고르면 영향 범위가 실제로 집계됩니다.</p>
+        <div class="ptabs">
+          <button class="ptab on" data-wd="anon">① 게시물 유지 + 익명화</button>
+          <button class="ptab" data-wd="hide">② 게시물 비공개 전환</button>
+          <button class="ptab" data-wd="del">③ 전체 삭제</button>
+        </div>
+        <p style="font-size:14px;line-height:1.7" id="wdResult"></p>
+        <div class="rls-sql" style="margin-top:10px;font-size:12px" id="wdClause"></div>
+      </div>
+    </section>
+
+    <!-- ④ 보안·RLS -->
+    <section class="apanel" id="tab-sec">
+      <div class="acard">
+        <h3>보안 자가진단 — 기존 「바이브 코딩」 데모 인수 점검표</h3>
+        <p class="asub">공고에 공유하겠다고 하신 기존 데모는 <b>인수 1일차에 이 8항목부터</b> 점검합니다.
+        특히 service_role 키가 프론트 번들에 있으면 RLS 전체가 무력화됩니다. 스위치를 켜서 조치 완료를 표시해 보세요.</p>
+        <div style="display:flex;gap:24px;align-items:center;margin-bottom:14px">
+          <div><span style="font-size:12px;font-weight:700;color:var(--ink-muted)">위험 점수</span>
+          <div class="score-ring" id="auditScore">100</div></div>
+          <p style="font-size:13px;color:var(--ink-sub);line-height:1.6" id="auditMsg"></p>
+        </div>
+        <div class="audit" id="auditList"></div>
+      </div>
+      <div class="acard">
+        <h3>RLS 성능 시뮬레이터 — 70명에선 안 보이고 4,000명에서 죽습니다</h3>
+        <p class="asub">naive한 <code>auth.uid()</code> 정책은 행마다 함수를 재평가합니다. Supabase 공식 실측 배율(11,000ms→10ms, 인덱스 100배)을
+        계수로 회원 규모별 예상 응답을 계산합니다.</p>
+        <div class="simrow">
+          <label>회원 수 <input type="range" id="perfMembers" min="70" max="4000" step="10" value="70"><output id="perfMembersOut">70명</output></label>
+          <output style="font-size:12px;color:var(--ink-muted)" id="perfRows"></output>
+        </div>
+        <div class="bars" id="perfBars"></div>
+      </div>
+      <div class="acard">
+        <h3>정책 진단기 — 무한 재귀(42P17) 좌우 대조</h3>
+        <p class="asub">등급을 profiles에서 서브쿼리하는 정책을 profiles 자신에 걸면 자기를 다시 호출합니다. 실행해 보세요.</p>
+        <div class="codepair">
+          <div><p class="cp-head bad">naive — profiles 서브쿼리</p>
+            <div class="rls-sql">CREATE POLICY read_profiles ON profiles
+FOR SELECT USING (
+  (SELECT grade FROM profiles      <span class="cm">-- ← 자기 자신</span>
+   WHERE id = auth.uid()) >= 1
+);</div>
+            <button class="sbtn dang" id="runBad" style="margin-top:8px">실행</button>
+            <div class="api-panel" id="outBad" style="margin-top:8px" hidden></div></div>
+          <div><p class="cp-head good">수정 — JWT 클레임 (Custom Access Token Hook)</p>
+            <div class="rls-sql">CREATE POLICY read_profiles ON profiles
+FOR SELECT TO authenticated USING (
+  ((SELECT auth.jwt()) -> 'app_metadata'
+    ->> 'grade')::int >= 1          <span class="cm">-- 테이블 조회 없음</span>
+);</div>
+            <button class="sbtn pri" id="runGood" style="margin-top:8px">실행</button>
+            <div class="api-panel" id="outGood" style="margin-top:8px" hidden></div></div>
+        </div>
+      </div>
+      <div class="acard">
+        <h3>유출본 역추적 — 워터마크 토큰 → 열람자 특정</h3>
+        <p class="asub">커뮤니티 자료실에서 다운로드하면 파일에 토큰이 각인됩니다. 유출본에서 읽은 토큰을 입력하면
+        발급 이력에서 열람자가 특정됩니다. (방금 커뮤니티에서 다운로드했다면 그 토큰을 넣어 보세요 — 데모 프리필: <b>WM-K7Q2XN</b>)</p>
+        <div class="tracein"><input id="traceToken" value="WM-K7Q2XN"><button class="sbtn pri" id="traceBtn">역추적</button></div>
+        <div id="traceResult"></div>
+      </div>
+    </section>
+
+    <!-- ⑤ 인프라·로그 -->
+    <section class="apanel" id="tab-infra">
+      <div class="acard">
+        <h3>인프라 설정 — 리전 하나가 법적 의무를 만듭니다</h3>
+        <p class="asub">Supabase는 해외 서비스지만 <b>서울 리전을 고르면 국외이전에 해당하지 않습니다.</b> 리전은 생성 후 변경이 번거로우므로 착수 1일차에 확정합니다.</p>
+        <div class="ptabs">
+          <button class="ptab on" data-region="seoul">서울 (ap-northeast-2)</button>
+          <button class="ptab" data-region="tokyo">도쿄</button>
+          <button class="ptab" data-region="us">미국 동부</button>
+        </div>
+        <p style="font-size:14px;margin-bottom:8px" id="regionBadge"></p>
+        <div class="rls-sql" style="font-size:12px" id="regionClause"></div>
+      </div>
+      <div class="acard">
+        <h3>플랜·백업·월 비용 — "자동 암호화 백업"은 유료 플랜 전제</h3>
+        <p class="asub">무료 플랜에는 자동 백업이 없고 7일 미사용 시 프로젝트가 일시정지됩니다. 공고의 비기능 요구를 충족하려면 Pro가 전제이며, 이는 의뢰자 부담 항목입니다.</p>
+        <div class="ptabs">
+          <button class="ptab" data-plan="free">Free (0원)</button>
+          <button class="ptab on" data-plan="pro">Pro (월 35,000원)</button>
+        </div>
+        <label style="font-size:13px;display:flex;align-items:center;gap:8px;margin:10px 0">
+          <span class="sw"><input type="checkbox" id="pitrChk"><i></i></span> PITR(시점 복구) 추가 — 월 140,000원</label>
+        <div class="simrow">
+          <label>회원 수 <input type="range" id="infMembers" min="70" max="4000" step="10" value="70"><output id="infMembersOut">70명</output></label>
+          <label>저장 자료(GB) <input type="range" id="infStor" min="1" max="200" step="1" value="8"><output id="infStorOut">8GB</output></label>
+          <label>월 전송량(GB) <input type="range" id="infEgress" min="5" max="500" step="5" value="30"><output id="infEgressOut">30GB</output></label>
+        </div>
+        <p style="font-size:15px;font-weight:800" id="infCost"></p>
+        <p style="font-size:12px;color:var(--ink-sub);margin-top:4px" id="infNote"></p>
+      </div>
+      <div class="acard">
+        <h3>소셜로그인 검수 — 개발이 끝나도 검수를 통과해야 열립니다</h3>
+        <p class="asub">카카오는 Supabase 네이티브지만 이메일 수집은 <b>비즈앱 전환(사업자등록번호)</b>이 선행됩니다.
+        네이버는 기본 프로바이더가 아니라 <b>Custom OIDC로 직접 연동</b>하며 검수에 3~4영업일이 걸립니다. 의뢰자 담당 항목이 표시됩니다.</p>
+        <div id="providers"></div>
+      </div>
+      <div class="acard">
+        <h3>활동 로그 — UI 기능이 아니라 법정 접속기록(1년 보존)</h3>
+        <p class="asub">누가 언제 어떤 회원 정보를 열람했는지까지 남아야 법정 요건을 충족합니다. 관리자 본인의 열람도 기록 대상입니다.
+        보존기간 내 삭제는 차단됩니다.</p>
+        <div class="logf">
+          <button class="ptab on" data-logf="all">전체</button>
+          <button class="ptab" data-logf="privacy">관리자의 회원정보 열람</button>
+          <button class="ptab" data-logf="download">다운로드·URL 발급</button>
+          <button class="sbtn" id="logAudit" style="margin-left:auto">월 1회 정기 점검 실행</button>
+        </div>
+        <table class="atable"><thead><tr><th>시각</th><th>행위자</th><th>행위</th><th>대상</th><th>IP</th><th>파기까지</th><th></th></tr></thead>
+        <tbody id="logRows"></tbody></table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 거절 사유 모달 -->
+<div class="modal-bg" id="rejectModal">
+  <div class="modal">
+    <h3>가입 거절 — 사유가 함께 통보됩니다</h3>
+    <p class="msub">거절 통보·사유 고지·재신청 규칙이 없으면 문의가 관리자 개인 연락처로 몰립니다. 거절자의 개인정보는 30일 후 자동 파기됩니다.</p>
+    <div class="radio-list">
+      <label><input type="radio" name="rj" value="가입 요건(추천인) 미충족 — 재신청 가능" checked><span><b>가입 요건 미충족</b><span>추천인·소속 확인 불가 — 보완 후 재신청 가능</span></span></label>
+      <label><input type="radio" name="rj" value="중복 계정 확인 — 기존 계정으로 로그인"><span><b>중복 계정</b><span>이메일 미수집 시 카카오·네이버 계정이 병합되지 않아 발생하는 유형</span></span></label>
+    </div>
+    <div class="mrow"><button class="btn ghost" data-close>취소</button><button class="btn dang" id="rejectSubmit">거절 확정</button></div>
+  </div>
+</div>
+
+<script src="assets/js/data.js?v=1"></script>
+<script src="assets/js/admin.js?v=2"></script>
+</body>
+</html>

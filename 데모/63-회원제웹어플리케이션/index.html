@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>INCIRCLE 인서클 — 회원제 커뮤니티 (데모)</title>
+<meta name="description" content="승인제 가입·권한 3단계·게시판 6종 회원제 커뮤니티 데모. 계정 상태 전환기로 등급별 시야 차이를 직접 확인할 수 있습니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+<body>
+
+<header class="gnb">
+  <div class="gnb-in">
+    <a class="logo" href="./">IN<b>CIRCLE</b> <span style="font-size:13px;font-weight:600;color:var(--ink-muted)">인서클</span></a>
+    <span class="gnb-note">demo — 회원·게시물·수치 전부 가상</span>
+    <span class="gnb-sp"></span>
+    <a class="gnb-link" href="admin.html">관리자 백오피스 →</a>
+  </div>
+</header>
+
+<!-- 계정 상태 전환기 (발견 A3) -->
+<div class="viewer">
+  <div class="viewer-in">
+    <span class="viewer-label">계정 상태</span>
+    <div class="vchips" id="vchips"></div>
+    <span class="viewer-sp"></span>
+    <button class="rls-toggle" id="rlsToggle">RLS 콘솔 — 이 시야의 정책 보기</button>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<!-- RLS 콘솔 드로어 -->
+<aside class="rls-drawer" id="rlsDrawer" aria-label="RLS 정책 콘솔">
+  <div class="rls-in">
+    <div class="rls-head">
+      <h3 id="rlsTitle">현재 시야에 적용되는 RLS 정책</h3>
+      <span class="rls-rows" id="rlsRows"></span>
+      <button class="rls-close" id="rlsClose">닫기</button>
+    </div>
+    <div class="rls-sql" id="rlsSql"></div>
+  </div>
+</aside>
+
+<!-- 신고 모달 -->
+<div class="modal-bg" id="reportModal">
+  <div class="modal">
+    <h3>게시물 신고</h3>
+    <p class="msub">접수 즉시 관리자에게 전달되며, 임시조치 시 신고자와 게시자 양측에 통지되고 게시판에 조치 사실이 공시됩니다 (정보통신망법 제44조의2 절차).</p>
+    <div class="radio-list" id="reportReasons">
+      <label><input type="radio" name="rr" value="명예훼손" checked><span><b>명예훼손·권리침해</b><span>임시조치(30일) 대상 — 게시자 이의제기 가능</span></span></label>
+      <label><input type="radio" name="rr" value="저작권(제3자)"><span><b>저작권 침해(제3자 권리)</b><span>원저작자 삭제 요청도 동일 절차로 처리됩니다</span></span></label>
+      <label><input type="radio" name="rr" value="스팸·광고"><span><b>스팸·광고</b><span>운영 정책 위반 — 검토 후 조치</span></span></label>
+    </div>
+    <div class="mrow">
+      <button class="btn ghost" data-close>취소</button>
+      <button class="btn dang" id="reportSubmit">신고 접수</button>
+    </div>
+  </div>
+</div>
+
+<!-- videoId 추출 시연 모달 (발견 A1) -->
+<div class="modal-bg" id="exposeModal">
+  <div class="modal">
+    <h3 id="exposeTitle">이 영상은 어디까지 노출되나요?</h3>
+    <div id="exposeBody"></div>
+    <div class="mrow"><button class="btn ghost" data-close>닫기</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/data.js?v=1"></script>
+<script src="assets/js/app.js?v=2"></script>
+</body>
+</html>
