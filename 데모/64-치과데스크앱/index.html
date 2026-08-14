@@ -7,7 +7,7 @@
 <title>DENTDESK 덴트데스크 — 치과 데스크 통합 CRM (데모)</title>
 <meta name="description" content="예약 3축 캘린더·환자·수납·발송·통계를 하나로 — 리콜 광고성 판정기와 기록 경계선까지 동작하는 치과 데스크 CRM 데모">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=3">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
 
@@ -16,6 +16,12 @@
   <span class="top-note">2026-08-14(금) 기준 화면</span>
   <span class="ssot-chip" id="ssotChip">예약 주인: 이 CRM</span>
   <span class="top-sp"></span>
+  <div class="theme-sw" id="themeSw" title="테마 — 메인 3색+스킨 변수만 스왑 (실측 테마 구조 계승)">
+    <button class="on" data-theme-set="" style="background:#04658E" aria-label="네이비 테마(theme06 실측 기본)"></button>
+    <button data-theme-set="green" style="background:#1F7A4D" aria-label="그린 테마"></button>
+    <button data-theme-set="purple" style="background:#8E44AD" aria-label="퍼플 테마(원본 theme01 계열)"></button>
+  </div>
+  <button class="btn sm" id="cidSim" title="CID 수신전화 팝업 시뮬레이션">☎ 수신 시뮬</button>
   <div class="role-sw">
     <button class="on" data-role="desk">데스크</button>
     <button data-role="chief">실장</button>
@@ -81,9 +87,12 @@
   <div class="card rv">
     <h3>환자 목록 — 연락처는 기본 마스킹, 「표시」 클릭이 곧 열람 기록</h3>
     <p class="sub">서버측 마스킹: 원문은 표시 요청 시에만 조회되고 그 행위가 접속기록에 남습니다(민감정보 시스템 2년 보존). 전체 다운로드는 역할별로 차단·제한됩니다 — 우측 상단 역할을 바꿔 보세요.</p>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <input class="inp" placeholder="이름·연락처 검색" value="장미래" style="width:220px">
-      <button class="btn">검색</button>
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-start">
+      <div class="qsearch">
+        <input class="inp" id="ptSearch" placeholder="이름·초성·전화 뒷자리" value="" style="width:220px" autocomplete="off">
+        <p class="qs-hint">초성 검색 지원 — "ㅈㅁㄹ" 또는 "8823"을 입력해 보세요 (계승 UX: 한글 초성 분리)</p>
+        <div class="qs-pop" id="qsPop" hidden></div>
+      </div>
       <span style="flex:1"></span>
       <button class="btn" id="ptExport">전체 목록 CSV</button>
     </div>
@@ -94,6 +103,21 @@
 
 <!-- ③ 수납·미수 -->
 <section class="view" id="v-pay">
+  <div class="card rv">
+    <h3>수납 등록 — 넘버패드 터치 입력 (계승 위젯 · 242px 규격)</h3>
+    <p class="sub">수납 데스크는 터치 단말 사용률이 높아 금액 입력 속도가 곧 대기열입니다. 금액 칸을 클릭하면 넘버패드가 뜨고,
+    현금 10만원 이상이면 현금영수증 발행 확인 없이는 저장이 차단됩니다.</p>
+    <div class="simrow" style="align-items:end">
+      <label class="field">환자 <input class="inp" id="npPat" value="오은영" style="width:110px"></label>
+      <label class="field">항목 <input class="inp" id="npItem" value="임플란트 2차 분납(비급여)" style="width:190px"></label>
+      <label class="field">수단 <select class="inp" id="npMethod" style="width:90px"><option>현금</option><option>카드</option><option>계좌이체</option></select></label>
+      <label class="field">금액 <input class="inp" id="npAmount" value="0" readonly style="width:120px;text-align:right;font-variant-numeric:tabular-nums;cursor:pointer" title="클릭하면 넘버패드"></label>
+      <label class="field" id="npReceiptWrap" hidden style="color:var(--alert-text)">현금영수증
+        <select class="inp" id="npReceipt" style="width:110px"><option value="">— 선택 —</option><option value="Y">발행함</option><option value="N">발행 안 함</option></select></label>
+      <button class="btn pri" id="npSave">수납 저장</button>
+    </div>
+    <p class="note" id="npNote">금액 칸을 클릭해 넘버패드로 입력하세요 — 예: 1,200,000원 (현금영수증 게이트 시연)</p>
+  </div>
   <div class="card rv">
     <h3>오늘 수납 — 현금 10만원 이상은 현금영수증이 필수 필드가 됩니다</h3>
     <p class="sub">치과는 현금영수증 의무발행업종 — 10만원 이상 현금 수납을 미발급하면 해당 금액의 20%가 가산세입니다. 수납 수정은 실장 이상(현금 조작 방지 — 역할을 바꿔 보세요).</p>
@@ -321,10 +345,13 @@
   </div>
 </div>
 
-<!-- 환자 상세 모달 (기록 경계선) -->
+<!-- 환자 상세 모달 (기록 경계선 · 레이어 규격: 스크롤 그림자 + 하단 고정 버튼바) -->
 <div class="modal-bg" id="patModal">
-  <div class="modal" style="max-width:760px">
+  <div class="modal lay" style="max-width:760px">
+    <div class="mhead">
     <h3 id="pdName"></h3>
+    </div>
+    <div class="mbody">
     <p class="msub" id="pdMeta"></p>
     <div class="boundary">
       <div class="b-desk">
@@ -344,13 +371,39 @@
         <p style="font-size:11px;color:var(--ink-muted);margin-top:8px">본 시스템에서 작성·수정 불가 — 진료기록의 소유는 전자의무기록(의료법 23조) 영역입니다.</p>
       </div>
     </div>
-    <div class="mrow"><button class="btn" data-close>닫기</button></div>
+    </div>
+    <div class="mfoot"><button class="btn" data-close>닫기</button></div>
+  </div>
+</div>
+
+<!-- CID 인콜 팝업 (계승 — 수신전화 즉시 환자 식별) -->
+<aside class="cid" id="cidPop" aria-label="수신전화 팝업">
+  <div class="cid-head">
+    <span class="cid-ring">☎</span>
+    <div><b id="cidName"></b><small id="cidSub"></small></div>
+    <button class="cid-x" id="cidClose" aria-label="닫기">✕</button>
+  </div>
+  <div class="cid-body" id="cidBody"></div>
+  <div class="cid-foot">
+    <button class="btn pri sm" id="cidChart" style="flex:1">차트 열기</button>
+    <button class="btn sm" id="cidBook" style="flex:1">예약 잡기</button>
+  </div>
+</aside>
+
+<!-- 넘버패드 (계승 위젯) -->
+<div class="numpad" id="numpad" hidden>
+  <div class="np-disp" id="npDisp">0</div>
+  <div class="np-grid">
+    <button data-np="7">7</button><button data-np="8">8</button><button data-np="9">9</button><button class="np-c" data-np="C">C</button>
+    <button data-np="4">4</button><button data-np="5">5</button><button data-np="6">6</button><button data-np="←">←</button>
+    <button data-np="1">1</button><button data-np="2">2</button><button data-np="3">3</button><button class="np-ok" data-np="OK">입력</button>
+    <button data-np="0">0</button><button data-np="00">00</button><button data-np="000">000</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script src="assets/js/data.js?v=1"></script>
-<script src="assets/js/app.js?v=2"></script>
+<script src="assets/js/app.js?v=4"></script>
 </body>
 </html>

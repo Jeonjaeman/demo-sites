@@ -7,10 +7,30 @@
      더가든피부과(GDWEB WINNER PRIZE 202607100001 — 국문 자간 −0.03/−0.02em·lh 1.30) · Linear(갤러리 — 명도 계단) */
 
 :root{
-  --ink:#141414; --ink-2:#2c3744; --ink-sub:#586470; --ink-muted:#9ca3af;
-  --bg:#ffffff; --bg-1:#f9f9f9; --bg-2:#f5f5f5; --bg-3:#f2f2f2;
-  --line:#e5e7eb; --line-in:#d1d5db;
-  --accent:#2563eb; --accent-soft:#eaf1fd;
+  /* ── 계승 토큰 층 (실운영 샵관리 SaaS 정적 분석 → 병원 전환 명세 09) ──
+     12단계 그레이스케일·의미론 상태색·soft-filled 인풋·그림자 변수는 값 그대로 계승,
+     메인 3색(--top-main-color/--main-color/--main-over-color)만 교체하면 전체 톤이 바뀌는
+     테마 구조를 유지한다(하단 [data-theme] 참조 — 변수 스왑 실증). */
+  --super-light:#ffffff; --ultra-light:#f8f8f8; --deep-light:#f6f6f6; --very-light:#eeeeee;
+  --light-moderate:#d2d2d2; --moderate:#cccccc; --dark:#aaaaaa; --very-dark:#888888;
+  --deep-dark:#464646; --ultra-dark:#111111;
+  /* theme06 실측 (test.hair-sarang.net/css/theme/theme06.css — 네이비/틸: 병원 적합 팔레트 그대로) */
+  --top-main-color:#04658E; --main-color:#4B859E; --main-over-color:#004A69;
+  --sub-color-1:#EBF5FA; --sub-color-2:#E0F5FF;
+  --btnStyle2-text:#0A5A7C; --btnStyle2:#EBF5FA; --btnStyle2-over:#DCEFF9;
+  --complete-color:#13BE1A; --alert-color:#FF6E69; --alert-text:#d4163a; --num-minus:#FF4A4A;
+  --input-hover-bg:#F3FBFF; --input-hover-border:#B7E1F3; --cell-over:#EBF5FA; --cell-over2:#E2F2FB;
+  --remain-shadow:0 2px 5px rgba(0,0,0,.1); --option-shadow:0 2px 4px rgba(0,0,0,.1);
+  --popLayer-shadow:1px 1px 4px rgba(0,0,0,.1); --hover-shadow:0 0 5px rgba(0,0,0,.3);
+  --saturday:#0047FF; --sunday:#ff0000;
+  /* 좌측 메뉴 스킨 (theme06 레프트 토큰 실측) */
+  --leftSkinDefault:#B0E8FF; --leftNavCon:#BCEBFF; --subNavOn:#9CDCFF; --subNavHover:#0d7aa8;
+  --leftMenuLine:#3582A3; --idxHeaderTxt:#5DB0D2;
+  /* ── 기존 시맨틱 매핑 (계승 토큰 위에 얹음) ── */
+  --ink:var(--ultra-dark); --ink-2:var(--deep-dark); --ink-sub:#586470; --ink-muted:var(--dark);
+  --bg:var(--super-light); --bg-1:var(--ultra-light); --bg-2:var(--deep-light); --bg-3:var(--very-light);
+  --line:var(--very-light); --line-in:var(--light-moderate);
+  --accent:var(--top-main-color); --accent-soft:var(--sub-color-1);
   /* 예약 상태 5종 — 채널톡 램프: hex 1개 → 알파 파생 */
   --st-wait:#b7770b;   --st-wait-bg:#fff7db;
   --st-conf:#2d76ec;   --st-conf-bg:#eaf1fd;
@@ -47,15 +67,22 @@ table{border-collapse:collapse}
 .ssot-chip{font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
 .ssot-chip.ro{background:var(--warn-bg);color:var(--warn)}
 
-.nav{position:sticky;top:56px;z-index:49;background:var(--bg);border-bottom:1px solid var(--line);
-  display:flex;gap:2px;padding:0 12px;overflow-x:auto}
-.nav button{font-size:13.5px;font-weight:600;color:var(--ink-sub);padding:12px 14px;border-bottom:2px solid transparent;
-  white-space:nowrap;transition:color var(--t1) var(--ease-ui),border-color var(--t1) var(--ease-ui)}
-.nav button:hover{color:var(--ink)}
-.nav button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+/* 좌측 메뉴 셸 (실측 계승 — .idxLeft 구조·leftSkin 토큰. ≤1080은 가로 탭 폴백) */
+.nav{position:fixed;left:0;top:56px;bottom:0;z-index:49;width:188px;display:flex;flex-direction:column;gap:2px;
+  padding:14px 10px;background:linear-gradient(180deg,var(--sub-color-1),var(--bg));border-right:1px solid var(--sub-color-2)}
+.nav button{font-size:14px;font-weight:600;color:var(--deep-dark);padding:10px 12px;border-radius:var(--r);
+  text-align:left;white-space:nowrap;border-left:3px solid transparent;
+  transition:background var(--t1) var(--ease-ui),color var(--t1) var(--ease-ui),border-color var(--t1) var(--ease-ui)}
+.nav button:hover{background:var(--leftNavCon);color:var(--ink)}
+.nav button.on{background:var(--subNavOn);color:var(--main-over-color);font-weight:700;border-left-color:var(--leftMenuLine)}
 .nav .nbadge{font-size:10px;font-weight:800;background:var(--danger);color:#fff;border-radius:999px;padding:1px 6px;margin-left:4px;vertical-align:1px}
+.nav::after{content:"실운영 샵관리 SaaS 실측 계승 셸";margin-top:auto;font-size:10.5px;color:var(--idxHeaderTxt);padding:0 12px 4px;white-space:normal;line-height:1.5}
 
-.main{max-width:1400px;margin:0 auto;padding:16px 18px 70px}
+.main{max-width:1400px;margin:0 0 0 188px;padding:16px 18px 70px}
+/* 스크롤바 실측 계승 — 6px·thumb light r10 */
+*::-webkit-scrollbar{width:6px;height:6px}
+*::-webkit-scrollbar-track{background:var(--very-light)}
+*::-webkit-scrollbar-thumb{background:var(--dark);border-radius:10px}
 .view{display:none}.view.on{display:block}
 
 /* ── 공통 컴포넌트 ── */
@@ -72,27 +99,34 @@ table{border-collapse:collapse}
 .kpi small{display:block;font-size:10.5px;color:var(--ink-muted);margin-top:2px}
 .kpi small b{font-weight:700}
 .kpi>b.warn{color:var(--warn)}.kpi>b.dang{color:var(--danger)}.kpi>b.ok{color:var(--ok)}
-.btn{height:34px;padding:0 13px;border-radius:var(--r);font-size:13px;font-weight:700;display:inline-flex;
-  align-items:center;gap:6px;box-shadow:inset 0 0 0 1px #dfdfdf,0 1px 2px rgba(0,0,0,.05);background:var(--bg);
-  color:var(--ink-2);transition:background var(--t1) var(--ease-ui),box-shadow var(--t1) var(--ease-ui),transform var(--t1) var(--ease-ui)}
-.btn:hover{background:var(--bg-1)}
+/* 버튼 실측 계승 — .btnStyle2(h36·r3·main bg·14px) / .dftBtn(h30·deep-light·hover 메인 보더) */
+.btn{height:36px;padding:0 13px;border-radius:3px;font-size:14px;font-weight:600;display:inline-flex;
+  align-items:center;gap:6px;background:var(--deep-light);border:1px solid transparent;
+  color:var(--ink-2);transition:background var(--t1) var(--ease-ui),border-color var(--t1) var(--ease-ui),transform var(--t1) var(--ease-ui)}
+.btn:hover{border-color:var(--main-color)}
 .btn:active{transform:scale(.98)}
-.btn.pri{background:var(--accent);color:#fff;box-shadow:none}.btn.pri:hover{background:#1d4fd7}
+.btn.pri{background:var(--main-color);color:#fff;border-color:transparent}.btn.pri:hover{background:var(--main-over-color);border-color:transparent}
 .btn.dang{color:var(--danger);box-shadow:inset 0 0 0 1px #f2c4cc}.btn.dang:hover{background:var(--danger-bg)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.sm{height:28px;padding:0 10px;font-size:12px}
+.btn.sm{height:30px;padding:0 10px;font-size:13px}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px}
 .pill.wait{background:var(--st-wait-bg);color:var(--st-wait)} .pill.conf{background:var(--st-conf-bg);color:var(--st-conf)}
 .pill.done{background:var(--st-done-bg);color:var(--st-done)} .pill.noshow{background:var(--st-noshow-bg);color:var(--st-noshow)}
 .pill.cancel{background:var(--st-cancel-bg);color:var(--st-cancel)}
 .pill.mut{background:var(--bg-2);color:var(--ink-sub)} .pill.ok{background:var(--ok-bg);color:var(--ok)}
 .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.dang{background:var(--danger-bg);color:var(--danger)}
+/* 표 실측 계승 — .tableForm 문법: th 회색면·중앙·6px, 보더 --light, 행 hover --cell-over */
 .tbl{width:100%;font-size:12.5px}
-.tbl th{text-align:left;font-size:11px;font-weight:700;color:var(--ink-muted);padding:7px 8px;border-bottom:1px solid var(--line-in)}
-.tbl td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
-.tbl tr:hover td{background:var(--bg-1)}
-.inp{height:34px;padding:0 10px;border:1px solid var(--line-in);border-radius:var(--r);font-size:13px;background:var(--bg)}
-.inp:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.tbl th{text-align:center;font-size:12px;font-weight:400;color:var(--deep-dark);background:var(--deep-light);
+  padding:6px 8px;border-bottom:1px solid var(--light-moderate)}
+.tbl td{padding:7px 8px;border-bottom:1px solid var(--very-light);vertical-align:middle;font-variant-numeric:tabular-nums}
+.tbl tr:hover td{background:var(--cell-over)}
+/* soft-filled 인풋 실측 계승 — .dftInput: h30·15px·padding 0 8·r3·bg deep-light, hover/focus 메인 보더 */
+.inp{height:30px;padding:0 8px;border:1px solid var(--deep-light);border-radius:3px;font-size:14px;
+  background:var(--deep-light);transition:border-color var(--t1) var(--ease-ui),background var(--t1) var(--ease-ui)}
+.inp::placeholder{font-size:13px}
+.inp:hover{background:var(--input-hover-bg);border-color:var(--input-hover-border)}
+.inp:focus{outline:none;background:var(--bg);border-color:var(--main-color)}
 select.inp{padding-right:6px}
 textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .field{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--ink-sub)}
@@ -100,7 +134,7 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .tab{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:var(--r);box-shadow:inset 0 0 0 1px var(--line-in);
   color:var(--ink-sub);transition:background var(--t1) var(--ease-ui),color var(--t1) var(--ease-ui),box-shadow var(--t1) var(--ease-ui)}
 .tab:hover{box-shadow:inset 0 0 0 1px var(--ink-muted)}
-.tab.on{background:var(--ink);color:#fff;box-shadow:none}
+.tab.on{background:var(--top-main-color);color:#fff;box-shadow:none}
 .note{font-size:12px;line-height:1.6;color:var(--ink-sub);border-left:3px solid var(--line-in);padding-left:10px;margin-top:10px}
 .note b{color:var(--ink)}
 .simrow{display:flex;gap:18px;flex-wrap:wrap;align-items:end;margin-bottom:10px}
@@ -219,12 +253,107 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .rv{opacity:0;transform:translateY(8px);transition:opacity var(--t2) var(--ease),transform var(--t2) var(--ease)}
 .rv.in{opacity:1;transform:none}
 
+@media (max-width:1080px){
+  /* 좌측 셸 → 가로 탭 폴백 (원본 top 레이아웃 대응) */
+  .nav{position:sticky;top:56px;bottom:auto;width:auto;flex-direction:row;padding:0 12px;gap:2px;
+    overflow-x:auto;background:var(--bg);border-right:0;border-bottom:1px solid var(--sub-color-2)}
+  .nav button{border-left:0;border-bottom:3px solid transparent;border-radius:0;padding:11px 12px}
+  .nav button.on{background:none;border-bottom-color:var(--leftMenuLine)}
+  .nav::after{display:none}
+  .main{margin-left:0}
+}
 @media (max-width:1024px){ .grid2{grid-template-columns:1fr} .grid3{grid-template-columns:1fr 1fr} .kpis{grid-template-columns:1fr 1fr} .boundary{grid-template-columns:1fr} .b-emr{border-left:0;border-top:1px dashed var(--line-in)} }
 @media (max-width:720px){
   .main{padding:12px 12px 70px}
-  .top{padding:0 12px;gap:8px} .top-note{display:none}
+  .top{padding:0 12px;gap:8px} .top-note{display:none} .ssot-chip{display:none} #cidSim{display:none}
+  .theme-sw button{width:26px;height:26px}
   .grid3{grid-template-columns:1fr}
   .card{overflow-x:auto} .tbl{min-width:520px}
   .role-sw button{padding:5px 8px;font-size:11.5px}
 }
+/* ── 테마 스왑 실증 — 기본은 theme06(네이비/틸) 실측값. 변형도 실측 테마 구조 그대로 메인 3색+서브만 교체 ── */
+[data-theme="green"]{ --top-main-color:#1F7A4D; --main-color:#3E9E6F; --main-over-color:#0E5C36;
+  --sub-color-1:#EDF9F2; --sub-color-2:#DFF5E8; --input-hover-bg:#F3FCF7; --input-hover-border:#B7E8CC;
+  --cell-over:#EDF9F2; --leftSkinDefault:#B9EFD3; --leftNavCon:#C6F2DB; --subNavOn:#A8E8C6;
+  --subNavHover:#157a45; --leftMenuLine:#2E8A58; --idxHeaderTxt:#5DC28F }
+[data-theme="purple"]{ --top-main-color:#8E44AD; --main-color:#AD50E5; --main-over-color:#6C3483;
+  --sub-color-1:#FBF5FF; --sub-color-2:#F7E9FF; --input-hover-bg:#FCFBFF; --input-hover-border:#E6CCF7;
+  --cell-over:#FBF5FF; --leftSkinDefault:#F2DEFF; --leftNavCon:#ECCCFF; --subNavOn:#E3BAFF;
+  --subNavHover:#8E44AD; --leftMenuLine:#CB77FF; --idxHeaderTxt:#C583EE }
+/* 원본 theme01 --main-color #D898FF는 흰 배경 대비 부족 → 09 명세 지적대로 버튼·텍스트는 진한 변형 사용 */
+.theme-sw{display:flex;gap:4px}
+.theme-sw button{width:22px;height:22px;border-radius:50%;border:2px solid transparent;
+  transition:border-color var(--t1) var(--ease-ui),transform var(--t1) var(--ease-ui)}
+.theme-sw button:hover{transform:scale(1.12)}
+.theme-sw button.on{border-color:var(--ink)}
+
+/* 버튼 hover — 메인 오버색 계승 */
+.btn.pri:hover{background:var(--main-over-color)}
+
+/* 마스킹 표시 규격 — "가려진 상태"를 시각으로 인지 (연한 배경 + 자물쇠) */
+.masked{background:var(--deep-light);border-radius:3px;padding:1px 6px;color:var(--very-dark)}
+.masked::before{content:"🔒";font-size:9px;margin-right:4px;filter:grayscale(1);opacity:.6}
+
+/* ── 레이어 규격 실측 계승: 컬러 헤더바(.layerInner .header) + 스크롤 그림자 + 하단 버튼바(#bottomBtn) ── */
+.modal.lay{padding:0;display:flex;flex-direction:column;overflow:hidden}
+.modal.lay .mhead{padding:10px 15px;background:var(--top-main-color);color:#fff;display:flex;align-items:center;gap:8px}
+.modal.lay .mhead h3{font-size:16px;font-weight:600;color:#fff;margin:0}
+.modal.lay .mbody>.msub{margin-top:12px}
+.modal.lay .mbody{padding:0 22px;overflow-y:auto;flex:1;position:relative;
+  background:linear-gradient(var(--bg) 30%,rgba(255,255,255,0)) center top,
+    linear-gradient(rgba(255,255,255,0),var(--bg) 70%) center bottom,
+    radial-gradient(farthest-side at 50% 0,rgba(0,0,0,.10),rgba(0,0,0,0)) center top,
+    radial-gradient(farthest-side at 50% 100%,rgba(0,0,0,.10),rgba(0,0,0,0)) center bottom;
+  background-repeat:no-repeat;background-size:100% 36px,100% 36px,100% 12px,100% 12px;
+  background-attachment:local,local,scroll,scroll}
+.modal.lay .mfoot{padding:15px 20px;display:flex;gap:10px;justify-content:center;background:var(--super-light);
+  border-radius:0 0 10px 10px;z-index:1}
+.modal.lay .mfoot .btn{min-width:80px;justify-content:center}
+
+/* ── 넘버패드 (원본 242×223 규격 계승 — 수납 터치 입력) ── */
+.numpad{position:absolute;z-index:80;width:242px;background:var(--bg);border:1px solid var(--line-in);
+  border-radius:8px;box-shadow:var(--popLayer-shadow);padding:8px;animation:pop var(--t2) var(--ease)}
+.numpad .np-disp{height:36px;display:flex;align-items:center;justify-content:flex-end;font-size:17px;
+  font-weight:800;font-variant-numeric:tabular-nums;padding:0 10px;background:var(--deep-light);
+  border-radius:var(--r);margin-bottom:6px}
+.numpad .np-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.numpad button{height:38px;border-radius:var(--r);font-size:14px;font-weight:700;background:var(--ultra-light);
+  transition:background var(--t1) var(--ease-ui)}
+.numpad button:hover{background:var(--sub-color-1)}
+.numpad button.np-ok{background:var(--main-color);color:#fff;grid-row:span 2}
+.numpad button.np-ok:hover{background:var(--main-over-color)}
+.numpad button.np-c{color:var(--num-minus)}
+
+/* ── CID 인콜 팝업 (수신전화 → 환자 즉시 식별) ── */
+.cid{position:fixed;right:18px;bottom:18px;z-index:85;width:330px;max-width:calc(100vw - 36px);
+  background:var(--bg);border:1px solid var(--line-in);border-radius:12px;box-shadow:var(--hover-shadow);
+  transform:translateY(20px);opacity:0;pointer-events:none;
+  transition:transform var(--t2) var(--ease),opacity var(--t2) var(--ease)}
+.cid.show{transform:none;opacity:1;pointer-events:auto}
+.cid .cid-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.cid .cid-ring{width:36px;height:36px;border-radius:50%;background:var(--sub-color-1);color:var(--main-color);
+  display:flex;align-items:center;justify-content:center;font-size:16px;position:relative;flex:none}
+.cid.show .cid-ring::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid var(--main-color);opacity:0;animation:cidpulse 1.4s ease-out infinite}
+@keyframes cidpulse{0%{transform:scale(.8);opacity:.7}100%{transform:scale(1.35);opacity:0}}
+.cid .cid-head b{font-size:15px}
+.cid .cid-head small{display:block;font-size:11.5px;color:var(--ink-muted)}
+.cid .cid-x{margin-left:auto;color:var(--ink-muted);font-size:15px;padding:4px 8px}
+.cid .cid-body{padding:10px 16px;display:flex;flex-direction:column;gap:6px;font-size:12.5px}
+.cid .cid-row{display:flex;justify-content:space-between;gap:10px}
+.cid .cid-row span{color:var(--ink-sub)}
+.cid .cid-foot{display:flex;gap:6px;padding:10px 16px 14px}
+
+/* ── 빠른 환자검색 (초성·전화 뒷자리 — 계승 UX) ── */
+.qsearch{position:relative}
+.qs-pop{position:absolute;top:38px;left:0;z-index:75;width:300px;background:var(--bg);
+  border:1px solid var(--line-in);border-radius:8px;box-shadow:var(--option-shadow);overflow:hidden}
+.qs-pop .qs-item{display:flex;gap:10px;align-items:center;padding:9px 12px;cursor:pointer;font-size:12.5px;
+  transition:background var(--t1) var(--ease-ui)}
+.qs-pop .qs-item:hover{background:var(--cell-over)}
+.qs-pop .qs-item b{font-size:13px}
+.qs-pop .qs-item .qs-meta{margin-left:auto;color:var(--ink-muted);font-size:11px;text-align:right}
+.qs-pop .qs-empty{padding:14px 12px;font-size:12px;color:var(--ink-muted)}
+.qs-hint{font-size:11px;color:var(--ink-muted);margin-top:4px}
+
 @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important;animation-duration:.01ms!important} }

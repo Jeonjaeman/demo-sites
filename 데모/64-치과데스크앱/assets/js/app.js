@@ -154,7 +154,7 @@ function renderPatients(){
   $("#ptExport").title = canExport===false?"데스크 권한은 전체 다운로드가 차단됩니다(유출 경로)":"";
   $("#ptBody").innerHTML = DD.PATIENTS.map(p=>`
     <tr><td>${p.id}</td><td><b>${p.name}</b></td><td>${p.birth.slice(0,4)}년생</td>
-    <td><span class="mono" id="ph-${p.id}">${mask(p.phone)}</span> <button class="btn sm" data-reveal="${p.id}">표시</button></td>
+    <td><span class="mono masked" id="ph-${p.id}">${mask(p.phone)}</span> <button class="btn sm" data-reveal="${p.id}">표시</button></td>
     <td>${p.lastVisit}</td>
     <td>${p.noshow12m?`<span class="pill noshow">노쇼 ${p.noshow12m}회</span>`:'<span class="pill ok">양호</span>'}</td>
     <td>${p.consent.marketing?`<span class="pill ok">광고 동의</span>`:'<span class="pill mut">미동의</span>'}</td>
@@ -163,7 +163,7 @@ function renderPatients(){
 document.addEventListener("click",e=>{
   const rv=e.target.closest("[data-reveal]");
   if(rv){ const p=DD.PATIENTS.find(x=>x.id===rv.dataset.reveal);
-    $("#ph-"+p.id).textContent=p.phone; state.maskLogs++;
+    const el=$("#ph-"+p.id); el.textContent=p.phone; el.classList.remove("masked"); state.maskLogs++;
     DD.LOGS.unshift({t:"2026-08-14 "+new Date().toTimeString().slice(0,5),who:state.role,act:"환자 연락처 표시",target:`${p.id} ${p.name[0]}**`,ip:"210.99.xx.xx",kind:"privacy"});
     renderLogs();
     toast(`원문 표시 — 이 클릭 자체가 열람 기록 1건으로 남았습니다 (누적 ${state.maskLogs}건, 설정·보안 탭)`); return; }
@@ -429,6 +429,121 @@ $("#importRun").addEventListener("click",()=>{
   $("#importOut").innerHTML=`업로드 3,214행 → 매핑 완료(이름·연락처·생년월일·최근내원) · <b style="color:var(--ok)">3,180건 정상</b> ·
   중복 후보 <b>21건</b>(동명+연락처 일치 → 병합 대기) · 오류 <b style="color:var(--danger)">13건</b>(생년월일 형식) — 오류 리포트 CSV 생성됨`;
   toast("이관은 별도 공수입니다 — 기존 프로그램의 내보내기 형식 확인이 착수 1주차 작업");
+});
+
+/* ══ 디자인 시스템 반영 (병원CRM전환 09 — 계승 위젯·테마 스왑) ══ */
+
+/* 테마 스왑 — 메인 3색 변수만 교체 */
+$$("#themeSw button").forEach(b=>b.addEventListener("click",()=>{
+  const t=b.dataset.themeSet;
+  if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
+  $$("#themeSw button").forEach(x=>x.classList.toggle("on",x===b));
+  toast(t==="purple"
+    ? "원본 theme01 퍼플 계열 — 파스텔 메인색은 대비 부족이라 버튼·텍스트는 진한 변형을 씁니다 (09 명세 지적 반영)"
+    : t==="green"
+    ? "그린 테마 — 실측 테마 구조 그대로 변수 세트만 교체했습니다"
+    : "theme06 네이비(실서비스 기본 테마 실측값) — 병원 화이트라벨이 이 변수 구조로 가능합니다");
+}));
+
+/* 한글 초성 분리 (계승 유틸 hanSplit — 초성 검색) */
+function chosung(str){
+  const CHO=["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
+  return Array.from(str).map(c=>{
+    const code=c.charCodeAt(0)-0xAC00;
+    return (code>=0&&code<11172)?CHO[Math.floor(code/588)]:c;
+  }).join("");
+}
+const qsPop=$("#qsPop"), qsInput=$("#ptSearch");
+function quickSearch(){
+  const q=qsInput.value.trim();
+  if(!q){ qsPop.hidden=true; renderPatients(); return; }
+  const isCho=/^[ㄱ-ㅎ]+$/.test(q), isNum=/^\d+$/.test(q);
+  const hits=DD.PATIENTS.filter(p=>
+    isCho ? chosung(p.name).includes(q)
+    : isNum ? p.phone.replace(/-/g,"").endsWith(q)||p.phone.includes(q)
+    : p.name.includes(q));
+  qsPop.innerHTML = hits.length
+    ? hits.map(p=>`<div class="qs-item" data-qs="${p.id}"><b>${p.name}</b><span>${p.id}</span>
+        <span class="qs-meta">${mask(p.phone)}<br>최근 ${p.lastVisit}</span></div>`).join("")
+    : `<div class="qs-empty">일치 없음 — 초성("ㅈㅁㄹ")·전화 뒷자리("8823")로도 찾을 수 있습니다</div>`;
+  qsPop.hidden=false;
+}
+qsInput && qsInput.addEventListener("input",quickSearch);
+document.addEventListener("click",e=>{
+  const qi=e.target.closest("[data-qs]");
+  if(qi){ qsPop.hidden=true; openPatient(qi.dataset.qs);
+    toast("초성·뒷자리 검색은 통화 중 한 손 조작의 핵심입니다 (계승 UX)"); return; }
+  if(!e.target.closest(".qsearch")) qsPop.hidden=true;
+});
+
+/* 넘버패드 (계승 위젯 — 수납 금액 터치 입력) */
+const npEl=$("#numpad"); let npVal="0";
+function npRender(){ $("#npDisp").textContent=(+npVal).toLocaleString(); }
+$("#npAmount").addEventListener("click",e=>{
+  const r=e.target.getBoundingClientRect();
+  npEl.style.left=Math.min(r.left+window.scrollX, window.scrollX+document.documentElement.clientWidth-260)+"px";
+  npEl.style.top=(r.bottom+window.scrollY+6)+"px";
+  npVal=String(+$("#npAmount").value.replace(/,/g,"")||0);
+  npEl.hidden=false; npRender();
+});
+npEl.addEventListener("click",e=>{
+  const b=e.target.closest("[data-np]"); if(!b) return;
+  const k=b.dataset.np;
+  if(k==="C") npVal="0";
+  else if(k==="←") npVal=npVal.length>1?npVal.slice(0,-1):"0";
+  else if(k==="OK"){ $("#npAmount").value=(+npVal).toLocaleString(); npEl.hidden=true; npGate(); return; }
+  else npVal=(npVal==="0"?"":npVal)+k;
+  if(npVal.length>9) npVal=npVal.slice(0,9);
+  npRender();
+});
+document.addEventListener("click",e=>{
+  if(!npEl.hidden && !e.target.closest("#numpad") && !e.target.closest("#npAmount")) npEl.hidden=true;
+});
+function npGate(){
+  const amt=+$("#npAmount").value.replace(/,/g,"")||0;
+  const cash=$("#npMethod").value==="현금";
+  const need=cash&&amt>=100000;
+  $("#npReceiptWrap").hidden=!need;
+  $("#npNote").innerHTML = need
+    ? `<b style="color:var(--alert-text)">현금 10만원 이상</b> — 현금영수증 발행 여부를 선택해야 저장됩니다 (미발급 가산세 20%)`
+    : `금액 칸을 클릭해 넘버패드로 입력하세요`;
+}
+$("#npMethod").addEventListener("change",npGate);
+$("#npSave").addEventListener("click",()=>{
+  const amt=+$("#npAmount").value.replace(/,/g,"")||0;
+  if(!amt){ toast("금액을 입력하세요 — 금액 칸 클릭 → 넘버패드"); return; }
+  const cash=$("#npMethod").value==="현금", need=cash&&amt>=100000;
+  const rc=$("#npReceipt").value;
+  if(need&&!rc){ toast("저장 차단 — 현금 10만원 이상은 현금영수증 발행 여부가 필수입니다 (의무발행업종)"); return; }
+  DD.PAYMENTS.unshift({ t:"2026-08-14 "+new Date().toTimeString().slice(0,5), p:$("#npPat").value,
+    item:$("#npItem").value, method:$("#npMethod").value, amount:amt, cash10:need, receipt:need?rc==="Y":null });
+  renderPayments();
+  $("#npAmount").value="0"; $("#npReceipt").value=""; npGate();
+  toast(need&&rc==="N" ? "저장됨 — 미발행 선택은 「누락 점검」 목록에 잡힙니다 (가산세 계산 반영)" : "수납 저장 — 감사 로그에 기록됩니다");
+});
+
+/* CID 인콜 팝업 (계승 — 수신전화 즉시 식별) */
+const CID_P="P-0233"; /* 오은영: 미수·분납·리콜·노쇼 이력 보유 */
+$("#cidSim").addEventListener("click",()=>{
+  const p=DD.PATIENTS.find(x=>x.id===CID_P);
+  const ar=DD.ARREARS.find(a=>a.p===p.name);
+  $("#cidName").textContent=`${p.name} (${p.id})`;
+  $("#cidSub").textContent=`${mask(p.phone)} · 수신 중`;
+  $("#cidBody").innerHTML=`
+    <div class="cid-row"><span>최근 내원</span><b>${p.lastVisit} (발치·임플란트 계획)</b></div>
+    <div class="cid-row"><span>미수 잔액</span><b style="color:var(--num-minus)">${(ar.total-ar.paid).toLocaleString()}원 · 2차 분납 ${ar.due.slice(5)}</b></div>
+    <div class="cid-row"><span>노쇼 이력</span><b>${p.noshow12m}회 (12개월)</b></div>
+    <div class="cid-row"><span>리콜</span><b>내년 1월 스케일링 대상</b></div>`;
+  $("#cidPop").classList.add("show");
+  toast("전화가 오면 데스크가 인사말을 하는 사이에 이 카드가 떠 있어야 합니다 — CID 연동 (계승 기능)");
+});
+$("#cidClose").addEventListener("click",()=>$("#cidPop").classList.remove("show"));
+$("#cidChart").addEventListener("click",()=>{ $("#cidPop").classList.remove("show"); openPatient(CID_P); });
+$("#cidBook").addEventListener("click",()=>{
+  $("#cidPop").classList.remove("show");
+  $$(".nav button").forEach(x=>x.classList.toggle("on",x.dataset.view==="cal"));
+  $$(".view").forEach(v=>v.classList.toggle("on",v.id==="v-cal"));
+  toast("캘린더로 이동 — 통화 중 빈 슬롯 클릭으로 바로 예약");
 });
 
 /* ── 공통 ── */
