@@ -23,7 +23,7 @@
   --rail:260px; --tbar:56px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{overflow-x:clip;font-size:20.8px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 (16→20.8: +30%) */
+html{overflow-x:clip;font-size:18px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 */
 body{font-family:Pretendard,-apple-system,system-ui,'Noto Sans KR',sans-serif;background:var(--bg);
   color:var(--ink);font-size:1rem;line-height:1.45;letter-spacing:-.02em;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:none;letter-spacing:inherit;color:inherit}
