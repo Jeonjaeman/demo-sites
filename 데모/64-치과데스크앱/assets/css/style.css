@@ -23,7 +23,7 @@
   --rail:216px; --tbar:56px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{overflow-x:clip;font-size:14px}  /* rem base = 14px — 이 값 하나로 전체 폰트 비례 스케일 */
+html{overflow-x:clip;font-size:16px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 (14→16 상향: 전체 확대) */
 body{font-family:Pretendard,-apple-system,system-ui,'Noto Sans KR',sans-serif;background:var(--bg);
   color:var(--ink);font-size:1rem;line-height:1.45;letter-spacing:-.02em;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:none;letter-spacing:inherit;color:inherit}
@@ -139,11 +139,12 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .masked::before{content:"🔒";font-size:0.6429rem;margin-right:4px;filter:grayscale(1);opacity:.6}
 
 /* ══ 세로 시간축 캘린더 (시안: 시간=세로·컬러 블록) ══ */
-.calwrap{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+.calwrap{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:visible;
   box-shadow:0 1px 2px rgba(27,33,48,.04)}
+.caltool{border-radius:10px 10px 0 0}
 .caltool{min-height:52px;display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .caltool .cdate{font-size:1.0714rem;font-weight:800}
-.calscroll{overflow:auto;max-height:640px}
+.calscroll{overflow-x:auto;overflow-y:visible;max-height:none}  /* 세로는 쭉 나열 — 페이지(body)가 스크롤, 가로만 필요 시 내부 */
 .vcal{display:grid;position:relative;min-width:760px}
 .vcal .vh{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line-in);
   padding:8px 6px;text-align:center;font-size:0.8571rem;font-weight:700}
