@@ -20,10 +20,10 @@
   --r:8px; --r-sm:6px;
   --ease:cubic-bezier(.33,1,.68,1); --ease-ui:cubic-bezier(.4,0,.2,1);
   --t1:.15s; --t2:.325s; --t3:.65s;
-  --rail:216px; --tbar:56px;
+  --rail:260px; --tbar:56px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{overflow-x:clip;font-size:16px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 (14→16 상향: 전체 확대) */
+html{overflow-x:clip;font-size:20.8px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 (16→20.8: +30%) */
 body{font-family:Pretendard,-apple-system,system-ui,'Noto Sans KR',sans-serif;background:var(--bg);
   color:var(--ink);font-size:1rem;line-height:1.45;letter-spacing:-.02em;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer;border:0;background:none;letter-spacing:inherit;color:inherit}
@@ -43,7 +43,8 @@ table{border-collapse:collapse}
 .rail .logo small{display:block;font-size:0.75rem;font-weight:500;color:var(--ch-sub);margin-top:2px}
 .rwidget{background:var(--ch-card);border-radius:var(--r);padding:11px 12px}
 .rwidget h5{font-size:0.7857rem;font-weight:700;color:var(--ch-sub);margin-bottom:7px;letter-spacing:.02em}
-.rline{display:flex;justify-content:space-between;align-items:center;font-size:0.8929rem;padding:3px 0;color:#C6CCDB}
+.rline{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.8929rem;padding:3px 0;color:#C6CCDB}
+.rline span{white-space:nowrap} .rline b{white-space:nowrap;text-align:right}
 .rline b{font-size:1rem;font-variant-numeric:tabular-nums;color:var(--ch-ink)}
 .rline b.blue{color:#6EA0FF} .rline b.red{color:#FF8A93} .rline b.yel{color:#FFD469} .rline b.grn{color:#5CD695}
 .rbars{display:flex;align-items:flex-end;gap:4px;height:44px;margin-top:6px}
@@ -296,11 +297,11 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 
 @media (max-width:1080px){
   .chrome{grid-template-columns:1fr}
-  .rail{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;gap:8px;padding:8px 12px;overflow-x:auto;z-index:51}
-  .rail .logo{border-bottom:0;padding:0 6px;white-space:nowrap}
-  .rail .rwidget{min-width:150px;padding:7px 10px}
-  .rail .rbars,.rail .rbar-lab,.rail .rfoot{display:none}
-  .rail .rspacer{display:none}
+  /* 모바일: 레일 요약 박스는 접고(상단 KPI 카드가 대체) 로고 바만 — 세로 길이 겹침 방지 */
+  .rail{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;gap:8px;padding:10px 14px;overflow:visible;z-index:51}
+  .rail .logo{border-bottom:0;padding:0;white-space:nowrap;font-size:1rem}
+  .rail .logo small{display:none}
+  .rail .rwidget,.rail .rbars,.rail .rbar-lab,.rail .rfoot,.rail .rspacer{display:none}
   .tbar{top:0}
   .grid2{grid-template-columns:1fr}
   .kpis{grid-template-columns:1fr 1fr}
