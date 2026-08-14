@@ -24,12 +24,13 @@ $$(".nav button").forEach(b=>b.addEventListener("click",()=>{
   bindReveal();
 }));
 
-/* ══ ① 캘린더 — 세로 시간축(시안 문법: 시간=세로·리소스=컬럼·컬러 블록) ══ */
-const SH=36, TW=52;
+/* ══ ① 캘린더 ══ */
+const CW=50, RH=60, LW=200;
 function axisRows(){
   if(state.axis==="chair"){
-    const rows=[]; DD.ROOMS.forEach(r=>{ r.chairs.forEach(cid=>{ const c=DD.CHAIRS.find(x=>x.id===cid);
-      rows.push({id:c.id,key:"chair",name:c.name,color:c.color,sub:r.name}); }); });
+    const rows=[]; DD.ROOMS.forEach(r=>{ rows.push({grp:r.name});
+      r.chairs.forEach(cid=>{ const c=DD.CHAIRS.find(x=>x.id===cid);
+        rows.push({id:c.id,key:"chair",name:c.name,color:c.color,sub:r.name}); }); });
     return rows;
   }
   if(state.axis==="doc") return DD.DOCTORS.map(d=>({id:d.id,key:"doc",name:d.name,color:d.color,sub:"이동 리소스"}));
@@ -43,54 +44,44 @@ function renderCal(){
   const ro = state.ssot==="emr";
   $("#calRO").hidden = !ro;
   const rows = axisRows();
-  const N = rows.length;
-  let h = `<div class="vcal" style="grid-template-columns:${TW}px repeat(${N},minmax(128px,1fr))">`;
-  h += `<div class="vh" style="background:#F7F9FC"></div>`;
-  rows.forEach(row=>{ h += `<div class="vh"><span class="dot" style="background:${row.color}"></span>${row.name}<small>${row.sub||""}</small></div>`; });
-  for(let t=0;t<DD.SLOTS;t++){
-    h += `<div class="tlab" style="height:${SH}px">${t%2? "":slotTime(t)}</div>`;
-    rows.forEach(row=>{
+  let h = `<div style="display:grid;grid-template-columns:${LW}px repeat(${DD.SLOTS},${CW}px)">
+    <div class="thead" style="justify-content:flex-start;padding-left:12px;position:sticky;left:0;background:var(--bg-1);z-index:3">${state.axis==="chair"?"진료실 › 체어":state.axis==="doc"?"담당 의사":"위생사"}</div>
+    ${Array.from({length:DD.SLOTS},(_,t)=>`<div class="thead ${t%2?"":"hour"}">${t%2?"":slotTime(t)}</div>`).join("")}
+  </div>`;
+  rows.forEach(row=>{
+    if(row.grp){ h+=`<div class="rh grp" style="height:26px;position:sticky;left:0;width:${LW+DD.SLOTS*CW}px;max-width:none;display:flex;align-items:center;padding-left:12px">${row.grp}</div>`; return; }
+    const evs = apptsFor(row).map(a=>{
+      const left = a.t*CW, w = a.len*CW-4;
+      return `<div class="evt ${a.st}" data-appt="${a.id}" style="left:${left}px;width:${w}px" title="${a.p} · ${a.proc}">
+        <b>${a.p}${a.st==="noshow"?" ⌀":""}</b><span>${slotTime(a.t)}–${slotTime(a.t+a.len)} · ${a.proc}</span></div>`;
+    }).join("");
+    const cells = Array.from({length:DD.SLOTS},(_,t)=>{
       const bl = row.key==="chair" ? blocked(row.id,t) : DD.BLOCKS.some(b=>b.chair==="*"&&t>=b.t&&t<b.t+b.len);
-      const blTitle = bl ? DD.BLOCKS.find(b=>(b.chair==="*"||b.chair===row.id)&&t>=b.t&&t<b.t+b.len).label : "";
-      h += `<div class="vcell ${t%2?"hh":""} ${bl?"blocked":""}" style="height:${SH}px" data-slot="${row.key}:${row.id}:${t}" title="${blTitle}"></div>`;
-    });
-  }
-  h += `</div>`;
-  $("#cal").innerHTML = h;
-  const grid = $("#cal .vcal");
-  grid.style.position="relative";
-  const headH = grid.querySelector(".vh").getBoundingClientRect().height;
-  const colW = (grid.getBoundingClientRect().width - TW) / N;
-  rows.forEach((row,ci)=>{
-    apptsFor(row).forEach(a=>{
-      const el=document.createElement("div");
-      el.className="vevt "+a.st; el.dataset.appt=a.id;
-      el.style.top=(headH + a.t*SH + 2)+"px";
-      el.style.height=(a.len*SH - 5)+"px";
-      el.style.left=(TW + ci*colW + 3)+"px";
-      el.style.width=(colW - 6)+"px";
-      el.title=`${a.p} · ${a.proc}`;
-      el.innerHTML=`<b>${a.p}${a.st==="noshow"?" ⌀":""}</b><span>${slotTime(a.t)}–${slotTime(a.t+a.len)} · ${a.proc}</span>`;
-      grid.appendChild(el);
-    });
+      return `<div class="cell ${t%2?"":"hour"} ${bl?"blocked":""}" data-slot="${row.key}:${row.id}:${t}" ${bl?`title="${DD.BLOCKS.find(b=>(b.chair==="*"||b.chair===row.id)&&t>=b.t&&t<b.t+b.len).label}"`:""}></div>`;
+    }).join("");
+    h+=`<div style="display:grid;grid-template-columns:${LW}px repeat(${DD.SLOTS},${CW}px);height:${RH}px;position:relative">
+      <div class="rh"><span class="dot" style="background:${row.color}"></span>${row.name} <small>${row.sub||""}</small></div>
+      ${cells}
+      <div style="position:absolute;left:${LW}px;right:0;top:0;bottom:0;pointer-events:none">
+        <div style="position:relative;height:100%;pointer-events:auto">${evs}</div>
+      </div>
+    </div>`;
   });
-  const now=document.createElement("div");
-  now.className="vnow"; now.style.top=(headH + DD.NOW_SLOT*SH)+"px";
-  grid.appendChild(now);
+  $("#cal").innerHTML = h + `<div class="nowline" style="left:${LW+DD.NOW_SLOT*CW}px"></div>`;
+  $("#cal").style.position="relative";
   const cnt = { wait:0,conf:0,done:0,noshow:0,cancel:0 };
   DD.APPTS.forEach(a=>cnt[a.st]++);
   $("#calKpi").innerHTML = `오늘 ${DD.APPTS.length}건 — <b style="color:var(--st-conf)">확정 ${cnt.conf}</b> · 대기 ${cnt.wait} · 완료 ${cnt.done} · <b style="color:var(--st-noshow)">노쇼 ${cnt.noshow}</b> · 취소 ${cnt.cancel}`;
 }
 $$("#axisTabs .tab").forEach(b=>b.addEventListener("click",()=>{
   state.axis=b.dataset.axis; $$("#axisTabs .tab").forEach(x=>x.classList.toggle("on",x===b)); renderCal();
-  toast(state.axis==="chair"?"체어 축 — 컬럼 헤더에 소속 진료실 표기(계층)":state.axis==="doc"?"의사 축 — 의사는 진료실을 이동하는 리소스입니다":"위생사 축 — 스케일링은 의사가 아니라 위생사+체어를 소요합니다");
+  toast(state.axis==="chair"?"체어 축 — 진료실이 그룹 헤더로(계층 구조)":state.axis==="doc"?"의사 축 — 의사는 진료실을 이동하는 리소스입니다":"위생사 축 — 스케일링은 의사가 아니라 위생사+체어를 소요합니다");
 }));
-window.addEventListener("resize",()=>{ if(state.view==="cal") renderCal(); });
 
 /* 빈 슬롯 클릭 → 예약 모달 (프리필) */
 let pendingSlot=null;
 document.addEventListener("click",e=>{
-  const cell=e.target.closest(".vcell:not(.blocked)");
+  const cell=e.target.closest(".cell:not(.blocked)");
   if(cell && state.view==="cal"){
     if(state.ssot==="emr"){ toast("읽기 전용 — SSOT가 「전자차트가 주인」이라 이 화면에서는 예약을 만들지 않습니다 (설정 탭에서 변경)"); return; }
     const [key,id,t]=cell.dataset.slot.split(":");
@@ -100,7 +91,7 @@ document.addEventListener("click",e=>{
     $("#bkNoshow").hidden = $("#bkPatient").value!=="최강훈";
     $("#bookModal").classList.add("open"); return;
   }
-  const evt=e.target.closest(".vevt");
+  const evt=e.target.closest(".evt");
   if(evt){ openApptActions(evt.dataset.appt); return; }
   if(e.target.closest("[data-close]")) $$(".modal-bg").forEach(m=>m.classList.remove("open"));
 });
@@ -379,11 +370,11 @@ $$("#nsDefTabs .tab").forEach(b=>b.addEventListener("click",()=>{
 $$("#ssotTabs .tab").forEach(b=>b.addEventListener("click",()=>{
   state.ssot=b.dataset.ssot; $$("#ssotTabs .tab").forEach(x=>x.classList.toggle("on",x===b));
   const chip=$("#ssotChip");
-  if(state.ssot==="crm"){ chip.textContent="예약 주인: 이 CRM"; chip.className="tchip";
+  if(state.ssot==="crm"){ chip.textContent="예약 주인: 이 CRM"; chip.className="ssot-chip";
     $("#ssotNote").innerHTML="이 CRM이 단일 진실 공급원 — 캘린더 편집 가능, 전자차트로 <b>내보내기 CSV</b>를 생성합니다."; }
-  else if(state.ssot==="emr"){ chip.textContent="예약 주인: 전자차트 (읽기 전용)"; chip.className="tchip ro";
+  else if(state.ssot==="emr"){ chip.textContent="예약 주인: 전자차트 (읽기 전용)"; chip.className="ssot-chip ro";
     $("#ssotNote").innerHTML="가장 현실적인 안 — 기존 전자차트(두번에·덴트웹 등)가 예약의 주인이고, 이 CRM은 <b>알림·리콜·미수·통계 레이어</b>만 담당합니다. 캘린더가 실제로 읽기 전용이 됐습니다(예약 탭 확인)."; }
-  else { chip.textContent="양방향 동기화 (충돌 규칙 필요)"; chip.className="tchip ro";
+  else { chip.textContent="양방향 동기화 (충돌 규칙 필요)"; chip.className="ssot-chip ro";
     $("#ssotNote").innerHTML="양쪽 수정 허용 — 같은 예약이 양쪽에서 바뀌면 <b>충돌 해결 규칙</b>(최신 우선/전자차트 우선/수동 큐)이 필요합니다. 구현·검증 공수가 가장 큽니다."; }
   renderCal();
   toast("SSOT 변경 — 착수 미팅 1순위 질문: 기존 프로그램이 무엇이고 예약을 그쪽에도 입력하는가");

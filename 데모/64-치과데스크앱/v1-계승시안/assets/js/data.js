@@ -32,7 +32,7 @@ DD.APPTS = [
   { id:"a4", t:4,  len:2, chair:"c2", doc:"d1", hyg:null, st:"noshow",p:"최강훈", proc:"레진 치료" },
   { id:"a5", t:5,  len:1, chair:"c5", doc:null, hyg:"h1", st:"conf",  p:"한지원", proc:"스케일링" },
   { id:"a6", t:6,  len:2, chair:"c4", doc:"d2", hyg:"h2", st:"conf",  p:"오은영", proc:"발치 상담" },
-  { id:"a7", t:11, len:2, chair:"c1", doc:"d1", hyg:null, st:"conf",  p:"장미래", proc:"신경치료 3차" },
+  { id:"a7", t:9,  len:2, chair:"c1", doc:"d1", hyg:null, st:"conf",  p:"장미래", proc:"신경치료 3차" },
   { id:"a8", t:10, len:1, chair:"c5", doc:null, hyg:"h1", st:"wait",  p:"윤도현", proc:"스케일링" },
   { id:"a9", t:11, len:2, chair:"c3", doc:"d2", hyg:null, st:"conf",  p:"서예진", proc:"교정 조정" },
   { id:"a10",t:13, len:2, chair:"c2", doc:"d1", hyg:"h2", st:"wait",  p:"임현우", proc:"임플란트 상담" },

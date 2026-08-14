@@ -7,54 +7,36 @@
 <title>DENTDESK 덴트데스크 — 치과 데스크 통합 CRM (데모)</title>
 <meta name="description" content="예약 3축 캘린더·환자·수납·발송·통계를 하나로 — 리콜 광고성 판정기와 기록 경계선까지 동작하는 치과 데스크 CRM 데모">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=7">
+<link rel="stylesheet" href="assets/css/style.css?v=6">
 </head>
 <body>
 
-<div class="chrome">
-<aside class="rail">
-  <div class="logo">DENT<b>DESK</b> 덴트데스크<small>demo — 전 데이터 가상 · 2026-08-14(금)</small></div>
-  <div class="rwidget"><h5>오늘 요약</h5>
-    <div class="rline"><span>예약</span><b class="blue">12건</b></div>
-    <div class="rline"><span>내원 완료</span><b class="grn">3</b></div>
-    <div class="rline"><span>노쇼</span><b class="red">1</b></div>
-    <div class="rline"><span>대기 목록</span><b class="yel">3명</b></div>
+<header class="top">
+  <span class="logo">DENT<b>DESK</b><span>덴트데스크 · demo 가상 데이터</span></span>
+  <span class="top-note">2026-08-14(금) 기준 화면</span>
+  <span class="ssot-chip" id="ssotChip">예약 주인: 이 CRM</span>
+  <span class="top-sp"></span>
+  <div class="theme-sw" id="themeSw" title="테마 — 메인 3색+스킨 변수만 스왑 (실측 테마 구조 계승)">
+    <button class="on" data-theme-set="" style="background:#04658E" aria-label="네이비 테마(theme06 실측 기본)"></button>
+    <button data-theme-set="green" style="background:#1F7A4D" aria-label="그린 테마"></button>
+    <button data-theme-set="purple" style="background:#8E44AD" aria-label="퍼플 테마(원본 theme01 계열)"></button>
   </div>
-  <div class="rwidget"><h5>주간 예약 추이</h5>
-    <div class="rbars"><i style="height:40%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:75%"></i><i class="hot" style="height:92%"></i><i style="height:30%"></i><i style="height:12%"></i></div>
-    <div class="rbar-lab"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>일</span></div>
-  </div>
-  <div class="rwidget"><h5>오늘 수납</h5>
-    <div class="rline"><span>수납 합계</span><b>1,866,500원</b></div>
-    <div class="rline"><span>미수 발생</span><b class="red">1건</b></div>
-  </div>
-  <div class="rwidget"><h5>발송 잔액</h5>
-    <div class="rline"><span>알림톡 캐시</span><b>12,400원</b></div>
-    <div class="rline"><span>이번 달 발송</span><b>412건</b></div>
-    <div style="margin-top:6px"><span class="pillb red">잔액 1만원 미만 임박</span></div>
-  </div>
-  <div class="rspacer"></div>
-  <div class="rfoot">차세대 시안 재구축 v2 — 다크 크롬·우측 패널·세로 캘린더<br>기능 12종(공고 대응)은 그대로</div>
-</aside>
-<div class="stage">
-<header class="tbar">
-  <nav class="nav">
-    <button class="on" data-view="cal"><i class="ni">&#128197;</i>스케줄</button>
-    <button data-view="pt"><i class="ni">&#128100;</i>환자</button>
-    <button data-view="pay"><i class="ni">&#128179;</i>수납·미수</button>
-    <button data-view="send"><i class="ni">&#9993;</i>문자·알림톡</button>
-    <button data-view="stats"><i class="ni">&#128202;</i>통계</button>
-    <button data-view="set"><i class="ni">&#9881;</i>설정·보안</button>
-  </nav>
-  <span class="sp"></span>
-  <span class="tchip" id="ssotChip">예약 주인: 이 CRM</span>
-  <button class="tbtn" id="cidSim" title="CID 수신전화 팝업 시뮬레이션">&#9742; 수신 시뮬</button>
+  <button class="btn sm" id="cidSim" title="CID 수신전화 팝업 시뮬레이션">☎ 수신 시뮬</button>
   <div class="role-sw">
     <button class="on" data-role="desk">데스크</button>
     <button data-role="chief">실장</button>
     <button data-role="owner">원장</button>
   </div>
 </header>
+
+<nav class="nav">
+  <button class="on" data-view="cal">예약 캘린더</button>
+  <button data-view="pt">환자</button>
+  <button data-view="pay">수납·미수 <span class="nbadge">1</span></button>
+  <button data-view="send">문자·알림톡</button>
+  <button data-view="stats">통계</button>
+  <button data-view="set">설정·보안</button>
+</nav>
 
 <main class="main">
 
@@ -97,7 +79,7 @@
     </div>
     <div class="calscroll"><div id="cal"></div></div>
   </div>
-  <p class="note">실측 규격 — 세로 시간축(시안 문법·30분=36px Syncfusion 세로형 실측)·컬러 상태 블록, 현재 시각 라인·비영업 사선(FullCalendar 원문), 상태 색은 채널톡 램프(hex→알파 파생). <b>스케일링은 위생사 축에서만 온전히 보입니다</b> — 위생사가 리소스에서 빠지면 "의사·체어는 비었는데 붙을 스탭이 없는" 예약이 생깁니다.</p>
+  <p class="note">실측 규격 — 타임라인 행 60px·이벤트 바 38px·30분 50px·정시 실선/30분 점선(Syncfusion 라이브 실측), 현재 시각 라인·비영업 사선(FullCalendar 원문), 상태 색은 채널톡 램프(hex→알파 파생). <b>스케일링은 위생사 축에서만 온전히 보입니다</b> — 위생사가 리소스에서 빠지면 "의사·체어는 비었는데 붙을 스탭이 없는" 예약이 생깁니다.</p>
 </section>
 
 <!-- ② 환자 -->
@@ -326,11 +308,9 @@
 </section>
 
 </main>
-</div><!--/stage-->
-</div><!--/chrome-->
 
 <!-- 예약 등록 모달 -->
-<div class="modal-bg rside" id="bookModal">
+<div class="modal-bg" id="bookModal">
   <div class="modal">
     <h3>신규 예약</h3>
     <p class="msub" id="bkWhen"></p>
@@ -366,7 +346,7 @@
 </div>
 
 <!-- 환자 상세 모달 (기록 경계선 · 레이어 규격: 스크롤 그림자 + 하단 고정 버튼바) -->
-<div class="modal-bg rside" id="patModal">
+<div class="modal-bg" id="patModal">
   <div class="modal lay" style="max-width:760px">
     <div class="mhead">
     <h3 id="pdName"></h3>
@@ -424,6 +404,6 @@
 <div class="toast" id="toast"></div>
 
 <script src="assets/js/data.js?v=1"></script>
-<script src="assets/js/app.js?v=5"></script>
+<script src="assets/js/app.js?v=4"></script>
 </body>
 </html>
