@@ -196,10 +196,10 @@ function openPatient(id){
   $("#pdMeta").innerHTML=`${p.birth} · ${mask(p.phone)} · 최근 내원 ${p.lastVisit}
     ${p.noshow12m>=2?' · <span class="pill noshow">위약금 동의서 징구 대상 (12개월 노쇼 '+p.noshow12m+'회)</span>':""}
     ${p.consent.sensitive?'':' · <span class="pill warn">민감정보 별도 동의 없음 — 진료 연동 열람 잠김</span>'}`;
-  $("#pdDesk").innerHTML=p.desk.map(r=>`<div class="rec"><time>${r.t} · ${r.who}</time>${r.txt}</div>`).join("")||'<p style="font-size:12px;color:var(--ink-muted)">기록 없음</p>';
+  $("#pdDesk").innerHTML=p.desk.map(r=>`<div class="rec"><time>${r.t} · ${r.who}</time>${r.txt}</div>`).join("")||'<p style="font-size:0.8571rem;color:var(--ink-muted)">기록 없음</p>';
   $("#pdEmr").innerHTML = p.consent.sensitive
-    ? (p.emr.map(r=>`<div class="rec"><time>${r.t}</time>${r.txt}</div>`).join("")||'<p style="font-size:12px;color:var(--ink-muted)">연동 기록 없음</p>')
-    : '<p style="font-size:12px;color:var(--warn)">민감정보 동의 미확보 — 열람 제한</p>';
+    ? (p.emr.map(r=>`<div class="rec"><time>${r.t}</time>${r.txt}</div>`).join("")||'<p style="font-size:0.8571rem;color:var(--ink-muted)">연동 기록 없음</p>')
+    : '<p style="font-size:0.8571rem;color:var(--warn)">민감정보 동의 미확보 — 열람 제한</p>';
   $("#pdInput").value="다음 내원 시 크라운 색상 상담 예정 — 견적 55만원 안내함";
   $("#pdWarn").hidden=true;
   $("#patModal").classList.add("open");
@@ -321,7 +321,7 @@ function renderRecall(){
   let base=0;
   if(yearRule) base+=DD.RECALL_MONTHLY[0]?820:0;
   const total=(yearRule?820:0)+(m6?310:0)+(imp65?46:0);
-  $("#recallCnt").innerHTML=`이번 분기 리콜 대상 <b style="font-size:18px">${fmt(total)}명</b>`;
+  $("#recallCnt").innerHTML=`이번 분기 리콜 대상 <b style="font-size:1.2857rem">${fmt(total)}명</b>`;
   const arr=yearRule?DD.RECALL_MONTHLY:DD.RECALL_MONTHLY.map(v=>Math.round(v*0.25+80));
   const max=Math.max(...arr);
   $("#recallSpark").innerHTML=arr.map((v,i)=>`<i class="${yearRule&&i===0?"hot":""}" style="height:${Math.max(3,v/max*100)}%"><em>${i===0||v===max?fmt(v):""}</em></i>`).join("");
@@ -335,7 +335,7 @@ function renderTemplates(){
   $("#tplBody").innerHTML=DD.TEMPLATES.map(t=>`
     <tr><td><b>${t.name}</b></td><td><span class="mono">${t.vars}/40</span></td>
     <td>${t.status==="승인"?'<span class="pill ok">승인</span>':t.status==="반려"?`<span class="pill dang" title="${t.reject}">반려</span>`:'<span class="pill warn">검수중</span>'}</td>
-    <td style="font-size:11.5px;color:var(--ink-sub);max-width:340px">${t.body}${t.reject?`<br><span style="color:var(--danger)">└ ${t.reject}</span>`:""}</td></tr>`).join("");
+    <td style="font-size:0.8214rem;color:var(--ink-sub);max-width:340px">${t.body}${t.reject?`<br><span style="color:var(--danger)">└ ${t.reject}</span>`:""}</td></tr>`).join("");
 }
 
 /* ══ ⑤ 통계 (R⑦⑩) ══ */
@@ -358,7 +358,7 @@ function renderStats(){
     all:[n.noshow, n.total, "노쇼 ÷ 전체 예약"],
     cancel:[n.noshow+n.sameDayCancel, n.total, "(노쇼+당일취소) ÷ 전체"] };
   const d=defs[state.noshowDef];
-  $("#nsOut").innerHTML=`<b style="font-size:22px">${(d[0]/d[1]*100).toFixed(1)}%</b> <small style="color:var(--ink-muted)">${d[2]} = ${d[0]}÷${d[1]}</small>`;
+  $("#nsOut").innerHTML=`<b style="font-size:1.5714rem">${(d[0]/d[1]*100).toFixed(1)}%</b> <small style="color:var(--ink-muted)">${d[2]} = ${d[0]}÷${d[1]}</small>`;
   /* 노쇼 방지 시뮬 */
   const mode=$("#nsSim")?.value||"d1";
   const rate={none:1, d1:0.78, both:0.66}[mode]; /* 서울대치과병원 실측 22%↓ 기준 */
