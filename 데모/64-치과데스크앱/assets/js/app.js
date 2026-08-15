@@ -292,9 +292,28 @@ document.addEventListener("click",e=>{
 function openPatient(id){
   const p=DD.PATIENTS.find(x=>x.id===id);
   $("#pdName").textContent=`${p.name} · ${p.id}`;
-  $("#pdMeta").innerHTML=`${p.birth} · ${mask(p.phone)} · 최근 내원 ${p.lastVisit}
-    ${p.noshow12m>=2?' · <span class="pill noshow">위약금 동의서 징구 대상 (12개월 노쇼 '+p.noshow12m+'회)</span>':""}
-    ${p.consent.sensitive?'':' · <span class="pill warn">민감정보 별도 동의 없음 — 진료 연동 열람 잠김</span>'}`;
+  const [by,bm,bd]=p.birth.split("-").map(Number);
+  let age=2026-by; if(8<bm||(8===bm&&14<bd)) age--;   /* 기준일 2026-08-14 만 나이 */
+  const ar=DD.ARREARS.find(x=>x.p===p.name);
+  $("#pdMeta").innerHTML=`
+    <div class="pd-head">
+      <div class="pd-ava">${p.name[0]}</div>
+      <div class="pd-hbody">
+        <div class="pd-hname">${p.name}<small>${p.id}</small></div>
+        <div class="pd-hmeta">
+          <span>생년월일 <b>${p.birth}</b> (만 ${age}세)</span>
+          <span>연락처 <b>${mask(p.phone)}</b></span>
+          <span>최근 내원 <b>${p.lastVisit}</b></span>
+        </div>
+        <div class="pd-hchips">
+          ${p.noshow12m?`<span class="pill noshow">노쇼 ${p.noshow12m}회</span>`:'<span class="pill ok">노쇼 없음</span>'}
+          ${ar?`<span class="pill dang">미수 ${fmt(ar.total-ar.paid)}원</span>`:'<span class="pill mut">미수 없음</span>'}
+          <span class="pill ${p.consent.marketing?"ok":"mut"}">광고 ${p.consent.marketing?"동의":"미동의"}</span>
+          ${p.noshow12m>=2?'<span class="pill warn">위약금 동의서 대상</span>':""}
+          ${!p.consent.sensitive?'<span class="pill warn">민감정보 미동의 — 진료 연동 잠김</span>':""}
+        </div>
+      </div>
+    </div>`;
   $("#pdDesk").innerHTML=p.desk.map(r=>`<div class="rec"><time>${r.t} · ${r.who}</time>${r.txt}</div>`).join("")||'<p style="font-size:0.8571rem;color:var(--ink-muted)">기록 없음</p>';
   $("#pdEmr").innerHTML = p.consent.sensitive
     ? (p.emr.map(r=>`<div class="rec"><time>${r.t}</time>${r.txt}</div>`).join("")||'<p style="font-size:0.8571rem;color:var(--ink-muted)">연동 기록 없음</p>')
