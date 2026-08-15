@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>온화 ONHWA — 지점·본부 관리자</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=9">
+<link rel="stylesheet" href="assets/css/admin.css?v=9">
+</head>
+<body class="admin">
+
+<aside class="rail" id="rail">
+  <a class="rail-brand" href="index.html"><span class="brand-mark">온화</span><span class="brand-en">ADMIN</span></a>
+  <div class="role-switch" id="roleSwitch">
+    <button class="on" data-role="branch">지점 오피스</button>
+    <button data-role="master">본부 마스터</button>
+  </div>
+  <nav class="rail-nav" id="railNav"></nav>
+  <div class="rail-foot">
+    <div class="rail-who" id="railWho"></div>
+    <a class="rail-back" href="index.html">← 이용자 사이트</a>
+  </div>
+</aside>
+
+<div class="admin-main">
+  <header class="abar">
+    <div class="abar-title"><h1 id="abarTitle">대시보드</h1><span class="muted" id="abarSub"></span></div>
+    <div class="abar-right">
+      <span class="demopill">데모 · 가상 데이터</span>
+      <div class="abar-user" id="abarUser"></div>
+    </div>
+  </header>
+  <main class="acontent" id="acontent"></main>
+</div>
+
+<div class="modal-bg" id="aModal"><div class="modal wide"><div id="aModalBody"></div></div></div>
+<div id="toast"></div>
+
+<script src="assets/js/data.js?v=9"></script>
+<script src="assets/js/admin.js?v=9"></script>
+</body>
+</html>

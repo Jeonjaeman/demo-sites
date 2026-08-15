@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>온화 ONHWA — 장례식장 예약·용품 견적 플랫폼</title>
+<meta name="description" content="전국 온화 지점의 빈소 현황을 한눈에. 예약부터 용품 견적, 모바일 부고장까지 원스톱. (제안용 데모 · 데이터는 전부 가상)">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=9">
+</head>
+<body>
+
+<!-- 상단 데모 고지 -->
+<div class="demobar">제안용 데모 · 표시되는 지점·유족·결제는 모두 <b>가상 데이터</b>입니다 · <a href="admin.html">관리자(지점·본부) 보기 →</a></div>
+
+<!-- 네비 -->
+<header class="nav" id="nav">
+  <div class="shell shell-wide nav-in">
+    <a class="brand" data-go="home">
+      <span class="brand-mark">온화</span><span class="brand-en">ONHWA</span>
+    </a>
+    <nav class="nav-menu">
+      <button data-go="search">지점 찾기</button>
+      <button data-go="estimate">용품 견적</button>
+      <button data-go="obituary">모바일 부고장</button>
+      <button data-go="mypage">마이페이지</button>
+    </nav>
+    <div class="nav-cta">
+      <a class="tel" href="tel:16680000"><span class="tel-dot"></span>24시간 상담 <b>1668-0000</b></a>
+      <button class="btn pri sm" data-emergency>지금 임종하셨나요?</button>
+    </div>
+    <button class="nav-burger" id="navBurger" aria-label="메뉴">☰</button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ═══════════ 홈 ═══════════ -->
+  <section class="view" id="v-home">
+    <!-- 스크롤 스크럽 히어로 -->
+    <section class="scrollhero fullbleed" id="scrollHero">
+      <div class="sh-stage">
+        <div class="sh-poster" style="background-image:url(assets/img/hero-poster.webp)"></div>
+        <video class="sh-video" id="shVideo" muted playsinline preload="auto" poster="assets/img/hero-poster.webp"></video>
+        <div class="sh-scrim"></div>
+        <div class="sh-loading" id="shLoading"><span class="sh-ring"></span></div>
+        <div class="sh-bands">
+          <div class="sh-band shell" data-band="0">
+            <p class="eyebrow sh-eye">전국 온화 지점 · 실시간 빈소 현황</p>
+            <h1 class="disp d-xxl sh-title">가장 경황없는 순간에,<br>가장 분명한 도움을.</h1>
+          </div>
+          <div class="sh-band shell" data-band="1">
+            <p class="disp d-xl sh-mid">지금 비어 있는 빈소를,<br>바로 보여드립니다.</p>
+          </div>
+          <div class="sh-band shell" data-band="2">
+            <p class="disp d-lg sh-settle">장례 비용을 미리, 투명하게.</p>
+            <div class="hero-actions">
+              <button class="btn gold lg" data-emergency><span class="ic">☎</span> 지금 임종하셨나요?</button>
+              <button class="btn lg hero-ghost" data-go="search">빈 빈소부터 찾아보기</button>
+            </div>
+            <div class="hero-meta">
+              <span><b id="hmBranch">—</b> 전국 지점</span><i></i>
+              <span><b id="hmAvail">—</b> 지금 예약 가능 빈소</span><i></i>
+              <span>평균 응대 <b>2분</b></span>
+            </div>
+          </div>
+        </div>
+        <div class="sh-cue" id="shCue"><span>스크롤</span><i></i></div>
+      </div>
+    </section>
+
+    <!-- 긴급도 진입(고이 문법) -->
+    <div class="shell section-sm">
+      <div class="urg-grid" id="urgGrid"></div>
+    </div>
+
+    <!-- 신뢰 3원칙 -->
+    <div class="shell section-sm">
+      <div class="between sec-head rv">
+        <div><p class="eyebrow">온화의 약속</p><h2 class="disp d-lg">가격이 투명해야 신뢰가 생깁니다.</h2></div>
+        <button class="btn sm" data-go="estimate">용품 견적 내보기 →</button>
+      </div>
+      <div class="trust-grid" id="trustGrid"></div>
+    </div>
+
+    <!-- 실시간 지점 현황 (풀블리드) -->
+    <div class="fullbleed live-band">
+      <div class="shell">
+        <div class="between sec-head rv">
+          <div><p class="eyebrow" style="color:var(--gold)">실시간 · 본부 관제</p>
+            <h2 class="disp d-lg" style="color:#F5F4F2">지금 이 순간, 비어 있는 빈소</h2></div>
+          <button class="btn sm live-more" data-go="search">전체 지점 보기 →</button>
+        </div>
+        <div class="live-grid" id="liveGrid"></div>
+        <p class="live-note rv">직영 지점은 본부 중앙 관제로 <b>실시간</b> 갱신됩니다. 가맹·제휴 지점은 <b>최종 확인 시각</b>과 함께
+          전화 확인을 권합니다. — 빈소 현황의 신선도를 숨기지 않고 그대로 보여드립니다.</p>
+      </div>
+    </div>
+
+    <!-- 상품 티어 -->
+    <div class="shell section">
+      <div class="sec-head center rv"><p class="eyebrow">상품 안내</p>
+        <h2 class="disp d-lg">무빈소부터 프리미엄까지, 필요한 만큼만.</h2></div>
+      <div class="pkg-grid" id="pkgGrid"></div>
+    </div>
+
+    <!-- ② 풀블리드 이미지 단락 -->
+    <section class="fullbleed statement" id="statement">
+      <div class="statement-media" style="background-image:url(assets/img/still-path.webp)"></div>
+      <div class="statement-scrim"></div>
+      <div class="shell statement-in">
+        <p class="eyebrow rv" style="color:var(--gold-soft)">함께 걷습니다</p>
+        <h2 class="disp d-xl rv" style="color:#F7F5EF">막막한 길을, 먼저 걸어본 이가 안내합니다.</h2>
+        <p class="lead rv" style="color:rgba(247,245,239,.86);max-width:46ch">임종부터 발인, 그리고 그 후의 정리까지. 무엇을 언제 해야 하는지, 온화가 곁에서 하나씩 짚어드립니다.</p>
+      </div>
+    </section>
+
+    <!-- 텍스트 리빌(⑤) -->
+    <div class="fullbleed reveal-band">
+      <div class="reveal-media" style="background-image:url(assets/img/still-flower.webp)"></div>
+      <div class="shell">
+        <p class="reveal-text disp d-xl" id="revealText">
+          <span>떠나보내는 일은 서두를 수 없습니다.</span>
+          <span>그러나 준비는, 분명하고 빠를수록 좋습니다.</span>
+          <span>온화는 남은 이들이 슬픔에만 집중할 수 있도록,</span>
+          <span>나머지를 대신 분명하게 정리합니다.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- 부고장 유도 -->
+    <div class="shell section">
+      <div class="obit-cta card rv lantern">
+        <div class="obit-cta-media" style="background-image:url(assets/img/still-lantern.webp)"></div>
+        <div class="obit-cta-scrim"></div>
+        <div class="obit-cta-txt">
+          <p class="eyebrow" style="color:var(--gold-soft)">모바일 부고장</p>
+          <h2 class="disp d-md" style="color:#F7F5EF">부고를 알리는 일까지, 품위 있게.</h2>
+          <p class="lead" style="color:rgba(247,245,239,.86)">템플릿을 고르고 정보를 입력하면 카카오톡으로 바로 공유할 수 있는 부고장이 만들어집니다.
+            조의계좌·유족 연락처는 <b style="color:#fff">비공개로 감출 수</b> 있고, 발인 후 링크는 자동 만료됩니다.</p>
+          <button class="btn gold" data-go="obituary">부고장 만들어보기 →</button>
+        </div>
+        <div class="obit-cta-prev" id="obitCtaPrev"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 지점 찾기 ═══════════ -->
+  <section class="view" id="v-search" hidden>
+    <div class="shell subhead">
+      <p class="eyebrow">지점 찾기</p>
+      <h1 class="disp d-xl">지금 비어 있는 빈소를 찾습니다.</h1>
+      <p class="lead">지역을 고르면 실시간(직영) 또는 최종 확인 시각(가맹·제휴)과 함께 가용 빈소를 보여드립니다.</p>
+    </div>
+    <div class="shell">
+      <div class="search-ctrl">
+        <div class="region-chips" id="regionChips"></div>
+        <label class="onlyavail"><span class="sw"><input type="checkbox" id="onlyAvail"><i></i></span> 예약 가능한 곳만</label>
+      </div>
+      <div class="branch-list" id="branchList"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 지점 상세 ═══════════ -->
+  <section class="view" id="v-detail" hidden>
+    <div class="shell" id="detailWrap"></div>
+  </section>
+
+  <!-- ═══════════ 용품 견적 ═══════════ -->
+  <section class="view" id="v-estimate" hidden>
+    <div class="shell subhead">
+      <p class="eyebrow">용품 견적</p>
+      <h1 class="disp d-xl">쓰기 전에 총액을 압니다.</h1>
+      <p class="lead">지점을 고르고 필요한 용품을 담으면 실시간으로 합산됩니다. 표시가는 본부 표준가 기준이며, 지점에 따라 확정가가 다를 수 있습니다.</p>
+    </div>
+    <div class="shell est-layout">
+      <div class="est-catalog" id="estCatalog"></div>
+      <aside class="est-cart" id="estCart"></aside>
+    </div>
+  </section>
+
+  <!-- ═══════════ 부고장 ═══════════ -->
+  <section class="view" id="v-obituary" hidden>
+    <div class="shell subhead">
+      <p class="eyebrow">모바일 부고장</p>
+      <h1 class="disp d-xl">부고를 알리는 일까지, 품위 있게.</h1>
+      <p class="lead">정보를 입력하고 템플릿을 고르면 오른쪽 미리보기가 실시간으로 바뀝니다. 링크 공유 방식이라 카카오 채널 없이 바로 보낼 수 있습니다.</p>
+    </div>
+    <div class="shell obit-layout">
+      <div class="obit-form" id="obitForm"></div>
+      <aside class="obit-preview-wrap"><div class="phone" id="obitPhone"></div></aside>
+    </div>
+  </section>
+
+  <!-- ═══════════ 마이페이지 ═══════════ -->
+  <section class="view" id="v-mypage" hidden>
+    <div class="shell subhead">
+      <p class="eyebrow">마이페이지</p>
+      <h1 class="disp d-xl">내 예약·결제·상담</h1>
+      <p class="lead">데모에서는 대표 유족(김상주 님) 계정으로 로그인되어 있다고 가정합니다.</p>
+    </div>
+    <div class="shell" id="mypageWrap"></div>
+  </section>
+
+</main>
+
+<!-- 푸터 -->
+<footer class="foot">
+  <div class="shell shell-wide foot-in">
+    <div><span class="brand-mark">온화</span><span class="brand-en">ONHWA</span>
+      <p class="muted" style="margin-top:10px;max-width:34ch">전국 온화 지점 예약·용품 견적·모바일 부고장 통합 플랫폼. 본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</p></div>
+    <div class="foot-cols">
+      <div><h5>서비스</h5><button data-go="search">지점 찾기</button><button data-go="estimate">용품 견적</button><button data-go="obituary">부고장</button></div>
+      <div><h5>고객</h5><a href="tel:16680000">24시간 상담 1668-0000</a><button data-emergency>긴급 상담</button><a href="admin.html">관리자 보기</a></div>
+    </div>
+  </div>
+  <div class="shell shell-wide foot-btm muted">© 2026 ONHWA (가상 브랜드) · 제안용 데모</div>
+</footer>
+
+<!-- ═══════════ 모달: 예약·결제 ═══════════ -->
+<div class="modal-bg" id="bookModal"><div class="modal wide"><div id="bookBody"></div></div></div>
+
+<!-- ═══════════ 시트: 응급 상담 ═══════════ -->
+<div class="modal-bg" id="emergSheet"><div class="modal"><div id="emergBody"></div></div></div>
+
+<!-- ═══════════ 모달: 견적서 ═══════════ -->
+<div class="modal-bg" id="quoteModal"><div class="modal wide"><div id="quoteBody"></div></div></div>
+
+<div id="toast"></div>
+
+<script src="assets/js/data.js?v=9"></script>
+<script src="assets/js/app.js?v=9"></script>
+</body>
+</html>
