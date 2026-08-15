@@ -127,6 +127,34 @@ DD.ROLES = {
   owner: { label:"원장",   export:true, payEdit:true, stats:true, logs:true }
 };
 
+/* 중복 고객 후보 (동명이인·전화 일치 — 병합 대상) */
+DD.DUP_CANDIDATES = [
+  { key:"장미래·010-4417-8823", reason:"이름+전화 완전 일치", records:[
+    { id:"P-1042", name:"장미래", phone:"010-4417-8823", birth:"1988-04-12", lastVisit:"2026-08-01", visits:18 },
+    { id:"P-1301", name:"장미래", phone:"010-4417-8823", birth:"1988-04-12", lastVisit:"2025-11-20", visits:3 }
+  ]},
+  { key:"김민수", reason:"동명이인 — 전화·생년 다름(병합 금지 후보)", records:[
+    { id:"P-0455", name:"김민수", phone:"010-2201-3388", birth:"1990-03-03", lastVisit:"2026-07-30", visits:6 },
+    { id:"P-0912", name:"김민수", phone:"010-8834-1120", birth:"1975-09-15", lastVisit:"2026-06-11", visits:2 }
+  ]}
+];
+
+/* 삭제·비활성 고객 (물리삭제 없음 — 보존기간·소프트삭제) */
+DD.INACTIVE = [
+  { id:"P-0233b", name:"정우석", reason:"본인 탈퇴 요청", inactiveAt:"2026-05-02", keepUntil:"2036-05-02", note:"진료기록 10년 보존 중 — 파기 불가" },
+  { id:"P-0710", name:"한소희", reason:"중복 병합(→ P-1042)", inactiveAt:"2026-08-01", keepUntil:"병합 보존", note:"병합 이력 보존, 되돌리기 가능" },
+  { id:"P-0088", name:"오세훈", reason:"5년 미내원 자동 비활성", inactiveAt:"2026-01-10", keepUntil:"2031-01-10", note:"명부 보존 5년 경과 시 파기 대상" }
+];
+
+/* 매입 (재료·약제 — 공급처·외상) */
+DD.SUPPLIERS = ["㈜덴탈메이트","오스템임플란트","신흥治材","GC코리아"];
+DD.PURCHASES = [
+  { t:"2026-08-13", supplier:"오스템임플란트", item:"임플란트 픽스처 (레귤러)", qty:20, amount:1600000, paid:true, lot:"OT-2608-A", exp:"2029-08" },
+  { t:"2026-08-12", supplier:"㈜덴탈메이트", item:"글러브·소독재 세트", qty:10, amount:180000, paid:true, lot:"-", exp:"2027-08" },
+  { t:"2026-08-10", supplier:"GC코리아", item:"레진 (A2/A3)", qty:8, amount:320000, paid:false, lot:"GC-2607", exp:"2028-02" },
+  { t:"2026-08-08", supplier:"신흥治材", item:"마취제 (리도카인)", qty:50, amount:250000, paid:false, lot:"SH-2605", exp:"2027-05" }
+];
+
 /* 진료항목 마스터 (헤어사랑넷 serviceMstr 계승 — 진료과 계층 + 급여구분·소요시간) */
 DD.SERVICES = [
   { cat:"보존", items:[

@@ -82,6 +82,14 @@ table{border-collapse:collapse}
 
 .main{padding:16px 18px 70px;min-width:0;max-width:1480px}
 .view{display:none}.view.on{display:block}
+/* 서브탭 바 (탭별 부수 기능) */
+.subnav{display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--line);overflow-x:auto}
+.subnav button{font-size:0.9286rem;font-weight:700;color:var(--ink-sub);padding:9px 15px;white-space:nowrap;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:color var(--t1) var(--ease-ui),border-color var(--t1) var(--ease-ui)}
+.subnav button:hover{color:var(--ink)}
+.subnav button.on{color:var(--pri);border-bottom-color:var(--pri)}
+.subnav .sbadge{font-size:0.7rem;font-weight:800;background:var(--warn-bg);color:var(--warn);border-radius:999px;padding:1px 6px;margin-left:5px}
+.subpane{display:none}.subpane.on{display:block}
 
 /* ══ 컴포넌트 ══ */
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px;

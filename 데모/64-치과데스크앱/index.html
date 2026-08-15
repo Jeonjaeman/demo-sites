@@ -7,7 +7,7 @@
 <title>DENTDESK — 치과 데스크 통합 관리</title>
 <meta name="description" content="치과 데스크 예약·환자·수납·발송·통계 통합 관리 시스템">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=16">
+<link rel="stylesheet" href="assets/css/style.css?v=17">
 </head>
 <body>
 
@@ -102,6 +102,12 @@
 
 <!-- ② 환자 -->
 <section class="view" id="v-pt">
+  <div class="subnav">
+    <button class="on" data-sub="pt-list">고객 목록</button>
+    <button data-sub="pt-dup">중복 고객 관리 <span class="sbadge">2</span></button>
+    <button data-sub="pt-del">삭제·비활성 고객</button>
+  </div>
+  <div class="subpane on" id="sp-pt-list">
   <div class="card rv">
     <h3>환자 목록 — 연락처는 기본 마스킹, 「표시」 클릭이 곧 열람 기록</h3>
     <p class="sub">서버측 마스킹: 원문은 표시 요청 시에만 조회되고 그 행위가 접속기록에 남습니다(민감정보 시스템 2년 보존). 전체 다운로드는 권한 등급별로 차단·제한됩니다(우측 상단 계정 등급 기준).</p>
@@ -117,10 +123,31 @@
     <table class="tbl"><thead><tr><th>ID</th><th>이름</th><th>출생</th><th>연락처</th><th>최근 내원</th><th>노쇼 이력</th><th>광고 수신</th><th></th></tr></thead>
     <tbody id="ptBody"></tbody></table>
   </div>
+  </div>
+  <div class="subpane" id="sp-pt-dup">
+    <div class="card rv">
+      <h3>중복 고객 관리 — 동명이인·전화 일치</h3>
+      <p class="sub">이름+전화가 일치하면 병합 후보이고, 동명이인(전화·생년이 다름)은 병합하면 안 됩니다. 병합은 물리 삭제가 아니라 한 차트로 합치고 이력을 보존하므로 되돌릴 수 있습니다.</p>
+      <div id="dupList"></div>
+    </div>
+  </div>
+  <div class="subpane" id="sp-pt-del">
+    <div class="card rv">
+      <h3>삭제·비활성 고객 — 물리 삭제 없음</h3>
+      <p class="sub">진료기록 10년·환자명부 5년 보존 의무가 있어, 삭제는 실제 삭제가 아니라 비활성 처리 + 보존기간 관리입니다. 보존기간 내에는 파기가 차단됩니다.</p>
+      <table class="tbl"><thead><tr><th>차트번호</th><th>이름</th><th>사유</th><th>비활성일</th><th>보존 만료</th><th></th></tr></thead><tbody id="inactiveBody"></tbody></table>
+    </div>
+  </div>
 </section>
 
 <!-- ③ 수납·미수 -->
 <section class="view" id="v-pay">
+  <div class="subnav">
+    <button class="on" data-sub="pay-main">수납·미수</button>
+    <button data-sub="pay-sales">매출</button>
+    <button data-sub="pay-purchase">매입 <span class="sbadge">외상 2</span></button>
+  </div>
+  <div class="subpane on" id="sp-pay-main">
   <div class="card rv">
     <h3>수납 등록</h3>
     <p class="sub">수납 데스크는 터치 단말 사용률이 높아 금액 입력 속도가 곧 대기열입니다. 금액 칸을 클릭하면 넘버패드가 뜨고,
@@ -155,6 +182,26 @@
       <label>취소 시점 <input type="range" id="pnWhen" min="0" max="7" step="1" value="1"><output id="pnWhenOut">1일 전</output></label>
     </div>
     <p style="font-size:0.9286rem" id="pnOut"></p>
+  </div>
+  </div>
+  <div class="subpane" id="sp-pay-sales">
+    <div class="card rv">
+      <h3>매출 — 일별·진료항목별</h3>
+      <p class="sub">수납 완료액 기준 집계입니다. 급여분은 공단 심사 후 입금되므로, 회계 매출은 통계 탭의 발생·청구대기와 함께 확인하세요.</p>
+      <div style="font-size:0.8214rem;font-weight:700;color:var(--ink-muted);margin-bottom:6px">최근 7일 수납</div>
+      <div class="spark" id="salesDaily"></div>
+      <div class="spark-lab"><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span><span>오늘</span></div>
+      <h4 style="font-size:0.8571rem;font-weight:800;margin:16px 0 8px">진료항목별 (이번 달)</h4>
+      <table class="tbl"><thead><tr><th>진료</th><th>건수</th><th style="text-align:right">매출</th><th>구분</th></tr></thead><tbody id="salesItemBody"></tbody></table>
+    </div>
+  </div>
+  <div class="subpane" id="sp-pay-purchase">
+    <div class="card rv">
+      <h3>매입 — 재료·약제</h3>
+      <p class="sub">공급처별 매입과 외상(미지급)을 관리합니다. 로트번호·유효기간은 처방·시술 시 차감과 유효기간 임박 알림에 쓰입니다.</p>
+      <table class="tbl"><thead><tr><th>일자</th><th>공급처</th><th>품목</th><th>수량</th><th style="text-align:right">금액</th><th>로트</th><th>유효기간</th><th>지급</th></tr></thead><tbody id="purchaseBody"></tbody></table>
+      <p class="note" id="purchaseSum"></p>
+    </div>
   </div>
 </section>
 
@@ -229,6 +276,11 @@
 
 <!-- ⑤ 통계 -->
 <section class="view" id="v-stats">
+  <div class="subnav">
+    <button class="on" data-sub="stats-main">경영 요약</button>
+    <button data-sub="stats-proc">진료·리콜</button>
+  </div>
+  <div class="subpane on" id="sp-stats-main">
   <div class="grid2">
     <div class="card rv">
       <h3>3단 매출 — 이 숫자는 회계가 아니라 운영 지표입니다</h3>
@@ -260,10 +312,30 @@
       <p style="font-size:0.9286rem" id="nsSimOut"></p>
     </div>
   </div>
+  </div>
+  <div class="subpane" id="sp-stats-proc">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>진료항목별 매출·건수 (이번 달)</h3>
+        <div id="statProcBody"></div>
+      </div>
+      <div class="card rv">
+        <h3>리콜 대상 — 규칙별</h3>
+        <p class="sub">스케일링(급여연도 리셋)·정기 검진·교정 유지 대상 환자 수입니다. 발송은 문자·알림톡 탭의 리콜 캠페인에서 진행합니다.</p>
+        <div id="statRecallBody"></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ⑥ 설정·보안 -->
 <section class="view" id="v-set">
+  <div class="subnav">
+    <button class="on" data-sub="set-care">진료·예약</button>
+    <button data-sub="set-data">데이터·연동</button>
+    <button data-sub="set-sec">보안·개인정보</button>
+  </div>
+  <div class="subpane on" id="sp-set-care">
   <div class="card rv">
     <h3>진료항목 관리</h3>
     <p class="sub">자주 쓰는 진료를 진료과별로 등록해 두면, 예약·수납에서 매번 타이핑하지 않고 선택할 수 있습니다(직접 입력도 가능). 급여/비급여 구분과 기본 소요시간을 함께 관리합니다.</p>
@@ -294,6 +366,8 @@
     </div>
     <p style="font-size:0.9286rem" id="duOut"></p>
   </div>
+  </div>
+  <div class="subpane" id="sp-set-data">
   <div class="grid2">
     <div class="card rv">
       <h3>기록 경계선 — 규제 등급 스위처</h3>
@@ -314,6 +388,8 @@
       <p class="note">지점 확장 대비 — 데이터 모델에 clinic_id 선반영, 화면의 「분원 추가」는 2차 범위로 비활성 노출.</p>
     </div>
   </div>
+  </div>
+  <div class="subpane" id="sp-set-sec">
   <div class="card rv">
     <h3>접속·열람 기록 — 민감정보 시스템은 2년 보존 의무 (원장 권한 전용)</h3>
     <p class="sub">누가 어떤 환자를 조회·수정·다운로드했는지까지 남아야 법정 요건을 충족합니다. 2025.10 개정: 접속한 자 전체 기록·외부 접속 MFA. 역할을 「원장」으로 바꾸면 열립니다.</p>
@@ -336,6 +412,7 @@
       </div>
       <p style="font-size:0.8929rem" id="brOut"></p>
     </div>
+  </div>
   </div>
 </section>
 
@@ -485,7 +562,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="assets/js/data.js?v=2"></script>
-<script src="assets/js/app.js?v=10"></script>
+<script src="assets/js/data.js?v=3"></script>
+<script src="assets/js/app.js?v=11"></script>
 </body>
 </html>

@@ -641,6 +641,89 @@ $("#importRun").addEventListener("click",()=>{
   toast("이관은 별도 공수입니다 — 기존 프로그램의 내보내기 형식 확인이 착수 1주차 작업");
 });
 
+/* ══ 서브탭 전환 (탭별 부수 기능) ══ */
+document.addEventListener("click",e=>{
+  const sb=e.target.closest(".subnav button"); if(!sb) return;
+  const sub=sb.dataset.sub, nav=sb.closest(".subnav"), view=sb.closest(".view");
+  nav.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===sb));
+  view.querySelectorAll(".subpane").forEach(p=>p.classList.toggle("on",p.id==="sp-"+sub));
+  ({ "pt-dup":renderDup, "pt-del":renderInactive, "pay-sales":renderSales,
+     "pay-purchase":renderPurchase, "stats-proc":renderStatProc }[sub]||(()=>{}))();
+  bindReveal();
+});
+/* 중복 고객 관리 */
+function renderDup(){
+  $("#dupList").innerHTML = DD.DUP_CANDIDATES.map((d,di)=>{
+    const mergeable = d.reason.includes("일치") && !d.reason.includes("금지");
+    return `<div style="border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <b style="font-size:0.9286rem">${d.records[0].name}</b>
+        <span class="pill ${mergeable?"warn":"mut"}">${d.reason}</span></div>
+      <table class="tbl"><thead><tr><th>차트번호</th><th>연락처</th><th>생년월일</th><th>최근 내원</th><th>내원수</th></tr></thead><tbody>
+      ${d.records.map(r=>`<tr><td>${r.id}</td><td class="mono">${mask(r.phone)}</td><td>${r.birth}</td><td>${r.lastVisit}</td><td>${r.visits}회</td></tr>`).join("")}
+      </tbody></table>
+      <div style="margin-top:8px;text-align:right">
+        ${mergeable
+          ? `<button class="btn sm pri" data-merge="${di}">한 차트로 병합 (${d.records[1].id}→${d.records[0].id})</button>`
+          : `<span style="font-size:0.8214rem;color:var(--ink-muted)">전화·생년월일이 달라 동일인이 아닙니다 — 병합하지 않습니다</span>`}
+      </div></div>`;
+  }).join("")||'<p style="font-size:0.8571rem;color:var(--ink-muted)">중복 후보가 없습니다</p>';
+}
+document.addEventListener("click",e=>{
+  const m=e.target.closest("[data-merge]");
+  if(m){ const d=DD.DUP_CANDIDATES[+m.dataset.merge];
+    const keep=d.records[0], gone=d.records[1];
+    DD.INACTIVE.unshift({ id:gone.id, name:gone.name, reason:`중복 병합(→ ${keep.id})`, inactiveAt:"2026-08-14", keepUntil:"병합 보존", note:"병합 이력 보존, 되돌리기 가능" });
+    DD.DUP_CANDIDATES.splice(+m.dataset.merge,1); renderDup();
+    toast(`${keep.name} — ${gone.id}를 ${keep.id}로 병합했습니다 (내원 이력 합산, 되돌리기 가능)`);
+  }
+});
+/* 삭제·비활성 고객 */
+function renderInactive(){
+  $("#inactiveBody").innerHTML = DD.INACTIVE.map((p,i)=>`
+    <tr><td>${p.id}</td><td><b>${p.name}</b></td><td>${p.reason}</td><td>${p.inactiveAt}</td>
+    <td><span class="pill ${p.keepUntil.includes("보존")?"mut":"warn"}">${p.keepUntil}</span></td>
+    <td><button class="btn sm" data-reactivate="${i}">복구</button></td></tr>`).join("")
+    ||'<p style="font-size:0.8571rem;color:var(--ink-muted)">비활성 고객이 없습니다</p>';
+}
+document.addEventListener("click",e=>{
+  const r=e.target.closest("[data-reactivate]");
+  if(r){ const p=DD.INACTIVE[+r.dataset.reactivate];
+    if(p.keepUntil!=="병합 보존"){ toast("복구 — 비활성 해제. 물리 삭제된 적이 없어 데이터는 그대로 남아 있습니다"); }
+    else toast("병합 되돌리기 — 분리된 차트로 복원했습니다 (이력 보존 덕분에 가능)");
+    DD.INACTIVE.splice(+r.dataset.reactivate,1); renderInactive();
+  }
+});
+/* 매출 (일별·항목별) */
+function renderSales(){
+  const daily=[820000,1240000,980000,1510000,1866500,340000,0];
+  const max=Math.max(...daily);
+  $("#salesDaily").innerHTML = daily.map((v,i)=>`<i class="${i===4?"hot":""}" style="height:${Math.max(3,v/max*100)}%"><em>${v?Math.round(v/10000)+"만":""}</em></i>`).join("");
+  const items=[["임플란트(1·2차)",6,7200000,"비급여"],["신경치료",9,1080000,"비급여"],["크라운·보철",7,2450000,"비급여"],["스케일링",22,363000,"급여"],["레진",11,1320000,"비급여"],["발치",8,240000,"급여"]];
+  $("#salesItemBody").innerHTML = items.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}건</td><td style="text-align:right">${fmt(r[2])}원</td>
+    <td><span class="pill ${r[3]==="급여"?"ok":"conf"}">${r[3]}</span></td></tr>`).join("");
+}
+/* 매입 */
+function renderPurchase(){
+  $("#purchaseBody").innerHTML = DD.PURCHASES.map(p=>`
+    <tr><td>${p.t.slice(5)}</td><td>${p.supplier}</td><td>${p.item}</td><td>${p.qty}</td>
+    <td style="text-align:right">${fmt(p.amount)}원</td><td class="mono">${p.lot}</td><td>${p.exp}</td>
+    <td>${p.paid?'<span class="pill ok">지급</span>':'<span class="pill dang">외상</span>'}</td></tr>`).join("");
+  const unpaid=DD.PURCHASES.filter(p=>!p.paid);
+  $("#purchaseSum").innerHTML=`미지급(외상) <b>${unpaid.length}건 · ${fmt(unpaid.reduce((s,p)=>s+p.amount,0))}원</b> · 이번 달 매입 합계 ${fmt(DD.PURCHASES.reduce((s,p)=>s+p.amount,0))}원`;
+}
+/* 통계 — 진료·리콜 */
+function renderStatProc(){
+  const items=[["임플란트",7200000,6],["보철",2450000,7],["신경치료",1080000,9],["레진",1320000,11],["예방·급여",603000,30]];
+  const max=Math.max(...items.map(x=>x[1]));
+  $("#statProcBody").innerHTML = items.map(r=>`
+    <div class="bar-h"><span class="bl">${r[0]} <span style="color:var(--ink-muted)">${r[2]}건</span></span>
+    <div class="bt"><i style="width:${r[1]/max*100}%"></i></div><span class="bv">${Math.round(r[1]/10000)}만</span></div>`).join("");
+  $("#statRecallBody").innerHTML = [["스케일링(급여연도 리셋)",820],["정기 검진 안내",310],["교정 유지 관찰",46],["임플란트 정기 점검",58]]
+    .map(r=>`<div class="ai-row" style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:0.8929rem">
+    <span>${r[0]}</span><b>${fmt(r[1])}명</b></div>`).join("");
+}
+
 /* ══ 디자인 시스템 반영 (병원CRM전환 09 — 계승 위젯·테마 스왑) ══ */
 
 /* 테마 스왑 — 메인 3색 변수만 교체 */
