@@ -171,25 +171,260 @@ DD.INVENTORY = [
 /* 진료항목 마스터 (헤어사랑넷 serviceMstr 계승 — 진료과 계층 + 급여구분·소요시간) */
 DD.SERVICES = [
   { cat:"보존", items:[
-    { name:"레진 치료", ins:"비급여", min:60 },
-    { name:"신경치료(근관)", ins:"비급여", min:90 },
-    { name:"인레이/온레이", ins:"비급여", min:60 } ] },
+    { name:"레진 치료", ins:"비급여", min:60, price:100000 },
+    { name:"신경치료(근관)", ins:"비급여", min:90, price:300000 },
+    { name:"인레이/온레이", ins:"비급여", min:60, price:350000 } ] },
   { cat:"보철", items:[
-    { name:"크라운 장착", ins:"비급여", min:60 },
-    { name:"보철 본뜨기", ins:"비급여", min:60 },
-    { name:"임플란트 1차(식립)", ins:"비급여", min:90 },
-    { name:"임플란트 2차(보철)", ins:"비급여", min:60 } ] },
+    { name:"크라운 장착", ins:"비급여", min:60, price:500000 },
+    { name:"보철 본뜨기", ins:"비급여", min:60, price:0 },
+    { name:"임플란트 1차(식립)", ins:"비급여", min:90, price:900000 },
+    { name:"임플란트 2차(보철)", ins:"비급여", min:60, price:400000 } ] },
   { cat:"예방·위생", items:[
-    { name:"스케일링", ins:"급여(연1회)", min:30 },
-    { name:"불소 도포", ins:"비급여", min:30 },
-    { name:"잇몸 치료", ins:"급여", min:30 } ] },
+    { name:"스케일링", ins:"급여(연1회)", min:30, price:null },
+    { name:"불소 도포", ins:"비급여", min:30, price:30000 },
+    { name:"잇몸 치료", ins:"급여", min:30, price:null } ] },
   { cat:"구강외과", items:[
-    { name:"발치", ins:"급여", min:30 },
-    { name:"발치 상담", ins:"상담", min:30 } ] },
+    { name:"발치", ins:"급여", min:30, price:null },
+    { name:"발치 상담", ins:"상담", min:30, price:null } ] },
   { cat:"교정", items:[
-    { name:"교정 상담", ins:"상담", min:30 },
-    { name:"교정 조정", ins:"비급여", min:30 } ] }
+    { name:"교정 상담", ins:"상담", min:30, price:null },
+    { name:"교정 조정", ins:"비급여", min:30, price:50000 } ] }
 ];
 
 /* EMR 규제 키워드 (R② 저장 차단) */
 DD.EMR_WORDS = ["근관치료","발치","크라운 장착","레진 수복","치수염","임플란트 식립","#\\d{2}","rct","신경치료 시행","진단"];
+
+/* ── 문자·알림톡 마케팅 스위트 (헤어사랑넷 06-SMS 계승 · 병원 매핑) ── */
+
+/* 발송 잔액·이번 달 사용 요약 */
+DD.SMS_WALLET = { cash:12400, price:{ SMS:9, LMS:30, 알림톡:8, 친구톡:15 },
+  monthUse:[ {type:"알림톡", cnt:388, cost:3104}, {type:"SMS", cnt:18, cost:162}, {type:"LMS", cnt:6, cost:180} ] };
+
+/* 발송 내역 (smsSendList — 상태코드 매핑 §1.5) */
+DD.SMS_HISTORY = [
+  { t:"2026-08-14 17:00", to:"010-****-8823", name:"장미래", type:"알림톡", tpl:"예약 D-1 리마인드", body:"장미래님, 내일 14:00 김이현 원장 예약이 있습니다.", st:"성공", cost:8 },
+  { t:"2026-08-14 17:00", to:"010-****-1147", name:"최강훈", type:"알림톡", tpl:"예약 D-1 리마인드", body:"최강훈님, 내일 10:30 박서준 원장 예약이 있습니다.", st:"성공", cost:8 },
+  { t:"2026-08-14 17:00", to:"010-****-6621", name:"박세라", type:"알림톡", tpl:"예약 D-1 리마인드", body:"박세라님, 내일 09:00 스케일링 예약이 있습니다.", st:"실패", stMsg:"카카오 미채널(친구아님)→SMS 대체", cost:9 },
+  { t:"2026-08-14 12:05", to:"010-****-0084", name:"오은영", type:"알림톡", tpl:"수납 완료 안내", body:"오은영님, 임플란트 2차 1,200,000원이 수납 처리되었습니다.", st:"성공", cost:8 },
+  { t:"2026-08-14 09:12", to:"010-****-3388", name:"김민수", type:"SMS", tpl:"직접 발송", body:"김민수님, 보철 본뜨기 결과물이 도착했습니다. 내원 예약 부탁드립니다.", st:"성공", cost:9 },
+  { t:"2026-08-13 17:00", to:"010-****-9902", name:"홍성민", type:"알림톡", tpl:"미수금 안내", body:"홍성민님, 크라운 잔액 550,000원 분납 예정일이 도래했습니다.", st:"성공", cost:8 },
+  { t:"2026-08-13 14:30", to:"010-****-2201", name:"이수진", type:"LMS", tpl:"진료 후 주의사항", body:"발치 후 주의사항 안내: 2시간 거즈 물기, 당일 음주·흡연 금지, 빨대 사용 금지…", st:"성공", cost:30 },
+  { t:"2026-08-13 11:00", to:"010-****-4417", name:"정우석", type:"알림톡", tpl:"교정 조정 안내", body:"정우석님, 다음 교정 조정일은 8/27 15:00입니다.", st:"수신거부", stMsg:"080 수신거부 등록번호", cost:0 },
+  { t:"2026-08-12 08:00", to:"010-****-7788", name:"강나래", type:"알림톡", tpl:"생일 축하·검진 안내", body:"강나래님, 생신을 축하드립니다. 정기 구강검진 시기가 되었습니다.", st:"성공", cost:8 },
+  { t:"2026-08-12 17:00", to:"010-****-5560", name:"윤도현", type:"SMS", tpl:"예약 D-1 리마인드", body:"윤도현님, 내일 16:30 크라운 장착 예약이 있습니다.", st:"실패", stMsg:"결번(1000: 없는 번호)", cost:0 }
+];
+
+/* 예약 문자 (sendFlag=1 예약발송 큐 §4) */
+DD.SMS_SCHEDULED = [
+  { at:"2026-08-15 17:00", title:"예약 D-1 리마인드 (자동)", type:"알림톡", target:"내일 내원 예정 14명", cnt:14, st:"예약됨", auto:true },
+  { at:"2026-08-16 10:00", title:"스케일링 급여 리셋 안내", type:"알림톡", target:"올해 미수검 · 동의자 63명", cnt:63, st:"예약됨", auto:false },
+  { at:"2026-08-18 09:00", title:"임플란트 2차 내원 안내", type:"LMS", target:"1차 완료 후 14일 경과 8명", cnt:8, st:"예약됨", auto:true },
+  { at:"2026-08-20 08:00", title:"8월 생일 고객 검진 안내", type:"알림톡", target:"8월 생일 · 동의자 21명", cnt:21, st:"예약됨", auto:true }
+];
+
+/* 문자 보관함 (smsKeep — 재사용 템플릿 §4) */
+DD.SMS_KEEP = [
+  { name:"예약 리마인드(기본)", type:"알림톡", body:"#{환자명}님, #{예약일시} #{담당의} 예약이 있습니다. 변경은 #{병원번호}" },
+  { name:"발치 후 주의사항", type:"LMS", body:"#{환자명}님, 발치 후 주의사항 안내드립니다. 2시간 거즈 물기, 당일 음주·흡연·빨대 금지, 통증 지속 시 내원 바랍니다." },
+  { name:"임플란트 2차 안내", type:"알림톡", body:"#{환자명}님, 임플란트 식립 후 골유착 기간이 지나 보철(2차) 시기가 되었습니다. 내원 예약 부탁드립니다." },
+  { name:"수납 완료·영수증", type:"알림톡", body:"#{환자명}님, #{진료항목} #{금액}원이 수납 처리되었습니다. 제증명 발급은 데스크에 문의하세요." },
+  { name:"스케일링 급여 안내", type:"알림톡", body:"#{환자명}님, 건강보험 스케일링은 연 1회 급여 적용됩니다. 올해 미수검 시 내원 예약을 권장드립니다." }
+];
+
+/* 자동 발송 설정 (autoType 병원 매핑 §3·§8.2) */
+DD.SMS_AUTO = [
+  { key:"resD1",    name:"예약 리마인드",     trig:"내원 D-1 정시", ch:"알림톡", tpl:"예약 D-1 리마인드",  on:true,  info:true,  cnt:14, msg:"#{환자명}님, 내일 #{예약일시} #{담당의} 예약이 있습니다. 변경은 02-000-0000 (1 확인 / 2 변경 / 3 취소)" },
+  { key:"resAccept",name:"예약 접수·확정 안내", trig:"예약 등록·확정 즉시", ch:"알림톡", tpl:"예약 접수 안내", on:true, info:true, cnt:0, msg:"#{환자명}님, #{예약일시} #{담당의} 예약이 정상 접수되었습니다. 내원 10분 전 도착 부탁드립니다." },
+  { key:"afterCare",name:"진료 후 안내",       trig:"시술 완료 D+1", ch:"LMS",  tpl:"진료 후 주의사항", on:true,  info:true,  cnt:6, msg:"#{환자명}님, 어제 진료 후 주의사항 안내드립니다. 2시간 후 식사, 당일 음주·흡연·격한 운동은 삼가시고 통증 지속 시 내원 바랍니다." },
+  { key:"pay",      name:"수납 완료·영수증",   trig:"수납 완료 즉시", ch:"알림톡", tpl:"수납 완료 안내",  on:true,  info:true,  cnt:0, msg:"#{환자명}님, #{진료항목} #{금액}원이 수납 처리되었습니다. 제증명 발급은 데스크에 문의하세요." },
+  { key:"arrears",  name:"미수금 분납 안내",    trig:"분납 예정일 도래", ch:"알림톡", tpl:"미수금 안내",   on:true,  info:true,  cnt:3, msg:"#{환자명}님, 진료비 잔액 #{금액}원의 분납 예정일이 도래했습니다. 내원 또는 계좌 납부 부탁드립니다." },
+  { key:"recall",   name:"검진 주기 리콜",     trig:"스케일링 급여 리셋(연1회)", ch:"알림톡", tpl:"검진 안내", on:false, info:false, cnt:63, msg:"#{환자명}님, 건강보험 스케일링은 연 1회 적용됩니다. 올해 미수검 시 정기 검진 예약을 권장드립니다." },
+  { key:"birth",    name:"생일 축하·검진",     trig:"생일 당일 08시", ch:"알림톡", tpl:"생일·검진 안내", on:true, info:false, cnt:21, msg:"#{환자명}님, 생신을 진심으로 축하드립니다. 건강한 미소를 오래 지켜드리겠습니다. 정기 검진도 잊지 마세요!" },
+  { key:"welcome",  name:"신규 환자 인사",     trig:"최초 등록 당일",  ch:"알림톡", tpl:"신규 환자 인사", on:false, info:true, cnt:0, msg:"#{환자명}님, 서울밝은치과를 찾아주셔서 감사합니다. 첫 내원 후 궁금하신 점은 언제든 문의해 주세요." },
+  { key:"noshow",   name:"노쇼 후 재예약 유도", trig:"노쇼 D+2",       ch:"SMS",  tpl:"재예약 안내",   on:false, info:false, cnt:1, msg:"#{환자명}님, 예약하신 진료에 내원하지 못하셨습니다. 편하신 시간으로 재예약 도와드리겠습니다. 02-000-0000" }
+];
+
+/* 문자 샘플 갤러리 (뷰티사랑넷 문자샘플 계승 · 치과 톤) — 카테고리별 문안 카드 */
+DD.SMS_SAMPLES = [
+  { cat:"예약", type:"알림톡", title:"예약 리마인드", body:"#{환자명}님, 내일 #{예약일시} #{담당의} 예약이 있습니다. 변경은 02-000-0000 (1 확인 / 2 변경 / 3 취소)" },
+  { cat:"예약", type:"알림톡", title:"예약 접수 확인", body:"#{환자명}님, #{예약일시} 예약이 접수되었습니다. 내원 10분 전 도착 부탁드립니다." },
+  { cat:"진료후", type:"LMS", title:"발치 후 주의사항", body:"#{환자명}님, 발치 후 주의사항 안내드립니다. 2시간 거즈 물기, 당일 음주·흡연·빨대 사용 금지, 통증 지속 시 내원 바랍니다." },
+  { cat:"진료후", type:"LMS", title:"임플란트 식립 후", body:"#{환자명}님, 임플란트 식립 후 골유착 기간이 중요합니다. 딱딱한 음식은 피하시고 처방약을 잊지 말고 복용하세요." },
+  { cat:"검진리콜", type:"알림톡", title:"스케일링 급여 안내", body:"#{환자명}님, 건강보험 스케일링은 연 1회 적용됩니다. 올해 미수검 시 정기 검진 예약을 권장드립니다." },
+  { cat:"검진리콜", type:"알림톡", title:"교정 정기 점검", body:"#{환자명}님, 교정 장치 정기 점검 시기가 되었습니다. 예약 도와드릴까요?" },
+  { cat:"생일", type:"알림톡", title:"생일 축하", body:"#{환자명}님, 생신을 진심으로 축하드립니다. 건강한 미소를 오래 지켜드리겠습니다. 정기 검진도 잊지 마세요!" },
+  { cat:"신규", type:"알림톡", title:"첫 내원 감사", body:"#{환자명}님, 서울밝은치과를 찾아주셔서 감사합니다. 첫 내원 후 궁금하신 점은 언제든 문의해 주세요." },
+  { cat:"휴면", type:"알림톡", title:"장기 미내원 안내", body:"#{환자명}님, 마지막 내원 후 시간이 꽤 지났습니다. 구강 상태 점검이 필요한 시기이니 편하실 때 방문해 주세요." },
+  { cat:"안부", type:"알림톡", title:"환절기 안부", body:"#{환자명}님, 환절기 잇몸 건강 잘 챙기고 계신가요? 서울밝은치과가 늘 건강한 미소를 응원합니다." },
+  { cat:"안부", type:"알림톡", title:"명절 인사", body:"#{환자명}님, 즐거운 명절 보내세요. 연휴 중 치과 응급은 02-000-0000으로 안내드립니다." },
+  { cat:"이벤트", type:"SMS", title:"(광고) 검진 캠페인", body:"#{환자명}님, 8월 구강검진 캠페인 안내입니다. 자세한 내용은 문의 주세요. (무료수신거부 080-000-0000)", ad:true }
+];
+
+/* 알림톡 설정 (kakaoMapping·채널·템플릿 심사 §2) */
+DD.KAKAO = {
+  channel:{ yellowId:"@서울밝은치과", senderKey:"a1b2****f9", status:"연동", profile:"서울밝은치과의원", connectedAt:"2026-05-02" },
+  templates:[
+    { name:"예약 D-1 리마인드", code:"DENT_RES_D1", vars:"환자명·예약일시·담당의", status:"승인", body:"#{환자명}님, #{예약일시} #{담당의} 예약이 있습니다." },
+    { name:"수납 완료 안내",   code:"DENT_PAY_OK", vars:"환자명·항목·금액", status:"승인", body:"#{환자명}님, #{진료항목} #{금액}원이 수납 처리되었습니다." },
+    { name:"진료 후 안내",     code:"DENT_AFTER",  vars:"환자명·주의사항", status:"승인", body:"#{환자명}님, 진료 후 주의사항 안내드립니다." },
+    { name:"검진 리콜(정기)",  code:"DENT_RECALL", vars:"환자명", status:"심사중", body:"#{환자명}님, 정기 구강검진 시기가 되었습니다.", note:"영업일 2일 심사" },
+    { name:"여름 임플란트 할인", code:"DENT_EVENT", vars:"환자명·할인율", status:"반려", body:"#{환자명}님, 8월 임플란트 30% 할인 이벤트!", note:"반려: 정보성 채널에 광고성 문구·의료법 유인성 표현" }
+  ]
+};
+
+/* 발신번호 설정 (regNumber KISA 사전등록 §1.3) */
+DD.SENDERS = [
+  { number:"02-000-0000", label:"대표번호", nominee:"사업자", auth:"서류인증", status:"등록완료", regAt:"2026-05-01" },
+  { number:"1588-0000",   label:"콜센터",   nominee:"사업자", auth:"서류인증", status:"등록완료", regAt:"2026-05-01" },
+  { number:"010-****-2200", label:"실장 직통", nominee:"본인",  auth:"휴대폰 실명인증", status:"심사중", regAt:"2026-08-13" },
+  { number:"070-0000-0000", label:"신규 인터넷전화", nominee:"사업자", auth:"서류인증", status:"반려", regAt:"2026-08-10", note:"통신가입증명원 사업자명 불일치" }
+];
+
+/* 충전·사용 내역 (cash_member_log §1.4) */
+DD.SMS_CHARGE = [
+  { t:"2026-08-14 17:03", type:"차감", detail:"알림톡 발송 388건", amt:-3104, bal:12400 },
+  { t:"2026-08-10 09:20", type:"충전", detail:"카드 충전", amt:15000, bal:15504 },
+  { t:"2026-08-07 17:02", type:"차감", detail:"알림톡·SMS 혼합 발송", amt:-2960, bal:504 },
+  { t:"2026-08-01 10:00", type:"충전", detail:"자동충전(잔액 5천원 미만)", amt:10000, bal:3464 }
+];
+
+/* 수신거부 목록 (smsDenyList §1.6) */
+DD.SMS_DENY = [
+  { number:"010-****-4417", name:"정우석", at:"2026-08-13", src:"080 자동 수신거부" },
+  { number:"010-****-1120", name:"김민수(P-0912)", at:"2026-07-22", src:"데스크 직접 등록" },
+  { number:"010-****-8890", name:"(미매칭)", at:"2026-07-15", src:"그룹 수신거부 동기화" },
+  { number:"010-****-3345", name:"이하늘", at:"2026-06-30", src:"광고 문자 하단 수신거부" }
+];
+
+/* ── 통계 분석 카탈로그 (헤어사랑넷 통계/인센 트리 계승 · 병원 매핑) ── */
+DD.STATS = {
+  months:["9월","10월","11월","12월","1월","2월","3월","4월","5월","6월","7월","8월"],
+  salesMonthly:[4820,5130,4990,5560,4210,4680,5240,5010,5380,5620,5910,6180], // 만원
+  salesLastYear:[4210,4380,4510,4820,3980,4120,4450,4610,4880,5020,5310,5480],
+  newPtMonthly:[14,17,12,19,9,11,16,15,18,20,17,18],
+  visitMonthly:[142,151,138,166,120,131,158,149,168,175,171,160],
+  noshowMonthly:[12,14,10,18,9,11,15,13,17,19,16,19],
+  byType:[["비급여 진료",4180],["급여 진료",1240],["재료·판매",180],["기타",60]], // 만원 (이번달)
+  byMethod:[["카드",3980],["현금",1120],["계좌이체",560]],
+  byDoc:[["김이현 원장",3210],["박서준 원장",2450]],
+  byDept:[["보철·임플란트",3650],["보존(신경·레진)",980],["교정",720],["예방·급여",240],["구강외과",180]],
+  ptRankSales:[["오은영",8600],["최강훈",5400],["장미래",4200],["김민수",3100],["박세라",1800],["윤도현",1500]], // 천원 누적
+  visitByHour:[["09시",18],["10시",34],["11시",31],["12시",9],["14시",28],["15시",30],["16시",26],["17시",22],["18시",14]],
+  visitByDow:[["월",142],["화",168],["수",151],["목",173],["금",196],["토",210]],
+  ptAge:[["10대",8],["20대",22],["30대",38],["40대",34],["50대",26],["60대+",32]],
+  ptGender:[["여성",96],["남성",64]],
+  ptByDoc:[["김이현 원장",92],["박서준 원장",68]],
+  birthMonthly:[11,9,14,10,13,8,12,15,10,9,11,7],
+  procCount:[["임플란트",6],["보철",7],["신경치료",9],["레진",11],["스케일링",42],["발치",14],["교정 조정",8]],
+  procSalesY:[["임플란트",8640],["보철",2450],["교정",1980],["신경치료",1080],["레진",760],["기타",520]], // 만원 연간
+  procByAge:[["20대","레진·교정"],["30대","임플란트·보철"],["40대","임플란트·크라운"],["50대+","임플란트·틀니"]],
+  matUse:[["레진",210],["픽스처",48],["마취제",320],["거타퍼차",90],["글러브",180]], // 이번달 사용량
+  docHours:[["김이현 원장",148],["박서준 원장",121]], // 월 진료시간(시간)
+  docProc:[["김이현 원장",210],["박서준 원장",168]], // 월 진료건
+  smsMonthly:[280,310,295,340,260,290,360,330,388,402,412,388],
+  callMonthly:[[ "수신",320],["발신",210]], // 이번달
+  callMonthlySeries:{ in:[290,310,280,340,250,270,330,300,350,360,340,320], out:[180,200,190,220,160,175,210,195,230,240,225,210] }
+};
+
+/* 분석 트리 — folder→items. kind: month(12개월 막대)·hbar(가로 랭킹)·table·compare(2계열) */
+DD.STAT_TREE = [
+  { folder:"⭐ 즐겨찾기", star:true, items:[
+    { code:"fav1", t:"월별 신규환자", kind:"month", src:"newPtMonthly", unit:"명" },
+    { code:"fav2", t:"월별 내원수", kind:"month", src:"visitMonthly", unit:"명" } ] },
+  { folder:"매출분석 — 연간", items:[
+    { code:"s01", t:"연간 매출 추이", kind:"month", src:"salesMonthly", unit:"만원" },
+    { code:"s02", t:"매출 구분별", kind:"hbar", src:"byType", unit:"만원" },
+    { code:"s03", t:"결제 수단별", kind:"hbar", src:"byMethod", unit:"만원" },
+    { code:"s04", t:"담당의별 매출", kind:"hbar", src:"byDoc", unit:"만원" },
+    { code:"s05", t:"진료과별 매출", kind:"hbar", src:"byDept", unit:"만원" } ] },
+  { folder:"매출분석 — 비교", items:[
+    { code:"c01", t:"작년 대비 올해 매출", kind:"compare", src:"salesMonthly", src2:"salesLastYear", unit:"만원" },
+    { code:"c02", t:"진료과별 연간 매출", kind:"hbar", src:"procSalesY", unit:"만원" } ] },
+  { folder:"고객분석 — 매출", items:[
+    { code:"p01", t:"환자 매출 순위", kind:"hbar", src:"ptRankSales", unit:"천원" } ] },
+  { folder:"고객분석 — 예약/방문", items:[
+    { code:"v01", t:"월별 신규환자", kind:"month", src:"newPtMonthly", unit:"명" },
+    { code:"v02", t:"월별 내원수", kind:"month", src:"visitMonthly", unit:"명" },
+    { code:"v03", t:"월별 노쇼", kind:"month", src:"noshowMonthly", unit:"건" },
+    { code:"v04", t:"시간대별 내원", kind:"hbar", src:"visitByHour", unit:"명" },
+    { code:"v05", t:"요일별 내원", kind:"hbar", src:"visitByDow", unit:"명" } ] },
+  { folder:"고객분석 — 정보", items:[
+    { code:"i01", t:"성별 분포", kind:"hbar", src:"ptGender", unit:"명" },
+    { code:"i02", t:"연령대 분포", kind:"hbar", src:"ptAge", unit:"명" },
+    { code:"i03", t:"담당의별 환자수", kind:"hbar", src:"ptByDoc", unit:"명" },
+    { code:"i04", t:"월별 생일 환자", kind:"month", src:"birthMonthly", unit:"명" } ] },
+  { folder:"진료분석", items:[
+    { code:"t01", t:"진료 인기도(건수)", kind:"hbar", src:"procCount", unit:"건" },
+    { code:"t02", t:"진료별 연간 매출", kind:"hbar", src:"procSalesY", unit:"만원" },
+    { code:"t03", t:"연령대별 인기 진료", kind:"table", src:"procByAge", cols:["연령대","인기 진료"] } ] },
+  { folder:"재료·물품분석", items:[
+    { code:"m01", t:"이번 달 재료 사용량", kind:"hbar", src:"matUse", unit:"단위" } ] },
+  { folder:"직원분석", items:[
+    { code:"e01", t:"담당의별 진료시간", kind:"hbar", src:"docHours", unit:"시간" },
+    { code:"e02", t:"담당의별 진료건", kind:"hbar", src:"docProc", unit:"건" } ] },
+  { folder:"문자분석", items:[
+    { code:"x01", t:"월별 문자 발송", kind:"month", src:"smsMonthly", unit:"건" } ] },
+  { folder:"전화분석 (CID)", items:[
+    { code:"n01", t:"월별 수·발신 추이", kind:"compare", src:"callMonthlySeries.in", src2:"callMonthlySeries.out", unit:"건", legend:["수신","발신"] },
+    { code:"n02", t:"이번 달 수·발신", kind:"hbar", src:"callMonthly", unit:"건" } ] }
+];
+
+/* 진료시간·휴무 (헤어사랑넷 업무시간/휴무 계승 · 치과) */
+DD.HOURS = [
+  { day:"월", open:true,  s:"09:00", e:"18:00", brk:"13:00~14:00", note:"" },
+  { day:"화", open:true,  s:"09:00", e:"18:00", brk:"13:00~14:00", note:"" },
+  { day:"수", open:true,  s:"09:00", e:"18:00", brk:"13:00~14:00", note:"" },
+  { day:"목", open:true,  s:"09:00", e:"20:30", brk:"13:00~14:00", note:"야간 진료" },
+  { day:"금", open:true,  s:"09:00", e:"18:00", brk:"13:00~14:00", note:"" },
+  { day:"토", open:true,  s:"09:00", e:"13:00", brk:"", note:"오전 진료" },
+  { day:"일", open:false, s:"", e:"", brk:"", note:"" }
+];
+DD.HOLIDAYS = { regular:"매주 일요일 · 공휴일 휴진",
+  days:["신정","설 연휴(3일)","삼일절","석가탄신일","어린이날","현충일","광복절","추석 연휴(3일)","개천절","한글날","성탄절"] };
+
+/* 월간·목록용 날짜 스케줄 (2026-08) — 타임라인 day뷰는 APPTS(오늘), 이건 달력/목록용 */
+DD.SCHED = [
+  { date:"2026-08-03", time:"10:00", len:2, p:"과거 홍정민", proc:"신경치료 1차", doc:"d1", hyg:null, chair:"c1", st:"done" },
+  { date:"2026-08-03", time:"15:10", len:1, p:"이수진", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"done" },
+  { date:"2026-08-05", time:"11:00", len:2, p:"김남식", proc:"임플란트 1차", doc:"d2", hyg:"h2", chair:"c3", st:"done" },
+  { date:"2026-08-06", time:"11:00", len:1, p:"이혜정", proc:"불소 도포", doc:null, hyg:"h1", chair:"c5", st:"done" },
+  { date:"2026-08-07", time:"14:20", len:2, p:"황윤희", proc:"크라운 장착", doc:"d1", hyg:null, chair:"c2", st:"done" },
+  { date:"2026-08-10", time:"09:30", len:2, p:"문수빈", proc:"보철 본뜨기", doc:"d2", hyg:null, chair:"c4", st:"done" },
+  { date:"2026-08-11", time:"16:00", len:1, p:"배준영", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"done" },
+  { date:"2026-08-12", time:"10:00", len:2, p:"김남식", proc:"임플란트 2차", doc:"d2", hyg:"h2", chair:"c3", st:"done" },
+  { date:"2026-08-13", time:"14:30", len:2, p:"이수진", proc:"발치", doc:"d1", hyg:null, chair:"c2", st:"done" },
+  { date:"2026-08-13", time:"11:00", len:1, p:"정우석", proc:"교정 조정", doc:"d2", hyg:null, chair:"c4", st:"done" },
+  /* 오늘 2026-08-14 (APPTS와 정합) */
+  { date:"2026-08-14", time:"09:00", len:2, p:"김민지", proc:"보철 본뜨기", doc:"d1", hyg:null, chair:"c1", st:"done" },
+  { date:"2026-08-14", time:"09:30", len:2, p:"이준호", proc:"임플란트 2차", doc:"d2", hyg:"h2", chair:"c3", st:"done" },
+  { date:"2026-08-14", time:"10:30", len:1, p:"박세라", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"done" },
+  { date:"2026-08-14", time:"11:00", len:2, p:"최강훈", proc:"레진 치료", doc:"d1", hyg:null, chair:"c2", st:"noshow" },
+  { date:"2026-08-14", time:"12:00", len:2, p:"오은영", proc:"발치 상담", doc:"d2", hyg:"h2", chair:"c4", st:"conf" },
+  { date:"2026-08-14", time:"14:30", len:2, p:"장미래", proc:"신경치료 3차", doc:"d1", hyg:null, chair:"c1", st:"conf" },
+  { date:"2026-08-14", time:"14:30", len:2, p:"서예진", proc:"교정 조정", doc:"d2", hyg:null, chair:"c3", st:"conf" },
+  { date:"2026-08-14", time:"15:30", len:2, p:"임현우", proc:"임플란트 상담", doc:"d1", hyg:"h2", chair:"c2", st:"wait" },
+  { date:"2026-08-14", time:"16:30", len:2, p:"홍성민", proc:"크라운 장착", doc:"d2", hyg:null, chair:"c4", st:"cancel" },
+  /* 미래 예약 */
+  { date:"2026-08-18", time:"09:00", len:2, p:"김남식", proc:"임플란트 2차", doc:"d2", hyg:"h2", chair:"c3", st:"conf" },
+  { date:"2026-08-18", time:"14:00", len:1, p:"강나래", proc:"불소 도포", doc:null, hyg:"h1", chair:"c5", st:"conf" },
+  { date:"2026-08-19", time:"10:00", len:2, p:"오은영", proc:"임플란트 2차(보철)", doc:"d2", hyg:"h2", chair:"c4", st:"conf" },
+  { date:"2026-08-20", time:"11:00", len:2, p:"문수빈", proc:"크라운 장착", doc:"d1", hyg:null, chair:"c1", st:"conf" },
+  { date:"2026-08-21", time:"15:00", len:1, p:"신아름", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"conf" },
+  { date:"2026-08-24", time:"09:30", len:2, p:"장미래", proc:"신경치료 4차", doc:"d1", hyg:null, chair:"c1", st:"conf" },
+  { date:"2026-08-26", time:"10:00", len:2, p:"김남식", proc:"임플란트 정기점검", doc:"d2", hyg:"h2", chair:"c3", st:"conf" },
+  { date:"2026-08-27", time:"15:00", len:2, p:"정우석", proc:"교정 조정", doc:"d2", hyg:null, chair:"c4", st:"conf" },
+  { date:"2026-08-28", time:"11:00", len:1, p:"이혜정", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"conf" },
+  { date:"2026-08-31", time:"14:00", len:2, p:"황윤희", proc:"보철 본뜨기", doc:"d1", hyg:null, chair:"c2", st:"conf" }
+];
+
+/* 환자 차트 보조정보 (포인트·비급여 패키지·진료사진 메타) — 차트 다탭용 */
+DD.PT_EXTRA = {
+  "P-1042": { points:12400, grade:"골드", packages:[{name:"신경치료 패키지", total:4, used:2, expire:"2026-12-31"}],
+    photos:[{date:"2026-08-01", label:"#36 근관 치근단 X-ray"},{date:"2026-07-18", label:"#36 초진 파노라마"}] },
+  "P-0871": { points:2100, grade:"일반", packages:[],
+    photos:[{date:"2026-06-20", label:"#25 레진 수복 전후"}] },
+  "P-1156": { points:800, grade:"일반", packages:[{name:"스케일링 정기(연1회)", total:1, used:1, expire:"2026-12-31"}],
+    photos:[] },
+  "P-0233": { points:34500, grade:"VIP", packages:[{name:"임플란트 2본 분납", total:2, used:1, expire:"2027-08-14"},{name:"교정 유지 관찰", total:12, used:3, expire:"2028-08-14"}],
+    photos:[{date:"2026-08-14", label:"#46 발치 전 파노라마"},{date:"2026-08-14", label:"임플란트 식립 계획 CT"}] }
+};

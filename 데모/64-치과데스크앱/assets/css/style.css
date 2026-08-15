@@ -21,6 +21,9 @@
   --ease:cubic-bezier(.33,1,.68,1); --ease-ui:cubic-bezier(.4,0,.2,1);
   --t1:.15s; --t2:.325s; --t3:.65s;
   --rail:260px; --tbar:56px;
+  /* v1 계승 컴포넌트 호환 별칭 */
+  --accent:var(--pri); --accent-soft:var(--pri-soft);
+  --bg-1:#F7F9FC; --bg-2:#EDF0F6; --bg-3:#E4E8F0; --r-card:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{overflow-x:clip;font-size:18px}  /* rem base — 이 값 하나로 전체 폰트 비례 스케일 */
@@ -250,6 +253,8 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 
 /* ══ 모달 → 우측 컨텍스트 패널 (시안 핵심 패턴) ══ */
 .modal-bg{position:fixed;inset:0;z-index:70;background:rgba(19,23,33,.45);display:none;align-items:center;justify-content:center;padding:16px}
+/* 계층: 우측 드로어(rside)=70, 중앙 다이얼로그는 그 위(76)에 떠서 드로어까지 백드롭으로 덮는다 */
+.modal-bg:not(.rside){z-index:76}
 .modal-bg.open{display:flex}
 .modal{background:var(--card);border-radius:12px;max-width:520px;width:100%;max-height:86vh;overflow:auto;padding:20px 22px;
   animation:pop var(--t2) var(--ease)}
@@ -276,7 +281,7 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .stg:last-child::after{display:none}
 .stg.done{color:var(--ok)}.stg.done::before{background:var(--ok)}
 .stg.now{color:var(--pri)}.stg.now::before{background:var(--pri);box-shadow:0 0 0 3px var(--pri-soft)}
-.sw{position:relative;width:38px;height:21px;flex:none;cursor:pointer}
+.sw{position:relative;display:inline-block;width:38px;height:21px;flex:none;cursor:pointer;vertical-align:middle}
 .sw input{opacity:0;width:0;height:0}
 .sw i{position:absolute;inset:0;background:var(--line-in);border-radius:999px;transition:background var(--t1) var(--ease-ui)}
 .sw i::before{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;background:#fff;transition:transform var(--t1) var(--ease-ui)}
@@ -353,3 +358,224 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
   .role-sw button{padding:4px 8px;font-size:0.7857rem}
 }
 @media (prefers-reduced-motion:reduce){ *{transition-duration:.01ms!important;animation-duration:.01ms!important} }
+
+
+[hidden]{display:none!important}  /* flex/inline-flex 요소가 hidden 속성을 무시하는 문제 방지 */
+/* 환자 차트 다탭 고도화 */
+.mhead .pd-ava{width:38px;height:38px;border-radius:50%;background:var(--pri);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1rem;flex:none}
+.pd-hname{display:flex;align-items:center;gap:8px;font-size:1.02rem;font-weight:700;color:#fff}
+.pd-phone{font-size:0.8rem;color:rgba(255,255,255,.78);font-variant-numeric:tabular-nums;margin-top:2px}
+.mhead .btn{white-space:nowrap}
+.mhead .btn.xs{background:rgba(255,255,255,.16);color:#fff;border-color:transparent}
+.mhead .btn.xs:hover{background:rgba(255,255,255,.28)}
+.chart-tabs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 16px;background:var(--ch-bg2);border-bottom:1px solid rgba(255,255,255,.1)}
+.chart-tabs .ct{font-size:0.82rem;font-weight:700;color:rgba(255,255,255,.72);background:rgba(255,255,255,.1);border:none;border-radius:999px;padding:6px 13px;cursor:pointer;white-space:nowrap;transition:background var(--t1) var(--ease-ui),color var(--t1) var(--ease-ui)}
+.chart-tabs .ct:hover{background:rgba(255,255,255,.2);color:#fff}
+.chart-tabs .ct.on{background:var(--pri);color:#fff}
+/* 예약 카드 hover 상세 레이어 */
+.hovercard{position:fixed;z-index:95;pointer-events:none;min-width:200px;max-width:260px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px rgba(20,24,33,.24);padding:11px 13px;font-size:0.82rem}
+.hovercard .hc-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+.hovercard .hc-h b{font-size:0.92rem}
+.hovercard .hc-row{display:flex;justify-content:space-between;gap:12px;padding:2px 0;color:var(--ink-sub)}
+.hovercard .hc-row b{color:var(--ink);font-weight:700;text-align:right}
+/* 우측 드로어 하단 버튼 줄바꿈 방지 */
+.modal-bg.rside .modal.lay .mfoot .btn{white-space:nowrap;font-size:0.88rem;padding:0 10px}
+#patModal .modal{width:min(600px,96vw);max-width:96vw}
+.pd-mhead{flex-wrap:wrap;row-gap:8px}
+.pd-hbody{min-width:0;flex:1}
+.pd-acts{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.chart-grid{display:flex;flex-direction:column;gap:10px}  /* 기본정보·매출요약 세로 배열 */
+#pdTabBody{padding-top:16px}  /* 탭과 내용 사이 여백 */
+/* 예약 패널 — 기본 회원 정보 카드 */
+.ap-sec{font-size:0.82rem;font-weight:800;color:var(--ink-muted);margin:16px 0 8px;display:flex;align-items:baseline;gap:8px}
+.ap-sec:first-child{margin-top:4px}
+.ap-sec.ap-div{border-top:1px solid var(--line);padding-top:15px;margin-top:18px}
+.ap-acts{margin-bottom:2px}
+.mevt{cursor:pointer}
+.ap-sec-note{font-size:0.72rem;font-weight:600;color:var(--ink-muted)}
+.pd-ava.sm{width:34px;height:34px;font-size:0.9rem}
+.ap-member{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ap-member .pd-ava{background:var(--pri);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex:none}
+.ap-mbody{min-width:0}
+.ap-mname{font-weight:800;font-size:0.96rem} .ap-mname small{color:var(--ink-muted);font-weight:600;font-size:0.82rem;margin-left:4px}
+.ap-mmeta{font-size:0.8rem;color:var(--ink-sub);font-variant-numeric:tabular-nums}
+.ap-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.ap-nreg{background:var(--warn-bg);border-radius:8px;padding:10px 12px;font-size:0.84rem}
+.ap-nreg b{display:block;color:var(--warn);margin-bottom:3px} .ap-nreg span{color:var(--ink-sub);line-height:1.5}
+.ch-h{font-size:0.82rem;font-weight:800;color:var(--ink-muted);margin:0 0 8px}
+.ch-empty{font-size:0.85rem;color:var(--ink-muted);padding:10px 0}
+.pkg-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px;font-size:0.86rem}
+.pkg-row b{flex:1;min-width:120px} .pkg-row .mut{color:var(--ink-muted);font-size:0.8rem}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.photo-cell{border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.photo-ph{height:100px;background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+.photo-cap{padding:8px 10px;font-size:0.78rem}
+.photo-cap b{display:block} .photo-cap time{color:var(--ink-muted)}
+.editgrid{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.editgrid label{display:flex;flex-direction:column;gap:4px;font-size:0.85rem;font-weight:700;color:var(--ink-sub)}
+.edittog{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.swrow{display:flex;align-items:center;gap:8px;font-size:0.88rem;color:var(--ink-sub);font-weight:600}
+/* 스케줄 뷰 선택자 계층 — 1차: 뷰 유형(강조), 2차: 날짜/월/기간 */
+.calmode .tab{font-size:0.9286rem;font-weight:800;padding:8px 18px}
+.calsub{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 0 10px;border-bottom:1px solid var(--line);margin-bottom:10px;min-height:44px}
+.calsub .listfilter{margin:0;flex:1}
+.calnav{display:flex;align-items:center;gap:6px}
+.calnav .cdate{font-weight:800;font-size:0.95rem;margin-left:8px;color:var(--ink)}
+/* 월간 달력 뷰 */
+.mcal{padding:6px}
+.mcal-h{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}
+.mcal-h>div{text-align:center;font-size:0.8rem;font-weight:800;color:var(--ink-sub);padding:4px}
+.mcal-h>div:first-child{color:var(--danger)} .mcal-h>div:last-child{color:var(--pri)}
+.mcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.mcell{min-height:104px;border:1px solid var(--line);border-radius:8px;padding:6px;background:var(--card);display:flex;flex-direction:column;gap:3px}
+.mcell.empty{background:transparent;border:none}
+.mcell.today{border-color:var(--pri);box-shadow:inset 0 0 0 1px var(--pri)}
+.mcell-d{font-size:0.82rem;font-weight:700;color:var(--ink-sub);display:flex;align-items:center;gap:5px;margin-bottom:2px}
+.mcell.today .mcell-d{color:var(--pri)}
+.mcell-n{font-size:0.68rem;font-weight:800;color:#fff;background:var(--pri);border-radius:999px;padding:0 6px;min-width:16px;text-align:center}
+.mevt{font-size:0.72rem;line-height:1.35;padding:2px 6px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--pri);background:var(--pri-soft);color:var(--ink)}
+.mevt.done{border-left-color:var(--st-done);background:var(--st-done-bg)}
+.mevt.conf{border-left-color:var(--st-conf);background:var(--st-conf-bg)}
+.mevt.wait{border-left-color:var(--st-wait);background:var(--st-wait-bg)}
+.mevt.noshow{border-left-color:var(--st-noshow);background:var(--st-noshow-bg)}
+.mevt.cancel{border-left-color:var(--st-cancel);background:var(--st-cancel-bg);text-decoration:line-through;opacity:.7}
+.mevt-more{font-size:0.68rem;color:var(--ink-muted);font-weight:700;padding:0 6px}
+.listfilter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0}
+@media(max-width:900px){.mcell{min-height:78px}.mevt{font-size:0.66rem}}
+/* 환자 다중선택 발송 바 */
+.bulkbar{display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:10px;background:var(--pri-soft);border:1px solid var(--pri-line);border-radius:8px;font-size:0.86rem}
+.bulkbar b{color:var(--pri)}
+/* 스케줄 카드 담당자 표기 */
+.vevt-staff{display:block;font-size:0.72rem;font-weight:700;opacity:.72;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 문자 작성 메타 · 바이트 · 샘플 갤러리 · 자동발송 카드 */
+.sendmeta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.sendmeta label{font-size:0.8rem;color:var(--ink-sub);font-weight:700;display:flex;flex-direction:column;gap:4px;flex:1;min-width:150px}
+.sendmeta .inp{width:100%}
+.bytebar{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:0.78rem;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.bytebar .dot{color:var(--line-in)}
+.smpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:10px}
+.smpl-card{border:1px solid var(--line);border-radius:9px;padding:11px 12px;cursor:pointer;transition:border-color var(--t1) var(--ease-ui),box-shadow var(--t1) var(--ease-ui),transform var(--t1) var(--ease-ui);background:var(--card)}
+.smpl-card:hover{border-color:var(--pri-line);box-shadow:0 3px 10px rgba(62,123,250,.1);transform:translateY(-1px)}
+.smpl-h{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.smpl-h b{font-size:0.86rem;flex:1}
+.smpl-cat{font-size:0.68rem;color:var(--ink-muted);background:var(--bg-2);border-radius:4px;padding:1px 6px}
+.smpl-b{font-size:0.8rem;color:var(--ink-sub);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.smpl-load{font-size:0.72rem;color:var(--pri);font-weight:700;margin-top:7px;display:inline-block;opacity:0;transition:opacity var(--t1) var(--ease-ui)}
+.smpl-card:hover .smpl-load{opacity:1}
+.auto-card{border-top:1px solid var(--line);padding:12px 2px}
+tr:first-child .auto-card{border-top:none}
+.auto-h{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-wrap:wrap}
+.auto-h>b{font-size:0.92rem}
+.auto-trig{font-size:0.78rem;color:var(--ink-muted)}
+.auto-msg{background:var(--bg-1);border-radius:8px;padding:10px 12px;font-size:0.83rem;line-height:1.6;color:var(--ink);margin-bottom:8px}
+.auto-a{margin-top:6px;display:flex;gap:6px}
+/* 표 합계 행 */
+.tbl .tbl-total td{border-top:2px solid var(--line);background:var(--bg-1);font-weight:800;color:var(--ink)}
+.tbl .tbl-total td:first-child{color:var(--ink-sub)}
+/* 문자 미리보기 — 폰 프레임 (카톡/문자) */
+.phone{width:288px;max-width:100%;margin:6px auto 0;background:#141821;border-radius:32px;padding:11px;box-shadow:0 12px 34px rgba(20,24,33,.22)}
+.phone-screen{border-radius:23px;overflow:hidden;min-height:340px;display:flex;flex-direction:column;background:#9bb0c4}
+.phone-bar{background:#a6bccf;padding:13px 15px 11px;display:flex;flex-direction:column;gap:2px}
+.phone-bar b{font-size:0.92rem;color:#17222e}
+.phone-bar span{font-size:0.72rem;color:#3c4b5a}
+.phone-bar.sms{background:#39424f} .phone-bar.sms b,.phone-bar.sms span{color:#fff}
+.phone-body{flex:1;padding:15px 13px;background:#9bb0c4}
+.phone-bar.sms + .phone-body{background:#0c141b}
+.msg-bubble{background:#fff;border-radius:5px 15px 15px 15px;padding:11px 13px;font-size:0.83rem;line-height:1.6;color:#111;white-space:pre-wrap;max-width:90%;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.msg-time{font-size:0.68rem;color:#455566;margin-top:6px}
+.phone-bar.sms + .phone-body .msg-time{color:#8a9aa8}
+.phone-home{height:5px;width:112px;background:#2b3542;border-radius:3px;margin:8px auto 4px}
+.msg-bubble .adtag{color:var(--danger);font-weight:800}
+.msg-bubble .lint{background:var(--danger-bg);color:var(--danger);border-radius:3px;padding:0 3px;font-weight:700}
+/* 알림톡 템플릿 카드 — 실제 발송 문안 */
+.tpl-card{border-top:1px solid var(--line);padding:12px 2px}
+tr:first-child .tpl-card{border-top:none}
+.tpl-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.tpl-code{font-size:0.72rem;color:var(--ink-muted);font-variant-numeric:tabular-nums;background:var(--bg-2);padding:2px 6px;border-radius:4px}
+.tpl-preview{background:#FEE500;color:#1a1a1a;border-radius:5px 13px 13px 13px;padding:11px 13px;font-size:0.83rem;line-height:1.6}
+.tpl-ch{display:inline-block;font-size:0.68rem;font-weight:800;color:#3c2e1e;background:rgba(0,0,0,.09);border-radius:3px;padding:1px 6px;margin-right:6px;vertical-align:2px}
+.tplvar{color:#1a5cff;font-weight:700}
+.tpl-meta{font-size:0.75rem;color:var(--ink-muted);margin-top:7px}
+/* 통계 상세 분석 트리 (헤어사랑넷 통계 카탈로그) */
+.statmgr{display:grid;grid-template-columns:248px minmax(0,1fr);gap:16px;align-items:start}
+.stat-tree{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg-1);max-height:78vh;overflow-y:auto}
+.stfold{margin-bottom:8px}
+.stfold-h{font-size:0.78rem;font-weight:800;color:var(--ink-muted);padding:6px 8px 4px}
+.stitem{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:0.86rem;transition:background var(--t1) var(--ease-ui)}
+.stitem:hover{background:var(--bg-2)}
+.stitem.on{background:var(--pri-soft);color:var(--pri);font-weight:700}
+.stitem .nm{flex:1}
+.stitem .star{font-style:normal;color:var(--line-in);font-size:0.86rem}
+.stitem .star.on{color:#F5A623}
+.stitem .star:hover{color:#F5A623}
+.stat-view{min-height:320px}
+.stat-view-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.stat-view-h h3{margin:0}
+.mbars{display:flex;align-items:flex-end;gap:6px;height:220px;padding:8px 0 0}
+.mbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.mbar-t{width:100%;max-width:34px;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:2px}
+.mbar-t>i{width:100%;background:var(--pri);border-radius:3px 3px 0 0;transition:height .5s var(--ease)}
+.mbar-t.cmp>i{width:46%}
+.mbar-v{font-size:0.68rem;color:var(--ink-muted);font-variant-numeric:tabular-nums}
+.mbar-l{font-size:0.72rem;color:var(--ink-sub)}
+.cmp-lg{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:0.82rem;color:var(--ink-sub)}
+.cmp-lg span{display:inline-flex;align-items:center;gap:6px}
+.cmp-lg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+/* 진료항목 관리 — 좌 카테고리 + 우 표 (헤어사랑넷 시술항목설정) */
+.svcmgr{display:grid;grid-template-columns:220px minmax(0,1fr);gap:16px;align-items:start}
+.svc-cats{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg-1)}
+.svc-cats-h{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 8px;font-size:0.9rem}
+.svc-cat{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:0.9rem;transition:background var(--t1) var(--ease-ui)}
+.svc-cat:hover{background:var(--bg-2)}
+.svc-cat.on{background:var(--pri-soft);color:var(--pri);font-weight:700}
+.svc-cat .dh{color:var(--ink-muted);cursor:grab;font-size:0.8rem;letter-spacing:-1px}
+.svc-cat .nm{flex:1}
+.svc-cat b{font-variant-numeric:tabular-nums;color:var(--ink-muted);font-weight:700}
+.svc-cat.on b{color:var(--pri)}
+.svc-cat .svc-catdel{opacity:0;color:var(--ink-muted);font-style:normal;font-weight:800;cursor:pointer;padding:0 3px}
+.svc-cat:hover .svc-catdel{opacity:1}
+.svc-cat .svc-catdel:hover{color:var(--danger)}
+.svc-sec{margin-bottom:18px}
+.svc-sec:last-child{margin-bottom:0}
+.svc-sec-h{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:0.95rem}
+.svc-sec-h .mut{color:var(--ink-muted);font-weight:700}
+.svc-tbl td{vertical-align:middle}
+.svc-editrow{background:var(--pri-soft)}
+.svc-editrow td{padding:6px 8px}
+/* 문자·알림톡 스위트 컴포넌트 */
+.subnav{flex-wrap:wrap}
+.info-box{background:var(--bg-1);border-radius:8px;padding:8px 14px}
+.info-box .ai-row{display:flex;justify-content:space-between;gap:10px;padding:4px 0;font-size:0.86rem}
+.info-box .ai-row span{color:var(--ink-sub)}
+.keep-row{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;transition:border-color var(--t1) var(--ease-ui)}
+.keep-row:hover{border-color:var(--pri-line)}
+.keep-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.keep-b{font-size:0.84rem;color:var(--ink-sub);line-height:1.55;margin-bottom:8px}
+.keep-a{display:flex;gap:6px}
+.btn.xs{height:28px;padding:0 10px;font-size:0.8rem}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink-sub)}
+.btn.ghost:hover{background:var(--bg-2)}
+/* 수납·미수 좌우 분할 — 좌: 수납등록 고정, 우: 탭 분기(전체·오늘수납·노쇼·미수금) */
+.paysplit{display:grid;grid-template-columns:440px minmax(0,1fr);gap:14px;align-items:start}
+.pay-left>.card,.pay-right .prpane>.card{margin:0}
+.pay-left .simrow{flex-wrap:wrap}
+.pay-right .prpane{display:none;margin-bottom:14px}
+.pay-right .prpane:last-child{margin-bottom:0}
+.pay-right .prpane.on{display:block}
+@media(max-width:1180px){.paysplit{grid-template-columns:1fr}}
+/* 막대 그래프 — grid2 좁은 컬럼에서도 막대 폭 확보 (라벨·값 축소, 1fr 최소 보장) */
+.bar-h{grid-template-columns:minmax(84px,120px) minmax(60px,1fr) minmax(52px,72px)!important}
+/* ── v1 계승 컴포넌트 이식 (막대·진단·매트릭스·레이어 위젯 — v2 누락분 복구) ── */
+.bar-h{display:grid;grid-template-columns:130px 1fr 96px;gap:10px;align-items:center;font-size:12px;margin-bottom:7px}
+.bar-h .bt{height:18px;background:var(--bg-2);border-radius:4px;overflow:hidden}
+.bar-h .bt i{display:block;height:100%;width:0;background:var(--accent);border-radius:4px;transition:width var(--t3) var(--ease)}
+.bar-h.dang .bt i{background:var(--danger)}
+.bar-h .bv{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.stg{flex:1;text-align:center;font-size:10.5px;font-weight:700;color:var(--ink-muted);position:relative;padding-top:14px}
+.stg::before{content:"";position:absolute;top:3px;left:calc(50% - 4px);width:8px;height:8px;border-radius:50%;background:var(--line-in)}
+.stg::after{content:"";position:absolute;top:6px;left:calc(50% + 6px);right:calc(-50% + 6px);height:2px;background:var(--line-in)}
+.stg:last-child::after{display:none}
+.stg.done{color:var(--ok)}
+.stg.done::before{background:var(--ok)}
+.stg.now{color:var(--accent)}
+.stg.now::before{background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}

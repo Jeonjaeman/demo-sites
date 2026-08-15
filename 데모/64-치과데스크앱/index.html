@@ -7,7 +7,7 @@
 <title>DENTDESK — 치과 데스크 통합 관리</title>
 <meta name="description" content="치과 데스크 예약·환자·수납·발송·통계 통합 관리 시스템">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=17">
+<link rel="stylesheet" href="assets/css/style.css?v=41">
 </head>
 <body>
 
@@ -90,12 +90,49 @@
     읽기 전용 — 설정에서 「전자차트가 예약의 주인」을 선택한 상태입니다. 이 CRM은 알림·리콜·미수·통계 레이어만 담당합니다.</p>
   <div class="calwrap rv">
     <div class="caltool">
-      <span class="cdate">2026년 8월 14일 (금)</span>
-      <button class="btn sm">◀</button><button class="btn sm">오늘</button><button class="btn sm">▶</button>
+      <div class="tabs calmode" id="calModeTabs">
+        <button class="tab on" data-cmode="grid">타임라인</button>
+        <button class="tab" data-cmode="month">월간</button>
+        <button class="tab" data-cmode="list">목록</button>
+      </div>
       <span style="flex:1"></span>
-      <span style="font-size:0.8214rem;color:var(--ink-muted)">빈 칸을 클릭하면 예약이 등록됩니다 · 예약을 클릭하면 당일 취소→대기 매칭</span>
+      <span class="calhint" style="font-size:0.8214rem;color:var(--ink-muted)">빈 칸을 클릭하면 예약이 등록됩니다 · 예약을 클릭하면 당일 취소→대기 매칭</span>
     </div>
-    <div class="calscroll"><div id="cal"></div></div>
+    <div class="calsub">
+      <div class="calnav" id="calNav">
+        <button class="btn sm" data-cnav="prev">◀</button>
+        <button class="btn sm" data-cnav="today">오늘</button>
+        <button class="btn sm" data-cnav="next">▶</button>
+        <span class="cdate" id="calDate">2026년 8월 14일 (금)</span>
+      </div>
+      <div class="listfilter" id="calListCtrl" hidden>
+        <div class="tabs" id="calPeriod">
+          <button class="tab on" data-cp="all">전체</button>
+          <button class="tab" data-cp="day">오늘</button>
+          <button class="tab" data-cp="week">주간</button>
+          <button class="tab" data-cp="month">월간</button>
+          <button class="tab" data-cp="range">기간 선택</button>
+        </div>
+        <span id="calRangeWrap" hidden style="display:inline-flex;align-items:center;gap:6px;font-size:0.85rem">
+          <input class="inp" type="date" id="calFrom" value="2026-08-01" style="width:150px"> ~
+          <input class="inp" type="date" id="calTo" value="2026-08-31" style="width:150px"></span>
+        <span style="flex:1"></span>
+        <div class="tabs" id="calStFilter">
+          <button class="tab on" data-clf="all">전체상태</button>
+          <button class="tab" data-clf="conf">확정</button>
+          <button class="tab" data-clf="wait">대기</button>
+          <button class="tab" data-clf="done">완료</button>
+          <button class="tab" data-clf="noshow">노쇼</button>
+          <button class="tab" data-clf="cancel">취소</button>
+        </div>
+      </div>
+    </div>
+    <div id="calGridWrap"><div class="calscroll"><div id="cal"></div></div></div>
+    <div id="calMonthWrap" hidden><div class="mcal" id="mcal"></div></div>
+    <div id="calListWrap" hidden>
+      <table class="tbl"><thead><tr><th>일자</th><th>시간</th><th>상태</th><th>환자</th><th>진료</th><th>담당 (의·위생)</th><th>진료실·체어</th></tr></thead><tbody id="calListBody"></tbody></table>
+      <p class="note" id="calListSum"></p>
+    </div>
   </div>
   <p class="note">체어·의사·위생사 축으로 볼 수 있습니다. <b>스케일링은 위생사 축에서 배정 상태가 온전히 보입니다</b> — 위생사를 배정하지 않으면 "의사·체어는 비었는데 붙을 스탭이 없는" 예약이 됩니다.</p>
 </section>
@@ -120,7 +157,14 @@
       <span style="flex:1"></span>
       <button class="btn" id="ptExport">전체 목록 CSV</button>
     </div>
-    <table class="tbl"><thead><tr><th>ID</th><th>이름</th><th>출생</th><th>연락처</th><th>최근 내원</th><th>노쇼 이력</th><th>광고 수신</th><th></th></tr></thead>
+    <div class="bulkbar" id="ptBulk">
+      <span>선택 <b id="ptSelN">0</b>명</span>
+      <button class="btn sm pri" id="ptBulkSms">✉ 선택 고객에게 문자</button>
+      <button class="btn sm" id="ptSelClear">선택 해제</button>
+      <span style="flex:1"></span>
+      <span class="note" style="margin:0">체크박스로 여러 명을 골라 한 번에 발송할 수 있습니다</span>
+    </div>
+    <table class="tbl"><thead><tr><th style="width:30px"><input type="checkbox" id="ptSelAll"></th><th>ID</th><th>이름</th><th>출생</th><th>연락처</th><th>최근 내원</th><th>노쇼 이력</th><th>광고 수신</th><th></th></tr></thead>
     <tbody id="ptBody"></tbody></table>
   </div>
   </div>
@@ -149,40 +193,60 @@
     <button data-sub="pay-stock">물품 재고 <span class="sbadge">발주 3</span></button>
   </div>
   <div class="subpane on" id="sp-pay-main">
-  <div class="card rv">
-    <h3>수납 등록</h3>
-    <p class="sub">수납 데스크는 터치 단말 사용률이 높아 금액 입력 속도가 곧 대기열입니다. 금액 칸을 클릭하면 넘버패드가 뜨고,
-    현금 10만원 이상이면 현금영수증 발행 확인 없이는 저장이 차단됩니다.</p>
-    <div class="simrow" style="align-items:end">
-      <label class="field">환자 <input class="inp" id="npPat" value="오은영" style="width:110px"></label>
-      <label class="field">항목 <input class="inp" id="npItem" value="임플란트 2차 분납(비급여)" style="width:190px"></label>
-      <label class="field">수단 <select class="inp" id="npMethod" style="width:90px"><option>현금</option><option>카드</option><option>계좌이체</option></select></label>
-      <label class="field">금액 <input class="inp" id="npAmount" value="0" readonly style="width:120px;text-align:right;font-variant-numeric:tabular-nums;cursor:pointer" title="클릭하면 넘버패드"></label>
-      <label class="field" id="npReceiptWrap" hidden style="color:var(--alert-text)">현금영수증
-        <select class="inp" id="npReceipt" style="width:110px"><option value="">— 선택 —</option><option value="Y">발행함</option><option value="N">발행 안 함</option></select></label>
-      <button class="btn pri" id="npSave">수납 저장</button>
+  <div class="paysplit">
+    <div class="pay-left">
+      <div class="card rv">
+        <h3>수납 등록</h3>
+        <p class="sub">수납 데스크는 터치 단말 사용률이 높아 금액 입력 속도가 곧 대기열입니다. 금액 칸을 클릭하면 넘버패드가 뜨고, 현금 10만원 이상이면 현금영수증 발행 확인 없이는 저장이 차단됩니다.</p>
+        <div class="simrow" style="align-items:end">
+          <label class="field" style="flex-basis:100%">환자
+            <div class="qsearch"><input class="inp" id="npPat" value="오은영" placeholder="이름·초성·전화" autocomplete="off" style="width:100%"><div class="qs-pop" id="npPatPop" hidden></div></div></label>
+          <label class="field" style="flex-basis:100%">항목
+            <select class="inp" id="npItemSel" style="width:100%"></select>
+            <input class="inp" id="npItem" value="임플란트 2차 분납(비급여)" placeholder="선택하거나 직접 입력" style="width:100%;margin-top:6px"></label>
+          <label class="field">수단 <select class="inp" id="npMethod" style="width:90px"><option>현금</option><option>카드</option><option>계좌이체</option></select></label>
+          <label class="field">금액 <input class="inp" id="npAmount" value="0" readonly style="width:120px;text-align:right;font-variant-numeric:tabular-nums;cursor:pointer" title="클릭하면 넘버패드"></label>
+          <label class="field" id="npReceiptWrap" hidden style="color:var(--alert-text)">현금영수증
+            <select class="inp" id="npReceipt" style="width:110px"><option value="">— 선택 —</option><option value="Y">발행함</option><option value="N">발행 안 함</option></select></label>
+          <button class="btn pri" id="npSave">수납 저장</button>
+        </div>
+        <p class="note" id="npNote">금액 칸을 클릭해 넘버패드로 입력하세요 — 예: 1,200,000원 (현금영수증 게이트 시연)</p>
+      </div>
     </div>
-    <p class="note" id="npNote">금액 칸을 클릭해 넘버패드로 입력하세요 — 예: 1,200,000원 (현금영수증 게이트 시연)</p>
-  </div>
-  <div class="card rv">
-    <h3>오늘 수납 — 현금 10만원 이상은 현금영수증이 필수 필드가 됩니다</h3>
-    <p class="sub">치과는 현금영수증 의무발행업종 — 10만원 이상 현금 수납을 미발급하면 해당 금액의 20%가 가산세입니다. 수납 수정은 실장 이상만 가능합니다(현금 조작 방지).</p>
-    <table class="tbl"><thead><tr><th>시각</th><th>환자</th><th>항목</th><th>수단</th><th style="text-align:right">금액</th><th>현금영수증</th><th></th></tr></thead>
-    <tbody id="payBody"></tbody></table>
-    <p class="note" id="recMiss"></p>
-  </div>
-  <div class="card rv">
-    <h3>미수금 — 목록이 아니라 시효 관리입니다 (3년 소멸)</h3>
-    <p class="sub">임플란트·교정 미수는 사고가 아니라 분납 계획의 미이행 — 회차별 예정일이 데이터에 있어야 합니다. 「확인서」는 시효 중단·지급명령의 사전 증거로 실제 파일이 생성됩니다.</p>
-    <table class="tbl"><thead><tr><th>환자</th><th style="text-align:right">미수 잔액</th><th>분납 계획</th><th>소멸시효</th><th>대응 단계</th><th></th></tr></thead>
-    <tbody id="arBody"></tbody></table>
-  </div>
-  <div class="card rv">
-    <h3>노쇼 위약금 계산기 — 치협 기준 · 사전 고지 없으면 부과 불가</h3>
-    <div class="simrow">
-      <label>취소 시점 <input type="range" id="pnWhen" min="0" max="7" step="1" value="1"><output id="pnWhenOut">1일 전</output></label>
+    <div class="pay-right">
+      <div class="tabs" id="payRightTabs">
+        <button class="tab on" data-prt="all">전체</button>
+        <button class="tab" data-prt="today">오늘 수납</button>
+        <button class="tab" data-prt="noshow">노쇼 위약금</button>
+        <button class="tab" data-prt="arrears">미수금</button>
+      </div>
+      <div class="prpane on" data-pr="today">
+        <div class="card rv">
+          <h3>오늘 수납 — 현금 10만원 이상은 현금영수증이 필수 필드가 됩니다</h3>
+          <p class="sub">치과는 현금영수증 의무발행업종 — 10만원 이상 현금 수납을 미발급하면 해당 금액의 20%가 가산세입니다. 수납 수정은 실장 이상만 가능합니다(현금 조작 방지).</p>
+          <table class="tbl"><thead><tr><th>시각</th><th>환자</th><th>항목</th><th>수단</th><th style="text-align:right">금액</th><th>현금영수증</th><th></th></tr></thead>
+          <tbody id="payBody"></tbody></table>
+          <p class="note" id="recMiss"></p>
+        </div>
+      </div>
+      <div class="prpane on" data-pr="noshow">
+        <div class="card rv">
+          <h3>노쇼 위약금 계산기 — 치협 기준 · 사전 고지 없으면 부과 불가</h3>
+          <div class="simrow">
+            <label>취소 시점 <input type="range" id="pnWhen" min="0" max="7" step="1" value="1"><output id="pnWhenOut">1일 전</output></label>
+          </div>
+          <p style="font-size:0.9286rem" id="pnOut"></p>
+        </div>
+      </div>
+      <div class="prpane on" data-pr="arrears">
+        <div class="card rv">
+          <h3>미수금 — 목록이 아니라 시효 관리입니다 (3년 소멸)</h3>
+          <p class="sub">임플란트·교정 미수는 사고가 아니라 분납 계획의 미이행 — 회차별 예정일이 데이터에 있어야 합니다. 「확인서」는 시효 중단·지급명령의 사전 증거로 실제 파일이 생성됩니다.</p>
+          <table class="tbl"><thead><tr><th>환자</th><th style="text-align:right">미수 잔액</th><th>분납 계획</th><th>소멸시효</th><th>대응 단계</th><th></th></tr></thead>
+          <tbody id="arBody"></tbody></table>
+        </div>
+      </div>
     </div>
-    <p style="font-size:0.9286rem" id="pnOut"></p>
   </div>
   </div>
   <div class="subpane" id="sp-pay-sales">
@@ -206,8 +270,17 @@
   </div>
   <div class="subpane" id="sp-pay-stock">
     <div class="card rv">
-      <h3>물품 재고 — 잔여량·유효기간</h3>
-      <p class="sub">안전재고 미만은 발주 경고, 유효기간 6개월 이내는 별도 표시합니다. 진료에 연동된 품목은 시술 완료 시 자동 차감되도록 설계합니다(예: 임플란트 1차 → 픽스처 1개).</p>
+      <h3>물품 재고 · 관리 — 등록·수정·삭제</h3>
+      <p class="sub">품목을 직접 등록·수정·삭제해 재고 원장을 관리합니다. 안전재고 미만은 발주 경고, 유효기간 6개월 이내는 별도 표시하고, 진료에 연동된 품목은 시술 완료 시 자동 차감되도록 설계합니다(예: 임플란트 1차 → 픽스처 1개).</p>
+      <div class="simrow" style="align-items:end;flex-wrap:wrap;margin-bottom:12px;padding:12px;background:var(--bg-1);border-radius:9px">
+        <label class="field">품목명 <input class="inp" id="ivName" placeholder="예: 임플란트 픽스처" style="width:150px"></label>
+        <label class="field">분류 <select class="inp" id="ivCat" style="width:110px"><option>임플란트</option><option>수복재료</option><option>약제</option><option>근관재료</option><option>소모품</option><option>예방재료</option></select></label>
+        <label class="field">단위 <input class="inp" id="ivUnit" placeholder="개·박스·팩" value="개" style="width:80px"></label>
+        <label class="field">안전재고 <input class="inp" id="ivSafety" type="number" value="5" style="width:80px"></label>
+        <label class="field">유효기간 <input class="inp" id="ivExp" placeholder="2028-08 · 없으면 -" value="2028-08" style="width:120px"></label>
+        <label class="field">연동 진료 <input class="inp" id="ivUses" placeholder="예: 임플란트 1차" style="width:140px"></label>
+        <button class="btn pri" id="ivAdd">물품 등록</button>
+      </div>
       <div class="tabs" id="invFilter">
         <button class="tab on" data-invf="all">전체</button>
         <button class="tab" data-invf="low">발주 필요</button>
@@ -221,6 +294,18 @@
 
 <!-- ④ 문자·알림톡 -->
 <section class="view" id="v-send">
+  <div class="subnav" id="sendNav">
+    <button class="on" data-sub="send-write">문자 보내기</button>
+    <button data-sub="send-history">발송 내역</button>
+    <button data-sub="send-scheduled">예약 문자 <span class="sbadge">4</span></button>
+    <button data-sub="send-keep">문자 보관함</button>
+    <button data-sub="send-auto">자동 발송</button>
+    <button data-sub="send-kakao">알림톡 설정</button>
+    <button data-sub="send-number">발신번호</button>
+    <button data-sub="send-charge">충전·사용</button>
+    <button data-sub="send-deny">수신거부 <span class="sbadge">4</span></button>
+  </div>
+  <div class="subpane on" id="sp-send-write">
   <div class="tabs" id="sendTabs">
     <button class="tab on" data-st="remind">예약 알림 (정보성 · 전원 발송)</button>
     <button class="tab" data-st="recall">리콜 캠페인 (광고성 · 동의자 한정)</button>
@@ -230,7 +315,12 @@
       <div class="card rv">
         <h3>발송 유형 판정기 — 문구가 채널을 결정합니다</h3>
         <p class="sub">KISA 기준: 예약 알림·경과 확인은 정보성, 단순 정기검진 권유는 광고성. 알림톡은 정보성 전용이라 광고성 문구는 템플릿 심사에서 반려됩니다. 문구를 바꿔 보세요 — 판정·채널·대상자가 실시간으로 바뀝니다.</p>
+        <div class="sendmeta">
+          <label>받는사람 <select class="inp" id="sendTo"><option value="312">전체 환자 (312명)</option><option value="18">신환 (18명)</option><option value="142">재진 (142명)</option><option value="88">광고 수신동의 (88명)</option><option value="21">이번 달 생일 (21명)</option><option value="34">휴면 6개월+ (34명)</option></select></label>
+          <label>발신번호 <select class="inp" id="sendFrom"><option>02-000-0000 (대표번호)</option><option>1588-0000 (콜센터)</option></select></label>
+        </div>
         <textarea class="inp" id="msgIn" rows="3" style="width:100%">#{환자명}님, 내일 14:00 김이현 원장 예약이 있습니다. 변경은 02-000-0000 (1 확인 / 2 변경 / 3 취소)</textarea>
+        <div class="bytebar"><span id="byteOut">0 byte</span><span class="dot">·</span><span id="typeOut">SMS</span><span class="dot">·</span><span id="msgCost">건당 9원</span></div>
         <div class="verdict info" id="judgeBadge" style="margin-top:10px"></div>
         <div class="chan">
           <span class="ch" id="chAlim">카카오 알림톡 (8원 · 정보성 전용)</span>
@@ -241,6 +331,7 @@
         <div class="simrow" style="margin-top:10px">
           <label>발송 시각 <input class="inp" type="time" id="sendAt" value="17:00" style="display:block;margin-top:4px"></label>
           <button class="btn pri" id="sendBtn" style="align-self:end">발송 큐에 적재</button>
+          <button class="btn" id="saveKeepBtn" style="align-self:end">보관함에 저장</button>
         </div>
         <p id="nightWarn" hidden style="font-size:0.8571rem;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:8px 10px;margin-top:8px"></p>
         <p style="font-size:0.8929rem;margin-top:10px" id="queueOut"></p>
@@ -248,15 +339,35 @@
       <div>
         <div class="card rv">
           <h3>수신자 미리보기</h3>
-          <div class="msgprev" id="msgPrev"></div>
-          <p class="note">광고성 판정 시 <b>(광고)</b>와 무료수신거부 번호가 강제 삽입되고, 야간(21~08시)은 익일 08시로 이월됩니다. 의료법 27조 3항(환자 유인) 소지 표현은 붉게 표시됩니다 — "할인"을 넣어 보세요.</p>
-        </div>
-        <div class="card rv">
-          <h3>알림톡 템플릿 — 검수 없이는 한 건도 못 보냅니다</h3>
-          <p class="sub">발신프로필(사업자등록증+카카오 채널) → 템플릿 사전 검수(영업일 2일·반려 반복). 리콜 템플릿이 왜 반려됐는지 보세요.</p>
-          <table class="tbl"><thead><tr><th>템플릿</th><th>변수</th><th>상태</th><th>내용</th></tr></thead><tbody id="tplBody"></tbody></table>
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-bar" id="phoneBar"><b>서울밝은치과</b><span id="phoneChan">카카오 알림톡</span></div>
+              <div class="phone-body">
+                <div class="msg-bubble" id="msgPrev"></div>
+                <div class="msg-time" id="msgTime">오후 5:00 · 알림톡</div>
+              </div>
+              <div class="phone-home"></div>
+            </div>
+          </div>
+          <p class="note">실제 발송 화면 그대로 미리봅니다. 광고성 판정 시 <b>(광고)</b>와 무료수신거부 번호가 강제 삽입되고, 야간(21~08시)은 익일 08시로 이월됩니다. 의료법 27조 3항(환자 유인) 소지 표현은 붉게 표시됩니다 — "할인"을 넣어 보세요.</p>
         </div>
       </div>
+    </div>
+    <div class="card rv" style="margin-top:14px">
+      <h3>문자 샘플 — 클릭하면 작성창에 채워집니다</h3>
+      <p class="sub">상황별 문안을 골라 바로 발송하거나, 불러온 뒤 매크로(#{환자명} 등)만 두고 수정하세요. 광고성 샘플은 알림톡 대신 (광고) SMS로 자동 분기됩니다.</p>
+      <div class="tabs" id="smplTabs">
+        <button class="tab on" data-smpl="all">전체</button>
+        <button class="tab" data-smpl="예약">예약</button>
+        <button class="tab" data-smpl="진료후">진료후</button>
+        <button class="tab" data-smpl="검진리콜">검진리콜</button>
+        <button class="tab" data-smpl="생일">생일</button>
+        <button class="tab" data-smpl="신규">신규</button>
+        <button class="tab" data-smpl="휴면">휴면</button>
+        <button class="tab" data-smpl="안부">안부</button>
+        <button class="tab" data-smpl="이벤트">이벤트</button>
+      </div>
+      <div class="smpl-grid" id="smplGrid"></div>
     </div>
   </div>
   <div id="recallPane" hidden>
@@ -286,6 +397,114 @@
       </div>
     </div>
   </div>
+  </div>
+
+  <div class="subpane" id="sp-send-history">
+    <div class="card rv">
+      <h3>발송 내역 — 상태·비용 추적</h3>
+      <p class="sub">발송 결과는 통신사·카카오 상태코드로 갱신됩니다. 알림톡 실패 시 SMS로 자동 대체발송되며, 수신거부·결번은 비용이 청구되지 않습니다.</p>
+      <div class="tabs" id="histFilter">
+        <button class="tab on" data-hf="all">전체</button>
+        <button class="tab" data-hf="성공">성공</button>
+        <button class="tab" data-hf="실패">실패·대체</button>
+        <button class="tab" data-hf="수신거부">수신거부</button>
+      </div>
+      <table class="tbl"><thead><tr><th>발송시각</th><th>수신자</th><th>유형</th><th>템플릿</th><th>내용</th><th>상태</th><th style="text-align:right">비용</th></tr></thead><tbody id="smsHistBody"></tbody></table>
+      <p class="note" id="smsHistSum"></p>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-scheduled">
+    <div class="card rv">
+      <h3>예약 문자 — 발송 예정 큐</h3>
+      <p class="sub">지정 시각에 자동 발송됩니다. 「자동」 표시는 자동 발송 규칙이 만든 큐로, 대상자는 발송 직전 재계산됩니다(수신거부·번호오류 자동 제외). 야간(21~08시) 예약은 익일 08시로 이월됩니다.</p>
+      <table class="tbl"><thead><tr><th>발송 예정</th><th>제목</th><th>유형</th><th>대상</th><th style="text-align:right">건수</th><th>출처</th><th></th></tr></thead><tbody id="smsSchedBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-keep">
+    <div class="card rv">
+      <h3>문자 보관함 — 자주 쓰는 문안</h3>
+      <p class="sub">매크로(#{환자명}·#{예약일시}·#{담당의}·#{금액} 등)를 넣어 저장하면, 발송 시 환자 데이터로 자동 치환됩니다. 「불러오기」로 문자 보내기에 즉시 적용됩니다.</p>
+      <div class="simrow" style="align-items:end;margin-bottom:10px">
+        <label class="field">이름 <input class="inp" id="keepName" placeholder="예: 임플란트 2차 안내" style="width:200px"></label>
+        <label class="field">유형 <select class="inp" id="keepType" style="width:100px"><option>알림톡</option><option>SMS</option><option>LMS</option></select></label>
+        <button class="btn pri" id="keepAdd">보관함에 저장</button>
+      </div>
+      <div id="smsKeepBody"></div>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-auto">
+    <div class="card rv">
+      <h3>자동 발송 설정 — 시점 트리거</h3>
+      <p class="sub">예약·수납·진료 이벤트나 시간 배치(생일·검진주기)로 자동 발송되는 규칙입니다. 토글로 켜고 끄면 예약 문자 큐와 발송 대상이 실제로 바뀝니다. 정보성(예약·수납 안내)은 전원 발송, 광고성(리콜·생일 이벤트)은 수신동의자로 제한됩니다.</p>
+      <table class="tbl"><thead><tr><th colspan="6" style="text-align:left">자동 발송 규칙 · 실제 발송 문안 (확인·수정 가능)</th></tr></thead><tbody id="smsAutoBody"></tbody></table>
+      <p class="note" id="smsAutoSum"></p>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-kakao">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>카카오 채널 연동</h3>
+        <div id="kakaoCh"></div>
+        <p class="note">알림톡은 정보성 전용·건당 8원으로 SMS(9원)보다 저렴하고 도달률이 높습니다. 채널 미연동·친구 아님이면 SMS로 자동 대체됩니다.</p>
+      </div>
+      <div class="card rv">
+        <h3>알림톡 템플릿 — 사전 심의</h3>
+        <p class="sub">발신프로필(사업자등록증+채널) 등록 후 템플릿마다 카카오 심의(영업일 2일). 광고성·의료법 유인성 문구는 반려됩니다.</p>
+        <table class="tbl"><thead><tr><th colspan="4" style="text-align:left">등록 템플릿 · 실제 발송 문안 미리보기</th></tr></thead><tbody id="kakaoTplBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-number">
+    <div class="card rv">
+      <h3>발신번호 설정 — KISA 사전등록제</h3>
+      <p class="sub">2015년 이후 사전 등록된 번호로만 발송할 수 있습니다(변작 방지). 본인 명의는 휴대폰 실명인증으로 즉시 등록, 사업자·타인 명의는 통신가입증명원·위임장 서류심사(영업일 3~5일)를 거칩니다. 심사완료(등록완료) 번호만 발신번호로 선택됩니다.</p>
+      <div class="simrow" style="align-items:end;margin-bottom:10px">
+        <label class="field">번호 <input class="inp" id="sndNum" placeholder="02-000-0000" style="width:140px"></label>
+        <label class="field">용도 <input class="inp" id="sndLabel" placeholder="예: 2진료실 직통" style="width:150px"></label>
+        <label class="field">명의 <select class="inp" id="sndNominee" style="width:100px"><option>사업자</option><option>본인</option></select></label>
+        <button class="btn pri" id="sndAdd">등록 신청</button>
+      </div>
+      <table class="tbl"><thead><tr><th>번호</th><th>용도</th><th>명의</th><th>인증방식</th><th>심사상태</th><th>신청일</th></tr></thead><tbody id="senderBody"></tbody></table>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-charge">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>충전 잔액 · 이번 달 사용</h3>
+        <div id="chargeBal"></div>
+        <h4 style="font-size:0.8571rem;font-weight:800;margin:14px 0 8px">유형별 사용 (이번 달)</h4>
+        <div id="chargeUse"></div>
+        <div class="simrow" style="align-items:end;margin-top:12px">
+          <label class="field">충전 금액 <select class="inp" id="chargeAmt" style="width:120px"><option value="10000">10,000원</option><option value="30000">30,000원</option><option value="50000">50,000원</option></select></label>
+          <button class="btn pri" id="chargeBtn">충전</button>
+          <label style="display:flex;gap:6px;align-items:center;font-size:0.8571rem"><span class="sw"><input type="checkbox" id="autoCharge" checked><i></i></span> 잔액 5천원 미만 자동충전</label>
+        </div>
+      </div>
+      <div class="card rv">
+        <h3>충전·사용 내역</h3>
+        <table class="tbl"><thead><tr><th>일시</th><th>구분</th><th>내역</th><th style="text-align:right">금액</th><th style="text-align:right">잔액</th></tr></thead><tbody id="chargeBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="subpane" id="sp-send-deny">
+    <div class="card rv">
+      <h3>수신거부 목록 — 발송 대상에서 자동 제외</h3>
+      <p class="sub">080 무료수신거부·데스크 직접 등록·그룹 동기화로 수집됩니다. 여기 등록된 번호는 모든 광고성 발송에서 자동 제외되며, 정보성(예약·수납 안내)은 광고 예외로 계속 발송됩니다. 미매칭 번호는 환자 차트와 연결되지 않은 수신거부입니다.</p>
+      <div class="simrow" style="align-items:end;margin-bottom:10px">
+        <label class="field">번호 <input class="inp" id="denyNum" placeholder="010-0000-0000" style="width:150px"></label>
+        <button class="btn" id="denyAdd">수신거부 등록</button>
+      </div>
+      <table class="tbl"><thead><tr><th>번호</th><th>환자</th><th>등록일</th><th>출처</th></tr></thead><tbody id="denyBody"></tbody></table>
+      <p class="note" id="denySum"></p>
+    </div>
+  </div>
 </section>
 
 <!-- ⑤ 통계 -->
@@ -295,6 +514,7 @@
     <button data-sub="stats-sales">매출 분석</button>
     <button data-sub="stats-pt">환자 분석</button>
     <button data-sub="stats-proc">진료·리콜</button>
+    <button data-sub="stats-tree">상세 분석 <span class="sbadge">28</span></button>
   </div>
   <div class="subpane on" id="sp-stats-main">
   <div class="grid2">
@@ -372,29 +592,33 @@
       </div>
     </div>
   </div>
+  <div class="subpane" id="sp-stats-tree">
+    <div class="statmgr">
+      <aside class="stat-tree" id="statTree"></aside>
+      <div class="card rv stat-view" id="statView"></div>
+    </div>
+  </div>
 </section>
 
 <!-- ⑥ 설정·보안 -->
 <section class="view" id="v-set">
   <div class="subnav">
     <button class="on" data-sub="set-care">진료·예약</button>
+    <button data-sub="set-hours">진료시간·휴무</button>
     <button data-sub="set-data">데이터·연동</button>
     <button data-sub="set-sec">보안·개인정보</button>
   </div>
   <div class="subpane on" id="sp-set-care">
   <div class="card rv">
     <h3>진료항목 관리</h3>
-    <p class="sub">자주 쓰는 진료를 진료과별로 등록해 두면, 예약·수납에서 매번 타이핑하지 않고 선택할 수 있습니다(직접 입력도 가능). 급여/비급여 구분과 기본 소요시간을 함께 관리합니다.</p>
-    <div style="display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:12px">
-      <label class="field">진료과
-        <select class="inp" id="svCat" style="width:130px"></select></label>
-      <label class="field">진료명 <input class="inp" id="svName" placeholder="예: 임플란트 3차" style="width:160px"></label>
-      <label class="field">구분
-        <select class="inp" id="svIns" style="width:120px"><option>비급여</option><option>급여</option><option>급여(연1회)</option><option>상담</option></select></label>
-      <label class="field">소요(분) <input class="inp" id="svMin" type="number" value="30" style="width:80px"></label>
-      <button class="btn pri" id="svAdd">추가</button>
+    <p class="sub">자주 쓰는 진료를 진료과(카테고리)별로 등록해 두면, 예약·수납에서 타이핑 없이 선택할 수 있습니다. 카테고리를 고르면 해당 진료만 보이고, 진료명·소요시간·기본 수가·급여구분을 표에서 바로 관리합니다.</p>
+    <div class="svcmgr">
+      <aside class="svc-cats">
+        <div class="svc-cats-h"><b>진료 카테고리</b><button class="btn xs" id="svCatAdd">+ 카테고리</button></div>
+        <div id="svcCatList"></div>
+      </aside>
+      <div class="svc-tables" id="svcTables"></div>
     </div>
-    <div id="svList"></div>
   </div>
   <div class="card rv">
     <h3>진료 리소스 관리 — 진료실·체어·의료진</h3>
@@ -422,6 +646,19 @@
     </div>
     <p style="font-size:0.9286rem" id="duOut"></p>
   </div>
+  </div>
+  <div class="subpane" id="sp-set-hours">
+    <div class="card rv">
+      <h3>진료시간</h3>
+      <p class="sub">요일별 진료 시간과 점심(휴게)시간을 설정합니다. 예약 캘린더의 진료 가능 구간·점심 블록에 반영됩니다. 요일 토글로 휴진일을 지정하고, 시작·종료·점심시간을 직접 편집합니다.</p>
+      <table class="tbl"><thead><tr><th>요일</th><th>진료</th><th>진료 시작</th><th>진료 종료</th><th>점심(휴게)</th><th>비고</th></tr></thead><tbody id="hoursBody"></tbody></table>
+      <p class="note">목요일은 야간 진료(20:30), 토요일은 오전 진료(13:00), 일요일은 휴진으로 설정돼 있습니다. 토글·시간을 바꾸면 즉시 반영됩니다.</p>
+    </div>
+    <div class="card rv">
+      <h3>휴무 설정 — 정기 휴진·공휴일</h3>
+      <p class="sub">영업시간 외 정기·공휴일 휴진을 설정합니다. 휴진일은 캘린더에서 예약이 차단되고, 예약 리마인드 자동 발송에서도 제외됩니다.</p>
+      <div id="holBody"></div>
+    </div>
   </div>
   <div class="subpane" id="sp-set-data">
   <div class="grid2">
@@ -526,14 +763,18 @@
   <div class="modal lay apanel">
     <div class="mhead"><h3 id="apName"></h3><span style="margin-left:auto" id="apStPill"></span></div>
     <div class="mbody">
+      <h4 class="ap-sec">예약 정보</h4>
       <div class="ap-status" id="apStatus"></div>
       <div class="ap-info" id="apInfo"></div>
-      <h4>고객 요약</h4>
-      <div class="ap-cust" id="apCust"></div>
       <div class="ap-acts" id="apActs"></div>
+      <h4 class="ap-sec ap-div">기본 회원 정보 <span class="ap-sec-note">상세는 「차트 열기」</span></h4>
+      <div class="ap-cust" id="apCust"></div>
+      <h4 class="ap-sec ap-div">메모 내역 <span class="ap-sec-note">데스크 응대 기록</span></h4>
+      <div class="ap-memo" id="apMemo"></div>
     </div>
     <div class="mfoot">
       <button class="btn" data-close>닫기</button>
+      <button class="btn" id="apSms">✉ 문자</button>
       <button class="btn pri" id="apChart">고객 차트 열기</button>
     </div>
   </div>
@@ -560,34 +801,107 @@
   </div>
 </div>
 
+<!-- 문자 발송 모달 (패널·차트·목록에서 즉시 발송) -->
+<div class="modal-bg" id="smsModal">
+  <div class="modal" style="max-width:540px">
+    <h3>문자 발송</h3>
+    <p class="msub" id="smsRecip"></p>
+    <div class="sendmeta" style="margin-bottom:8px">
+      <label>발신번호 <select class="inp" id="smsFrom"><option>02-000-0000 (대표번호)</option><option>1588-0000 (콜센터)</option></select></label>
+      <label>빠른 문안 <select class="inp" id="smsQuick"></select></label>
+    </div>
+    <textarea class="inp" id="smsBody" rows="4" style="width:100%">#{환자명}님, </textarea>
+    <div class="bytebar"><span id="smsByte">0 byte</span><span class="dot">·</span><span id="smsType">SMS</span><span class="dot">·</span><span id="smsCost"></span></div>
+    <p class="note" style="margin-top:8px">여러 명 발송 시 #{환자명}은 각 환자 이름으로 자동 치환됩니다. 광고성 문구는 의료법·정보통신망법 린트 대상입니다. 발송분은 「문자·알림톡 → 발송 내역」에 기록됩니다.</p>
+    <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:14px">
+      <button class="btn" data-close>취소</button>
+      <button class="btn pri" id="smsSend">발송</button>
+    </div>
+  </div>
+</div>
+
 <!-- 환자 상세 모달 (기록 경계선 · 레이어 규격: 스크롤 그림자 + 하단 고정 버튼바) -->
 <div class="modal-bg rside" id="patModal">
-  <div class="modal lay" style="max-width:760px">
-    <div class="mhead">
-    <h3 id="pdName"></h3>
-    </div>
-    <div class="mbody">
-    <p class="msub" id="pdMeta"></p>
-    <div class="boundary">
-      <div class="b-desk">
-        <div class="b-head">데스크 응대 기록 <span class="pill ok">이 시스템 소유</span></div>
-        <div id="pdDesk"></div>
-        <textarea class="inp" id="pdInput" rows="2" style="width:100%;margin-top:8px"></textarea>
-        <p id="pdWarn" hidden style="font-size:0.8214rem;color:var(--danger);margin-top:6px">
-          진료기록 성격의 문구입니다 — 의료법 22조상 의료인 서명이 필요한 기록은 전자차트에 작성하세요. 저장이 차단됩니다.</p>
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button class="btn pri sm" id="pdSave">응대 기록 저장</button>
-          <button class="btn dang sm" id="pdDeact">환자 삭제</button>
-        </div>
+  <div class="modal lay" style="max-width:860px">
+    <div class="mhead pd-mhead">
+      <div class="pd-ava" id="pdAva"></div>
+      <div class="pd-hbody">
+        <div class="pd-hname"><span id="pdName"></span> <button class="btn xs" id="pdEdit" title="고객정보 수정">✎ 편집</button></div>
+        <div id="pdPhone" class="pd-phone"></div>
       </div>
-      <div class="b-emr">
-        <div class="b-head">진료 기록 <span class="pill mut">전자차트 연동 · 읽기 전용</span></div>
-        <div id="pdEmr"></div>
-        <p style="font-size:0.7857rem;color:var(--ink-muted);margin-top:8px">본 시스템에서 작성·수정 불가 — 진료기록의 소유는 전자의무기록(의료법 23조) 영역입니다.</p>
+      <div class="pd-acts">
+        <button class="btn sm" id="pdSms">✉ 문자</button>
+        <button class="btn sm" id="pdBook">예약 등록</button>
+        <button class="btn sm" id="pdPay">수납 등록</button>
       </div>
     </div>
+    <div class="chart-tabs" id="pdTabs">
+      <button class="ct on" data-ct="info">고객정보</button>
+      <button class="ct" data-ct="sales">진료·매출</button>
+      <button class="ct" data-ct="appt">예약</button>
+      <button class="ct" data-ct="sms">문자내역</button>
+      <button class="ct" data-ct="arrear">미수금</button>
+      <button class="ct" data-ct="emr">진료기록</button>
+      <button class="ct" data-ct="memo">데스크 메모</button>
     </div>
+    <div class="mbody" id="pdTabBody"></div>
     <div class="mfoot"><button class="btn" data-close>닫기</button></div>
+  </div>
+</div>
+
+<!-- 고객정보 수정 모달 -->
+<div class="modal-bg" id="patEditModal">
+  <div class="modal" style="max-width:460px">
+    <h3>고객정보 수정</h3>
+    <p class="msub">이름·연락처·생년월일·동의 항목을 수정합니다. 저장 시 차트와 환자 목록에 즉시 반영됩니다.</p>
+    <div class="editgrid">
+      <label>이름 <input class="inp" id="peName"></label>
+      <label>연락처 <input class="inp" id="pePhone"></label>
+      <label>생년월일 <input class="inp" type="date" id="peBirth"></label>
+    </div>
+    <div class="edittog">
+      <label class="swrow"><span class="sw"><input type="checkbox" id="peMkt"><i></i></span> 광고성 정보 수신 동의</label>
+      <label class="swrow"><span class="sw"><input type="checkbox" id="peSens"><i></i></span> 민감정보(건강정보) 수집·이용 동의</label>
+    </div>
+    <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn" data-close>취소</button>
+      <button class="btn pri" id="peSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 예약 등록 모달 (차트에서 · 페이지 이동 없이 · 스케줄과 연동) -->
+<div class="modal-bg" id="apptRegModal">
+  <div class="modal" style="max-width:480px">
+    <h3>예약 등록</h3>
+    <p class="msub" id="aqPatLbl"></p>
+    <div class="editgrid">
+      <label>날짜 <input class="inp" type="date" id="aqDate" value="2026-08-15"></label>
+      <label>시간 <input class="inp" type="time" id="aqTime" value="10:00"></label>
+      <label>진료 <select class="inp" id="aqProcSel"></select>
+        <input class="inp" id="aqProc" placeholder="선택하거나 직접 입력" style="margin-top:6px"></label>
+      <label>담당의 <select class="inp" id="aqDoc"></select></label>
+      <label>체어 <select class="inp" id="aqChair"></select></label>
+    </div>
+    <p class="note">저장하면 스케줄(타임라인·월간·목록)과 이 환자 차트의 예약 탭에 함께 반영됩니다.</p>
+    <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:14px"><button class="btn" data-close>취소</button><button class="btn pri" id="aqSave">예약 저장</button></div>
+  </div>
+</div>
+
+<!-- 수납 등록 모달 (차트에서 · 페이지 이동 없이 · 수납 페이지와 연동) -->
+<div class="modal-bg" id="payRegModal">
+  <div class="modal" style="max-width:480px">
+    <h3>수납 등록</h3>
+    <p class="msub" id="pyPatLbl"></p>
+    <div class="editgrid">
+      <label>항목 <select class="inp" id="pyItemSel"></select>
+        <input class="inp" id="pyItem" placeholder="선택하거나 직접 입력" style="margin-top:6px"></label>
+      <label>수단 <select class="inp" id="pyMethod"><option>현금</option><option>카드</option><option>계좌이체</option></select></label>
+      <label>금액 <input class="inp" id="pyAmount" type="number" value="0"></label>
+      <label id="pyRcptWrap" hidden style="color:var(--alert-text)">현금영수증 <select class="inp" id="pyRcpt"><option value="">— 선택 —</option><option value="Y">발행</option><option value="N">미발행</option></select></label>
+    </div>
+    <p class="note" id="pyNote">현금 10만원 이상이면 현금영수증 발행 여부를 선택해야 저장됩니다. 저장하면 수납·미수 페이지와 이 환자 차트의 진료·매출 탭에 함께 반영됩니다.</p>
+    <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:14px"><button class="btn" data-close>취소</button><button class="btn pri" id="pySave">수납 저장</button></div>
   </div>
 </div>
 
@@ -617,8 +931,9 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="hovercard" id="hoverCard" hidden></div>
 
-<script src="assets/js/data.js?v=4"></script>
-<script src="assets/js/app.js?v=12"></script>
+<script src="assets/js/data.js?v=10"></script>
+<script src="assets/js/app.js?v=35"></script>
 </body>
 </html>
