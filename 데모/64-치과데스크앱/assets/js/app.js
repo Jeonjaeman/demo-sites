@@ -96,9 +96,9 @@ document.addEventListener("click",e=>{
     const [key,id,t]=cell.dataset.slot.split(":");
     pendingSlot={key,id,t:+t};
     $("#bkWhen").textContent=`${slotTime(+t)}–${slotTime(+t+2)} · ${axisRows().find(r=>r.id===id)?.name||id}`;
-    const pt = DD.PATIENTS.find(p=>p.noshow12m>=2);
-    $("#bkNoshow").hidden = $("#bkPatient").value!=="최강훈";
-    $("#bookModal").classList.add("open"); return;
+    $("#bkPatient").value=""; $("#bkNoshow").hidden=true; $("#bkPatState").textContent="";
+    $("#bkPatPop").hidden=true; $("#bkProc").value=""; $("#bkProcSel").value=""; $("#bkProcMeta").textContent="";
+    $("#bookModal").classList.add("open"); setTimeout(()=>$("#bkPatient").focus(),50); return;
   }
   if(e.target.closest("[data-close]")) $$(".modal-bg").forEach(m=>m.classList.remove("open"));
 });
@@ -151,8 +151,85 @@ document.addEventListener("pointerup",e=>{
   renderCal();
   toast(`${d.a.p} · ${from} → ${slotTime(drop.t)} ${drop.row.name}로 이동 (드래그 변경)`);
 });
-$("#bkPatient").addEventListener("input",()=>{
-  $("#bkNoshow").hidden = $("#bkPatient").value.trim()!=="최강훈";
+/* 예약 등록 — 환자 자동검색(이름·초성·전화 뒷자리) */
+const bkPop=$("#bkPatPop"), bkIn=$("#bkPatient");
+function bkNoshowBanner(){ const p=DD.PATIENTS.find(x=>x.name===bkIn.value.trim()); $("#bkNoshow").hidden=!(p&&p.noshow12m>=2); }
+bkIn.addEventListener("input",()=>{
+  const q=bkIn.value.trim(); bkNoshowBanner();
+  if(!q){ bkPop.hidden=true; $("#bkPatState").textContent=""; return; }
+  const isCho=/^[ㄱ-ㅎ]+$/.test(q), isNum=/^\d+$/.test(q);
+  const hits=DD.PATIENTS.filter(p=> isCho?chosung(p.name).includes(q) : isNum?p.phone.replace(/-/g,"").includes(q) : p.name.includes(q));
+  bkPop.innerHTML = hits.length
+    ? hits.map(p=>`<div class="qs-item" data-bkpat="${p.id}"><b>${p.name}</b><span>${p.id}</span><span class="qs-meta">${mask(p.phone)}</span></div>`).join("")
+    : `<div class="qs-empty">등록 환자 없음 — 이대로 저장하면 미등록(신규) 예약이 되고, 예약 상세에서 「+ 환자 등록」으로 차트를 만들 수 있습니다</div>`;
+  bkPop.hidden=false;
+  const exact=DD.PATIENTS.find(p=>p.name===q);
+  $("#bkPatState").textContent = exact?`등록 환자 · ${exact.id}` : "미등록 — 저장 후 「+ 환자 등록」 가능";
+});
+document.addEventListener("click",e=>{
+  const bi=e.target.closest("[data-bkpat]");
+  if(bi){ const p=DD.PATIENTS.find(x=>x.id===bi.dataset.bkpat); bkIn.value=p.name; bkPop.hidden=true;
+    $("#bkPatState").textContent=`등록 환자 · ${p.id}`; bkNoshowBanner(); return; }
+  if(!e.target.closest("#bookModal .qsearch")) bkPop.hidden=true;
+});
+/* 진료항목 선택(등록 진료) + 수기 병행 — 진료항목 관리와 연동 */
+function renderProcSelect(){
+  const sel=$("#bkProcSel");
+  sel.innerHTML=`<option value="">— 등록된 진료 선택 또는 직접 입력 —</option>`;
+  DD.SERVICES.forEach(g=>{
+    const og=document.createElement("optgroup"); og.label=g.cat;
+    g.items.forEach(it=>{ const o=document.createElement("option");
+      o.value=it.name; o.dataset.ins=it.ins; o.dataset.min=it.min;
+      o.textContent=`${it.name} · ${it.ins} · ${it.min}분`; og.appendChild(o); });
+    sel.appendChild(og);
+  });
+}
+$("#bkProcSel").addEventListener("change",()=>{
+  const o=$("#bkProcSel").selectedOptions[0];
+  if(o&&o.value){ $("#bkProc").value=o.value; $("#bkProcMeta").textContent=`${o.dataset.ins} · 기본 소요 ${o.dataset.min}분`; }
+  else $("#bkProcMeta").textContent="";
+});
+/* 설정 — 진료항목 관리 (헤어사랑넷 serviceMstr 계승) */
+function renderServices(){
+  const catSel=$("#svCat");
+  if(catSel.options.length!==DD.SERVICES.length) catSel.innerHTML=DD.SERVICES.map(g=>`<option>${g.cat}</option>`).join("");
+  $("#svList").innerHTML=DD.SERVICES.map((g,gi)=>`
+    <div style="margin-bottom:10px">
+      <div style="font-size:0.8214rem;font-weight:800;color:var(--ink-sub);margin-bottom:5px">${g.cat} <span style="color:var(--ink-muted);font-weight:600">${g.items.length}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${g.items.map((it,ii)=>`<span class="pill ${it.ins.startsWith("급여")?"ok":it.ins==="상담"?"mut":"conf"}" style="gap:6px">
+          ${it.name} · ${it.ins} · ${it.min}분
+          <b data-svdel="${gi}:${ii}" style="cursor:pointer;color:var(--ink-muted);font-weight:800">×</b></span>`).join("")}
+      </div>
+    </div>`).join("");
+}
+$("#svAdd").addEventListener("click",()=>{
+  const cat=$("#svCat").value, name=$("#svName").value.trim(), ins=$("#svIns").value, min=+$("#svMin").value||30;
+  if(!name){ toast("진료명을 입력하세요"); return; }
+  const g=DD.SERVICES.find(x=>x.cat===cat); if(!g) return;
+  if(g.items.some(it=>it.name===name)){ toast("이미 등록된 진료입니다"); return; }
+  g.items.push({name,ins,min}); $("#svName").value="";
+  renderServices(); renderProcSelect();
+  toast(`${cat} · ${name} 등록 — 예약·수납에서 선택할 수 있습니다`);
+});
+document.addEventListener("click",e=>{
+  const d=e.target.closest("[data-svdel]");
+  if(d){ const [gi,ii]=d.dataset.svdel.split(":").map(Number);
+    DD.SERVICES[gi].items.splice(ii,1); renderServices(); renderProcSelect();
+    toast("진료항목 삭제됨"); }
+});
+/* 신규 환자 등록 → 차트 생성 (A안) */
+$("#prSave").addEventListener("click",()=>{
+  const name=$("#prName").value.trim(); if(!name){ toast("이름을 입력하세요"); return; }
+  const id="P-"+(1300+DD.PATIENTS.length*7);
+  const np={ id, name, birth:$("#prBirth").value.trim()||"1990-01-01", phone:$("#prPhone").value.trim()||"010-0000-0000",
+    lastVisit:"2026-08-14", noshow12m:0,
+    consent:{ privacy:true, sensitive:$("#prSensitive").checked, marketing:$("#prMarketing").checked, marketingAt:$("#prMarketing").checked?"2026-08-14":null },
+    desk:[{ t:"2026-08-14 "+new Date().toTimeString().slice(0,5), who:DD.ROLES[state.role].label, txt:"신규 환자 등록 — 예약 접수 시 생성" }], emr:[] };
+  DD.PATIENTS.push(np); renderPatients();
+  $("#patRegModal").classList.remove("open"); $("#apptPanel").classList.remove("open");
+  openPatient(id);
+  toast(`${name} 환자 등록 완료 — 차트가 생성되어 열렸습니다`);
 });
 $("#bkSave").addEventListener("click",()=>{
   if(!pendingSlot) return;
@@ -212,7 +289,9 @@ function openApptPanel(id){
   if(a.st!=="cancel") acts.push(`<button class="btn sm dang" data-apcancel="1">당일 취소→대기</button>`);
   acts.push(`<button class="btn sm" data-apre="1" style="grid-column:1/-1;color:var(--ink-sub)">↔ 시간·체어 변경은 캘린더에서 카드를 드래그하세요</button>`);
   const ae=$("#apActs"); ae.innerHTML=acts.join(""); ae.dataset.appt=id;
-  $("#apChart").dataset.pt = p?p.id:""; $("#apChart").disabled = !p;
+  if(p){ $("#apChart").textContent="고객 차트 열기"; $("#apChart").dataset.cpt=p.id; $("#apChart").dataset.reg=""; }
+  else { $("#apChart").textContent="+ 환자 등록"; $("#apChart").dataset.cpt=""; $("#apChart").dataset.reg=a.p; }
+  $("#apChart").disabled=false;
   $("#apptPanel").classList.add("open");
 }
 /* 당일 취소 → 대기 목록 점수 매칭 (R⑤) */
@@ -245,8 +324,12 @@ document.addEventListener("click",e=>{
     toast("수납 화면 — 환자·항목이 채워졌습니다. 금액을 입력하세요"); return; }
   if(e.target.closest("[data-apcancel]")){ const id=$("#apActs").dataset.appt;
     $("#apptPanel").classList.remove("open"); cancelAndMatch(id); return; }
-  if(e.target.id==="apChart"){ const pt=$("#apChart").dataset.pt;
-    if(pt){ $("#apptPanel").classList.remove("open"); openPatient(pt); } return; }
+  if(e.target.id==="apChart"){ const pt=$("#apChart").dataset.cpt, reg=$("#apChart").dataset.reg;
+    if(pt){ $("#apptPanel").classList.remove("open"); openPatient(pt); }
+    else if(reg){ $("#prName").value=reg; $("#prPhone").value=""; $("#prBirth").value="";
+      $("#prSensitive").checked=false; $("#prMarketing").checked=false;
+      $("#patRegModal").dataset.appt=$("#apActs").dataset.appt; $("#patRegModal").classList.add("open"); }
+    return; }
 });
 document.addEventListener("click",e=>{
   const wl=e.target.closest("[data-wl]");
@@ -290,7 +373,7 @@ document.addEventListener("click",e=>{
   }
 });
 function openPatient(id){
-  const p=DD.PATIENTS.find(x=>x.id===id);
+  const p=DD.PATIENTS.find(x=>x.id===id); if(!p) return;
   $("#pdName").textContent=`${p.name} · ${p.id}`;
   const [by,bm,bd]=p.birth.split("-").map(Number);
   let age=2026-by; if(8<bm||(8===bm&&14<bd)) age--;   /* 기준일 2026-08-14 만 나이 */
@@ -680,6 +763,6 @@ function bindReveal(){
 }
 /* 초기 렌더 */
 renderCal(); renderPatients(); renderPayments(); renderTemplates(); renderRecall();
-judge(); calcDual(); calcPenalty(); renderLogs(); renderStats(); bindReveal();
+judge(); calcDual(); calcPenalty(); renderLogs(); renderStats(); renderProcSelect(); renderServices(); bindReveal();
 $("#emrEst").innerHTML=`상담 CRM 모드 — 진료기록은 기존 전자차트에 남기고, 이 시스템은 데스크 응대 기록만 소유합니다 (기본 견적 범위)`;
 })();

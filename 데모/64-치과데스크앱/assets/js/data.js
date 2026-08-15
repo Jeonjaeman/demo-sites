@@ -127,5 +127,28 @@ DD.ROLES = {
   owner: { label:"원장",   export:true, payEdit:true, stats:true, logs:true }
 };
 
+/* 진료항목 마스터 (헤어사랑넷 serviceMstr 계승 — 진료과 계층 + 급여구분·소요시간) */
+DD.SERVICES = [
+  { cat:"보존", items:[
+    { name:"레진 치료", ins:"비급여", min:60 },
+    { name:"신경치료(근관)", ins:"비급여", min:90 },
+    { name:"인레이/온레이", ins:"비급여", min:60 } ] },
+  { cat:"보철", items:[
+    { name:"크라운 장착", ins:"비급여", min:60 },
+    { name:"보철 본뜨기", ins:"비급여", min:60 },
+    { name:"임플란트 1차(식립)", ins:"비급여", min:90 },
+    { name:"임플란트 2차(보철)", ins:"비급여", min:60 } ] },
+  { cat:"예방·위생", items:[
+    { name:"스케일링", ins:"급여(연1회)", min:30 },
+    { name:"불소 도포", ins:"비급여", min:30 },
+    { name:"잇몸 치료", ins:"급여", min:30 } ] },
+  { cat:"구강외과", items:[
+    { name:"발치", ins:"급여", min:30 },
+    { name:"발치 상담", ins:"상담", min:30 } ] },
+  { cat:"교정", items:[
+    { name:"교정 상담", ins:"상담", min:30 },
+    { name:"교정 조정", ins:"비급여", min:30 } ] }
+];
+
 /* EMR 규제 키워드 (R② 저장 차단) */
 DD.EMR_WORDS = ["근관치료","발치","크라운 장착","레진 수복","치수염","임플란트 식립","#\\d{2}","rct","신경치료 시행","진단"];
