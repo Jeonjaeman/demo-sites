@@ -158,9 +158,29 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .vcell.hh{border-bottom:1px solid var(--line-in)}
 .vcell:hover{background:var(--pri-soft)}
 .vcell.blocked{background:repeating-linear-gradient(45deg,rgba(150,158,178,.16),rgba(150,158,178,.16) 5px,transparent 5px,transparent 10px);cursor:not-allowed}
-.vevt{position:absolute;left:3px;right:3px;border-radius:7px;padding:5px 7px;overflow:hidden;cursor:pointer;z-index:2;
-  box-shadow:0 0 0 1px var(--card);transition:transform var(--t1) var(--ease),box-shadow var(--t1) var(--ease)}
+.vevt{position:absolute;left:3px;right:3px;border-radius:7px;padding:5px 7px;overflow:hidden;cursor:grab;z-index:2;
+  box-shadow:0 0 0 1px var(--card);transition:transform var(--t1) var(--ease),box-shadow var(--t1) var(--ease);
+  touch-action:none;user-select:none}
 .vevt:hover{transform:translateY(-1px);box-shadow:0 0 0 1px var(--card),0 4px 10px rgba(27,33,48,.18);z-index:3}
+.vevt.dragging{cursor:grabbing;opacity:.9;z-index:20;box-shadow:0 8px 20px rgba(27,33,48,.3);transition:none}
+.vevt .vdrag-hint{position:absolute;right:4px;top:3px;font-size:0.6429rem;opacity:.5}
+.vcell.drop-ok{background:var(--pri-soft);box-shadow:inset 0 0 0 2px var(--pri)}
+.vcell.drop-no{background:var(--danger-bg);box-shadow:inset 0 0 0 2px var(--danger)}
+
+/* 우측 예약·고객 패널 (헤어사랑넷 reservationView 계승) */
+.apanel .ap-status{display:flex;gap:5px;margin:12px 0}
+.apanel .ap-st{flex:1;text-align:center;font-size:0.75rem;font-weight:700;padding:8px 4px;border-radius:var(--r-sm);
+  background:#EDF0F6;color:var(--ink-muted);position:relative;transition:background var(--t1) var(--ease-ui),color var(--t1) var(--ease-ui)}
+.apanel .ap-st.done{background:var(--ok-bg);color:var(--ok)}
+.apanel .ap-st.cur{background:var(--pri);color:#fff}
+.apanel .ap-info{background:#F7F9FC;border-radius:var(--r-sm);padding:12px 14px;font-size:0.8571rem;line-height:1.7}
+.apanel .ap-info .ai-row{display:flex;justify-content:space-between;gap:10px}
+.apanel .ap-info .ai-row span{color:var(--ink-sub)} .apanel .ap-info .ai-row b{font-weight:700}
+.apanel h4{font-size:0.8214rem;font-weight:700;color:var(--ink-muted);margin:16px 0 8px}
+.apanel .ap-cust{border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px}
+.apanel .ap-cust .ai-row{display:flex;justify-content:space-between;gap:10px;font-size:0.8571rem;padding:3px 0}
+.apanel .ap-cust .ai-row b.warn{color:var(--warn)} .apanel .ap-cust .ai-row b.dang{color:var(--num-minus)}
+.apanel .ap-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px}
 .vevt b{display:block;font-size:0.8571rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vevt span{font-size:0.75rem;opacity:.8;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vevt.wait{background:var(--st-wait-bg);color:#7a5205;border-top:3px solid var(--st-wait)}

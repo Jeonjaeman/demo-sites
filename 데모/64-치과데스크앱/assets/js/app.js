@@ -1,4 +1,4 @@
-/* DENTDESK — 캘린더·환자·수납·발송·통계·설정 (전 데이터 가상) */
+/* DENTDESK — 캘린더·환자·수납·발송·통계·설정 */
 (function(){
 "use strict";
 const $ = s => document.querySelector(s);
@@ -83,7 +83,7 @@ function renderCal(){
 }
 $$("#axisTabs .tab").forEach(b=>b.addEventListener("click",()=>{
   state.axis=b.dataset.axis; $$("#axisTabs .tab").forEach(x=>x.classList.toggle("on",x===b)); renderCal();
-  toast(state.axis==="chair"?"체어 축 — 컬럼 헤더에 소속 진료실 표기(계층)":state.axis==="doc"?"의사 축 — 의사는 진료실을 이동하는 리소스입니다":"위생사 축 — 스케일링은 의사가 아니라 위생사+체어를 소요합니다");
+  toast(state.axis==="chair"?"체어별 보기 — 진료실 그룹으로 표시":state.axis==="doc"?"의사별 보기":"위생사별 보기 — 스케일링·예방 처치 배정");
 }));
 window.addEventListener("resize",()=>{ if(state.view==="cal") renderCal(); });
 
@@ -100,9 +100,56 @@ document.addEventListener("click",e=>{
     $("#bkNoshow").hidden = $("#bkPatient").value!=="최강훈";
     $("#bookModal").classList.add("open"); return;
   }
-  const evt=e.target.closest(".vevt");
-  if(evt){ openApptActions(evt.dataset.appt); return; }
   if(e.target.closest("[data-close]")) $$(".modal-bg").forEach(m=>m.classList.remove("open"));
+});
+
+/* 예약 카드 드래그 → 시간·체어 변경 (클릭과 통합: 이동 없으면 패널 열기) */
+const SL=(cx,cy)=>{
+  const grid=$("#cal .vcal"); if(!grid) return null;
+  const r=grid.getBoundingClientRect();
+  const headH=grid.querySelector(".vh").getBoundingClientRect().height;
+  const rows=axisRows(), N=rows.length, colW=(r.width-TW)/N;
+  const ci=Math.floor((cx-r.left-TW)/colW), t=Math.round((cy-r.top-headH)/SH);
+  if(ci<0||ci>=N||t<0||t>=DD.SLOTS) return null;
+  return { row:rows[ci], t:Math.max(0,Math.min(DD.SLOTS-1,t)) };
+};
+function clearDropHl(){ $$(".vcell.drop-ok,.vcell.drop-no").forEach(c=>c.classList.remove("drop-ok","drop-no")); }
+function dropOK(a,drop){
+  const key=drop.row.key, id=drop.row.id, t=drop.t;
+  const conflict=DD.APPTS.some(x=>x.id!==a.id && x.st!=="cancel" && x[key]===id && t<x.t+x.len && t+a.len>x.t);
+  const blk=[...Array(a.len)].some((_,k)=> (key==="chair"?blocked(id,t+k):DD.BLOCKS.some(b=>b.chair==="*"&&(t+k)>=b.t&&(t+k)<b.t+b.len)) );
+  return !conflict && !blk && (t+a.len)<=DD.SLOTS;
+}
+let drag=null;
+document.addEventListener("pointerdown",e=>{
+  if(state.view!=="cal") return;
+  const el=e.target.closest(".vevt"); if(!el) return;
+  const a=DD.APPTS.find(x=>x.id===el.dataset.appt); if(!a) return;
+  drag={el,a,x0:e.clientX,y0:e.clientY,top0:parseFloat(el.style.top),left0:parseFloat(el.style.left),moved:false};
+  try{ el.setPointerCapture(e.pointerId); }catch(_){}
+});
+document.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const dx=e.clientX-drag.x0, dy=e.clientY-drag.y0;
+  if(!drag.moved && Math.hypot(dx,dy)<5) return;
+  if(state.ssot==="emr"){ drag=null; toast("읽기 전용 — 전자차트가 예약의 주인이라 이 화면에서는 이동할 수 없습니다"); return; }
+  drag.moved=true; drag.el.classList.add("dragging");
+  drag.el.style.top=(drag.top0+dy)+"px"; drag.el.style.left=(drag.left0+dx)+"px";
+  clearDropHl();
+  const drop=SL(e.clientX,e.clientY);
+  if(drop){ const ok=dropOK(drag.a,drop);
+    for(let k=0;k<drag.a.len;k++){ const c=$(`.vcell[data-slot="${drop.row.key}:${drop.row.id}:${drop.t+k}"]`); if(c) c.classList.add(ok?"drop-ok":"drop-no"); } }
+});
+document.addEventListener("pointerup",e=>{
+  if(!drag) return;
+  const d=drag; drag=null; clearDropHl(); d.el.classList.remove("dragging");
+  if(!d.moved){ openApptPanel(d.a.id); return; }         /* 이동 없음 = 클릭 → 패널 */
+  const drop=SL(e.clientX,e.clientY);
+  if(!drop || (drop.row.id===d.a[drop.row.key] && drop.t===d.a.t)){ renderCal(); return; }
+  if(!dropOK(d.a,drop)){ toast("이동 불가 — 그 시간대에 예약이 있거나 블록(점심·정비)입니다"); renderCal(); return; }
+  const from=`${slotTime(d.a.t)}`; d.a.t=drop.t; d.a[drop.row.key]=drop.row.id;
+  renderCal();
+  toast(`${d.a.p} · ${from} → ${slotTime(drop.t)} ${drop.row.name}로 이동 (드래그 변경)`);
 });
 $("#bkPatient").addEventListener("input",()=>{
   $("#bkNoshow").hidden = $("#bkPatient").value.trim()!=="최강훈";
@@ -130,25 +177,77 @@ $("#bkSave").addEventListener("click",()=>{
   toast("예약 등록 — 상태 '예약대기'. D-1 리마인드가 발송 큐에 자동 적재됩니다 (발송 탭)");
 });
 
-/* 예약 액션: 취소 → 대기 목록 매칭 (R⑤) */
-function openApptActions(id){
+/* 예약 카드 클릭 → 우측 예약·고객 패널 (헤어사랑넷 reservationView 계승) */
+const ST_NAME={wait:"예약대기",conf:"확정",done:"내원완료",noshow:"노쇼",cancel:"취소"};
+function openApptPanel(id){
   const a=DD.APPTS.find(x=>x.id===id); if(!a) return;
-  if(a.st==="cancel"){ toast("이미 취소된 예약입니다"); return; }
-  if(confirm(`${a.p} · ${a.proc} (${slotTime(a.t)})\n\n이 예약을 '당일 취소'로 바꾸고 대기 목록에서 후보를 찾을까요?`)){
-    a.st="cancel"; renderCal();
-    const scored = DD.WAITLIST.map(w=>{
-      let s=0; if(w.want==="무관"||(w.want==="오후"&&a.t>=8)) s+=2;
-      if(!w.doc||w.doc===a.doc) s+=2; if(w.noshow===0) s+=1;
-      return {...w,score:s};
-    }).sort((x,y)=>y.score-x.score);
-    $("#wlBody").innerHTML = scored.map((w,i)=>`
-      <tr><td><b>${w.p}</b></td><td>${w.proc}</td><td>${w.want}</td><td>${w.doc?DD.DOCTORS.find(d=>d.id===w.doc).name:"무관"}</td>
-      <td>${w.noshow?`<span class="pill noshow">노쇼 ${w.noshow}</span>`:'<span class="pill ok">0</span>'}</td>
-      <td><b style="color:var(--accent)">${w.score}점</b></td>
-      <td><button class="btn sm pri" data-wl="${i}">배정+알림</button></td></tr>`).join("");
-    $("#wlModal").classList.add("open");
-  }
+  $("#apName").textContent=`${a.p} · ${a.proc}`;
+  $("#apStPill").innerHTML=`<span class="pill ${a.st}">${ST_NAME[a.st]}</span>`;
+  /* 상태 체인: 예약대기 → 확정 → 내원 → 수납 (헤어사랑넷 0→5→1→99) */
+  const flow=["wait","conf","done"], ci=flow.indexOf(a.st), abn=(a.st==="noshow"||a.st==="cancel");
+  $("#apStatus").innerHTML=["예약대기","확정","내원","수납"].map((n,i)=>{
+    let cls=""; if(!abn){ if(i<ci)cls="done"; else if(i===ci)cls="cur"; }
+    return `<div class="ap-st ${cls}">${n}</div>`;
+  }).join("");
+  const chair=DD.CHAIRS.find(c=>c.id===a.chair), doc=a.doc?DD.DOCTORS.find(d=>d.id===a.doc):null, hyg=a.hyg?DD.HYGIENISTS.find(h=>h.id===a.hyg):null;
+  $("#apInfo").innerHTML=`
+    <div class="ai-row"><span>시간</span><b>${slotTime(a.t)}–${slotTime(a.t+a.len)}</b></div>
+    <div class="ai-row"><span>체어·진료실</span><b>${chair?chair.name:"-"} · ${chair?DD.ROOMS.find(r=>r.id===chair.room).name:""}</b></div>
+    <div class="ai-row"><span>담당의</span><b>${doc?doc.name:"—"}</b></div>
+    <div class="ai-row"><span>위생사</span><b>${hyg?hyg.name:"—"}</b></div>
+    <div class="ai-row"><span>진료 내용</span><b>${a.proc}</b></div>`;
+  const p=DD.PATIENTS.find(x=>x.name===a.p), ar=DD.ARREARS.find(x=>x.p===a.p);
+  $("#apCust").innerHTML = p ? `
+    <div class="ai-row"><span>차트번호</span><b>${p.id}</b></div>
+    <div class="ai-row"><span>최근 내원</span><b>${p.lastVisit}</b></div>
+    <div class="ai-row"><span>노쇼 이력</span><b class="${p.noshow12m>=2?"warn":""}">${p.noshow12m}회 (12개월)</b></div>
+    <div class="ai-row"><span>미수 잔액</span><b class="${ar?"dang":""}">${ar?fmt(ar.total-ar.paid)+"원":"없음"}</b></div>
+    <div class="ai-row"><span>광고 수신</span><b>${p.consent.marketing?"동의":"미동의"}</b></div>`
+    : `<div class="ai-row"><span>등록 상태</span><b>미등록/신규 — 내원 시 환자 등록</b></div>`;
+  const acts=[];
+  if(a.st==="wait") acts.push(`<button class="btn sm" data-apst="conf">예약 확정</button>`);
+  if(a.st==="conf") acts.push(`<button class="btn sm" data-apst="done">내원 체크인</button>`);
+  if(a.st==="done") acts.push(`<button class="btn sm pri" data-appay="1">수납 진행</button>`);
+  if(!["noshow","cancel","done"].includes(a.st)) acts.push(`<button class="btn sm dang" data-apst="noshow">노쇼 처리</button>`);
+  if(a.st!=="cancel") acts.push(`<button class="btn sm dang" data-apcancel="1">당일 취소→대기</button>`);
+  acts.push(`<button class="btn sm" data-apre="1" style="grid-column:1/-1;color:var(--ink-sub)">↔ 시간·체어 변경은 캘린더에서 카드를 드래그하세요</button>`);
+  const ae=$("#apActs"); ae.innerHTML=acts.join(""); ae.dataset.appt=id;
+  $("#apChart").dataset.pt = p?p.id:""; $("#apChart").disabled = !p;
+  $("#apptPanel").classList.add("open");
 }
+/* 당일 취소 → 대기 목록 점수 매칭 (R⑤) */
+function cancelAndMatch(id){
+  const a=DD.APPTS.find(x=>x.id===id); if(!a||a.st==="cancel") return;
+  a.st="cancel"; renderCal();
+  const scored = DD.WAITLIST.map(w=>{
+    let s=0; if(w.want==="무관"||(w.want==="오후"&&a.t>=8)) s+=2;
+    if(!w.doc||w.doc===a.doc) s+=2; if(w.noshow===0) s+=1;
+    return {...w,score:s};
+  }).sort((x,y)=>y.score-x.score);
+  $("#wlBody").innerHTML = scored.map((w,i)=>`
+    <tr><td><b>${w.p}</b></td><td>${w.proc}</td><td>${w.want}</td><td>${w.doc?DD.DOCTORS.find(d=>d.id===w.doc).name:"무관"}</td>
+    <td>${w.noshow?`<span class="pill noshow">노쇼 ${w.noshow}</span>`:'<span class="pill ok">0</span>'}</td>
+    <td><b style="color:var(--pri)">${w.score}점</b></td>
+    <td><button class="btn sm pri" data-wl="${i}">배정+알림</button></td></tr>`).join("");
+  $("#wlModal").classList.add("open");
+}
+/* 패널 액션 위임 */
+document.addEventListener("click",e=>{
+  const st=e.target.closest("[data-apst]");
+  if(st){ const id=$("#apActs").dataset.appt, a=DD.APPTS.find(x=>x.id===id);
+    a.st=st.dataset.apst; renderCal(); openApptPanel(id);
+    toast({conf:"예약이 확정되었습니다",done:"내원 체크인 — 진료 대기에 추가되었습니다",noshow:"노쇼 처리 — 위약금 동의서 대상 여부를 확인하세요"}[st.dataset.apst]||""); return; }
+  if(e.target.closest("[data-appay]")){ const id=$("#apActs").dataset.appt, a=DD.APPTS.find(x=>x.id===id);
+    $("#apptPanel").classList.remove("open");
+    $$(".nav button").forEach(x=>x.classList.toggle("on",x.dataset.view==="pay"));
+    $$(".view").forEach(v=>v.classList.toggle("on",v.id==="v-pay"));
+    state.view="pay"; $("#npPat").value=a.p; $("#npItem").value=a.proc;
+    toast("수납 화면 — 환자·항목이 채워졌습니다. 금액을 입력하세요"); return; }
+  if(e.target.closest("[data-apcancel]")){ const id=$("#apActs").dataset.appt;
+    $("#apptPanel").classList.remove("open"); cancelAndMatch(id); return; }
+  if(e.target.id==="apChart"){ const pt=$("#apChart").dataset.pt;
+    if(pt){ $("#apptPanel").classList.remove("open"); openPatient(pt); } return; }
+});
 document.addEventListener("click",e=>{
   const wl=e.target.closest("[data-wl]");
   if(wl){ $("#wlModal").classList.remove("open");
@@ -481,7 +580,7 @@ qsInput && qsInput.addEventListener("input",quickSearch);
 document.addEventListener("click",e=>{
   const qi=e.target.closest("[data-qs]");
   if(qi){ qsPop.hidden=true; openPatient(qi.dataset.qs);
-    toast("초성·뒷자리 검색은 통화 중 한 손 조작의 핵심입니다 (계승 UX)"); return; }
+    toast("이름·초성·전화 뒷자리로 환자를 찾습니다"); return; }
   if(!e.target.closest(".qsearch")) qsPop.hidden=true;
 });
 
@@ -544,7 +643,7 @@ $("#cidSim").addEventListener("click",()=>{
     <div class="cid-row"><span>노쇼 이력</span><b>${p.noshow12m}회 (12개월)</b></div>
     <div class="cid-row"><span>리콜</span><b>내년 1월 스케일링 대상</b></div>`;
   $("#cidPop").classList.add("show");
-  toast("전화가 오면 데스크가 인사말을 하는 사이에 이 카드가 떠 있어야 합니다 — CID 연동 (계승 기능)");
+  toast("수신전화가 오면 환자 정보가 자동으로 표시됩니다");
 });
 $("#cidClose").addEventListener("click",()=>$("#cidPop").classList.remove("show"));
 $("#cidChart").addEventListener("click",()=>{ $("#cidPop").classList.remove("show"); openPatient(CID_P); });

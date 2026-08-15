@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>DENTDESK 덴트데스크 — 치과 데스크 통합 CRM (데모)</title>
-<meta name="description" content="예약 3축 캘린더·환자·수납·발송·통계를 하나로 — 리콜 광고성 판정기와 기록 경계선까지 동작하는 치과 데스크 CRM 데모">
+<title>DENTDESK — 치과 데스크 통합 관리</title>
+<meta name="description" content="치과 데스크 예약·환자·수납·발송·통계 통합 관리 시스템">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=13">
+<link rel="stylesheet" href="assets/css/style.css?v=14">
 </head>
 <body>
 
 <div class="chrome">
 <aside class="rail">
-  <div class="logo">DENT<b>DESK</b> 덴트데스크<small>demo — 전 데이터 가상 · 2026-08-14(금)</small></div>
+  <div class="logo">DENT<b>DESK</b> 덴트데스크<small>치과 데스크 통합 관리</small></div>
   <div class="rwidget"><h5>오늘 요약</h5>
     <div class="rline"><span>예약</span><b class="blue">12건</b></div>
     <div class="rline"><span>내원 완료</span><b class="grn">3</b></div>
@@ -34,7 +34,7 @@
     <div style="margin-top:6px"><span class="pillb red">잔액 1만원 미만 임박</span></div>
   </div>
   <div class="rspacer"></div>
-  <div class="rfoot">차세대 시안 재구축 v2 — 다크 크롬·우측 패널·세로 캘린더<br>기능 12종(공고 대응)은 그대로</div>
+  <div class="rfoot">버전 2.4 · 실시간 동기화 중<br>도움말 · 고객센터 1533-0000</div>
 </aside>
 <div class="stage">
 <header class="tbar">
@@ -48,7 +48,7 @@
   </nav>
   <span class="sp"></span>
   <span class="tchip" id="ssotChip">예약 주인: 이 CRM</span>
-  <button class="tbtn" id="cidSim" title="CID 수신전화 팝업 시뮬레이션">&#9742; 수신 시뮬</button>
+  <button class="tbtn" id="cidSim" title="수신전화 화면 미리보기">&#9742; 수신전화</button>
   <div class="role-sw">
     <button class="on" data-role="desk">데스크</button>
     <button data-role="chief">실장</button>
@@ -62,7 +62,7 @@
 <section class="view on" id="v-cal">
   <div class="kpis">
     <div class="kpi"><span>오늘 예약</span><b>12</b><small id="calKpi"></small></div>
-    <div class="kpi"><span>노쇼 (이번 달)</span><b class="dang">19건</b><small>체어 공실 760분 — 통계 탭 시뮬</small></div>
+    <div class="kpi"><span>노쇼 (이번 달)</span><b class="dang">19건</b><small>체어 공실 760분 (통계에서 상세)</small></div>
     <div class="kpi"><span>대기 목록</span><b class="warn">3명</b><small>당일 취소 시 자동 매칭</small></div>
     <div class="kpi"><span>D-1 리마인드</span><b class="ok">14건 예약됨</b><small>내일 오후 5시 자동 발송</small></div>
   </div>
@@ -83,7 +83,7 @@
     <span style="flex:1"></span>
     <label style="display:flex;align-items:center;gap:7px;font-size:0.8571rem;font-weight:700;color:var(--ink-sub)">
       <span class="sw"><input type="checkbox" id="conflictSim"><i></i></span>
-      동시 예약 충돌 시뮬레이터 (옆 데스크가 같은 슬롯 선점)
+      동시 예약 충돌 방지 (다른 데스크가 같은 슬롯을 잡으면 저장 시 차단)
     </label>
   </div>
   <p id="calRO" hidden style="font-size:0.8929rem;font-weight:700;color:var(--warn);background:var(--warn-bg);border-radius:6px;padding:9px 12px;margin-bottom:10px">
@@ -97,18 +97,18 @@
     </div>
     <div class="calscroll"><div id="cal"></div></div>
   </div>
-  <p class="note">실측 규격 — 세로 시간축(시안 문법·30분=36px Syncfusion 세로형 실측)·컬러 상태 블록, 현재 시각 라인·비영업 사선(FullCalendar 원문), 상태 색은 채널톡 램프(hex→알파 파생). <b>스케일링은 위생사 축에서만 온전히 보입니다</b> — 위생사가 리소스에서 빠지면 "의사·체어는 비었는데 붙을 스탭이 없는" 예약이 생깁니다.</p>
+  <p class="note">체어·의사·위생사 축으로 볼 수 있습니다. <b>스케일링은 위생사 축에서 배정 상태가 온전히 보입니다</b> — 위생사를 배정하지 않으면 "의사·체어는 비었는데 붙을 스탭이 없는" 예약이 됩니다.</p>
 </section>
 
 <!-- ② 환자 -->
 <section class="view" id="v-pt">
   <div class="card rv">
     <h3>환자 목록 — 연락처는 기본 마스킹, 「표시」 클릭이 곧 열람 기록</h3>
-    <p class="sub">서버측 마스킹: 원문은 표시 요청 시에만 조회되고 그 행위가 접속기록에 남습니다(민감정보 시스템 2년 보존). 전체 다운로드는 역할별로 차단·제한됩니다 — 우측 상단 역할을 바꿔 보세요.</p>
+    <p class="sub">서버측 마스킹: 원문은 표시 요청 시에만 조회되고 그 행위가 접속기록에 남습니다(민감정보 시스템 2년 보존). 전체 다운로드는 권한 등급별로 차단·제한됩니다(우측 상단 계정 등급 기준).</p>
     <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-start">
       <div class="qsearch">
         <input class="inp" id="ptSearch" placeholder="이름·초성·전화 뒷자리" value="" style="width:220px" autocomplete="off">
-        <p class="qs-hint">초성 검색 지원 — "ㅈㅁㄹ" 또는 "8823"을 입력해 보세요 (계승 UX: 한글 초성 분리)</p>
+        <p class="qs-hint">초성·전화 뒷자리 검색 — "ㅈㅁㄹ" 또는 "8823"으로 찾을 수 있습니다</p>
         <div class="qs-pop" id="qsPop" hidden></div>
       </div>
       <span style="flex:1"></span>
@@ -122,7 +122,7 @@
 <!-- ③ 수납·미수 -->
 <section class="view" id="v-pay">
   <div class="card rv">
-    <h3>수납 등록 — 넘버패드 터치 입력 (계승 위젯 · 242px 규격)</h3>
+    <h3>수납 등록</h3>
     <p class="sub">수납 데스크는 터치 단말 사용률이 높아 금액 입력 속도가 곧 대기열입니다. 금액 칸을 클릭하면 넘버패드가 뜨고,
     현금 10만원 이상이면 현금영수증 발행 확인 없이는 저장이 차단됩니다.</p>
     <div class="simrow" style="align-items:end">
@@ -138,7 +138,7 @@
   </div>
   <div class="card rv">
     <h3>오늘 수납 — 현금 10만원 이상은 현금영수증이 필수 필드가 됩니다</h3>
-    <p class="sub">치과는 현금영수증 의무발행업종 — 10만원 이상 현금 수납을 미발급하면 해당 금액의 20%가 가산세입니다. 수납 수정은 실장 이상(현금 조작 방지 — 역할을 바꿔 보세요).</p>
+    <p class="sub">치과는 현금영수증 의무발행업종 — 10만원 이상 현금 수납을 미발급하면 해당 금액의 20%가 가산세입니다. 수납 수정은 실장 이상만 가능합니다(현금 조작 방지).</p>
     <table class="tbl"><thead><tr><th>시각</th><th>환자</th><th>항목</th><th>수단</th><th style="text-align:right">금액</th><th>현금영수증</th><th></th></tr></thead>
     <tbody id="payBody"></tbody></table>
     <p class="note" id="recMiss"></p>
@@ -248,7 +248,7 @@
         <button class="tab" data-def="cancel">당일취소 포함</button>
       </div>
       <p id="nsOut" style="margin-bottom:14px"></p>
-      <h3 style="margin-top:6px">리마인드 효과 시뮬레이터</h3>
+      <h3 style="margin-top:6px">리마인드 효과 예측</h3>
       <div class="simrow">
         <label>발송 정책
           <select class="inp" id="nsSim" style="display:block;margin-top:4px">
@@ -295,7 +295,7 @@
     <div class="card rv">
       <h3>기존 환자 데이터 이관 (별도 공수)</h3>
       <p class="sub">강남 개원 치과라면 기존 프로그램에 수천 명이 이미 있습니다. CSV 업로드 → 컬럼 매핑 → 중복 병합 → 검증 리포트.</p>
-      <button class="btn pri" id="importRun">샘플 파일로 이관 시뮬레이션</button>
+      <button class="btn pri" id="importRun">기존 프로그램 파일로 이관 시작</button>
       <p style="font-size:0.8929rem;margin-top:10px;line-height:1.7" id="importOut"></p>
       <p class="note">지점 확장 대비 — 데이터 모델에 clinic_id 선반영, 화면의 「분원 추가」는 2차 범위로 비활성 노출.</p>
     </div>
@@ -344,6 +344,24 @@
   </div>
 </div>
 
+<!-- 우측 예약·고객 패널 (예약 카드 클릭 — 헤어사랑넷 reservationView 계승) -->
+<div class="modal-bg rside" id="apptPanel">
+  <div class="modal lay apanel">
+    <div class="mhead"><h3 id="apName"></h3><span style="margin-left:auto" id="apStPill"></span></div>
+    <div class="mbody">
+      <div class="ap-status" id="apStatus"></div>
+      <div class="ap-info" id="apInfo"></div>
+      <h4>고객 요약</h4>
+      <div class="ap-cust" id="apCust"></div>
+      <div class="ap-acts" id="apActs"></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn" data-close>닫기</button>
+      <button class="btn pri" id="apChart">고객 차트 열기</button>
+    </div>
+  </div>
+</div>
+
 <!-- 동시성 충돌 모달 -->
 <div class="modal-bg" id="conflictModal">
   <div class="modal">
@@ -358,7 +376,7 @@
 <div class="modal-bg" id="wlModal">
   <div class="modal" style="max-width:640px">
     <h3>당일 취소 — 대기 목록에서 후보를 찾았습니다</h3>
-    <p class="msub">빈 체어 40분은 매출 증발입니다. 선호 시간대·담당의·노쇼 이력으로 점수를 실제 계산해 정렬했습니다. (공고에 없지만 반드시 필요한 기능)</p>
+    <p class="msub">빈 체어 40분은 매출 증발입니다. 선호 시간대·담당의·노쇼 이력으로 점수를 실제 계산해 정렬했습니다.</p>
     <table class="tbl"><thead><tr><th>대기자</th><th>희망 진료</th><th>시간대</th><th>담당의</th><th>노쇼</th><th>점수</th><th></th></tr></thead>
     <tbody id="wlBody"></tbody></table>
     <div class="mrow"><button class="btn" data-close>닫기</button></div>
@@ -396,7 +414,7 @@
   </div>
 </div>
 
-<!-- CID 인콜 팝업 (계승 — 수신전화 즉시 환자 식별) -->
+<!-- 수신전화(CID) 팝업 -->
 <aside class="cid" id="cidPop" aria-label="수신전화 팝업">
   <div class="cid-head">
     <span class="cid-ring">☎</span>
@@ -410,7 +428,7 @@
   </div>
 </aside>
 
-<!-- 넘버패드 (계승 위젯) -->
+<!-- 넘버패드 -->
 <div class="numpad" id="numpad" hidden>
   <div class="np-disp" id="npDisp">0</div>
   <div class="np-grid">
@@ -424,6 +442,6 @@
 <div class="toast" id="toast"></div>
 
 <script src="assets/js/data.js?v=1"></script>
-<script src="assets/js/app.js?v=6"></script>
+<script src="assets/js/app.js?v=7"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* DENTDESK 샘플 데이터 — 전부 가상. const DD 선언은 이 파일 한 번만. */
+/* DENTDESK 데이터. const DD 선언은 이 파일 한 번만. */
 const DD = window.DD || (window.DD = {});
 
 /* 리소스 — 체어는 진료실에 종속(R⑤), 위생사도 리소스 */
