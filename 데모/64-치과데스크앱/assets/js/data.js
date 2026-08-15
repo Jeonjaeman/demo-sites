@@ -79,6 +79,7 @@ DD.PATIENTS = [
 DD.PAYMENTS = [
   { t:"2026-08-14 10:35", p:"박세라", item:"스케일링(급여)", method:"카드", amount:16500, cash10:false, receipt:null },
   { t:"2026-08-14 11:55", p:"이준호", item:"임플란트 2차(비급여)", method:"현금", amount:1200000, cash10:true, receipt:true },
+  { t:"2026-08-14 12:05", p:"오은영", item:"임플란트 1차 식립(비급여)", method:"현금", amount:1200000, cash10:true, receipt:true },
   { t:"2026-08-14 12:20", p:"김민지", item:"보철 본뜨기(비급여)", method:"카드", amount:350000, cash10:false, receipt:null },
   { t:"2026-08-13 17:40", p:"정우석", item:"교정 3회차(비급여)", method:"현금", amount:300000, cash10:true, receipt:false }
 ];
@@ -205,7 +206,7 @@ DD.SMS_HISTORY = [
   { t:"2026-08-14 17:00", to:"010-****-8823", name:"장미래", type:"알림톡", tpl:"예약 D-1 리마인드", body:"장미래님, 내일 14:00 김이현 원장 예약이 있습니다.", st:"성공", cost:8 },
   { t:"2026-08-14 17:00", to:"010-****-1147", name:"최강훈", type:"알림톡", tpl:"예약 D-1 리마인드", body:"최강훈님, 내일 10:30 박서준 원장 예약이 있습니다.", st:"성공", cost:8 },
   { t:"2026-08-14 17:00", to:"010-****-6621", name:"박세라", type:"알림톡", tpl:"예약 D-1 리마인드", body:"박세라님, 내일 09:00 스케일링 예약이 있습니다.", st:"실패", stMsg:"카카오 미채널(친구아님)→SMS 대체", cost:9 },
-  { t:"2026-08-14 12:05", to:"010-****-0084", name:"오은영", type:"알림톡", tpl:"수납 완료 안내", body:"오은영님, 임플란트 2차 1,200,000원이 수납 처리되었습니다.", st:"성공", cost:8 },
+  { t:"2026-08-14 12:05", to:"010-****-0084", name:"오은영", type:"알림톡", tpl:"수납 완료 안내", body:"오은영님, 임플란트 1차 식립 1,200,000원이 수납 처리되었습니다.", st:"성공", cost:8 },
   { t:"2026-08-14 09:12", to:"010-****-3388", name:"김민수", type:"SMS", tpl:"직접 발송", body:"김민수님, 보철 본뜨기 결과물이 도착했습니다. 내원 예약 부탁드립니다.", st:"성공", cost:9 },
   { t:"2026-08-13 17:00", to:"010-****-9902", name:"홍성민", type:"알림톡", tpl:"미수금 안내", body:"홍성민님, 크라운 잔액 550,000원 분납 예정일이 도래했습니다.", st:"성공", cost:8 },
   { t:"2026-08-13 14:30", to:"010-****-2201", name:"이수진", type:"LMS", tpl:"진료 후 주의사항", body:"발치 후 주의사항 안내: 2시간 거즈 물기, 당일 음주·흡연 금지, 빨대 사용 금지…", st:"성공", cost:30 },
@@ -404,6 +405,9 @@ DD.SCHED = [
   { date:"2026-08-14", time:"14:30", len:2, p:"서예진", proc:"교정 조정", doc:"d2", hyg:null, chair:"c3", st:"conf" },
   { date:"2026-08-14", time:"15:30", len:2, p:"임현우", proc:"임플란트 상담", doc:"d1", hyg:"h2", chair:"c2", st:"wait" },
   { date:"2026-08-14", time:"16:30", len:2, p:"홍성민", proc:"크라운 장착", doc:"d2", hyg:null, chair:"c4", st:"cancel" },
+  { date:"2026-08-14", time:"11:30", len:1, p:"한지원", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"conf" },
+  { date:"2026-08-14", time:"14:00", len:1, p:"윤도현", proc:"스케일링", doc:null, hyg:"h1", chair:"c5", st:"wait" },
+  { date:"2026-08-14", time:"16:00", len:1, p:"강나래", proc:"불소 도포", doc:null, hyg:"h1", chair:"c5", st:"conf" },
   /* 미래 예약 */
   { date:"2026-08-18", time:"09:00", len:2, p:"김남식", proc:"임플란트 2차", doc:"d2", hyg:"h2", chair:"c3", st:"conf" },
   { date:"2026-08-18", time:"14:00", len:1, p:"강나래", proc:"불소 도포", doc:null, hyg:"h1", chair:"c5", st:"conf" },

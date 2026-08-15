@@ -21,6 +21,7 @@ $$(".nav button").forEach(b=>b.addEventListener("click",()=>{
   state.view=b.dataset.view; $$(".nav button").forEach(x=>x.classList.toggle("on",x===b));
   $$(".view").forEach(v=>v.classList.toggle("on",v.id==="v-"+state.view));
   if(state.view==="stats") renderStats();
+  if(state.view==="cal" && calMode==="grid") renderCal();   /* 숨김 중 폭 0으로 어긋난 배치 복구 */
   bindReveal();
 }));
 
@@ -61,6 +62,7 @@ function renderCal(){
   grid.style.position="relative";
   const headH = grid.querySelector(".vh").getBoundingClientRect().height;
   const colW = (grid.getBoundingClientRect().width - TW) / N;
+  if(colW<=0) return;   /* 숨김 뷰(폭 0)에서 호출 시 절대배치 스킵 — 뷰 복귀 시 재렌더로 정상 배치 */
   rows.forEach((row,ci)=>{
     apptsFor(row).forEach(a=>{
       const el=document.createElement("div");
@@ -153,19 +155,34 @@ document.addEventListener("click",e=>{
 document.addEventListener("change",e=>{ if(e.target.id==="calFrom"||e.target.id==="calTo"){ if(calPeriod==="range") renderCalList(); } });
 window.addEventListener("resize",()=>{ if(state.view==="cal") renderCal(); });
 
-/* 빈 슬롯 클릭 → 예약 모달 (프리필) */
+/* 빈 슬롯 클릭 → 예약/휴무 선택 모달 */
 let pendingSlot=null;
+function openBookModal(){
+  if(!pendingSlot) return; const {id,t}=pendingSlot;
+  $("#bkWhen").textContent=`${slotTime(t)}–${slotTime(t+2)} · ${axisRows().find(r=>r.id===id)?.name||id}`;
+  $("#bkPatient").value=""; $("#bkNoshow").hidden=true; $("#bkPatState").textContent="";
+  $("#bkPatPop").hidden=true; $("#bkProc").value=""; $("#bkProcSel").value=""; $("#bkProcMeta").textContent="";
+  $("#bookModal").classList.add("open"); setTimeout(()=>$("#bkPatient").focus(),50);
+}
 document.addEventListener("click",e=>{
   const cell=e.target.closest(".vcell:not(.blocked)");
   if(cell && state.view==="cal"){
     if(state.ssot==="emr"){ toast("읽기 전용 — SSOT가 「전자차트가 주인」이라 이 화면에서는 예약을 만들지 않습니다 (설정 탭에서 변경)"); return; }
     const [key,id,t]=cell.dataset.slot.split(":");
     pendingSlot={key,id,t:+t};
-    $("#bkWhen").textContent=`${slotTime(+t)}–${slotTime(+t+2)} · ${axisRows().find(r=>r.id===id)?.name||id}`;
-    $("#bkPatient").value=""; $("#bkNoshow").hidden=true; $("#bkPatState").textContent="";
-    $("#bkPatPop").hidden=true; $("#bkProc").value=""; $("#bkProcSel").value=""; $("#bkProcMeta").textContent="";
-    $("#bookModal").classList.add("open"); setTimeout(()=>$("#bkPatient").focus(),50); return;
+    $("#slotWhen").textContent=`${slotTime(+t)}–${slotTime(+t+2)} · ${axisRows().find(r=>r.id===id)?.name||id}`;
+    $("#offForm").hidden=true; $("#slotModal").classList.add("open"); return;
   }
+  if(e.target.closest("#slotBook")){ $("#slotModal").classList.remove("open"); openBookModal(); return; }
+  if(e.target.closest("#slotOff")){ $("#offForm").hidden=false; return; }
+  if(e.target.closest("#offSave")){ if(!pendingSlot) return;
+    const scope=$("#offScope").value, len=+$("#offLen").value, reason=$("#offReason").value, rep=$("#offRepeat").value;
+    const chair = scope==="*" ? "*" : (pendingSlot.key==="chair" ? pendingSlot.id : "*");
+    DD.BLOCKS.push({ chair, t:pendingSlot.t, len, label:reason, repeat:rep!=="none"?rep:undefined });
+    renderCal(); $("#slotModal").classList.remove("open");
+    const dow=["일","월","화","수","목","금","토"][new Date(2026,7,14).getDay()];
+    const repTxt = rep==="weekly"?` · 매주 ${dow}요일 반복`:rep==="daily"?" · 매 진료일 반복":"";
+    toast(`휴무 등록 — ${reason}${repTxt}`); return; }
   if(e.target.closest("[data-close]")) $$(".modal-bg").forEach(m=>m.classList.remove("open"));
 });
 
@@ -452,7 +469,7 @@ function cancelAndMatch(id){
     return {...w,score:s};
   }).sort((x,y)=>y.score-x.score);
   $("#wlBody").innerHTML = scored.map((w,i)=>`
-    <tr><td><b>${w.p}</b></td><td>${w.proc}</td><td>${w.want}</td><td>${w.doc?DD.DOCTORS.find(d=>d.id===w.doc).name:"무관"}</td>
+    <tr><td><b>${w.p}</b></td><td>${w.proc}</td><td>${w.want}</td><td>${w.doc?((DD.DOCTORS.find(d=>d.id===w.doc)||{}).name||"무관"):"무관"}</td>
     <td>${w.noshow?`<span class="pill noshow">노쇼 ${w.noshow}</span>`:'<span class="pill ok">0</span>'}</td>
     <td><b style="color:var(--pri)">${w.score}점</b></td>
     <td><button class="btn sm pri" data-wl="${i}">배정+알림</button></td></tr>`).join("");
@@ -539,7 +556,6 @@ function openPatient(id){
 function renderChartTab(tab){
   chartTab=tab;
   const p=DD.PATIENTS.find(x=>x.id===chartPid); if(!p) return;
-  const ex=DD.PT_EXTRA[p.id]||{points:0,grade:"일반",packages:[],photos:[]};
   const pays=DD.PAYMENTS.filter(x=>x.p===p.name), appts=DD.SCHED.filter(x=>x.p===p.name),
         smss=DD.SMS_HISTORY.filter(x=>x.name===p.name), ar=DD.ARREARS.find(x=>x.p===p.name),
         total=pays.reduce((s,x)=>s+x.amount,0);
@@ -747,9 +763,9 @@ $("#sendAt").addEventListener("input",judge);
 $("#sendBtn").addEventListener("click",()=>{
   const {isAd}=judge();
   const s=DD.SEND_STATS, n=isAd?s.consented:s.total;
-  const alim=isAd?0:Math.round(n*0.86), fb=n-alim-(isAd?0:8), sms=isAd?n:8;
+  const alim=isAd?0:Math.round(n*0.86), sms=isAd?n:8;
   $("#queueOut").innerHTML=`발송 큐 적재 — 알림톡 ${alim}건 · 실패 폴백 SMS ${isAd?0:8}건 · ${isAd?`(광고) SMS ${sms}건`:""} · 수신거부 제외 3건<br>
-  예상 비용 <b>${fmt(alim*8+ (isAd?sms:8)*12)}원</b> (알림톡 8원 · SMS 12원) ${isAd?'· <span style="color:var(--warn)">야간분은 08:00 이월</span>':""}`;
+  예상 비용 <b>${fmt(alim*8+ (isAd?sms:8)*9)}원</b> (알림톡 8원 · SMS 9원) ${isAd?'· <span style="color:var(--warn)">야간분은 08:00 이월</span>':""}`;
   toast("발송 큐에 적재됐습니다 — 템플릿 미승인 채널은 자동 제외됩니다");
 });
 $("#saveKeepBtn").addEventListener("click",()=>{
@@ -1146,18 +1162,6 @@ function renderStatProc(){
 }
 
 /* ══ 디자인 시스템 반영 (병원CRM전환 09 — 계승 위젯·테마 스왑) ══ */
-
-/* 테마 스왑 — 메인 3색 변수만 교체 */
-$$("#themeSw button").forEach(b=>b.addEventListener("click",()=>{
-  const t=b.dataset.themeSet;
-  if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme;
-  $$("#themeSw button").forEach(x=>x.classList.toggle("on",x===b));
-  toast(t==="purple"
-    ? "원본 theme01 퍼플 계열 — 파스텔 메인색은 대비 부족이라 버튼·텍스트는 진한 변형을 씁니다 (09 명세 지적 반영)"
-    : t==="green"
-    ? "그린 테마 — 실측 테마 구조 그대로 변수 세트만 교체했습니다"
-    : "theme06 네이비(실서비스 기본 테마 실측값) — 병원 화이트라벨이 이 변수 구조로 가능합니다");
-}));
 
 /* 한글 초성 분리 (계승 유틸 hanSplit — 초성 검색) */
 function chosung(str){

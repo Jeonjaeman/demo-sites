@@ -7,7 +7,7 @@
 <title>DENTDESK — 치과 데스크 통합 관리</title>
 <meta name="description" content="치과 데스크 예약·환자·수납·발송·통계 통합 관리 시스템">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=41">
+<link rel="stylesheet" href="assets/css/style.css?v=44">
 </head>
 <body>
 
@@ -905,6 +905,28 @@
   </div>
 </div>
 
+<!-- 빈 슬롯 클릭 → 예약/휴무 선택 -->
+<div class="modal-bg" id="slotModal">
+  <div class="modal" style="max-width:440px">
+    <h3>이 시간에 무엇을 등록할까요?</h3>
+    <p class="msub" id="slotWhen"></p>
+    <div class="slot-choice">
+      <button class="btn pri" id="slotBook">📅 예약 등록</button>
+      <button class="btn" id="slotOff">⛔ 휴무·블록 등록</button>
+    </div>
+    <div id="offForm" hidden>
+      <div class="editgrid">
+        <label>사유 <select class="inp" id="offReason"><option>점심시간</option><option>정비·소독</option><option>휴진</option><option>회의·교육</option><option>개인 사유</option></select></label>
+        <label>길이 <select class="inp" id="offLen"><option value="1">30분</option><option value="2" selected>1시간</option><option value="4">2시간</option><option value="8">4시간</option></select></label>
+        <label>대상 <select class="inp" id="offScope"><option value="chair">이 체어(진료실)만</option><option value="*">전체 진료실</option></select></label>
+        <label>반복 <select class="inp" id="offRepeat"><option value="none">반복 없음</option><option value="weekly">매주 이 요일</option><option value="daily">매일(진료일)</option></select></label>
+      </div>
+      <p class="note">반복 휴무는 진료시간·휴무 설정에 규칙으로 저장되어 매 주기 자동 적용됩니다(데모는 오늘 캘린더에 즉시 표시).</p>
+      <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn" data-close>취소</button><button class="btn pri" id="offSave">휴무 등록</button></div>
+    </div>
+  </div>
+</div>
+
 <!-- 수신전화(CID) 팝업 -->
 <aside class="cid" id="cidPop" aria-label="수신전화 팝업">
   <div class="cid-head">
@@ -933,7 +955,7 @@
 <div class="toast" id="toast"></div>
 <div class="hovercard" id="hoverCard" hidden></div>
 
-<script src="assets/js/data.js?v=10"></script>
-<script src="assets/js/app.js?v=35"></script>
+<script src="assets/js/data.js?v=11"></script>
+<script src="assets/js/app.js?v=37"></script>
 </body>
 </html>
