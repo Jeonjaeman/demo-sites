@@ -155,6 +155,19 @@ DD.PURCHASES = [
   { t:"2026-08-08", supplier:"신흥治材", item:"마취제 (리도카인)", qty:50, amount:250000, paid:false, lot:"SH-2605", exp:"2027-05" }
 ];
 
+/* 물품(재고) — 잔여량·안전재고·유효기간 (헤어사랑넷 goods 재고원장 계승) */
+DD.INVENTORY = [
+  { id:"IV-01", name:"임플란트 픽스처(레귤러)", cat:"임플란트", unit:"개", stock:14, safety:10, exp:"2029-08", supplier:"오스템임플란트", perUse:1, uses:["임플란트 1차(식립)"] },
+  { id:"IV-02", name:"임플란트 힐링 어벗먼트", cat:"임플란트", unit:"개", stock:6, safety:8, exp:"2030-01", supplier:"오스템임플란트", perUse:1, uses:["임플란트 2차(보철)"] },
+  { id:"IV-03", name:"레진 A2", cat:"수복재료", unit:"시린지", stock:3, safety:4, exp:"2027-02", supplier:"GC코리아", perUse:1, uses:["레진 치료"] },
+  { id:"IV-04", name:"레진 A3", cat:"수복재료", unit:"시린지", stock:5, safety:4, exp:"2028-02", supplier:"GC코리아", perUse:1, uses:["레진 치료"] },
+  { id:"IV-05", name:"마취제(리도카인)", cat:"약제", unit:"앰플", stock:48, safety:20, exp:"2026-11", supplier:"신흥治材", perUse:2, uses:["발치","신경치료(근관)"] },
+  { id:"IV-06", name:"거타퍼차 포인트", cat:"근관재료", unit:"박스", stock:9, safety:3, exp:"2031-05", supplier:"신흥治材", perUse:1, uses:["신경치료(근관)"] },
+  { id:"IV-07", name:"글러브(라텍스 M)", cat:"소모품", unit:"박스", stock:2, safety:5, exp:"2027-08", supplier:"㈜덴탈메이트", perUse:0, uses:[] },
+  { id:"IV-08", name:"스케일링 팁", cat:"소모품", unit:"개", stock:12, safety:6, exp:"-", supplier:"㈜덴탈메이트", perUse:0, uses:["스케일링"] },
+  { id:"IV-09", name:"불소 바니시", cat:"예방재료", unit:"팩", stock:7, safety:5, exp:"2026-09", supplier:"GC코리아", perUse:1, uses:["불소 도포"] }
+];
+
 /* 진료항목 마스터 (헤어사랑넷 serviceMstr 계승 — 진료과 계층 + 급여구분·소요시간) */
 DD.SERVICES = [
   { cat:"보존", items:[

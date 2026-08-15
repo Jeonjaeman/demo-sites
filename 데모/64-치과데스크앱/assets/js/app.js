@@ -648,8 +648,138 @@ document.addEventListener("click",e=>{
   nav.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===sb));
   view.querySelectorAll(".subpane").forEach(p=>p.classList.toggle("on",p.id==="sp-"+sub));
   ({ "pt-dup":renderDup, "pt-del":renderInactive, "pay-sales":renderSales,
-     "pay-purchase":renderPurchase, "stats-proc":renderStatProc }[sub]||(()=>{}))();
+     "pay-purchase":renderPurchase, "pay-stock":renderInventory, "stats-proc":renderStatProc,
+     "stats-sales":renderSalesAnalysis, "stats-pt":renderPatientAnalysis }[sub]||(()=>{}))();
   bindReveal();
+});
+/* ── 물품 재고 ── */
+let invFilter="all";
+function monToExp(exp){ if(exp==="-")return 999; const [y,m]=exp.split("-").map(Number); return (y-2026)*12+(m-8); }
+function renderInventory(){
+  const rows=DD.INVENTORY.filter(v=>{
+    if(invFilter==="low") return v.stock<v.safety;
+    if(invFilter==="exp") return v.exp!=="-" && monToExp(v.exp)<=6;
+    return true;
+  });
+  $("#invBody").innerHTML=rows.map((v,i)=>{
+    const low=v.stock<v.safety, expSoon=v.exp!=="-"&&monToExp(v.exp)<=6;
+    const gi=DD.INVENTORY.indexOf(v);
+    return `<tr>
+      <td><b>${v.name}</b></td><td><span class="pill mut">${v.cat}</span></td>
+      <td><b class="${low?"":""}" style="color:${low?"var(--num-minus)":"var(--ink)"}">${v.stock}${v.unit}</b></td>
+      <td>${v.safety}${v.unit} ${low?'<span class="pill dang">발주</span>':''}</td>
+      <td>${v.exp}${expSoon?' <span class="pill warn">임박</span>':''}</td>
+      <td style="font-size:0.7857rem;color:var(--ink-sub)">${v.uses.join(", ")||"—"}</td>
+      <td style="white-space:nowrap"><button class="btn sm" data-invin="${gi}">입고 +10</button> <button class="btn sm" data-invuse="${gi}">사용 −1</button></td>
+    </tr>`;
+  }).join("")||'<tr><td colspan="7" style="text-align:center;color:var(--ink-muted);padding:16px">해당 품목 없음</td></tr>';
+  const low=DD.INVENTORY.filter(v=>v.stock<v.safety), exp=DD.INVENTORY.filter(v=>v.exp!=="-"&&monToExp(v.exp)<=6);
+  $("#invSum").innerHTML=`발주 필요 <b style="color:var(--num-minus)">${low.length}종</b>${low.length?" ("+low.map(v=>v.name).join(", ")+")":""} · 유효기간 임박 <b style="color:var(--warn)">${exp.length}종</b>`;
+}
+document.addEventListener("click",e=>{
+  const inv=e.target.closest("[data-invin]"), use=e.target.closest("[data-invuse]");
+  const f=e.target.closest("#invFilter [data-invf]");
+  if(inv){ DD.INVENTORY[+inv.dataset.invin].stock+=10; renderInventory(); toast("입고 처리 — 재고가 갱신됐습니다"); }
+  else if(use){ const v=DD.INVENTORY[+use.dataset.invuse]; if(v.stock>0)v.stock--; renderInventory();
+    toast(v.stock<v.safety?`${v.name} 사용 — 안전재고 미만, 발주가 필요합니다`:`${v.name} 사용 처리`); }
+  else if(f){ invFilter=f.dataset.invf; $$("#invFilter .tab").forEach(x=>x.classList.toggle("on",x===f)); renderInventory(); }
+});
+/* ── 매출 분석 ── */
+let salPeriod="day";
+function renderSalesAnalysis(){
+  const data={ day:[[820,1240,980,1510,1866,340,0],["월","화","수","목","금","토","오늘"]],
+    week:[[9800,11200,10400,12660],["1주","2주","3주","4주"]],
+    month:[[42000,38500,45200,51000,48600,53400],["3월","4월","5월","6월","7월","8월"]] }[salPeriod];
+  const max=Math.max(...data[0]);
+  $("#salPeriodBars").innerHTML=data[0].map((v,i)=>`<i class="${v===max?"hot":""}" style="height:${Math.max(3,v/max*100)}%"><em>${v?(salPeriod==="day"?v+"만":Math.round(v/100)/10+"천만"):""}</em></i>`).join("");
+  $("#salPeriodLab").innerHTML=data[1].map(l=>`<span>${l}</span>`).join("");
+  const dept=[["보철·임플란트",9650000],["보존(신경·레진)",2400000],["예방·급여",603000],["교정",1800000],["구강외과",480000]];
+  const dmax=Math.max(...dept.map(x=>x[1]));
+  $("#salByDept").innerHTML=dept.map(r=>`<div class="bar-h"><span class="bl">${r[0]}</span><div class="bt"><i style="width:${r[1]/dmax*100}%"></i></div><span class="bv">${Math.round(r[1]/10000)}만</span></div>`).join("");
+  const doc=[["김이현 원장",8200000],["박서준 원장",6730000]];
+  const domax=Math.max(...doc.map(x=>x[1]));
+  $("#salByDoc").innerHTML=doc.map(r=>`<div class="bar-h"><span class="bl">${r[0]}</span><div class="bt"><i style="width:${r[1]/domax*100}%"></i></div><span class="bv">${Math.round(r[1]/10000)}만</span></div>`).join("");
+}
+document.addEventListener("click",e=>{
+  const p=e.target.closest("#salPeriod [data-sp]");
+  if(p){ salPeriod=p.dataset.sp; $$("#salPeriod .tab").forEach(x=>x.classList.toggle("on",x===p)); renderSalesAnalysis(); }
+});
+/* ── 환자 분석 ── */
+function renderPatientAnalysis(){
+  const nw=18, rt=142, tot=nw+rt;
+  $("#ptNewReturn").innerHTML=`
+    <div style="display:flex;height:26px;border-radius:6px;overflow:hidden;margin-bottom:8px">
+      <div style="width:${nw/tot*100}%;background:var(--pri);color:#fff;font-size:0.75rem;display:flex;align-items:center;justify-content:center;font-weight:700">신환 ${nw}</div>
+      <div style="width:${rt/tot*100}%;background:var(--ok);color:#fff;font-size:0.75rem;display:flex;align-items:center;justify-content:center;font-weight:700">재진 ${rt}</div>
+    </div>
+    <div style="font-size:0.8214rem;color:var(--ink-sub)">이번 달 내원 ${tot}명 · 신환 비율 <b>${Math.round(nw/tot*100)}%</b> (전월 15%)</div>`;
+  const age=[["10대",8],["20대",22],["30대",38],["40대",34],["50대",26],["60대+",32]];
+  const amax=Math.max(...age.map(x=>x[1]));
+  $("#ptAge").innerHTML=age.map(r=>`<div class="bar-h"><span class="bl">${r[0]}</span><div class="bt"><i style="width:${r[1]/amax*100}%"></i></div><span class="bv">${r[1]}명</span></div>`).join("");
+  $("#ptRevisit").innerHTML=`6개월 내 재방문율 <b>68%</b> · 리콜 발송군이 미발송군보다 재방문 22%p 높음`;
+}
+/* ── 진료 리소스 관리 (체어·의사·위생사) ── */
+const RES_PALETTE=["#357cd2","#1aaa55","#7fa900","#df5286","#915CE0","#0FB3A3","#A0A540","#e08a3c","#c0576b"];
+let resTab="chair";
+function renderResources(){
+  const b=$("#resBody");
+  if(resTab==="chair"){
+    b.innerHTML=`
+      ${DD.ROOMS.map(r=>`
+        <div style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.8571rem;font-weight:800;margin-bottom:6px">
+            ${r.name} <span style="color:var(--ink-muted);font-weight:600">체어 ${r.chairs.length}</span>
+            <button class="btn sm" data-roomdel="${r.id}" style="margin-left:auto">진료실 삭제</button></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            ${r.chairs.map(cid=>{ const c=DD.CHAIRS.find(x=>x.id===cid); return `<span class="pill" style="background:${c.color}22;color:${c.color};gap:6px">${c.name} <b data-chairdel="${c.id}" style="cursor:pointer;color:var(--ink-muted)">×</b></span>`; }).join("")}
+            <button class="btn sm" data-chairadd="${r.id}">+ 체어</button>
+          </div>
+        </div>`).join("")}
+      <div style="display:flex;gap:8px;align-items:end;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)">
+        <label class="field">진료실 추가 <input class="inp" id="roomNew" placeholder="예: 진료실 3" style="width:150px"></label>
+        <button class="btn pri" id="roomAdd">추가</button>
+      </div>`;
+  } else {
+    const list = resTab==="doc"?DD.DOCTORS:DD.HYGIENISTS, label=resTab==="doc"?"담당의":"위생사";
+    b.innerHTML=`
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+        ${list.map(m=>`<span class="pill" style="background:${m.color}22;color:${m.color};gap:6px">${m.name} <b data-resdel="${resTab}:${m.id}" style="cursor:pointer;color:var(--ink-muted)">×</b></span>`).join("")||'<span style="color:var(--ink-muted);font-size:0.8214rem">등록 없음</span>'}
+      </div>
+      <div style="display:flex;gap:8px;align-items:end;padding-top:10px;border-top:1px dashed var(--line)">
+        <label class="field">${label} 추가 <input class="inp" id="resNew" placeholder="이름" style="width:150px"></label>
+        <button class="btn pri" id="resAdd">추가</button>
+      </div>`;
+  }
+}
+document.addEventListener("click",e=>{
+  const rt=e.target.closest("#resTabs [data-res]");
+  if(rt){ resTab=rt.dataset.res; $$("#resTabs .tab").forEach(x=>x.classList.toggle("on",x===rt)); renderResources(); return; }
+  if(e.target.id==="roomAdd"){ const v=$("#roomNew").value.trim(); if(!v){toast("진료실명을 입력하세요");return;}
+    DD.ROOMS.push({id:"r"+(DD.ROOMS.length+1+Math.floor(state.maskLogs)),name:v,chairs:[]}); renderResources(); toast(`${v} 추가`); return; }
+  const ca=e.target.closest("[data-chairadd]");
+  if(ca){ const rid=ca.dataset.chairadd, r=DD.ROOMS.find(x=>x.id===rid);
+    const cid="c"+(DD.CHAIRS.length+1)+"_"+DD.CHAIRS.length;
+    DD.CHAIRS.push({id:cid,name:"체어 "+(DD.CHAIRS.length+1),room:rid,color:RES_PALETTE[DD.CHAIRS.length%RES_PALETTE.length]});
+    r.chairs.push(cid); renderResources(); renderCal(); toast("체어 추가 — 캘린더에 반영됐습니다"); return; }
+  const cd=e.target.closest("[data-chairdel]");
+  if(cd){ const cid=cd.dataset.chairdel;
+    if(DD.APPTS.some(a=>a.chair===cid&&a.st!=="cancel")){ toast("삭제 불가 — 이 체어에 예약이 있습니다"); return; }
+    DD.CHAIRS=DD.CHAIRS.filter(c=>c.id!==cid); DD.ROOMS.forEach(r=>r.chairs=r.chairs.filter(x=>x!==cid));
+    renderResources(); renderCal(); toast("체어 삭제됨"); return; }
+  const rd=e.target.closest("[data-roomdel]");
+  if(rd){ const rid=rd.dataset.roomdel, r=DD.ROOMS.find(x=>x.id===rid);
+    if(r.chairs.length){ toast("삭제 불가 — 체어를 먼저 비우세요"); return; }
+    DD.ROOMS=DD.ROOMS.filter(x=>x.id!==rid); renderResources(); toast("진료실 삭제됨"); return; }
+  if(e.target.id==="resAdd"){ const v=$("#resNew").value.trim(); if(!v){toast("이름을 입력하세요");return;}
+    const list=resTab==="doc"?DD.DOCTORS:DD.HYGIENISTS, pre=resTab==="doc"?"d":"h";
+    list.push({id:pre+(list.length+1)+"_"+list.length,name:v,color:RES_PALETTE[(list.length+3)%RES_PALETTE.length]});
+    renderResources(); toast(`${v} 추가 — 캘린더 축·예약 배정에 반영됩니다`); return; }
+  const rmd=e.target.closest("[data-resdel]");
+  if(rmd){ const [t,id]=rmd.dataset.resdel.split(":");
+    const key=t==="doc"?"doc":"hyg";
+    if(DD.APPTS.some(a=>a[key]===id&&a.st!=="cancel")){ toast("삭제 불가 — 배정된 예약이 있습니다"); return; }
+    if(t==="doc") DD.DOCTORS=DD.DOCTORS.filter(m=>m.id!==id); else DD.HYGIENISTS=DD.HYGIENISTS.filter(m=>m.id!==id);
+    renderResources(); toast("삭제됨"); return; }
 });
 /* 중복 고객 관리 */
 function renderDup(){
@@ -846,6 +976,6 @@ function bindReveal(){
 }
 /* 초기 렌더 */
 renderCal(); renderPatients(); renderPayments(); renderTemplates(); renderRecall();
-judge(); calcDual(); calcPenalty(); renderLogs(); renderStats(); renderProcSelect(); renderServices(); bindReveal();
+judge(); calcDual(); calcPenalty(); renderLogs(); renderStats(); renderProcSelect(); renderServices(); renderResources(); bindReveal();
 $("#emrEst").innerHTML=`상담 CRM 모드 — 진료기록은 기존 전자차트에 남기고, 이 시스템은 데스크 응대 기록만 소유합니다 (기본 견적 범위)`;
 })();

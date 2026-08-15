@@ -146,6 +146,7 @@
     <button class="on" data-sub="pay-main">수납·미수</button>
     <button data-sub="pay-sales">매출</button>
     <button data-sub="pay-purchase">매입 <span class="sbadge">외상 2</span></button>
+    <button data-sub="pay-stock">물품 재고 <span class="sbadge">발주 3</span></button>
   </div>
   <div class="subpane on" id="sp-pay-main">
   <div class="card rv">
@@ -201,6 +202,19 @@
       <p class="sub">공급처별 매입과 외상(미지급)을 관리합니다. 로트번호·유효기간은 처방·시술 시 차감과 유효기간 임박 알림에 쓰입니다.</p>
       <table class="tbl"><thead><tr><th>일자</th><th>공급처</th><th>품목</th><th>수량</th><th style="text-align:right">금액</th><th>로트</th><th>유효기간</th><th>지급</th></tr></thead><tbody id="purchaseBody"></tbody></table>
       <p class="note" id="purchaseSum"></p>
+    </div>
+  </div>
+  <div class="subpane" id="sp-pay-stock">
+    <div class="card rv">
+      <h3>물품 재고 — 잔여량·유효기간</h3>
+      <p class="sub">안전재고 미만은 발주 경고, 유효기간 6개월 이내는 별도 표시합니다. 진료에 연동된 품목은 시술 완료 시 자동 차감되도록 설계합니다(예: 임플란트 1차 → 픽스처 1개).</p>
+      <div class="tabs" id="invFilter">
+        <button class="tab on" data-invf="all">전체</button>
+        <button class="tab" data-invf="low">발주 필요</button>
+        <button class="tab" data-invf="exp">유효기간 임박</button>
+      </div>
+      <table class="tbl"><thead><tr><th>품목</th><th>분류</th><th>잔여</th><th>안전재고</th><th>유효기간</th><th>연동 진료</th><th></th></tr></thead><tbody id="invBody"></tbody></table>
+      <p class="note" id="invSum"></p>
     </div>
   </div>
 </section>
@@ -278,6 +292,8 @@
 <section class="view" id="v-stats">
   <div class="subnav">
     <button class="on" data-sub="stats-main">경영 요약</button>
+    <button data-sub="stats-sales">매출 분석</button>
+    <button data-sub="stats-pt">환자 분석</button>
     <button data-sub="stats-proc">진료·리콜</button>
   </div>
   <div class="subpane on" id="sp-stats-main">
@@ -326,6 +342,36 @@
       </div>
     </div>
   </div>
+  <div class="subpane" id="sp-stats-sales">
+    <div class="card rv">
+      <h3>매출 분석 — 기간·진료과·담당의</h3>
+      <div class="tabs" id="salPeriod">
+        <button class="tab on" data-sp="day">일별</button>
+        <button class="tab" data-sp="week">주별</button>
+        <button class="tab" data-sp="month">월별</button>
+      </div>
+      <div class="spark" id="salPeriodBars"></div>
+      <div class="spark-lab" id="salPeriodLab"></div>
+      <div class="grid2" style="margin-top:16px">
+        <div><h4 style="font-size:0.8571rem;font-weight:800;margin-bottom:8px">진료과별</h4><div id="salByDept"></div></div>
+        <div><h4 style="font-size:0.8571rem;font-weight:800;margin-bottom:8px">담당의별</h4><div id="salByDoc"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="subpane" id="sp-stats-pt">
+    <div class="grid2">
+      <div class="card rv">
+        <h3>신환 · 재진</h3>
+        <p class="sub">이번 달 초진(신환)과 재진 비율입니다. 신환 유입이 줄면 마케팅·리콜을, 재진이 줄면 예약 이탈을 점검합니다.</p>
+        <div id="ptNewReturn"></div>
+      </div>
+      <div class="card rv">
+        <h3>연령대 분포 · 재방문율</h3>
+        <div id="ptAge"></div>
+        <p class="note" id="ptRevisit"></p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ⑥ 설정·보안 -->
@@ -349,6 +395,16 @@
       <button class="btn pri" id="svAdd">추가</button>
     </div>
     <div id="svList"></div>
+  </div>
+  <div class="card rv">
+    <h3>진료 리소스 관리 — 진료실·체어·의료진</h3>
+    <p class="sub">체어(진료 유닛)·담당의·위생사를 직접 추가하거나 삭제합니다. 캘린더 축과 예약 배정에 바로 반영되어, 개원·증설·인력 변동을 운영자가 직접 관리할 수 있습니다.</p>
+    <div class="tabs" id="resTabs">
+      <button class="tab on" data-res="chair">진료실·체어</button>
+      <button class="tab" data-res="doc">담당의</button>
+      <button class="tab" data-res="hyg">위생사</button>
+    </div>
+    <div id="resBody"></div>
   </div>
   <div class="card rv">
     <h3>예약의 주인은 누구입니까 — 착수 미팅 1순위 질문</h3>
@@ -562,7 +618,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="assets/js/data.js?v=3"></script>
-<script src="assets/js/app.js?v=11"></script>
+<script src="assets/js/data.js?v=4"></script>
+<script src="assets/js/app.js?v=12"></script>
 </body>
 </html>
