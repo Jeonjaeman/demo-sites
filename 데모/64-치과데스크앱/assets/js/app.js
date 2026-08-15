@@ -341,22 +341,31 @@ document.addEventListener("click",e=>{
   if(!e.target.closest("#sp-pay-main .qsearch")) npPop.hidden=true;
 });
 /* 설정 — 진료항목 관리 (헤어사랑넷 시술항목설정 계승 — 좌 카테고리 + 우 표) */
-let svcCat="전체", svcEdit=null; /* svcEdit={gi,ii}; ii=-1 → 신규 추가행 */
+let svcCat="전체", svcEdit=null, svcCatEdit=null; /* svcEdit={gi,ii}; ii=-1 → 신규 추가행 · svcCatEdit=gi → 카테고리명 편집 */
 function svcEditRow(gi,ii,it){
-  return `<tr class="svc-editrow">
-    <td><input class="inp" id="svcE_name" value="${it.name}" placeholder="진료명" style="width:100%"></td>
-    <td><input class="inp" id="svcE_min" type="number" value="${it.min}" style="width:64px"> 분</td>
-    <td style="text-align:right"><input class="inp" id="svcE_price" type="number" value="${it.price||0}" style="width:104px;text-align:right"></td>
-    <td><select class="inp" id="svcE_ins" style="width:120px">${["비급여","급여","급여(연1회)","상담"].map(o=>`<option ${o===it.ins?"selected":""}>${o}</option>`).join("")}</select></td>
-    <td><button class="btn xs pri" data-svcsave="${gi}:${ii}">저장</button><button class="btn xs ghost" data-svccancel="1">취소</button></td></tr>`;
+  const cats=DD.SERVICES.map((g,i)=>`<option value="${i}" ${i===gi?"selected":""}>${g.cat}</option>`).join("");
+  const insOpts=["비급여","급여","급여(연1회)","상담"].map(o=>`<option ${o===it.ins?"selected":""}>${o}</option>`).join("");
+  return `<tr class="svc-editrow"><td colspan="5"><div class="svc-editform">
+    <label class="ef">카테고리<select class="inp" id="svcE_cat">${cats}</select></label>
+    <label class="ef ef-grow">진료명<input class="inp" id="svcE_name" value="${it.name}" placeholder="진료명"></label>
+    <label class="ef">소요시간<span class="ef-min"><input class="inp" id="svcE_min" type="number" value="${it.min}">분</span></label>
+    <label class="ef">기본 수가<input class="inp num" id="svcE_price" type="number" value="${it.price||0}"></label>
+    <label class="ef">급여구분<select class="inp" id="svcE_ins">${insOpts}</select></label>
+    <span class="ef-act"><button class="btn xs pri" data-svcsave="${gi}:${ii}">저장</button><button class="btn xs ghost" data-svccancel="1">취소</button></span>
+  </div></td></tr>`;
 }
 function renderServices(){
   const total=DD.SERVICES.reduce((s,g)=>s+g.items.length,0);
   $("#svcCatList").innerHTML=
-    `<div class="svc-cat ${svcCat==="전체"?"on":""}" data-svccat="전체"><span class="dh">⠿</span><span class="nm">전체</span><b>${total}</b></div>`+
-    DD.SERVICES.map((g,gi)=>`<div class="svc-cat ${svcCat===g.cat?"on":""}" data-svccat="${g.cat}">
-      <span class="dh">⠿</span><span class="nm">${g.cat}</span><b>${g.items.length}</b>
-      <i class="svc-catdel" data-svccatdel="${gi}" title="카테고리 삭제">×</i></div>`).join("");
+    `<div class="svc-cat ${svcCat==="전체"?"on":""}" data-svccat="전체"><span class="dh fix" title="전체는 고정">≡</span><span class="nm">전체</span><b>${total}</b></div>`+
+    DD.SERVICES.map((g,gi)=>{
+      if(svcCatEdit===gi) return `<div class="svc-cat editing"><span class="dh">⠿</span>
+        <input class="inp cat-inp" id="svcCatName" value="${g.cat}"><button class="btn xs pri" data-svccatsave="${gi}">✓</button></div>`;
+      return `<div class="svc-cat ${svcCat===g.cat?"on":""}" draggable="true" data-svccat="${g.cat}" data-gi="${gi}">
+        <span class="dh" title="드래그로 순서 변경">⠿</span><span class="nm">${g.cat}</span><b>${g.items.length}</b>
+        <i class="svc-catren" data-svccatren="${gi}" title="이름 변경">✎</i>
+        <i class="svc-catdel" data-svccatdel="${gi}" title="카테고리 삭제">×</i></div>`;
+    }).join("");
   const groups=svcCat==="전체"?DD.SERVICES:DD.SERVICES.filter(g=>g.cat===svcCat);
   $("#svcTables").innerHTML=groups.map(g=>{
     const gi=DD.SERVICES.indexOf(g);
@@ -380,29 +389,49 @@ function renderServices(){
 document.addEventListener("click",e=>{
   const cat=e.target.closest("[data-svccat]"), catdel=e.target.closest("[data-svccatdel]"),
         catadd=e.target.closest("#svCatAdd"), add=e.target.closest("[data-svcadd]"),
+        catren=e.target.closest("[data-svccatren]"), catsave=e.target.closest("[data-svccatsave]"),
         edit=e.target.closest("[data-svcedit]"), del=e.target.closest("[data-svcdel]"),
         save=e.target.closest("[data-svcsave]"), cancel=e.target.closest("[data-svccancel]");
   if(catdel){ e.stopPropagation(); const gi=+catdel.dataset.svccatdel, g=DD.SERVICES[gi];
     if(g.items.length){ toast("진료가 있는 카테고리는 삭제할 수 없습니다 — 먼저 진료를 비우세요"); return; }
-    if(svcCat===g.cat) svcCat="전체"; DD.SERVICES.splice(gi,1); svcEdit=null; renderServices(); toast(`${g.cat} 카테고리 삭제됨`); return; }
-  if(cat){ svcCat=cat.dataset.svccat; svcEdit=null; renderServices(); return; }
+    if(svcCat===g.cat) svcCat="전체"; DD.SERVICES.splice(gi,1); svcEdit=null; svcCatEdit=null; renderServices(); toast(`${g.cat} 카테고리 삭제됨`); return; }
+  if(catren){ e.stopPropagation(); svcCatEdit=+catren.dataset.svccatren; svcEdit=null; renderServices();
+    const f=$("#svcCatName"); if(f){ f.focus(); f.select(); } return; }
+  if(catsave){ const gi=+catsave.dataset.svccatsave, nm=$("#svcCatName").value.trim();
+    if(!nm){ toast("카테고리명을 입력하세요"); return; }
+    if(DD.SERVICES.some((g,i)=>i!==gi&&g.cat===nm)){ toast("이미 있는 카테고리명입니다"); return; }
+    const old=DD.SERVICES[gi].cat; DD.SERVICES[gi].cat=nm; if(svcCat===old)svcCat=nm; svcCatEdit=null;
+    renderServices(); renderProcSelect(); toast(`카테고리명 변경 — ${nm}`); return; }
+  if(cat){ svcCat=cat.dataset.svccat; svcEdit=null; svcCatEdit=null; renderServices(); return; }
   if(catadd){ let n=1; while(DD.SERVICES.some(g=>g.cat==="새 진료과 "+n))n++;
-    const nm="새 진료과 "+n; DD.SERVICES.push({cat:nm,items:[]}); svcCat=nm; svcEdit=null; renderServices();
-    toast(`${nm} 추가 — 진료를 등록하세요`); return; }
-  if(add){ svcEdit={gi:+add.dataset.svcadd,ii:-1}; renderServices(); const f=$("#svcE_name"); if(f)f.focus(); return; }
-  if(edit){ const [gi,ii]=edit.dataset.svcedit.split(":").map(Number); svcEdit={gi,ii}; renderServices(); return; }
+    const nm="새 진료과 "+n; DD.SERVICES.push({cat:nm,items:[]}); svcCat=nm; svcEdit=null; svcCatEdit=DD.SERVICES.length-1; renderServices();
+    const f=$("#svcCatName"); if(f){ f.focus(); f.select(); } toast("카테고리명을 입력하세요"); return; }
+  if(add){ svcEdit={gi:+add.dataset.svcadd,ii:-1}; svcCatEdit=null; renderServices(); const f=$("#svcE_name"); if(f)f.focus(); return; }
+  if(edit){ const [gi,ii]=edit.dataset.svcedit.split(":").map(Number); svcEdit={gi,ii}; svcCatEdit=null; renderServices(); return; }
   if(cancel){ svcEdit=null; renderServices(); return; }
   if(del){ const [gi,ii]=del.dataset.svcdel.split(":").map(Number);
     DD.SERVICES[gi].items.splice(ii,1); svcEdit=null; renderServices(); renderProcSelect(); toast("진료항목 삭제됨"); return; }
   if(save){ const [gi,ii]=save.dataset.svcsave.split(":").map(Number);
     const name=$("#svcE_name").value.trim(); if(!name){ toast("진료명을 입력하세요"); return; }
     const ins=$("#svcE_ins").value, min=+$("#svcE_min").value||30, price=ins==="비급여"?(+$("#svcE_price").value||0):null;
-    const g=DD.SERVICES[gi];
-    if(ii===-1){ if(g.items.some(x=>x.name===name)){ toast("이미 등록된 진료입니다"); return; }
-      g.items.push({name,ins,min,price}); toast(`${g.cat} · ${name} 등록`); }
-    else { Object.assign(g.items[ii],{name,ins,min,price}); toast(`${name} 수정됨`); }
+    const tgi=Math.max(0,Math.min(DD.SERVICES.length-1,+$("#svcE_cat").value)), src=DD.SERVICES[gi], tgt=DD.SERVICES[tgi], rec={name,ins,min,price};
+    if(ii===-1){ if(tgt.items.some(x=>x.name===name)){ toast("이미 등록된 진료입니다"); return; }
+      tgt.items.push(rec); svcCat=tgt.cat; toast(`${tgt.cat} · ${name} 등록`); }
+    else if(tgi===gi){ Object.assign(src.items[ii],rec); toast(`${name} 수정됨`); }
+    else { if(tgt.items.some(x=>x.name===name)){ toast("대상 카테고리에 이미 있는 진료명입니다"); return; }
+      src.items.splice(ii,1); tgt.items.push(rec); toast(`${name} → ${tgt.cat} 카테고리로 이동`); }
     svcEdit=null; renderServices(); renderProcSelect(); return; }
 });
+/* 진료 카테고리 드래그 순서 변경 (전체 제외) */
+let svcDragGi=null;
+document.addEventListener("dragstart",e=>{ const c=e.target.closest("#svcCatList .svc-cat[data-gi]"); if(!c)return;
+  svcDragGi=+c.dataset.gi; e.dataTransfer.effectAllowed="move"; c.classList.add("dragging"); });
+document.addEventListener("dragend",e=>{ const c=e.target.closest(".svc-cat.dragging"); if(c)c.classList.remove("dragging"); svcDragGi=null; $$("#svcCatList .drop-hint").forEach(x=>x.classList.remove("drop-hint")); });
+document.addEventListener("dragover",e=>{ if(svcDragGi==null)return; const c=e.target.closest("#svcCatList .svc-cat[data-gi]"); if(!c)return;
+  e.preventDefault(); $$("#svcCatList .drop-hint").forEach(x=>x.classList.remove("drop-hint")); if(+c.dataset.gi!==svcDragGi) c.classList.add("drop-hint"); });
+document.addEventListener("drop",e=>{ if(svcDragGi==null)return; const c=e.target.closest("#svcCatList .svc-cat[data-gi]"); if(!c)return;
+  e.preventDefault(); const to=+c.dataset.gi, from=svcDragGi; svcDragGi=null;
+  if(to!==from){ const [m]=DD.SERVICES.splice(from,1); DD.SERVICES.splice(to,0,m); renderServices(); renderProcSelect(); toast(`카테고리 순서 변경 — ${m.cat}`); } });
 /* 신규 환자 등록 → 차트 생성 (A안) */
 $("#prSave").addEventListener("click",()=>{
   const name=$("#prName").value.trim(); if(!name){ toast("이름을 입력하세요"); return; }

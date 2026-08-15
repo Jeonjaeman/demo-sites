@@ -572,7 +572,27 @@ tr:first-child .tpl-card{border-top:none}
 .svc-sec-h .mut{color:var(--ink-muted);font-weight:700}
 .svc-tbl td{vertical-align:middle}
 .svc-editrow{background:var(--pri-soft)}
-.svc-editrow td{padding:6px 8px}
+.svc-editrow td{padding:8px}
+.svc-editform{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+.svc-editform .ef{display:flex;flex-direction:column;gap:3px;font-size:0.75rem;font-weight:700;color:var(--ink-sub)}
+.svc-editform .ef .inp{height:32px}
+.svc-editform .ef-grow{flex:1 1 160px}
+.svc-editform .ef-grow .inp{width:100%}
+.svc-editform #svcE_cat{min-width:120px}
+.svc-editform #svcE_ins{min-width:108px}
+.svc-editform .ef-min{display:flex;align-items:center;gap:4px}
+.svc-editform .ef-min .inp{width:60px}
+.svc-editform #svcE_price{width:108px;text-align:right}
+.svc-editform .ef-act{display:flex;gap:6px;padding-bottom:1px}
+/* 카테고리 이름변경·드래그 순서변경 */
+.svc-cat .dh.fix{cursor:default;opacity:.5}
+.svc-cat .svc-catren{opacity:0;color:var(--ink-muted);font-style:normal;cursor:pointer;padding:0 2px;font-size:0.82rem}
+.svc-cat:hover .svc-catren{opacity:1}
+.svc-cat .svc-catren:hover{color:var(--pri)}
+.svc-cat.dragging{opacity:.45}
+.svc-cat.drop-hint{box-shadow:inset 0 2px 0 var(--pri);background:var(--bg-2)}
+.svc-cat.editing{gap:6px;background:var(--pri-soft)}
+.svc-cat .cat-inp{flex:1;height:28px;min-width:0}
 /* 문자·알림톡 스위트 컴포넌트 */
 .subnav{flex-wrap:wrap}
 .info-box{background:var(--bg-1);border-radius:8px;padding:8px 14px}
