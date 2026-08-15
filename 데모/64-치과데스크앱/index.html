@@ -7,7 +7,7 @@
 <title>DENTDESK — 치과 데스크 통합 관리</title>
 <meta name="description" content="치과 데스크 예약·환자·수납·발송·통계 통합 관리 시스템">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-<link rel="stylesheet" href="assets/css/style.css?v=44">
+<link rel="stylesheet" href="assets/css/style.css?v=46">
 </head>
 <body>
 
@@ -908,18 +908,35 @@
 <!-- 빈 슬롯 클릭 → 예약/휴무 선택 -->
 <div class="modal-bg" id="slotModal">
   <div class="modal" style="max-width:440px">
-    <h3>이 시간에 무엇을 등록할까요?</h3>
+    <h3>일정 등록</h3>
     <p class="msub" id="slotWhen"></p>
-    <div class="slot-choice">
-      <button class="btn pri" id="slotBook">📅 예약 등록</button>
-      <button class="btn" id="slotOff">⛔ 휴무·블록 등록</button>
+    <div class="tabs slot-tabs" id="slotTabs">
+      <button class="tab on" data-slot="book">📅 예약 등록</button>
+      <button class="tab" data-slot="off">⛔ 휴무·블록</button>
     </div>
-    <div id="offForm" hidden>
+    <div class="slot-pane" id="pane-book">
+      <p class="note">선택한 시간에 예약을 등록합니다. 진행하면 환자·진료를 입력하는 예약 창이 열립니다.</p>
+      <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn" data-close>취소</button><button class="btn pri" id="slotBook">예약 등록 진행</button></div>
+    </div>
+    <div class="slot-pane" id="pane-off" hidden>
       <div class="editgrid">
         <label>사유 <select class="inp" id="offReason"><option>점심시간</option><option>정비·소독</option><option>휴진</option><option>회의·교육</option><option>개인 사유</option></select></label>
-        <label>길이 <select class="inp" id="offLen"><option value="1">30분</option><option value="2" selected>1시간</option><option value="4">2시간</option><option value="8">4시간</option></select></label>
+        <label class="swrow" style="margin:2px 0"><span class="sw"><input type="checkbox" id="offAllday"><i></i></span> 종일 휴무</label>
+        <div class="simrow" id="offTimeRow" style="gap:12px">
+          <label class="field">시작 <input class="inp" type="time" id="offStart" value="13:00" style="width:130px"></label>
+          <label class="field">종료 <input class="inp" type="time" id="offEnd" value="14:00" style="width:130px"></label>
+        </div>
         <label>대상 <select class="inp" id="offScope"><option value="chair">이 체어(진료실)만</option><option value="*">전체 진료실</option></select></label>
-        <label>반복 <select class="inp" id="offRepeat"><option value="none">반복 없음</option><option value="weekly">매주 이 요일</option><option value="daily">매일(진료일)</option></select></label>
+        <label>반복 <select class="inp" id="offRepeat"><option value="none">반복 안 함</option><option value="daily">매일</option><option value="weekly">매주 이 요일</option><option value="weekdays">주중 매일(월~금)</option><option value="monthly">매월 이 날</option><option value="custom">맞춤설정…</option></select></label>
+        <div class="offcustom" id="offCustom" hidden>
+          <div class="ocrow"><span class="oclab">반복 주기</span><input class="inp" type="number" id="offEvery" min="1" max="30" value="1"><select class="inp" id="offUnit"><option value="day">일</option><option value="week" selected>주</option><option value="month">개월</option></select><span class="ocsuf">마다</span></div>
+          <div class="ocrow" id="offDowRow"><span class="oclab">반복 요일</span><div class="dowpick" id="offDows"><button type="button" data-d="0">일</button><button type="button" data-d="1">월</button><button type="button" data-d="2">화</button><button type="button" data-d="3">수</button><button type="button" data-d="4">목</button><button type="button" data-d="5">금</button><button type="button" data-d="6">토</button></div></div>
+          <div class="ocrow ocend"><span class="oclab">종료</span><div class="endpick">
+            <label class="rdo"><input type="radio" name="offEnd" value="never" checked> 없음</label>
+            <label class="rdo"><input type="radio" name="offEnd" value="on"> 날짜 <input class="inp" type="date" id="offEndDate" value="2026-12-31"></label>
+            <label class="rdo"><input type="radio" name="offEnd" value="after"> 다음 이후 <input class="inp" type="number" id="offCount" min="1" max="99" value="10"> 회</label>
+          </div></div>
+        </div>
       </div>
       <p class="note">반복 휴무는 진료시간·휴무 설정에 규칙으로 저장되어 매 주기 자동 적용됩니다(데모는 오늘 캘린더에 즉시 표시).</p>
       <div class="mrow" style="justify-content:flex-end;gap:8px;margin-top:12px"><button class="btn" data-close>취소</button><button class="btn pri" id="offSave">휴무 등록</button></div>
@@ -956,6 +973,6 @@
 <div class="hovercard" id="hoverCard" hidden></div>
 
 <script src="assets/js/data.js?v=11"></script>
-<script src="assets/js/app.js?v=37"></script>
+<script src="assets/js/app.js?v=39"></script>
 </body>
 </html>

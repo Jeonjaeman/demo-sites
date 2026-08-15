@@ -422,8 +422,26 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .photo-ph{height:100px;background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-size:2.2rem}
 .photo-cap{padding:8px 10px;font-size:0.78rem}
 .photo-cap b{display:block} .photo-cap time{color:var(--ink-muted)}
-.slot-choice{display:flex;gap:10px;margin-top:14px}
-.slot-choice .btn{flex:1;height:48px;font-size:0.95rem;font-weight:700}
+.slot-tabs{display:flex;gap:6px;margin:14px 0 6px}
+.slot-tabs .tab{flex:1;justify-content:center;height:44px;font-size:0.92rem;font-weight:700}
+.slot-pane{margin-top:4px}
+#offTimeRow{align-items:end;flex-wrap:wrap}
+.offcustom{margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg-1);display:flex;flex-direction:column;gap:10px}
+.ocrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ocrow .inp{height:32px}
+.ocrow #offEvery,.ocrow #offCount{width:60px}
+.ocrow #offUnit{width:84px}
+.oclab{flex:0 0 62px;font-size:0.82rem;font-weight:600;color:var(--ink-sub)}
+.ocsuf{font-size:0.85rem;color:var(--ink-sub)}
+.dowpick{display:flex;gap:5px}
+.dowpick button{width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-sub);font-size:0.8rem;font-weight:600;cursor:pointer;transition:background .14s,color .14s,border-color .14s}
+.dowpick button:hover{border-color:var(--pri)}
+.dowpick button.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.ocend{align-items:flex-start}
+.endpick{display:flex;flex-direction:column;gap:7px}
+.endpick .rdo{display:flex;align-items:center;gap:6px;font-size:0.85rem;cursor:pointer}
+.endpick .rdo .inp{height:30px}
+.endpick #offEndDate{width:150px}
 .editgrid{display:flex;flex-direction:column;gap:10px;margin-top:12px}
 .editgrid label{display:flex;flex-direction:column;gap:4px;font-size:0.85rem;font-weight:700;color:var(--ink-sub)}
 .edittog{display:flex;flex-direction:column;gap:8px;margin-top:12px}

@@ -164,6 +164,28 @@ function openBookModal(){
   $("#bkPatPop").hidden=true; $("#bkProc").value=""; $("#bkProcSel").value=""; $("#bkProcMeta").textContent="";
   $("#bookModal").classList.add("open"); setTimeout(()=>$("#bkPatient").focus(),50);
 }
+const slotHHMM = t => { const h=9+Math.floor(t/2), m=t%2?30:0; return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0"); };
+const hhmmToSlot = v => { const [h,m]=(v||"9:00").split(":").map(Number); return (h-9)*2 + (m>=30?1:0); };
+const DOWKO=["일","월","화","수","목","금","토"];
+function offRepeatRule(){                                    /* 구글 캘린더식 반복 규칙 → {rule,txt,…} */
+  const mode=$("#offRepeat").value, dow=new Date(2026,7,14).getDay();
+  if(mode==="none")     return {rule:"none", txt:""};
+  if(mode==="daily")    return {rule:"daily", txt:"매일 반복"};
+  if(mode==="weekly")   return {rule:"weekly", days:[dow], txt:`매주 ${DOWKO[dow]}요일`};
+  if(mode==="weekdays") return {rule:"weekdays", days:[1,2,3,4,5], txt:"주중 매일(월~금)"};
+  if(mode==="monthly")  return {rule:"monthly", txt:"매월 이 날"};
+  /* custom */
+  const every=Math.max(1,+$("#offEvery").value||1), unit=$("#offUnit").value;
+  const uw={day:"일",week:"주",month:"개월"}[unit];
+  let txt = every===1 ? `매${uw}` : `${every}${uw}마다`;
+  let days=[];
+  if(unit==="week"){ days=[...$$("#offDows button.on")].map(b=>+b.dataset.d).sort((a,b)=>a-b);
+    if(!days.length){ days=[dow]; } txt += " " + days.map(d=>DOWKO[d]).join(", ")+"요일"; }
+  const et=($("input[name=offEnd]:checked")||{}).value||"never";
+  if(et==="on")    txt += ` · ${$("#offEndDate").value}까지`;
+  else if(et==="after") txt += ` · ${$("#offCount").value}회 후 종료`;
+  return {rule:"custom", every, unit, days, end:et, txt};
+}
 document.addEventListener("click",e=>{
   const cell=e.target.closest(".vcell:not(.blocked)");
   if(cell && state.view==="cal"){
@@ -171,19 +193,38 @@ document.addEventListener("click",e=>{
     const [key,id,t]=cell.dataset.slot.split(":");
     pendingSlot={key,id,t:+t};
     $("#slotWhen").textContent=`${slotTime(+t)}–${slotTime(+t+2)} · ${axisRows().find(r=>r.id===id)?.name||id}`;
-    $("#offForm").hidden=true; $("#slotModal").classList.add("open"); return;
+    $$("#slotTabs .tab").forEach(x=>x.classList.toggle("on",x.dataset.slot==="book"));   /* 기본: 예약 등록 탭 활성 */
+    $("#pane-book").hidden=false; $("#pane-off").hidden=true;
+    $("#offStart").value=slotHHMM(+t); $("#offEnd").value=slotHHMM(+t+2);              /* 휴무 시작·종료 프리필 */
+    $("#offAllday").checked=false; $("#offTimeRow").hidden=false;
+    $("#offRepeat").value="none"; $("#offCustom").hidden=true;                          /* 반복: 구글식 초기화 */
+    { const cd=new Date(2026,7,14).getDay(); $$("#offDows button").forEach(b=>b.classList.toggle("on",+b.dataset.d===cd)); }
+    $("#slotModal").classList.add("open"); return;
   }
+  const stab=e.target.closest("#slotTabs .tab");
+  if(stab){ const k=stab.dataset.slot; $$("#slotTabs .tab").forEach(x=>x.classList.toggle("on",x===stab));
+    $("#pane-book").hidden=k!=="book"; $("#pane-off").hidden=k!=="off"; return; }
+  const dowb=e.target.closest("#offDows button");                                     /* 구글식 반복 요일 토글 */
+  if(dowb){ dowb.classList.toggle("on"); return; }
   if(e.target.closest("#slotBook")){ $("#slotModal").classList.remove("open"); openBookModal(); return; }
-  if(e.target.closest("#slotOff")){ $("#offForm").hidden=false; return; }
   if(e.target.closest("#offSave")){ if(!pendingSlot) return;
-    const scope=$("#offScope").value, len=+$("#offLen").value, reason=$("#offReason").value, rep=$("#offRepeat").value;
+    const scope=$("#offScope").value, reason=$("#offReason").value, allday=$("#offAllday").checked, rr=offRepeatRule();
+    let t, len;
+    if(allday){ t=0; len=DD.SLOTS; }
+    else { const s=Math.max(0,hhmmToSlot($("#offStart").value)), en=hhmmToSlot($("#offEnd").value);
+      t=s; len=Math.max(1, Math.min(DD.SLOTS,en)-s); }
     const chair = scope==="*" ? "*" : (pendingSlot.key==="chair" ? pendingSlot.id : "*");
-    DD.BLOCKS.push({ chair, t:pendingSlot.t, len, label:reason, repeat:rep!=="none"?rep:undefined });
+    DD.BLOCKS.push({ chair, t, len, label:reason, repeat:rr.rule!=="none"?rr:undefined });
     renderCal(); $("#slotModal").classList.remove("open");
-    const dow=["일","월","화","수","목","금","토"][new Date(2026,7,14).getDay()];
-    const repTxt = rep==="weekly"?` · 매주 ${dow}요일 반복`:rep==="daily"?" · 매 진료일 반복":"";
-    toast(`휴무 등록 — ${reason}${repTxt}`); return; }
+    const repTxt = rr.txt ? ` · ${rr.txt}` : "";
+    const when = allday?"종일":`${slotTime(t)}–${slotTime(t+len)}`;
+    toast(`휴무 등록 — ${reason} (${when})${repTxt}`); return; }
   if(e.target.closest("[data-close]")) $$(".modal-bg").forEach(m=>m.classList.remove("open"));
+});
+document.addEventListener("change",e=>{
+  if(e.target.id==="offAllday"){ $("#offTimeRow").hidden=e.target.checked; }
+  if(e.target.id==="offRepeat"){ $("#offCustom").hidden=e.target.value!=="custom"; if(e.target.value==="custom") $("#offDowRow").hidden=$("#offUnit").value!=="week"; }
+  if(e.target.id==="offUnit"){ $("#offDowRow").hidden=e.target.value!=="week"; }
 });
 
 /* 예약 카드 드래그 → 시간·체어 변경 (클릭과 통합: 이동 없으면 패널 열기) */
