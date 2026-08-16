@@ -98,10 +98,10 @@ h1,h2,h3,h4,p{margin:0;font-weight:400;word-break:keep-all}
 .hd-nav button:hover, .hd-nav a:hover{opacity:.6}   /* IG 호버 = opacity .6 통일 */
 
 /* ── 히어로 ── */
-.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
+.hero{min-height:100svh;align-content:end;
   padding-bottom:calc(12.5vw * 0.7);position:relative}
 .hero-eyebrow{font-size:var(--fs-ui);letter-spacing:.22em;color:var(--ink-60);margin-bottom:var(--sp-24)}
-.hero-title{max-width:20ch}
+.hero-title{max-width:none}
 .hero-sub{margin-top:var(--sp-24);max-width:44ch;color:var(--ink-60);font-size:var(--fs-body);font-family:var(--serif);line-height:1.7}
 .hero-dn{position:absolute;bottom:var(--sp-40);right:var(--sp-40);font-size:var(--fs-tiny);
   letter-spacing:.2em;color:var(--ink-40);display:flex;align-items:center;gap:10px}
@@ -310,6 +310,7 @@ select.inp{appearance:none;cursor:pointer;
   .piece-cap.y-start,.piece-cap.y-end{align-self:auto;padding:0}
   .cap-story{max-width:none}
   .hero{padding-bottom:100px}
+  .hero > div{grid-column:1 / -1 !important}
   .hd{padding:20px 24px}
   .hd-nav{gap:16px}
   .hd-nav .hide-m{display:none}
