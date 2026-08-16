@@ -1,0 +1,80 @@
+/* MURO admin — style.css 토큰 재사용, 대시보드 표면 */
+body.adm{background:#F2EFE9}
+body.adm .wall-bg{display:none}
+
+.rail{position:fixed;top:0;left:0;bottom:0;width:224px;background:var(--ink);color:#CFC9BE;
+  display:flex;flex-direction:column;padding:26px 16px;z-index:40}
+.rail-brand{font-family:var(--serif);font-size:20px;letter-spacing:.3em;color:#F2EFE9;padding:0 8px 24px}
+.rail-brand small{font-family:var(--sans);font-size:10px;letter-spacing:.2em;color:var(--gold);margin-left:8px}
+.rail-nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.rail-nav button{display:block;text-align:left;padding:12px;color:#CFC9BE;font-size:14px;
+  transition:background .3s,color .3s}
+.rail-nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.rail-nav button.on{background:var(--gold);color:#1A160F}
+.rail-foot{border-top:1px solid rgba(255,255,255,.12);padding-top:16px;font-size:12px;line-height:1.7}
+.rail-foot b{color:#fff}
+.rail-foot a{color:var(--gold);display:block;margin-top:10px}
+
+.adm-main{margin-left:224px;min-height:100vh}
+.abar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;
+  height:64px;padding:0 28px;background:rgba(242,239,233,.92);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--ink-12)}
+.abar h1{font-family:var(--serif);font-size:20px}
+.demopill{font-size:11px;letter-spacing:.08em;color:var(--gold);border:1px solid var(--gold);padding:4px 10px}
+.acontent{padding:26px 28px 70px;max-width:1180px}
+
+.acard{background:#FBF9F5;border:1px solid var(--ink-12);margin-bottom:20px}
+.acard-h{display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:16px 20px;border-bottom:1px solid var(--ink-12)}
+.acard-h h3{font-family:var(--serif);font-size:16px}
+.acard-h .mut{font-size:12px}
+.acard-b{padding:18px 20px}
+
+.callout{border:1px solid var(--gold);background:var(--gold-soft);padding:14px 18px;margin-bottom:18px;
+  font-size:13px;line-height:1.7;color:var(--ink)}
+.callout b{color:var(--gold)}
+
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{font-size:11px;letter-spacing:.06em;color:var(--ink-40);text-align:left;font-weight:400;
+  padding:8px 10px;border-bottom:1px solid var(--ink-12)}
+.tbl td{padding:10px;border-bottom:1px solid var(--ink-12);vertical-align:middle}
+.tbl .r{text-align:right}
+.tbl img{width:44px;height:54px;object-fit:cover}
+.tbl-wrap{overflow-x:auto}
+
+.sel{height:34px;border:1px solid var(--ink-12);background:#fff;font-family:inherit;font-size:12px;
+  padding:0 8px;color:var(--ink)}
+.chip{display:inline-block;font-size:11px;letter-spacing:.04em;padding:3px 9px;border:1px solid var(--ink-12)}
+.chip.g{border-color:#3D6B4F;color:#3D6B4F}
+.chip.y{border-color:var(--gold);color:var(--gold)}
+.chip.r{border-color:#9C2B22;color:#9C2B22}
+.chip.gr{color:var(--ink-40)}
+
+.seg{display:inline-flex;border:1px solid var(--ink-12)}
+.seg button{padding:9px 16px;font-size:12px;border-right:1px solid var(--ink-12);transition:background .3s,color .3s}
+.seg button:last-child{border-right:0}
+.seg button.on{background:var(--ink);color:#F2EFE9}
+
+.verdict{border:1px solid var(--ink-12);background:#fff;padding:16px 18px;margin-top:14px;font-size:13px;line-height:1.8}
+.verdict b.due{color:#9C2B22}
+.verdict b.free{color:#3D6B4F}
+.vlist{list-style:none;margin:10px 0 0;padding:0}
+.vlist li{padding:4px 0 4px 22px;position:relative;color:var(--ink-60)}
+.vlist li::before{content:"○";position:absolute;left:2px;color:var(--ink-40)}
+.vlist li.hit{color:var(--ink)}
+.vlist li.hit::before{content:"●";color:#9C2B22}
+
+.count{font-family:var(--serif);font-size:26px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.field-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;font-size:13px}
+.field-row label{color:var(--ink-60);font-size:12px}
+.num-in{width:140px;height:34px;border:1px solid var(--ink-12);padding:0 10px;font-family:inherit;font-size:13px;text-align:right}
+
+.perf-bar{height:10px;background:var(--ink-12);position:relative;margin:6px 0 4px}
+.perf-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--gold)}
+
+@media (max-width:900px){
+  .rail{display:none}
+  .adm-main{margin-left:0}
+  .grid2{grid-template-columns:1fr}
+}

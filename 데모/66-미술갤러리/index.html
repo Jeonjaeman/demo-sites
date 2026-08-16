@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>무로 MURO — 벽에 거는 이야기, 원화 갤러리</title>
+<meta name="description" content="유럽 미장 벽 위에 액자로 걸린 원화를 스크롤로 감상하고, 작품의 이야기를 읽고, 구매 문의로 이어지는 갤러리. (제안용 데모 · 작가·작품·거래는 전부 가상)">
+<meta property="og:title" content="무로 MURO — 벽에 거는 이야기">
+<meta property="og:description" content="그림을 고르면, 그 그림의 이야기가 이어집니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css?v=2">
+</head>
+<body>
+
+<div class="wall-bg" aria-hidden="true"></div>
+
+<header class="hd" id="hd">
+  <div class="hd-brand" data-top>무로<small>MURO</small></div>
+  <nav class="hd-nav">
+    <button data-scroll="stream">작품</button>
+    <button data-scroll="arch" class="hide-m">지나간 작품</button>
+    <button data-scroll="inq">구매 문의</button>
+    <a href="admin.html" class="hide-m" style="color:var(--ink-40)">관리자</a>
+  </nav>
+</header>
+
+<main>
+  <!-- 히어로 -->
+  <section class="hero g">
+    <div style="grid-column:2 / span 9">
+      <p class="hero-eyebrow rv">원화 갤러리 · 제안용 데모 — 작가·작품·거래는 전부 가상입니다</p>
+      <h1 class="disp hero-title rv">벽은 비어 있는 게 아니라,<br>기다리고 있는 것입니다.</h1>
+      <p class="hero-sub rv">무로는 그림을 파는 곳이 아니라, 그림이 걸릴 자리를 찾아 주는 곳입니다.
+        천천히 내려 보세요. 작품마다 그 곁에 이야기가 걸려 있습니다.</p>
+    </div>
+    <div class="hero-dn"><span>SCROLL</span><i></i></div>
+  </section>
+
+  <!-- 갤러리 스트림 (JS 렌더) -->
+  <section id="stream" class="stream"></section>
+
+  <!-- 지나간 작품 -->
+  <section id="arch" class="arch">
+    <div class="g">
+      <div style="grid-column:2 / span 6" class="arch-h">
+        <h2 class="disp rv" style="font-size:var(--fs-mid)">지나간 작품</h2>
+        <p class="mut rv" style="margin-top:12px;max-width:44ch">새 소장처를 찾은 작품들입니다. 판매가 끝난 작품은
+          작가의 게시 동의 아래 <b>축소된 해상도로만</b> 남깁니다 — 판매 후 고해상 게시는 저작권법상 소개 목적을 넘어서기 때문입니다.</p>
+      </div>
+      <div style="grid-column:2 / span 10">
+        <div class="arch-grid" id="archGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 구매 문의 -->
+  <section id="inq" class="inq">
+    <div class="g">
+      <div style="grid-column:2 / span 4" class="inq-lead">
+        <h2 class="disp rv" style="font-size:var(--fs-mid)">구매 문의</h2>
+        <p class="body-t mut rv" style="margin-top:16px">확정가는 문의에서 확인됩니다. 작품 상태·설치 환경에 따라
+          최종 금액이 달라지기 때문입니다. 하루 안에 답을 드립니다.</p>
+        <p class="tiny faint rv" style="margin-top:20px;line-height:1.8">전화 02-540-0000 · 서울 성동구 (가상)<br>
+          관람은 예약제로 운영합니다.</p>
+      </div>
+      <div style="grid-column:7 / span 5">
+        <form class="inq-form" id="inqForm">
+          <div class="fld">
+            <label>문의 작품</label>
+            <select class="inp" id="qWork"></select>
+          </div>
+          <div class="two">
+            <div class="fld"><label>문의 유형</label>
+              <select class="inp" id="qType"><option>구매</option><option>3개월 걸어보기(렌탈)</option><option>커미션(주문 제작)</option><option>기타</option></select></div>
+            <div class="fld"><label>성함</label><input class="inp" id="qName" value="김소장" placeholder="이름"></div>
+          </div>
+          <div class="two">
+            <div class="fld"><label>연락처</label><input class="inp" id="qTel" value="010-1234-5678"></div>
+            <div class="fld"><label>수령지 층수</label><input class="inp" id="qFloor" type="number" value="3"></div>
+          </div>
+          <div class="two">
+            <div class="fld"><label>엘리베이터</label><select class="inp" id="qElev"><option>있음</option><option>없음</option></select></div>
+            <div class="fld"><label>설치 서비스</label><select class="inp" id="qInstall"><option>필요</option><option>불필요</option></select></div>
+          </div>
+          <div class="fld"><label>남기실 말씀</label>
+            <textarea class="inp" id="qMsg" placeholder="설치 공간, 궁금한 점을 자유롭게 적어주세요.">거실 소파 뒤 벽에 걸 생각입니다. 실물을 보고 싶어요.</textarea></div>
+          <div class="ship-est" id="shipEst"></div>
+          <div id="commissionExtra" hidden>
+            <label class="chk"><input type="checkbox" id="qCommission">
+              <span><b>주문 제작 동의</b> — 커미션 작품은 제 주문에 따라 개별 제작되어 제작 착수 후에는
+              청약철회가 제한됨을 확인했습니다. (전자상거래법 시행령상 4요건 고지·동의)</span></label>
+          </div>
+          <label class="chk"><input type="checkbox" id="qPolicy">
+            <span>청약철회 안내를 확인했습니다 — 기성 원화는 수령 후 7일 이내 철회 가능,
+            <b>표시·광고와 다른 경우 3개월 이내</b> 철회 가능(반환 비용 판매자 부담).
+            실물 색감은 모니터·조명에 따라 다를 수 있습니다.</span></label>
+          <button class="btn pri" type="submit" style="height:54px">문의 보내기</button>
+          <button class="btn" type="button" id="qSample" style="height:44px">예시로 보내보기 (원클릭)</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 푸터 -->
+<footer class="ft">
+  <div class="g">
+    <div style="grid-column:2 / span 4">
+      <div class="brand-big">무로</div>
+      <p style="margin-top:18px">벽에 거는 이야기, 원화 갤러리.<br>본 사이트는 제안용 데모이며 모든 작가·작품·가격·거래는 가상입니다.</p>
+    </div>
+    <div style="grid-column:7 / span 3">
+      <h5>사업자 정보 (가상)</h5>
+      <ul>
+        <li>상호 무로 · 대표 김무로</li>
+        <li>사업자등록번호 000-00-00000</li>
+        <li>통신판매업 신고 제2026-서울성동-0000호</li>
+        <li>미술서비스업(화랑업) 신고 제2026-0000호</li>
+        <li>서울 성동구 (가상 주소) · 02-540-0000</li>
+      </ul>
+    </div>
+    <div style="grid-column:10 / span 2">
+      <h5>저작권 안내</h5>
+      <ul>
+        <li>모든 작품 이미지의 저작권은 각 작가에게 있습니다.</li>
+        <li>작품 구매 시 소유권만 이전되며 저작권은 이전되지 않습니다.</li>
+        <li>이미지는 소개 목적(긴 변 1600px 제한)으로만 게시됩니다.</li>
+        <li>무단 복제·재배포를 금합니다.</li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<!-- 작품 상세 오버레이 -->
+<div class="ov" id="ov">
+  <div class="ov-wall" aria-hidden="true"></div>
+  <div class="ov-top">
+    <button class="ov-close" data-ovclose>← 갤러리로</button>
+    <button class="copy-link" id="ovCopy">이 작품 링크 복사</button>
+  </div>
+  <div class="ov-body"><div class="g ov-grid" id="ovGrid"></div></div>
+</div>
+
+<div id="toast"></div>
+<div id="cursor">자세히 보기</div>
+
+<script src="assets/js/data.js?v=2"></script>
+<script src="assets/js/app.js?v=2"></script>
+</body>
+</html>
