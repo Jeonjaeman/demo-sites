@@ -6,12 +6,15 @@ window.MURO = (function(){
   const ARTISTS = {
     seo:  { id:"seo",  name:"서하윤", born:1985, base:"서울", perHo:120000,
       bio:"물감을 붓이 아니라 나이프로 쌓아 올리는 작가. 두께가 곧 시간이라 믿으며, 계절의 온도를 임파스토의 결로 번역한다.",
+      note:"\"물감이 마르는 데 걸리는 시간만큼, 감정에도 두께가 쌓인다고 생각합니다. 저는 빨리 그리지 못합니다. 한 겹이 마르기를 기다렸다가 다음 겹을 올리는 일 — 그 기다림이 제 그림의 절반입니다. 완성된 화면을 만질 수는 없지만, 빛이 대신 만져 줍니다. 아침과 저녁, 조명 아래에서 그림자가 바뀔 때마다 그림은 조금씩 다른 이야기를 합니다.\"",
       history:["2024 개인전 「결」 — 무로", "2022 단체전 「표면의 깊이」 — 성수", "2019 신진작가상"] },
     lee:  { id:"lee",  name:"이도운", born:1972, base:"양평", perHo:220000,
       bio:"고요한 사물의 화가. 백자와 꽃, 오후의 빛처럼 소리 없는 것들을 오래 바라보고, 그 침묵을 화면에 옮긴다.",
+      note:"\"삼십 년을 그렸지만 아직도 흰색이 제일 어렵습니다. 달항아리의 흰빛은 물감의 흰색이 아니라 그 곁을 지나간 시간의 색이라서요. 사물은 말이 없지만, 오래 바라보면 먼저 말을 걸어옵니다. 저는 그 첫 마디를 받아 적는 사람입니다. 그림 앞에 서신 분이 조금 오래 머물러 주신다면, 그 말이 들리실 겁니다.\"",
       history:["2025 개인전 「침묵의 사물」 — 무로", "2023 개인전 — 한남", "2020 국립현대미술관 소장(유사 연작)"] },
     baek: { id:"baek", name:"백서진", born:1990, base:"제주", perHo:90000,
       bio:"길 위의 풍경화가. 새벽 능선과 비 오는 골목처럼 지나가는 시간의 장면을 현장에서 그린다.",
+      note:"\"저는 작업실이 없습니다. 길이 작업실입니다. 새벽 능선을 그리려고 같은 자리에 열아홉 번 올랐고, 비 오는 골목을 그리려고 우산 아래서 세 시간을 서 있었습니다. 풍경은 두 번 다시 같은 얼굴을 보여주지 않으니까요. 제 그림을 거는 일은, 그 하루의 날씨를 방 안에 들이는 일이라고 생각합니다.\"",
       history:["2024 개인전 「지나가는 빛」 — 무로", "2023 아트페어 참여", "2021 단체전 — 제주"] },
   };
 
@@ -115,6 +118,20 @@ window.MURO = (function(){
     { id:"w10", w:4, p:7, cap:3,  capY:"center" },
   ];
 
+  /* 지나간 작품(아카이브) 10점 — 판매완료. consent=작가 게시 동의(없으면 비공개 카드) */
+  const ARCHIVE = [
+    { id:"p1", img:"s1",  artist:"baek", title:"자작나무, 겨울",  year:2022, sold:"2023.01", consent:true },
+    { id:"p2", img:"s2",  artist:"lee",  title:"홍시",           year:2021, sold:"2021.12", consent:true },
+    { id:"p3", img:"s3",  artist:"baek", title:"수국, 비",       year:2023, sold:"2023.07", consent:true },
+    { id:"p4", img:"s4",  artist:"lee",  title:"처마의 저녁",     year:2020, sold:"2022.03", consent:true },
+    { id:"p5", img:"s5",  artist:"baek", title:"눈 오는 골목",    year:2022, sold:"2022.12", consent:false },
+    { id:"p6", img:"s6",  artist:"seo",  title:"억새의 시간",     year:2023, sold:"2024.02", consent:true },
+    { id:"p7", img:"s7",  artist:"lee",  title:"동백",           year:2024, sold:"2024.04", consent:true },
+    { id:"p8", img:"s8",  artist:"baek", title:"창 너머의 산",    year:2021, sold:"2021.09", consent:true },
+    { id:"p9", img:"s9",  artist:"baek", title:"물때",           year:2019, sold:"2020.05", consent:false },
+    { id:"p10",img:"s10", artist:"seo",  title:"개는 안개",       year:2024, sold:"2025.01", consent:true },
+  ];
+
   /* 벽 프리셋 (걸어보기) — CSS 렌더 */
   const ROOMS = [
     { id:"living",  name:"거실",  wall:"#EDE9E1", floor:"#B8A488", furn:"sofa" },
@@ -142,7 +159,7 @@ window.MURO = (function(){
   /* 설정 — 가격 정책 모드: hidden | band | perho | fixed */
   const CONFIG = { pricePolicy:"band", rentalRate:0.02, maxLongEdge:1600, brand:"무로", en:"MURO", tel:"02-540-0000" };
 
-  return { ARTISTS, WORKS, LAYOUT, ROOMS, LIGHTS, INQUIRIES, CONFIG };
+  return { ARTISTS, WORKS, LAYOUT, ARCHIVE, ROOMS, LIGHTS, INQUIRIES, CONFIG };
 })();
 
 /* ── 계산 헬퍼 (하드코딩 금지 — 전부 실제 연산) ── */

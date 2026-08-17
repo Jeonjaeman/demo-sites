@@ -2,7 +2,7 @@
 (function(){
 "use strict";
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const { WORKS, LAYOUT, ARTISTS, ROOMS, LIGHTS, CONFIG } = MURO;
+const { WORKS, LAYOUT, ARTISTS, ARCHIVE, ROOMS, LIGHTS, CONFIG } = MURO;
 let toastT; function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show");
   clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600); }
 
@@ -36,7 +36,7 @@ function renderStream(){
         </div>
         <div class="piece-cap y-${L.capY} rv" style="grid-column:${L.cap} / span 3">
           <p class="cap-no tnum">${String(i+1).padStart(2,"0")} / ${String(visible.length).padStart(2,"0")}</p>
-          <p class="cap-artist">${a.name}</p>
+          <p class="cap-artist link" data-artist="${a.id}" title="${a.name} 작가 페이지">${a.name}</p>
           <h3 class="cap-title">《${w.title}》</h3>
           <p class="cap-meta">${w.year} · ${w.medium}<br>${w.w}×${w.h}cm (${w.ho}호) · ${w.framed}</p>
           <p class="cap-story">${w.story.note.split(". ")[0]}.</p>
@@ -58,18 +58,19 @@ function renderStream(){
   observeReveal();
 }
 
-/* ── 아카이브 ── */
+/* ── 아카이브 (지나간 작품 10점) ── */
 function renderArch(){
-  const solds = WORKS.filter(w=>w.status==="sold_open"||w.status==="sold_arch");
-  $("#archGrid").innerHTML = solds.map(w=>{ const a=ARTISTS[w.artist];
-    if(w.status==="sold_arch" || !w.soldConsent)
-      return `<figure class="arch-item rv"><div style="aspect-ratio:4/5;background:rgba(23,21,18,.07);display:grid;place-items:center" class="tiny faint">판매 완료 · 비공개<br>(작가 게시 동의 없음)</div></figure>`;
-    return `<figure class="arch-item rv" data-open="${w.slug}" style="cursor:pointer">
+  $("#archGrid").innerHTML = ARCHIVE.map(p=>{ const a=ARTISTS[p.artist];
+    if(!p.consent)
+      return `<figure class="arch-item rv"><div style="aspect-ratio:4/5;background:rgba(23,21,18,.07);display:grid;place-items:center;text-align:center;padding:12px" class="tiny faint">판매 완료 · 비공개<br>(작가 게시 동의 없음)</div>
+        <figcaption>${a.name} 《${p.title}》 ${p.year} · ${p.sold} 판매</figcaption></figure>`;
+    return `<figure class="arch-item rv" data-artist="${a.id}" style="cursor:pointer" title="${a.name} 작가 페이지로">
       <span class="tag">SOLD</span>
-      <img src="assets/img/${w.img}.webp" alt="${w.title}" loading="lazy" style="width:100%">
-      <figcaption>${a.name} 《${w.title}》 ${w.year} · 게시 동의下 저해상 보관</figcaption>
+      <img src="assets/img/${p.img}.webp" alt="${a.name}, ${p.title}" loading="lazy" style="width:100%;aspect-ratio:${p.img==="s4"||p.img==="s6"||p.img==="s8"?"5/4":"4/5"};object-fit:cover">
+      <figcaption>${a.name} 《${p.title}》 ${p.year} · ${p.sold} 판매 · 저해상 보관</figcaption>
     </figure>`;
   }).join("");
+  observeReveal();
 }
 
 /* ── 리빌 (IG: opacity 1.9s ease-in-out) ── */
@@ -114,29 +115,43 @@ function observeReveal(){
   document.addEventListener("pointerover",e=>{ c.classList.toggle("on", !!e.target.closest(".frame")); });
 })();
 
-/* ── 해시 라우터: #/w/{slug} ── */
+/* ── 해시 라우터: #/w/{slug} · #/a/{artist} · #/artists ── */
 function route(){
-  const m=location.hash.match(/^#\/w\/([\w-]+)/);
-  if(m && workBySlug(m[1])) openDetail(m[1],false);
+  const w=location.hash.match(/^#\/w\/([\w-]+)/);
+  const a=location.hash.match(/^#\/a\/(\w+)/);
+  if(w && workBySlug(w[1])) openDetail(w[1],false);
+  else if(a && ARTISTS[a[1]]) openArtist(a[1],false);
+  else if(location.hash==="#/artists") openArtistIndex(false);
   else closeDetail(false);
 }
 addEventListener("hashchange",route);
 
-/* ── 상세 오버레이 ── */
-let curWork=null, curLight="day", curRoom="living", savedScroll=0;
+/* ── 오버레이 (작품 상세 · 작가 페이지 · 작가 목록) ── */
+let curWork=null, curArtist=null, ovMode=null, curLight="day", curRoom="living", savedScroll=0;
+function ovOpen(){ $("#ov").classList.add("open"); $("#ov").scrollTop=0; document.body.style.overflow="hidden";
+  $("#ovCopy").textContent = ovMode==="work" ? "이 작품 링크 복사" : ovMode==="artist" ? "이 작가 링크 복사" : "링크 복사"; }
 function openDetail(slug,push=true){
   const w=workBySlug(slug); if(!w) return;
-  curWork=w; curLight="day"; curRoom="living";
-  if(push){ savedScroll=scrollY; location.hash=`/w/${slug}`; }
-  renderDetail();
-  $("#ov").classList.add("open"); $("#ov").scrollTop=0;
-  document.body.style.overflow="hidden";
+  curWork=w; curArtist=null; ovMode="work"; curLight="day"; curRoom="living";
+  if(push){ if(!$("#ov").classList.contains("open")) savedScroll=scrollY; location.hash=`/w/${slug}`; }
+  renderDetail(); ovOpen();
+}
+function openArtist(id,push=true){
+  const a=ARTISTS[id]; if(!a) return;
+  curArtist=a; curWork=null; ovMode="artist";
+  if(push){ if(!$("#ov").classList.contains("open")) savedScroll=scrollY; location.hash=`/a/${id}`; }
+  renderArtist(); ovOpen();
+}
+function openArtistIndex(push=true){
+  curArtist=null; curWork=null; ovMode="artists";
+  if(push){ if(!$("#ov").classList.contains("open")) savedScroll=scrollY; location.hash="/artists"; }
+  renderArtistIndex(); ovOpen();
 }
 function closeDetail(push=true){
   if(!$("#ov").classList.contains("open")) return;
   $("#ov").classList.remove("open");
   document.body.style.overflow="";
-  curWork=null;
+  curWork=null; curArtist=null; ovMode=null;
   if(push && location.hash) history.pushState("",document.title,location.pathname+location.search);
 }
 function renderDetail(){
@@ -163,7 +178,7 @@ function renderDetail(){
     </div>
     <div class="ov-info">
       <div class="ov-sec">
-        <p class="cap-artist">${a.name} <span class="faint">b.${a.born} · ${a.base}</span></p>
+        <p class="cap-artist"><span class="link" data-artist="${a.id}" title="작가 페이지">${a.name}</span> <span class="faint">b.${a.born} · ${a.base}</span></p>
         <h2 class="disp" style="margin:6px 0 14px">《${w.title}》</h2>
         <ul class="spec">
           <li><span>제작 연도</span><b>${w.year}</b></li>
@@ -242,6 +257,68 @@ function renderRoom(){
     <span class="room-scale">벽 폭 3.6m 기준 · 작품 ${w.w}cm = 실측 비율</span>`;
 }
 
+/* ── 작가 페이지 ── */
+function renderArtist(){
+  const a=curArtist;
+  const works=WORKS.filter(w=>w.artist===a.id && w.status!=="hidden");
+  const past=ARCHIVE.filter(p=>p.artist===a.id);
+  const rep=works[0]||{};
+  const forSale=works.filter(w=>w.status==="sale");
+  $("#ovGrid").innerHTML=`
+    <div class="ov-art">
+      <figure class="frame ${frameClass(rep)}" style="cursor:default">
+        <div class="frame-in"><img src="assets/img/${rep.img}.webp" alt="${a.name} 대표작" class="ld"></div>
+      </figure>
+      <p class="tiny faint" style="margin-top:14px">대표작 《${rep.title}》 ${rep.year}</p>
+    </div>
+    <div class="ov-info">
+      <div class="ov-sec">
+        <p class="cap-artist">작가</p>
+        <h2 class="disp" style="margin:6px 0 10px">${a.name}</h2>
+        <p class="ui mut">b.${a.born} · ${a.base} 거점 · 호당 ${MX.fmt(a.perHo)}원</p>
+        <p class="body-t" style="margin-top:18px">${a.bio}</p>
+      </div>
+      <div class="ov-sec"><h4>작가 노트</h4><p class="ov-note">${a.note}</p></div>
+      <div class="ov-sec"><h4>이력</h4>
+        <ul class="prov">${a.history.map(h=>`<li>${h}</li>`).join("")}</ul></div>
+      <div class="ov-sec"><h4>구매 가능한 작품 ${forSale.length}점</h4>
+        <div class="artist-works">${works.map(w=>`
+          <figure class="aw ${w.status!=="sale"?"dim":""}" data-open="${w.slug}">
+            <img src="assets/img/${w.img}.webp" alt="${w.title}" loading="lazy">
+            <figcaption>《${w.title}》<br><span class="faint">${w.year} · ${MX.priceLabel(w)}</span></figcaption>
+          </figure>`).join("")}</div></div>
+      <div class="ov-sec"><h4>지나간 작품 ${past.length}점</h4>
+        <p class="ui mut">이미 새 소장처를 찾은 작품이 ${past.length}점 있습니다. 같은 결의 신작 소식을 문의로 받아보실 수 있습니다.</p></div>
+      <div class="cap-cta">
+        ${forSale.length?`<button class="btn pri" data-inq="${forSale[0].id}">이 작가 작품 문의</button>`:""}
+        <button class="btn" data-artists-back>다른 작가 보기</button>
+      </div>
+    </div>`;
+}
+/* ── 작가 목록 ── */
+function renderArtistIndex(){
+  $("#ovGrid").innerHTML=`
+    <div style="grid-column:2 / span 10">
+      <p class="cap-artist">무로의 작가들</p>
+      <h2 class="disp" style="margin:6px 0 16px">세 개의 시선</h2>
+      <p class="body-t mut" style="max-width:52ch;margin-bottom:calc(var(--sp-60))">무로는 많은 작가를 다루지 않습니다.
+        오래 볼 수 있는 세 사람의 작업을, 오래 보이도록 겁니다.</p>
+      <div class="artist-cards">
+        ${Object.values(ARTISTS).map(a=>{ const rep=WORKS.find(w=>w.artist===a.id);
+          const n=WORKS.filter(w=>w.artist===a.id&&w.status==="sale").length;
+          return `<figure class="artist-card" data-artist="${a.id}">
+            <div class="ac-img"><img src="assets/img/${rep.img}.webp" alt="${a.name} 대표작" loading="lazy"></div>
+            <figcaption>
+              <b class="serif">${a.name}</b>
+              <span class="faint">b.${a.born} · ${a.base}</span>
+              <p>${a.bio}</p>
+              <span class="gold-t tiny">구매 가능 ${n}점 →</span>
+            </figcaption>
+          </figure>`; }).join("")}
+      </div>
+    </div>`;
+}
+
 /* ── 문의 폼 ── */
 function renderInqSelect(sel){
   $("#qWork").innerHTML = WORKS.filter(w=>w.status==="sale"||w.status==="hold")
@@ -280,6 +357,10 @@ $("#qSample").addEventListener("click",()=>{
 document.addEventListener("click",e=>{
   const open=e.target.closest("[data-open]");
   if(open){ openDetail(open.dataset.open); return; }
+  const art=e.target.closest("[data-artist]");
+  if(art){ openArtist(art.dataset.artist); return; }
+  if(e.target.closest("[data-artists-back]")){ openArtistIndex(); return; }
+  if(e.target.closest("[data-artists]")){ openArtistIndex(); return; }
   if(e.target.closest("[data-ovclose]")){ closeDetail(); requestAnimationFrame(()=>scrollTo(0,savedScroll)); return; }
   const inq=e.target.closest("[data-inq]");
   if(inq){ closeDetail(); renderInqSelect(inq.dataset.inq); $("#qType").value="구매";
@@ -294,9 +375,12 @@ document.addEventListener("click",e=>{
   const rm=e.target.closest("[data-room]");
   if(rm){ curRoom=rm.dataset.room; $$("[data-room]").forEach(b=>b.classList.toggle("on",b===rm)); renderRoom(); return; }
   if(e.target.closest("#ovCopy")){
-    const url=location.origin+location.pathname+"#/w/"+(curWork?curWork.slug:"");
+    const path = ovMode==="artist"&&curArtist ? "#/a/"+curArtist.id
+               : ovMode==="artists" ? "#/artists"
+               : "#/w/"+(curWork?curWork.slug:"");
+    const url=location.origin+location.pathname+path;
     (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(
-      ()=>toast("작품 링크가 복사되었습니다 — 어디서든 이 액자 앞으로 돌아옵니다"),
+      ()=>toast(ovMode==="work"?"작품 링크가 복사되었습니다 — 어디서든 이 액자 앞으로 돌아옵니다":"링크가 복사되었습니다"),
       ()=>toast(url));
     return; }
   const sc=e.target.closest("[data-scroll]");
