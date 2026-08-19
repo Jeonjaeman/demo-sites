@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Works — UNFRAME 언프레임</title>
+<meta name="description" content="UNFRAME의 포트폴리오 — 브랜드 캠페인·퍼포먼스·콘텐츠·디지털. 카테고리별 필터. (제안용 데모 — 가상 케이스)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="page-dark">
+
+<header class="nav solid" id="nav">
+  <div class="shell nav-in">
+    <a class="brand" href="index.html" aria-label="UNFRAME 홈">
+      <span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span>
+    </a>
+    <nav class="nav-links" aria-label="주 메뉴">
+      <a href="works.html" aria-current="page">Works</a>
+      <a href="about.html">About</a>
+      <a href="events.html">Events</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a class="btn-cta nav-cta" href="contact.html">프로젝트 문의</a>
+    <button class="nav-burger" id="navBurger" aria-label="메뉴 열기" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+<div class="nav-sheet" id="navSheet" hidden>
+  <a href="works.html">Works</a><a href="about.html">About</a><a href="events.html">Events</a>
+  <a href="contact.html" class="sheet-cta">프로젝트 문의</a>
+</div>
+
+<aside class="popup" id="eventPopup" hidden role="dialog" aria-label="이벤트 안내">
+  <div class="popup-body">
+    <p class="overline">EVENT · 진행 중</p>
+    <p class="popup-title" id="popupTitle"></p>
+    <p class="popup-desc" id="popupDesc"></p>
+    <div class="popup-actions">
+      <a href="events.html" class="popup-go" id="popupGo">자세히 보기</a>
+      <button id="popupToday">오늘 하루 보지 않기</button>
+      <button id="popupClose" aria-label="닫기">닫기</button>
+    </div>
+  </div>
+</aside>
+
+<main>
+<section class="works page-top" id="works">
+  <div class="shell works-head">
+    <p class="overline rv">WORKS</p>
+    <h1 class="display-lg rv" data-chars>일이 말하게 합니다</h1>
+    <p class="page-lede rv">217개의 캠페인 중 게시 동의를 받은 케이스만 공개합니다.
+    성과 수치에는 측정 도구와 기간을 함께 적습니다.</p>
+    <div class="works-filter rv" role="tablist" aria-label="카테고리 필터" id="worksFilter">
+      <button role="tab" aria-selected="true" data-cat="all">ALL</button>
+      <button role="tab" aria-selected="false" data-cat="brand">브랜드 캠페인</button>
+      <button role="tab" aria-selected="false" data-cat="perf">퍼포먼스</button>
+      <button role="tab" aria-selected="false" data-cat="content">콘텐츠</button>
+      <button role="tab" aria-selected="false" data-cat="digital">디지털</button>
+    </div>
+    <p class="works-imweb-note rv">※ 리로드 없는 즉시 필터·딥링크(URL 해시) — 아임웹 게시판 필터는 페이지 이동 방식이라 이 경험이 나오지 않습니다</p>
+  </div>
+  <div class="shell works-grid" id="worksGrid"><!-- JS 렌더 --></div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="shell footer-grid">
+    <div>
+      <p class="footer-brand"><span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span></p>
+      <p class="footer-note">본 사이트는 제안용 데모이며, UNFRAME은 가상의 브랜드입니다.<br>모든 실적·고객사·수치는 시연을 위해 만들어진 가상 데이터입니다.</p>
+    </div>
+    <div class="footer-links">
+      <a href="works.html">Works</a><a href="about.html">About</a>
+      <a href="events.html">Events</a><a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-meta">
+      <p>서울 마포구 어울마당로 00, 5F</p>
+      <p>hello@unframe.kr · 02-000-0000</p>
+      <a class="footer-admin" href="admin.html">관리자 (커스텀 포트폴리오 관리 프로그램) →</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+(() => {
+"use strict";
+const worksGrid = $("#worksGrid");
+const worksFilter = $("#worksFilter");
+
+const renderWorks = (cat) => {
+  const list = WORKS.filter((w) => cat === "all" || w.cats.includes(cat));
+  worksGrid.innerHTML = list.length ? list.map(workCardHTML).join("")
+    : `<p class="work-empty">이 카테고리의 공개 가능한 작업이 아직 없습니다.</p>`;
+  bindMaskedCards(worksGrid);
+};
+
+const applyFilter = (cat, push = true) => {
+  $$("button", worksFilter).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.cat === cat)));
+  $$(".work-card", worksGrid).forEach((c) => c.classList.add("flip-out"));
+  setTimeout(() => renderWorks(cat), reduceMotion ? 0 : 320);
+  if (push) history.replaceState(null, "", cat === "all" ? "works.html" : `works.html#${cat}`);
+};
+worksFilter.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b) applyFilter(b.dataset.cat);
+});
+
+const hashCat = location.hash.slice(1);
+const startCat = CAT_LABEL[hashCat] ? hashCat : "all";
+renderWorks(startCat);
+$$("button", worksFilter).forEach((b) => b.setAttribute("aria-selected", String(b.dataset.cat === startCat)));
+})();
+</script>
+</body>
+</html>

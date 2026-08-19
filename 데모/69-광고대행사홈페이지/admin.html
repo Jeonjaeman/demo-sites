@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNFRAME 관리자 — 커스텀 포트폴리오 관리 프로그램</title>
+<meta name="description" content="아임웹 기본 관리자로는 불가능한 운영 경험을 시연하는 커스텀 관리자 (데모)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<div class="adm">
+  <!-- ══════════ 사이드바 ══════════ -->
+  <aside class="adm-side">
+    <a class="adm-brand" href="index.html"><span class="bk">[</span>UNFRAME<span class="bk">]</span> <em>ADMIN</em></a>
+    <nav class="adm-nav">
+      <button class="on" data-view="dash">대시보드</button>
+      <button data-view="portfolio">포트폴리오</button>
+      <button data-view="events">이벤트 · 팝업</button>
+      <button data-view="inbox">문의함</button>
+      <button data-view="history">버전 이력</button>
+      <button data-view="cost">비용 · 트래픽</button>
+    </nav>
+    <div class="adm-side-note">
+      <p>커스텀 포트폴리오 관리 프로그램 (데모)</p>
+      <p>아임웹 기본 관리자와의 차이를 각 화면의 <b>파란 각주</b>로 표기합니다</p>
+    </div>
+    <a class="adm-back" href="index.html">← 공개 사이트로</a>
+  </aside>
+
+  <!-- ══════════ 본문 ══════════ -->
+  <main class="adm-main">
+
+    <!-- ───── 대시보드 ───── -->
+    <section class="view view-dash on" id="view-dash">
+      <header class="vh"><h1>대시보드</h1><p id="dashDate">방문 통계는 데모용 가상 데이터</p></header>
+      <div class="kpi-row">
+        <div class="kpi"><span class="kpi-label">오늘 방문</span><strong class="kpi-num" data-count="482">0</strong><span class="kpi-diff up">+12.4% vs 지난주</span></div>
+        <div class="kpi"><span class="kpi-label">이번 주 문의</span><strong class="kpi-num" data-count="14">0</strong><span class="kpi-diff up">+3건</span></div>
+        <div class="kpi"><span class="kpi-label">진행 중 이벤트</span><strong class="kpi-num" data-count="2">0</strong><span class="kpi-diff">팝업 1건 노출 중</span></div>
+        <div class="kpi"><span class="kpi-label">공개 포트폴리오</span><strong class="kpi-num" id="kpiPub">0</strong><span class="kpi-diff warn" id="kpiMask"></span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>최근 14일 방문</h2><span class="mono-note">canvas 직접 렌더 · 외부 라이브러리 없음</span></div>
+        <canvas id="visitChart" height="120"></canvas>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h2>유입 채널</h2></div>
+          <ul class="bar-list" id="channelBars"></ul>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>많이 본 케이스</h2></div>
+          <ul class="rank-list" id="topWorks"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 포트폴리오 ───── -->
+    <section class="view" id="view-portfolio">
+      <header class="vh">
+        <h1>포트폴리오</h1>
+        <p>드래그로 노출 순서를 바꾸고, 게시 동의 상태가 공개 화면 마스킹과 연동됩니다</p>
+      </header>
+      <div class="pf-toolbar">
+        <div class="mode-switch" role="tablist">
+          <button class="on" id="modeCustom" role="tab" aria-selected="true">커스텀 방식 — 드래그 정렬</button>
+          <button id="modeImweb" role="tab" aria-selected="false">아임웹 방식 체험</button>
+        </div>
+        <button class="btn-blue" id="pfAdd">+ 새 작업 등록</button>
+      </div>
+      <p class="imweb-note" id="imwebNote" hidden>
+        아임웹에는 게시물 순서 변경 기능이 없어, 공식 가이드가 안내하는 방법은 <b>게시물 작성시각을 직접 수정</b>하는 것입니다
+        (미래 시각 입력 불가 · 순서 반영은 디자인 모드에서 게시판 위젯을 다시 설정해야 확인됩니다). 아래에서 직접 체험해 보세요.
+      </p>
+      <ul class="pf-list" id="pfList"></ul>
+      <p class="blue-note">파란 각주 — 아임웹 갤러리 위젯에는 카테고리 필터가 없고(위젯 복제 방식), 게시판 필터는 페이지 리로드 방식입니다.
+      이 관리자에서 바꾼 순서·상태는 즉시 공개 화면과 같은 데이터로 반영되는 구조입니다 (데모에서는 세션 저장).</p>
+    </section>
+
+    <!-- ───── 이벤트 · 팝업 ───── -->
+    <section class="view" id="view-events">
+      <header class="vh"><h1>이벤트 · 팝업</h1><p>노출 기간을 설정하면 남은 일수와 팝업 노출이 실시간 계산됩니다</p></header>
+      <div class="panel">
+        <div class="panel-head"><h2>이벤트 목록</h2></div>
+        <ul class="ev-list" id="evList"></ul>
+      </div>
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h2>팝업 미리보기</h2><span class="mono-note">메인 화면 좌하단 노출</span></div>
+          <div class="pop-preview" id="popPreview"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>캠페인 트래픽 시뮬레이터</h2></div>
+          <div class="sim">
+            <label>일 예상 방문<input type="range" id="simVisits" min="500" max="200000" step="500" value="12000"><b id="simVisitsV"></b></label>
+            <label>페이지 평균 용량<input type="range" id="simSize" min="1" max="20" step="0.5" value="6"><b id="simSizeV"></b></label>
+            <div class="sim-gauge"><div class="sim-fill" id="simFill"></div><span class="sim-mark">아임웹 Starter 일 한도 20GB</span></div>
+            <p class="sim-out" id="simOut"></p>
+            <p class="blue-note">파란 각주 — 아임웹은 한도 도달 시 방문자 접속이 차단되고, 광고·프로모션 트래픽은 시작 7일 전 사전 신고가 필요합니다(당일 불가).
+            자체제작 + Cloudflare Pages는 정적 요청 무제한이라 이 시뮬레이터 자체가 필요 없습니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 문의함 ───── -->
+    <section class="view" id="view-inbox">
+      <header class="vh"><h1>문의함</h1><p>광고성 수신 동의 여부로 필터링되고, 보유기간 경과 건이 자동 표시됩니다</p></header>
+      <div class="inbox-toolbar">
+        <div class="mode-switch">
+          <button class="on" data-if="all">전체</button>
+          <button data-if="mkt">광고 수신 동의만</button>
+          <button data-if="expired">보유기간 경과</button>
+        </div>
+        <button class="btn-ghost2" id="purgeBtn">경과 건 일괄 파기</button>
+      </div>
+      <ul class="inq-list" id="inqList"></ul>
+      <div class="panel">
+        <div class="panel-head"><h2>알림 수신 설정</h2><span class="mono-note">새 문의 접수 시</span></div>
+        <div class="notify-set">
+          <label class="notify-row"><input type="checkbox" id="ntEmail" checked><span>이메일 알림</span>
+            <input type="email" id="ntEmailAddr" value="hello@unframe.kr" aria-label="수신 이메일"></label>
+          <label class="notify-row"><input type="checkbox" id="ntSms" checked><span>문자(SMS) 알림</span>
+            <input type="tel" id="ntSmsNum" value="010-1234-5678" aria-label="수신 번호"></label>
+          <button class="btn-blue" id="ntSave">설정 저장</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>새 문의 알림 문자 미리보기</h2></div>
+        <div class="sms-compare">
+          <div class="sms">
+            <span class="sms-tag gray">아임웹 SMS 알림</span>
+            <div class="bubble">[UNFRAME] 새로운 입력폼이 제출되었습니다.</div>
+            <p>제출 사실만 안내 — 상세 내용 미포함 · 문구 수정 불가 · 알림톡은 심사 영업일 10일</p>
+          </div>
+          <div class="sms">
+            <span class="sms-tag blue">커스텀 알림</span>
+            <div class="bubble on">[UNFRAME 문의] (주)샘플브랜드 김대표 · 월 500~2,000만 · 신제품 론칭 캠페인 · 010-1234-**** → 답장하면 바로 연결</div>
+            <p>문의 요약이 담겨 회신 우선순위를 문자만 보고 판단</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── 버전 이력 ───── -->
+    <section class="view" id="view-history">
+      <header class="vh"><h1>버전 이력</h1><p>포트폴리오 상태를 저장할 때마다 스냅샷이 쌓이고, 언제든 되돌릴 수 있습니다</p></header>
+      <div class="panel">
+        <div class="panel-head"><h2>스냅샷</h2><button class="btn-blue" id="snapBtn">현재 상태 저장</button></div>
+        <ul class="ver-list" id="verList"></ul>
+      </div>
+      <p class="blue-note">파란 각주 — 아임웹 디자인 모드는 백업 기능이 없고 "마지막 게시 시점"으로만 복원됩니다(공식 대안: 스크린샷 보관).
+      이 관리자는 저장 시점마다 전체 상태를 보존하고 원클릭 롤백합니다 (데모: localStorage · 실구축: 서버 이력).</p>
+    </section>
+
+    <!-- ───── 비용 · 트래픽 ───── -->
+    <section class="view" id="view-cost">
+      <header class="vh"><h1>운영 비용 계산기</h1><p>실제 단가로 계산합니다 — 아임웹 공식 요금(2026.08) vs 자체제작 + 무료 호스팅</p></header>
+      <div class="grid-2">
+        <div class="panel cost-panel">
+          <div class="panel-head"><h2>아임웹 구성</h2></div>
+          <label class="cost-row"><span>요금제</span>
+            <select id="cPlan">
+              <option value="192000">Starter 연결제 (16,000×12 −20%≈)</option>
+              <option value="230400" selected>Pro 연결제 (24,000×12 −20%)</option>
+              <option value="288000">Pro 월결제 (24,000×12)</option>
+            </select></label>
+          <label class="cost-row chk"><input type="checkbox" id="cSsl" checked><span>개인 도메인 SSL Basic — 38,500원/년</span></label>
+          <label class="cost-row chk"><input type="checkbox" id="cSms" checked><span>SMS 크레딧 충전 — 22,000원/년 (1,100건)</span></label>
+          <label class="cost-row"><span>도메인</span><b>25,000원/년</b></label>
+          <div class="cost-total"><span>연간</span><strong id="cImwebY">0</strong><span>5년</span><strong id="cImweb5">0</strong></div>
+        </div>
+        <div class="panel cost-panel">
+          <div class="panel-head"><h2>자체제작 + 무료 호스팅</h2></div>
+          <p class="cost-line">Cloudflare Pages 호스팅 — <b>0원</b> (정적 요청 무제한 · SSL 자동)</p>
+          <p class="cost-line">문의 폼 백엔드 (무료 250건/월) — <b>0원</b></p>
+          <p class="cost-line">커스텀 관리자 호스팅 — <b>0원</b> (정적 배포 포함)</p>
+          <p class="cost-line">도메인 — <b>25,000원/년</b></p>
+          <div class="cost-total blue"><span>연간</span><strong id="cSelfY">25,000원</strong><span>5년</span><strong id="cSelf5">125,000원</strong></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>5년 누적 비교</h2></div>
+        <canvas id="costChart" height="110"></canvas>
+        <p class="cost-verdict" id="costVerdict"></p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- 작업 등록/수정 모달 -->
+<div class="modal" id="pfModal" hidden>
+  <div class="modal-bg" id="pfModalBg"></div>
+  <form class="modal-panel" id="pfForm">
+    <h3 id="pfFormTitle">새 작업 등록</h3>
+    <label>작업명 <input id="pfTitle" required placeholder="예: AURORA 하이드로 세럼 론칭"></label>
+    <label>클라이언트 <input id="pfClient" placeholder="예: 가상 뷰티 브랜드 A"></label>
+    <label>카테고리
+      <select id="pfCat" multiple size="4">
+        <option value="brand">브랜드 캠페인</option><option value="perf">퍼포먼스</option>
+        <option value="content">콘텐츠</option><option value="digital">디지털</option>
+      </select></label>
+    <fieldset class="consent-set">
+      <legend>게시 동의 상태 — 공개 화면 마스킹과 연동</legend>
+      <label><input type="radio" name="pfConsent" value="ok" checked> 동의 완료 (전체 공개)</label>
+      <label><input type="radio" name="pfConsent" value="masked"> 브랜드명 비공개 (블러 카드)</label>
+      <label><input type="radio" name="pfConsent" value="private"> NDA · 게시 불가 (목록 제외)</label>
+    </fieldset>
+    <label>성과 수치의 근거 <input id="pfEvidence" placeholder="측정 도구 · 기간 · 비교 기준 (비우면 공개 화면에서 수치가 정성 표현으로 대체)"></label>
+    <div class="modal-actions"><button type="button" class="btn-ghost2" id="pfCancel">취소</button><button class="btn-blue" type="submit">저장</button></div>
+  </form>
+</div>
+
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

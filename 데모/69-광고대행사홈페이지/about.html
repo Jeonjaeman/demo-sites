@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>About — UNFRAME 언프레임</title>
+<meta name="description" content="UNFRAME 회사 소개 — 비전, 일하는 방식, 연혁, 오시는 길. (제안용 데모 — 가상 브랜드)">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="nav solid" id="nav">
+  <div class="shell nav-in">
+    <a class="brand" href="index.html" aria-label="UNFRAME 홈">
+      <span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span>
+    </a>
+    <nav class="nav-links" aria-label="주 메뉴">
+      <a href="works.html">Works</a>
+      <a href="about.html" aria-current="page">About</a>
+      <a href="events.html">Events</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <a class="btn-cta nav-cta" href="contact.html">프로젝트 문의</a>
+    <button class="nav-burger" id="navBurger" aria-label="메뉴 열기" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+<div class="nav-sheet" id="navSheet" hidden>
+  <a href="works.html">Works</a><a href="about.html">About</a><a href="events.html">Events</a>
+  <a href="contact.html" class="sheet-cta">프로젝트 문의</a>
+</div>
+
+<aside class="popup" id="eventPopup" hidden role="dialog" aria-label="이벤트 안내">
+  <div class="popup-body">
+    <p class="overline">EVENT · 진행 중</p>
+    <p class="popup-title" id="popupTitle"></p>
+    <p class="popup-desc" id="popupDesc"></p>
+    <div class="popup-actions">
+      <a href="events.html" class="popup-go" id="popupGo">자세히 보기</a>
+      <button id="popupToday">오늘 하루 보지 않기</button>
+      <button id="popupClose" aria-label="닫기">닫기</button>
+    </div>
+  </div>
+</aside>
+
+<main>
+<section class="about page-top" id="about">
+  <div class="shell about-head">
+    <p class="overline rv">ABOUT</p>
+    <h1 class="display-lg rv" data-chars>2017년부터,<br>틀 밖에서</h1>
+    <p class="about-body rv">UNFRAME은 브랜드 캠페인·퍼포먼스·콘텐츠를 한 팀으로 묶은 독립 광고대행사입니다.
+    대행사의 일은 대신 말해주는 것이 아니라, 브랜드가 스스로 말하게 만드는 것이라고 믿습니다.</p>
+  </div>
+
+  <div class="shell principles">
+    <div class="principle rv"><span class="overline">원칙 01</span><h3>실험 설계서를 먼저 드립니다</h3>
+      <p>무엇을 검증할지, 얼마를 쓸지, 언제 멈출지를 합의하고 집행합니다. 성과 수치에는 측정 도구와 기간을 붙입니다.</p></div>
+    <div class="principle rv"><span class="overline">원칙 02</span><h3>첫 계약은 3개월입니다</h3>
+      <p>갱신은 성과 리뷰 뒤에 결정하시면 됩니다. 91% 재계약률은 묶어놓은 결과가 아니라 풀어놓은 결과입니다.</p></div>
+    <div class="principle rv"><span class="overline">원칙 03</span><h3>리포트 첫 장은 세 줄입니다</h3>
+      <p>쓴 돈, 번 돈, 다음 액션. 광고 용어가 아니라 매출의 언어로 씁니다.</p></div>
+  </div>
+
+  <div class="history bleed">
+    <div class="history-track" id="historyTrack">
+      <div class="hist-item"><span class="hist-year">2017</span><p>서울 마포, 3인으로 시작</p></div>
+      <div class="hist-item"><span class="hist-year">2019</span><p>퍼포먼스팀 신설 · 운용액 연 40억 돌파</p></div>
+      <div class="hist-item"><span class="hist-year">2021</span><p>콘텐츠 스튜디오 개소 · 첫 브랜드 필름</p></div>
+      <div class="hist-item"><span class="hist-year">2023</span><p>임직원 28명 · 재계약률 90% 첫 달성</p></div>
+      <div class="hist-item"><span class="hist-year">2025</span><p>디지털 프로덕트팀 신설</p></div>
+      <div class="hist-item"><span class="hist-year">2026</span><p>217번째 캠페인, 그리고 다음</p></div>
+    </div>
+  </div>
+
+  <div class="shell visit">
+    <div class="visit-map rv" aria-hidden="true">
+      <svg viewBox="0 0 520 300" class="map-svg">
+        <rect width="520" height="300" fill="none"/>
+        <path class="map-river" d="M0 218 C120 196 210 236 320 212 C410 192 470 206 520 194" />
+        <path class="map-road" d="M60 0 L150 300"/><path class="map-road" d="M0 96 L520 60"/>
+        <path class="map-road" d="M240 0 L300 300"/><path class="map-road" d="M0 170 L520 150"/>
+        <circle class="map-pin-ring" cx="262" cy="118" r="16"/>
+        <circle class="map-pin" cx="262" cy="118" r="7"/>
+        <text x="282" y="123" class="map-label">UNFRAME</text>
+      </svg>
+    </div>
+    <div class="visit-info">
+      <p class="overline rv">VISIT</p>
+      <h2 class="display-md rv">서울 마포구 어울마당로 00, 5F</h2>
+      <p class="rv">홍대입구역 9번 출구에서 걸어서 6분 · 주차는 건물 지하 1층</p>
+      <div class="visit-actions rv">
+        <a class="btn-ghost" href="https://map.kakao.com/link/to/홍대입구역,37.557527,126.925320" target="_blank" rel="noopener">카카오맵 길찾기</a>
+        <a class="btn-ghost" href="https://map.naver.com/p/directions/-/-/-/walk" target="_blank" rel="noopener">네이버지도 길찾기</a>
+        <button class="btn-ghost" id="copyAddr">주소 복사</button>
+      </div>
+      <p class="visit-note rv">지도 API 키 없이 동작하는 구성입니다 — 발주자 명의 클라우드 계정·결제수단 등록 전에도 오시는 길이 비지 않습니다</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="shell footer-grid">
+    <div>
+      <p class="footer-brand"><span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span></p>
+      <p class="footer-note">본 사이트는 제안용 데모이며, UNFRAME은 가상의 브랜드입니다.<br>모든 실적·고객사·수치는 시연을 위해 만들어진 가상 데이터입니다.</p>
+    </div>
+    <div class="footer-links">
+      <a href="works.html">Works</a><a href="about.html">About</a>
+      <a href="events.html">Events</a><a href="contact.html">Contact</a>
+    </div>
+    <div class="footer-meta">
+      <p>서울 마포구 어울마당로 00, 5F</p>
+      <p>hello@unframe.kr · 02-000-0000</p>
+      <a class="footer-admin" href="admin.html">관리자 (커스텀 포트폴리오 관리 프로그램) →</a>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+(() => {
+"use strict";
+// 연혁 드래그 스크롤
+const hist = $(".history");
+let hDown = false, hStartX = 0, hStartS = 0;
+hist.addEventListener("pointerdown", (e) => { hDown = true; hStartX = e.clientX; hStartS = hist.scrollLeft; hist.classList.add("dragging"); });
+addEventListener("pointermove", (e) => { if (hDown) hist.scrollLeft = hStartS - (e.clientX - hStartX); });
+addEventListener("pointerup", () => { hDown = false; hist.classList.remove("dragging"); });
+// 주소 복사
+$("#copyAddr").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText("서울 마포구 어울마당로 00, 5F (데모 주소)");
+    toast("주소를 복사했습니다");
+  } catch (_) { toast("복사 권한이 없어 실패했습니다"); }
+});
+})();
+</script>
+</body>
+</html>
