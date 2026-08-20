@@ -269,8 +269,11 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 
 /* ---------- 통계 (다크 네이비 · 글래스 카드 · countup) ---------- */
 .stats-grid { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+/* 우측 정렬 섹션에선 카드도 우측으로 — 정렬 교대가 의도로 읽히게 */
+.sec-right .stats-grid { justify-content: flex-end; }
 .stat-card {
-  flex: 1 1 0; min-width: 13rem; aspect-ratio: 1;
+  /* 레퍼런스 글래스 카드 원형 280×280@1920 — 전폭으로 늘어나지 않게 고정 */
+  flex: 0 1 17.5rem; width: 17.5rem; aspect-ratio: 1;
   border: 1px solid rgba(209, 210, 212, 0.2); border-radius: 0.75rem;
   backdrop-filter: blur(10px);
   display: grid; align-content: end; gap: 0.5rem; padding: 1.75rem 1.5rem 1.5rem;
@@ -406,7 +409,8 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 .works-filter button[aria-selected="true"]::after { right: 0; }
 .works-filter button:hover { color: var(--ink); }
 .works-note { margin-top: 1rem; font-size: 0.875rem; color: var(--faint); }
-.works-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3.75rem 2.625rem; margin: 3.75rem 0 9.375rem; }
+/* margin 축약형을 쓰면 .shell의 margin-inline:auto(중앙정렬)가 덮여 좌측으로 붙는다 — margin-block만 지정 */
+.works-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3.75rem 2.625rem; margin-block: 3.75rem 9.375rem; }
 .work-card.flip-out { opacity: 0; transform: translateY(1.875rem); pointer-events: none; transition: opacity 0.3s, transform 0.3s; }
 
 /* ---------- Work 상세 ---------- */
