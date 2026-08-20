@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서식 검색 · 서식나루</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+body { --shell: 1400px; }
+.layout { display: grid; grid-template-columns: 224px 1fr; gap: 0; align-items: start; }
+
+/* ── 패싯 사이드바 ─────────────────────────────────────────── */
+.side-facet {
+  position: sticky; top: 60px; align-self: start;
+  border-right: 1px solid var(--line); background: var(--bg);
+  padding: 20px 20px 40px 0; max-height: calc(100vh - 60px); overflow: auto;
+}
+.fgroup + .fgroup { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.fgroup h3 {
+  font-size: 11px; font-family: var(--mono); letter-spacing: .1em; color: var(--t3);
+  margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+}
+.fgroup h3 button { font-family: var(--sans); font-size: 11px; letter-spacing: 0; color: var(--ac); }
+.fopt { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 6px; border-radius: var(--r-sm); cursor: pointer; transition: background .12s var(--ease); }
+.fopt:hover { background: var(--hover); }
+.fopt .nm { flex: 1 1 auto; font-size: 13px; color: var(--t2); }
+.fopt .n { font-family: var(--mono); font-size: 11px; color: var(--t3); }
+.fopt input:checked + .nm { color: var(--t1); font-weight: 500; }
+.fopt input[type=radio] {
+  appearance: none; width: 15px; height: 15px; border: 1px solid var(--line-strong);
+  border-radius: 50%; position: relative; cursor: pointer;
+}
+.fopt input[type=radio]:checked { border-color: var(--ac); border-width: 4.5px; }
+
+/* ── 결과 영역 ─────────────────────────────────────────────── */
+.results { padding: 20px 0 60px 24px; min-width: 0; }
+
+.resbar {
+  position: sticky; top: 60px; z-index: 20; background: var(--bg);
+  padding: 4px 0 12px; border-bottom: 1px solid var(--line); margin-bottom: 0;
+}
+.resbar .l1 { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.resbar h1 { font-size: 20px; font-weight: 700; letter-spacing: -.025em; color: var(--t1); }
+.resbar h1 em { font-style: normal; color: var(--ac); }
+.resbar .stat { font-family: var(--mono); font-size: 12px; color: var(--t3); }
+.resbar .ctrl { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.resbar .spacer { flex: 1 1 auto; }
+.seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: var(--r-sm); overflow: hidden; height: 30px; }
+.seg button { padding: 0 10px; font-size: 12px; color: var(--t2); border-right: 1px solid var(--line); background: var(--surface); transition: background .12s var(--ease); }
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--hover); }
+.seg button.on { background: var(--ac-soft); color: var(--ac-hover); font-weight: 500; }
+
+.active-filters { display: flex; gap: 6px; flex-wrap: wrap; padding: 12px 0 0; }
+.active-filters .chip { height: 26px; font-size: 12px; }
+.active-filters .chip button { color: var(--t3); font-size: 14px; line-height: 1; margin-left: 2px; }
+.active-filters .chip button:hover { color: var(--bad); }
+
+.tbl-wrap { background: var(--surface); border: 1px solid var(--line); border-top: 0; }
+.tbl thead th { top: var(--stick, 105px); }
+.tbl .sub { white-space: nowrap; font-size: 11.5px; color: var(--t3); margin-top: 1px; display: flex; gap: 6px; align-items: center; }
+.tbl .sub .law { font-family: var(--mono); }
+.tbl .keep { opacity: 0; transition: opacity .12s var(--ease); }
+.tbl tr:hover .keep, .tbl tr.sel .keep { opacity: 1; }
+
+.pager { display: flex; justify-content: center; align-items: center; gap: 4px; padding: 24px 0 0; }
+.pager { gap: 6px; }
+.pager button {
+  min-width: 30px; height: 30px; padding: 0 8px; border-radius: var(--r-xs);
+  font-family: var(--mono); font-size: 13px; color: var(--t1);
+  transition: background .3s ease, color .3s ease;
+}
+.pager button:hover { background: var(--ac-soft); color: var(--ac); }
+.pager button.on { background: var(--ac); color: #fff; font-weight: 700; }
+.pager button[disabled] { color: #bcbdc1; pointer-events: none; }
+
+/* 선택 액션 바 */
+.selbar {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px);
+  background: var(--navy); color: rgba(255,255,255,.82); border-radius: 999px;
+  box-shadow: var(--shadow-pop); padding: 10px 12px 10px 18px;
+  display: flex; align-items: center; gap: 14px; font-size: 13px;
+  opacity: 0; pointer-events: none; transition: opacity .2s var(--ease), transform .2s var(--ease);
+  z-index: 120;
+}
+.selbar.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.selbar b { color: #7bcdf5; font-family: var(--mono); }
+.selbar .btn { height: 30px; background: transparent; border-color: rgba(255,255,255,.35); color: #fff; }
+.selbar .btn:hover { background: #fff; border-color: #fff; color: var(--navy); }
+.selbar .btn.pri { background: var(--ac2); border-color: var(--ac2); color: #fff; }
+.selbar .x { color: rgba(255,255,255,.55); padding: 0 4px; }
+.selbar .x:hover { color: #fff; }
+
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+  .side-facet { position: static; border-right: 0; border-bottom: 1px solid var(--line); padding: 16px 0; max-height: none; }
+  .results { padding-left: 0; }
+  .tbl thead th { top: 60px; }
+}
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="shell">
+    <a class="brand" href="index.html"><span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span></a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="search.html" class="on">서식검색</a>
+      <a href="search.html#cat">분야별</a>
+      <a href="search.html#stage">절차별</a>
+      <a href="plan.html">이용등급</a>
+    </nav>
+    <div class="side">
+      <div class="hdr-search">
+        <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input id="hq" type="search" placeholder="서식명, 사건유형, 법령" aria-label="서식 검색">
+      </div>
+      <a class="btn ghost sm" href="mypage.html">내 서식함</a>
+      <span class="badge std" id="meBadge">정회원</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="layout">
+
+    <!-- 패싯 -->
+    <aside class="side-facet">
+      <div class="fgroup">
+        <h3>사건분야 <button id="clearCat">해제</button></h3>
+        <div id="fCat"></div>
+      </div>
+      <div class="fgroup">
+        <h3>진행단계</h3>
+        <div id="fStage"></div>
+      </div>
+      <div class="fgroup">
+        <h3>서식출처</h3>
+        <div id="fSrc"></div>
+      </div>
+      <div class="fgroup">
+        <h3>파일형식</h3>
+        <div id="fFile"></div>
+      </div>
+      <div class="fgroup">
+        <h3>최종개정</h3>
+        <div id="fSince"></div>
+      </div>
+    </aside>
+
+    <!-- 결과 -->
+    <main class="results">
+      <div class="resbar">
+        <div class="l1">
+          <h1 id="title">전체 서식</h1>
+          <span class="stat" id="stat"></span>
+        </div>
+        <div class="ctrl">
+          <div class="seg" id="sortSeg">
+            <button data-v="rel" class="on">관련도순</button>
+            <button data-v="new">개정순</button>
+            <button data-v="dl">내려받기순</button>
+          </div>
+          <span class="spacer"></span>
+          <span class="xs t3">행 높이</span>
+          <div class="seg" id="denSeg">
+            <button data-v="36">좁게</button>
+            <button data-v="44" class="on">보통</button>
+            <button data-v="56">넓게</button>
+          </div>
+          <span class="xs t3">페이지당</span>
+          <select class="inp" id="perPage" style="width:78px">
+            <option>20</option><option selected>40</option><option>100</option>
+          </select>
+        </div>
+        <div class="active-filters" id="chips"></div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="tbl fixed" id="tbl">
+          <thead><tr>
+            <th class="cbx"><input type="checkbox" id="checkAll" aria-label="전체 선택"></th>
+            <th style="width:auto">서식명</th>
+            <th style="width:104px">분야</th>
+            <th style="width:158px">파일</th>
+            <th style="width:128px">제출기관</th>
+            <th style="width:108px">최종개정</th>
+            <th style="width:82px" class="tr">내려받기</th>
+            <th style="width:70px">등급</th>
+            <th style="width:58px"></th>
+          </tr></thead>
+          <tbody id="body"></tbody>
+        </table>
+        <div id="empty" class="empty" hidden>
+          <div class="h3">검색된 서식이 없습니다</div>
+          <p class="sm">서식명 대신 사건유형(예: 대여금)이나 근거 법령(예: 민사집행법)으로 찾아보세요.<br>
+          또는 왼쪽 필터를 하나씩 해제해 범위를 넓힐 수 있습니다.</p>
+          <button class="btn sm" id="resetAll" style="margin-top:14px">필터 모두 해제</button>
+        </div>
+      </div>
+
+      <div class="pager" id="pager"></div>
+    </main>
+  </div>
+</div>
+
+<div class="selbar" id="selbar">
+  <span><b id="selN">0</b>건 선택</span>
+  <button class="btn sm pri" id="selDl">한글 파일로 내려받기</button>
+  <button class="btn sm" id="selKeep">서식함에 담기</button>
+  <button class="x" id="selClear" aria-label="선택 해제">✕</button>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var S = { q: '', cat: [], stage: [], src: [], file: [], since: '', sort: 'rel', page: 1, per: 40, den: 44 };
+  var sel = {};
+  var res = { rows: [], total: 0, ms: 0 };
+
+  /* 주소창 파라미터 수용 */
+  S.q = A.qs('q');
+  if (A.qs('cat')) S.cat = [A.qs('cat')];
+  if (A.qs('stage')) S.stage = [A.qs('stage')];
+  if (A.qs('sort')) S.sort = A.qs('sort');
+  document.getElementById('hq').value = S.q;
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ── 패싯 그리기 ─────────────────────────────────────── */
+  function opt(group, val, name, n, type) {
+    return '<label class="fopt"><input type="' + (type || 'checkbox') + '" name="' + group + '" value="' + val + '">'
+      + '<span class="nm">' + name + '</span>'
+      + (n === null ? '' : '<span class="n">' + A.fmt(n) + '</span>') + '</label>';
+  }
+
+  $('fCat').innerHTML = NARU.CATS.map(function (c) { return opt('cat', c.code, c.name, c.n); }).join('');
+
+  var stageCount = {};
+  NARU.FORMS.forEach(function (f) { stageCount[f.st] = (stageCount[f.st] || 0) + 1; });
+  $('fStage').innerHTML = NARU.STAGES.map(function (s) { return opt('stage', s.code, s.name, stageCount[s.code]); }).join('');
+
+  var srcCount = {};
+  NARU.FORMS.forEach(function (f) { srcCount[f.s] = (srcCount[f.s] || 0) + 1; });
+  $('fSrc').innerHTML = NARU.SOURCES.map(function (s) { return opt('src', s, s, srcCount[s]); }).join('');
+
+  var fileCount = { HWP: 0, HWPX: 0, PDF: 0, DOCX: 0 };
+  NARU.FORMS.forEach(function (f) { f.f.forEach(function (x) { fileCount[x]++; }); });
+  $('fFile').innerHTML = ['HWP', 'HWPX', 'PDF', 'DOCX'].map(function (x) { return opt('file', x, x, fileCount[x]); }).join('');
+
+  $('fSince').innerHTML = [['', '전체 기간'], ['2025-08-20', '최근 1년'], ['2023-08-20', '최근 3년'], ['2021-08-20', '최근 5년']]
+    .map(function (p) { return opt('since', p[0], p[1], null, 'radio'); }).join('');
+  $('fSince').querySelector('input').checked = true;
+
+  /* 초기 선택 반영 */
+  function syncInputs() {
+    ['cat', 'stage', 'src', 'file'].forEach(function (g) {
+      document.querySelectorAll('input[name=' + g + ']').forEach(function (i) {
+        i.checked = S[g].indexOf(i.value) !== -1;
+      });
+    });
+  }
+  syncInputs();
+
+  document.querySelectorAll('.side-facet input').forEach(function (i) {
+    i.addEventListener('change', function () {
+      var g = i.name;
+      if (g === 'since') { S.since = i.value; }
+      else {
+        var arr = S[g], k = arr.indexOf(i.value);
+        if (i.checked && k === -1) arr.push(i.value);
+        if (!i.checked && k !== -1) arr.splice(k, 1);
+      }
+      S.page = 1; run();
+    });
+  });
+
+  $('clearCat').addEventListener('click', function () { S.cat = []; syncInputs(); S.page = 1; run(); });
+
+  /* ── 컨트롤 ──────────────────────────────────────────── */
+  function segBind(id, fn) {
+    var el = $(id);
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      el.querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on'); fn(b.dataset.v);
+    });
+  }
+  segBind('sortSeg', function (v) { S.sort = v; S.page = 1; run(); });
+  segBind('denSeg', function (v) { S.den = +v; applyDensity(); });
+  $('perPage').addEventListener('change', function () { S.per = +this.value; S.page = 1; run(); });
+  $('hq').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { S.q = this.value.trim(); S.page = 1; run(); }
+  });
+  $('resetAll').addEventListener('click', function () {
+    S.q = ''; S.cat = []; S.stage = []; S.src = []; S.file = []; S.since = '';
+    $('hq').value = ''; syncInputs();
+    $('fSince').querySelector('input').checked = true;
+    S.page = 1; run();
+  });
+  document.querySelectorAll('#sortSeg button').forEach(function (b) {
+    b.classList.toggle('on', b.dataset.v === S.sort);
+  });
+
+  function applyDensity() {
+    var t = $('tbl');
+    t.classList.remove('d36', 'd56');
+    if (S.den === 36) t.classList.add('d36');
+    if (S.den === 56) t.classList.add('d56');
+  }
+
+  /* ── 실행 ────────────────────────────────────────────── */
+  var CATNAME = {}; NARU.CATS.forEach(function (c) { CATNAME[c.code] = c.name; });
+  var STGNAME = {}; NARU.STAGES.forEach(function (s) { STGNAME[s.code] = s.name; });
+
+  function run() {
+    res = NARU.search(S.q, S);
+    sel = {};
+    $('title').innerHTML = S.q
+      ? '<em>' + A.esc(S.q) + '</em> 검색결과'
+      : (S.cat.length === 1 ? CATNAME[S.cat[0]] + ' 서식' : '전체 서식');
+    $('stat').innerHTML = A.fmt(res.total) + '건 · 응답 ' + res.ms + 'ms';
+
+    /* 활성 필터 칩 */
+    var chips = [];
+    if (S.q) chips.push(['q', '검색어 ' + S.q]);
+    S.cat.forEach(function (c) { chips.push(['cat:' + c, CATNAME[c]]); });
+    S.stage.forEach(function (c) { chips.push(['stage:' + c, STGNAME[c]]); });
+    S.src.forEach(function (c) { chips.push(['src:' + c, c]); });
+    S.file.forEach(function (c) { chips.push(['file:' + c, c]); });
+    if (S.since) chips.push(['since', S.since.slice(0, 4) + '년 이후 개정']);
+    $('chips').innerHTML = chips.length
+      ? chips.map(function (c) {
+          return '<span class="chip on">' + A.esc(c[1]) + '<button data-k="' + c[0] + '" aria-label="필터 해제">✕</button></span>';
+        }).join('') + '<button class="chip" id="chipReset" style="border-style:dashed">모두 해제</button>'
+      : '';
+
+    renderRows();
+    renderPager();
+    updateSelbar();
+    syncStick();
+  }
+
+  /* resbar 높이(칩 유무에 따라 변함)만큼 표 헤더 고정 위치를 내린다 */
+  function syncStick() {
+    var rb = document.querySelector('.resbar');
+    document.documentElement.style.setProperty('--stick', (60 + rb.offsetHeight) + 'px');
+  }
+  window.addEventListener('resize', syncStick);
+
+  $('chips').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'chipReset') { $('resetAll').click(); return; }
+    var k = b.dataset.k;
+    if (k === 'q') { S.q = ''; $('hq').value = ''; }
+    else if (k === 'since') { S.since = ''; $('fSince').querySelector('input').checked = true; }
+    else { var p = k.split(':'); var i = S[p[0]].indexOf(p[1]); if (i !== -1) S[p[0]].splice(i, 1); syncInputs(); }
+    S.page = 1; run();
+  });
+
+  function renderRows() {
+    var start = (S.page - 1) * S.per;
+    var page = res.rows.slice(start, start + S.per);
+    $('empty').hidden = res.total !== 0;
+    $('tbl').style.display = res.total ? '' : 'none';
+
+    $('body').innerHTML = page.map(function (f) {
+      return '<tr data-id="' + f.id + '">'
+        + '<td class="cbx"><input type="checkbox" aria-label="선택"></td>'
+        + '<td class="name"><a class="ttl trunc" style="display:block" href="form.html?id=' + f.id + '">' + A.mark(f.t, S.q) + '</a>'
+        + '<div class="sub"><span class="law">' + f.l + '</span><span>·</span><span>' + f.s + '</span></div></td>'
+        + '<td class="sm t3">' + f.cn + '</td>'
+        + '<td>' + A.fmtTags(f.f) + '</td>'
+        + '<td class="sm t3 trunc" style="max-width:128px">' + f.o + '</td>'
+        + '<td class="num t3">' + f.r + '</td>'
+        + '<td class="num t3 tr">' + A.fmt(f.d) + '</td>'
+        + '<td>' + A.gradeBadge(f.g) + '</td>'
+        + '<td class="tr" style="padding-right:14px"><button class="btn sm keep" data-dl="' + f.id + '">받기</button></td>'
+        + '</tr>';
+    }).join('');
+    $('checkAll').checked = false;
+    applyDensity();
+  }
+
+  $('body').addEventListener('click', function (e) {
+    var dl = e.target.closest('[data-dl]');
+    if (dl) { A.download(NARU.byId(dl.dataset.dl), 'HWP'); return; }
+    var cb = e.target.closest('input[type=checkbox]');
+    if (cb) {
+      var tr = cb.closest('tr');
+      tr.classList.toggle('sel', cb.checked);
+      if (cb.checked) sel[tr.dataset.id] = 1; else delete sel[tr.dataset.id];
+      updateSelbar();
+    }
+  });
+
+  $('checkAll').addEventListener('change', function () {
+    var on = this.checked;
+    $('body').querySelectorAll('tr').forEach(function (tr) {
+      tr.querySelector('input').checked = on;
+      tr.classList.toggle('sel', on);
+      if (on) sel[tr.dataset.id] = 1; else delete sel[tr.dataset.id];
+    });
+    updateSelbar();
+  });
+
+  function updateSelbar() {
+    var n = Object.keys(sel).length;
+    $('selN').textContent = n;
+    $('selbar').classList.toggle('on', n > 0);
+  }
+  $('selClear').addEventListener('click', function () {
+    sel = {};
+    $('body').querySelectorAll('input:checked').forEach(function (i) { i.checked = false; i.closest('tr').classList.remove('sel'); });
+    $('checkAll').checked = false;
+    updateSelbar();
+  });
+  $('selDl').addEventListener('click', function () {
+    var ids = Object.keys(sel);
+    var left = A.me.quotaDay - A.me.usedDay;
+    if (ids.length > left) {
+      A.toast('오늘 남은 내려받기가 <b>' + left + '건</b>입니다. 선택한 ' + ids.length + '건 중 일부만 받을 수 있습니다.', 'bad');
+      return;
+    }
+    A.me.usedDay += ids.length;
+    A.toast('<b>' + ids.length + '건</b>을 압축 파일로 내려받는 중입니다<br><span class="sm t3">오늘 ' + A.me.usedDay + '/' + A.me.quotaDay + '건 사용</span>');
+    $('selClear').click();
+  });
+  $('selKeep').addEventListener('click', function () {
+    A.toast('서식함 <b>기본 폴더</b>에 ' + Object.keys(sel).length + '건을 담았습니다.');
+    $('selClear').click();
+  });
+
+  function renderPager() {
+    var last = Math.max(1, Math.ceil(res.total / S.per));
+    if (last === 1) { $('pager').innerHTML = ''; return; }
+    var out = ['<button data-p="' + (S.page - 1) + '"' + (S.page === 1 ? ' disabled' : '') + '>이전</button>'];
+    var from = Math.max(1, S.page - 3), to = Math.min(last, from + 6);
+    from = Math.max(1, to - 6);
+    if (from > 1) out.push('<button data-p="1">1</button><button disabled>…</button>');
+    for (var i = from; i <= to; i++) out.push('<button data-p="' + i + '"' + (i === S.page ? ' class="on"' : '') + '>' + i + '</button>');
+    if (to < last) out.push('<button disabled>…</button><button data-p="' + last + '">' + last + '</button>');
+    out.push('<button data-p="' + (S.page + 1) + '"' + (S.page === last ? ' disabled' : '') + '>다음</button>');
+    $('pager').innerHTML = out.join('');
+  }
+  $('pager').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-p]'); if (!b) return;
+    S.page = +b.dataset.p;
+    sel = {}; renderRows(); renderPager(); updateSelbar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  run();
+})();
+</script>
+</body>
+</html>

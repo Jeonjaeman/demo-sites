@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서식 관리 · 서식나루 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.steps { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+.steps > div { flex: 1 1 0; padding: 12px 16px; border-right: 1px solid var(--line); position: relative; }
+.steps > div:last-child { border-right: 0; }
+.steps .no { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: var(--t3); }
+.steps .nm { font-size: 13.5px; font-weight: 600; color: var(--t3); margin-top: 3px; letter-spacing: -.01em; }
+.steps .st { font-size: 11.5px; color: var(--t3); margin-top: 2px; }
+.steps > div.done .nm, .steps > div.now .nm { color: var(--t1); }
+.steps > div.now::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--ac); }
+.steps > div.done::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--ok); }
+
+.filecard { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.filecard .ic { width: 38px; height: 46px; border: 1px solid var(--line-strong); border-radius: 3px; background: var(--sunken); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 9px; color: var(--ok); flex: 0 0 auto; }
+.filecard .nm { font-size: 14px; font-weight: 500; color: var(--t1); }
+.filecard .mt { font-family: var(--mono); font-size: 11.5px; color: var(--t3); margin-top: 2px; }
+
+.tree { font-size: 13.5px; }
+.tree li > .row { display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 8px; border-radius: var(--r-sm); }
+.tree li > .row:hover { background: var(--hover); }
+.tree .nm { flex: 1 1 auto; color: var(--t2); }
+.tree .n { font-family: var(--mono); font-size: 11px; color: var(--t3); }
+.tree ul { margin-left: 14px; border-left: 1px solid var(--line); padding-left: 8px; }
+.tree .tw { width: 12px; color: var(--t3); font-size: 10px; }
+
+.tagcloud { display: flex; flex-wrap: wrap; gap: 6px; }
+.tagcloud .chip { height: 26px; font-size: 12.5px; }
+
+.two { display: grid; grid-template-columns: 1.35fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 1200px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="adm">
+
+  <aside class="adm-side">
+    <div class="top">
+      <div class="brand"><span class="mark">서식나루</span></div>
+      <span class="role">ADMIN CONSOLE</span>
+    </div>
+    <nav>
+      <h4>운영</h4>
+      <a href="index.html">대시보드</a>
+      <a href="forms.html" class="on">서식 관리 <span class="n">10,412</span></a>
+      <a href="members.html">회원·등급 <span class="n">412</span></a>
+      <a href="logs.html">내려받기 로그</a>
+      <h4>분류</h4>
+      <a href="#tree">카테고리 트리</a>
+      <a href="#tag">검색 태그</a>
+      <h4>설정</h4>
+      <a href="settings.html">한도·보안 정책</a>
+      <a href="settings.html#accounts">관리자 계정</a>
+    </nav>
+    <div class="btm">운영자 이지현 · 최고관리자<br><a href="../index.html" style="color:var(--ac)">서비스 화면으로</a></div>
+  </aside>
+
+  <div class="adm-main">
+    <div class="adm-bar">
+      <h1>서식 관리</h1>
+      <span class="crumb">등록 <span class="mono" id="cnt">10,412</span>건</span>
+      <span style="flex:1 1 auto"></span>
+      <button class="btn sm" id="oneBtn">서식 1건 등록</button>
+      <button class="btn pri sm" id="openBulk">엑셀 일괄 등록</button>
+    </div>
+
+    <div class="adm-body">
+
+      <!-- 일괄 등록 -->
+      <section class="panel" id="bulk">
+        <div class="hd">
+          <div>
+            <div class="h3">엑셀 일괄 등록</div>
+            <p class="xs t3" style="margin-top:2px">엑셀 한 장과 서식 파일 폴더를 올리면 파일명으로 짝을 맞춰 등록합니다.</p>
+          </div>
+          <a class="sm ac" href="#" id="tplBtn">등록 양식 내려받기 (CSV)</a>
+        </div>
+
+        <div class="steps" id="steps">
+          <div class="done"><div class="no">STEP 1</div><div class="nm">파일 올리기</div><div class="st">엑셀 1개 · 서식 파일 10,412개</div></div>
+          <div class="now"><div class="no">STEP 2</div><div class="nm">컬럼 매핑</div><div class="st">9개 항목 중 8개 자동 인식</div></div>
+          <div><div class="no">STEP 3</div><div class="nm">검증</div><div class="st">등록 전 오류 확인</div></div>
+          <div><div class="no">STEP 4</div><div class="nm">등록 실행</div><div class="st">대기</div></div>
+        </div>
+
+        <div class="bd stack-16">
+          <div class="filecard">
+            <div class="ic">XLSX</div>
+            <div class="grow">
+              <div class="nm">법률서식_일괄등록_2026Q3.xlsx</div>
+              <div class="mt">10,412행 · 9열 · 4.2MB · 업로드 2026-08-20 10:04</div>
+            </div>
+            <span class="badge ok">읽기 완료</span>
+            <button class="btn sm">교체</button>
+          </div>
+
+          <div class="drop" id="drop">
+            <svg class="ico" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 15V4m0 0L8 8m4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+            <h3>서식 파일 폴더를 여기에 놓으세요</h3>
+            <p>HWP · HWPX · PDF · 최대 2GB · 파일명이 엑셀의 <span class="mono">파일명</span> 열과 일치해야 합니다</p>
+            <p class="mono xs" style="margin-top:10px;color:var(--ok)">10,412개 중 10,270개 짝 맞춤 · 142개 미매칭</p>
+          </div>
+
+          <div class="two">
+            <div>
+              <div class="rule-head tight">
+                <span class="eyebrow">STEP 2 &nbsp;/&nbsp; COLUMN MAPPING</span>
+                <div class="bar"></div>
+              </div>
+              <div id="mapRows"></div>
+              <p class="xs t3" style="margin-top:10px">한 번 저장한 매핑은 다음 업로드에서 자동으로 적용됩니다.</p>
+            </div>
+
+            <div>
+              <div class="rule-head tight">
+                <span class="eyebrow">STEP 3 &nbsp;/&nbsp; VALIDATION</span>
+                <div class="bar"></div>
+              </div>
+              <div class="progress-rows">
+                <div><span class="k">정상</span><span class="meter ok" style="flex:1 1 auto"><i style="width:94.5%"></i></span><span class="v">9,842</span></div>
+                <div><span class="k">경고</span><span class="meter warn" style="flex:1 1 auto"><i style="width:4.1%"></i></span><span class="v">428</span></div>
+                <div><span class="k">실패</span><span class="meter bad" style="flex:1 1 auto"><i style="width:1.4%"></i></span><span class="v">142</span></div>
+              </div>
+
+              <div class="panel" style="margin-top:14px;overflow:hidden">
+                <div class="hd" style="padding:10px 14px">
+                  <span class="sm t1" style="font-weight:600">처리하지 못한 행</span>
+                  <a class="xs ac" href="#" id="failBtn">실패 목록 내려받기</a>
+                </div>
+                <table class="tbl d36 static">
+                  <thead><tr><th style="width:56px;padding-left:14px">행</th><th>사유</th><th style="width:74px"></th></tr></thead>
+                  <tbody>
+                    <tr><td class="num t3" style="padding-left:14px">1,204</td><td class="sm">파일명 <span class="mono">civ_1204.hwp</span> 가 폴더에 없습니다</td><td class="tr" style="padding-right:14px"><button class="btn sm">보기</button></td></tr>
+                    <tr><td class="num t3" style="padding-left:14px">2,881</td><td class="sm">분야 값 <span class="mono">민사집행</span> 이 카테고리 트리에 없습니다</td><td class="tr" style="padding-right:14px"><button class="btn sm">보기</button></td></tr>
+                    <tr><td class="num t3" style="padding-left:14px">4,017</td><td class="sm">최종개정일 <span class="mono">2026.13.02</span> 는 날짜 형식이 아닙니다</td><td class="tr" style="padding-right:14px"><button class="btn sm">보기</button></td></tr>
+                    <tr><td class="num t3" style="padding-left:14px">6,530</td><td class="sm">서식명이 <span class="mono">7,118행</span> 과 중복됩니다</td><td class="tr" style="padding-right:14px"><button class="btn sm">보기</button></td></tr>
+                    <tr><td class="num t3" style="padding-left:14px">9,346</td><td class="sm">이용등급 값이 비어 있습니다</td><td class="tr" style="padding-right:14px"><button class="btn sm">보기</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="xs t3" style="margin-top:10px">경고 428건은 등록되며, 값이 비어 있는 항목은 기본값으로 채워집니다.</p>
+            </div>
+          </div>
+
+          <div class="row gap-8" style="padding-top:4px;border-top:1px solid var(--line);padding-top:16px">
+            <span class="sm t3 grow">실패한 142건을 뺀 <b class="t1 mono">10,270건</b>을 등록합니다. 되돌리기는 등록 직후 24시간 안에 가능합니다.</span>
+            <button class="btn">검증 다시 실행</button>
+            <button class="btn pri" id="runBulk">10,270건 등록 실행</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 서식 목록 -->
+      <section class="panel" style="overflow:hidden">
+        <div class="toolbar">
+          <div class="srch">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <input id="q" type="search" placeholder="서식명 검색">
+          </div>
+          <select class="inp" id="fCat" style="width:132px"><option value="">전체 분야</option></select>
+          <select class="inp" id="fGrade" style="width:112px"><option value="">전체 등급</option><option value="0">무료</option><option value="1">정회원</option><option value="2">프리미엄</option></select>
+          <span class="grow"></span>
+          <span class="sm t3" id="listCnt"></span>
+          <button class="btn sm" id="bulkGrade">선택 등급 변경</button>
+          <button class="btn sm">선택 삭제</button>
+        </div>
+        <table class="tbl d36 static">
+          <thead><tr>
+            <th class="cbx"><input type="checkbox" id="all" aria-label="전체 선택"></th>
+            <th style="width:74px">ID</th>
+            <th>서식명</th>
+            <th style="width:116px">분야</th>
+            <th style="width:96px">파일</th>
+            <th style="width:104px">최종개정</th>
+            <th style="width:92px" class="tr">내려받기</th>
+            <th style="width:82px">등급</th>
+            <th style="width:78px">상태</th>
+            <th style="width:62px"></th>
+          </tr></thead>
+          <tbody id="body"></tbody>
+        </table>
+        <div class="row" style="justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line)">
+          <span class="sm t3">1–25 / <span class="mono" id="totalTxt">10,412</span></span>
+          <div class="row gap-8">
+            <button class="btn sm" disabled>이전</button>
+            <button class="btn sm" id="next">다음</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 분류 -->
+      <section class="two" id="tree">
+        <div class="panel">
+          <div class="hd">
+            <div class="h3">카테고리 트리</div>
+            <button class="btn sm">분류 추가</button>
+          </div>
+          <div class="bd">
+            <ul class="tree" id="treeBox"></ul>
+          </div>
+        </div>
+
+        <div class="panel" id="tag">
+          <div class="hd">
+            <div class="h3">검색 태그 매핑</div>
+            <span class="sm t3">동의어 · 오타 보정</span>
+          </div>
+          <div class="bd stack-16">
+            <div>
+              <p class="sm t2" style="margin-bottom:8px">검색어 <b class="t1">가압류</b> 에 연결된 태그</p>
+              <div class="tagcloud">
+                <span class="chip on">가압류</span><span class="chip on">보전처분</span><span class="chip on">가압류신청</span>
+                <span class="chip on">채권가압류</span><span class="chip on">부동산가압류</span><span class="chip">＋ 태그 추가</span>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div>
+              <p class="sm t2" style="margin-bottom:8px">최근 검색됐지만 결과가 없던 말</p>
+              <div class="tagcloud">
+                <span class="chip">가처분해제</span><span class="chip">공탁금회수청구</span><span class="chip">임차권등기명령</span>
+                <span class="chip">상속한정승인</span><span class="chip">부동산인도단행</span>
+              </div>
+              <p class="xs t3" style="margin-top:8px">이 말들을 기존 서식에 태그로 연결하면 다음 검색부터 결과가 잡힙니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- 서식 편집 드로어 -->
+<div class="drawer-mask" id="mask"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-labelledby="dTitle">
+  <div class="hd">
+    <div><div class="h3" id="dTitle">서식 편집</div><p class="xs t3 mono" id="dId"></p></div>
+    <button class="btn ghost sm" id="dClose" aria-label="닫기">✕</button>
+  </div>
+  <div class="bd stack-16">
+    <label class="field"><span class="lb">서식명</span><input class="inp" id="dName"></label>
+    <div class="row gap-12">
+      <label class="field grow"><span class="lb">분야</span><select class="inp" id="dCat" style="height:40px"></select></label>
+      <label class="field grow"><span class="lb">이용등급</span><select class="inp" id="dGrade" style="height:40px"><option value="0">무료</option><option value="1">정회원</option><option value="2">프리미엄</option></select></label>
+    </div>
+    <div class="row gap-12">
+      <label class="field grow"><span class="lb">근거 법령</span><input class="inp" id="dLaw"></label>
+      <label class="field grow"><span class="lb">최종개정일</span><input class="inp mono" id="dRev"></label>
+    </div>
+    <label class="field"><span class="lb">제출기관</span><input class="inp" id="dOffice"></label>
+    <label class="field"><span class="lb">검색 태그</span><input class="inp" placeholder="쉼표로 구분"></label>
+    <div>
+      <span class="lb" style="display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:6px">연결된 파일</span>
+      <dl class="deflist" id="dFiles"></dl>
+    </div>
+  </div>
+  <div class="ft">
+    <button class="btn" id="dCancel">취소</button>
+    <button class="btn pri" id="dSave">저장</button>
+  </div>
+</aside>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  $('#cnt').textContent = A.fmt(NARU.TOTAL);
+  $('#totalTxt').textContent = A.fmt(NARU.TOTAL);
+
+  /* 컬럼 매핑 */
+  var MAP = [
+    ['A · 서식명', 'title', '자동', 'ok'],
+    ['B · 분류', 'category', '자동', 'ok'],
+    ['C · 근거법령', 'law', '자동', 'ok'],
+    ['D · 제출기관', 'office', '자동', 'ok'],
+    ['E · 최종개정일', 'revised_at', '자동', 'ok'],
+    ['F · 파일명', 'file_name', '자동', 'ok'],
+    ['G · 이용등급', 'grade', '자동', 'ok'],
+    ['H · 절차단계', 'stage', '자동', 'ok'],
+    ['I · 비고', '', '미지정', 'skip']
+  ];
+  var FIELDS = [['', '연결 안 함'], ['title', '서식명'], ['category', '분야'], ['law', '근거 법령'],
+                ['office', '제출기관'], ['revised_at', '최종개정일'], ['file_name', '파일명'],
+                ['grade', '이용등급'], ['stage', '절차단계'], ['tags', '검색 태그'], ['memo', '내부 메모']];
+  $('#mapRows').innerHTML = MAP.map(function (m) {
+    var opts = FIELDS.map(function (f) {
+      return '<option value="' + f[0] + '"' + (f[0] === m[1] ? ' selected' : '') + '>' + f[1] + '</option>';
+    }).join('');
+    return '<div class="maprow">'
+      + '<span class="src">' + m[0] + '</span>'
+      + '<span class="arw">→</span>'
+      + '<select class="inp">' + opts + '</select>'
+      + '<span class="st">' + (m[3] === 'ok' ? '<span class="badge ok">자동 인식</span>' : '<span class="badge line">미지정</span>') + '</span>'
+      + '</div>';
+  }).join('');
+
+  $('#tplBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    A.csv('서식_일괄등록_양식.csv', [
+      ['서식명', '분류', '근거법령', '제출기관', '최종개정일', '파일명', '이용등급', '절차단계', '비고'],
+      ['소장 (대여금)', '민사', '민사소송법', '관할 지방법원', '2026-05-02', 'civ_0001.hwp', '정회원', '소제기·신청', '']
+    ]);
+  });
+  $('#failBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    A.csv('일괄등록_실패목록_20260820.csv', [
+      ['행', '사유'],
+      ['1204', '파일명 civ_1204.hwp 가 폴더에 없습니다'],
+      ['2881', '분야 값 민사집행 이 카테고리 트리에 없습니다'],
+      ['4017', '최종개정일 2026.13.02 는 날짜 형식이 아닙니다'],
+      ['6530', '서식명이 7118행 과 중복됩니다'],
+      ['9346', '이용등급 값이 비어 있습니다']
+    ]);
+  });
+  $('#oneBtn').addEventListener('click', function () {
+    openD(NARU.FORMS[0]);
+    $('#dTitle').textContent = '서식 등록';
+    $('#dId').textContent = '새 서식';
+    $('#dName').value = '';
+    $('#dFiles').innerHTML = '<div><dt>파일</dt><dd class="t3">저장 후 업로드할 수 있습니다</dd></div>';
+  });
+
+  $('#openBulk').addEventListener('click', function () {
+    $('#bulk').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  $('#runBulk').addEventListener('click', function () {
+    var b = this;
+    b.disabled = true; b.textContent = '등록 중… 0%';
+    var p = 0;
+    var t = setInterval(function () {
+      p += Math.random() * 14 + 6;
+      if (p >= 100) {
+        clearInterval(t);
+        b.textContent = '등록 완료';
+        $('#steps').children[1].className = 'done';
+        $('#steps').children[2].className = 'done';
+        $('#steps').children[3].className = 'now';
+        $('#steps').children[3].querySelector('.st').textContent = '10,270건 등록 완료';
+        A.toast('<b>10,270건</b>을 등록했습니다. 실패 142건은 목록으로 내려받을 수 있습니다.');
+        setTimeout(function () { b.disabled = false; b.textContent = '10,270건 등록 실행'; }, 2600);
+        return;
+      }
+      b.textContent = '등록 중… ' + Math.floor(p) + '%';
+    }, 320);
+  });
+
+  var drop = $('#drop');
+  ['dragenter', 'dragover'].forEach(function (e) {
+    drop.addEventListener(e, function (ev) { ev.preventDefault(); drop.classList.add('hot'); });
+  });
+  ['dragleave', 'drop'].forEach(function (e) {
+    drop.addEventListener(e, function (ev) { ev.preventDefault(); drop.classList.remove('hot'); });
+  });
+
+  /* 목록 */
+  var page = 0, rows = [];
+  NARU.CATS.forEach(function (c) {
+    $('#fCat').insertAdjacentHTML('beforeend', '<option value="' + c.code + '">' + c.name + '</option>');
+    $('#dCat').insertAdjacentHTML('beforeend', '<option value="' + c.code + '">' + c.name + '</option>');
+  });
+
+  function load() {
+    var r = NARU.search($('#q').value.trim(), {
+      cat: $('#fCat').value ? [$('#fCat').value] : [],
+      sort: 'dl'
+    });
+    if ($('#fGrade').value !== '') {
+      r.rows = r.rows.filter(function (f) { return f.g === +$('#fGrade').value; });
+      r.total = r.rows.length;
+    }
+    rows = r.rows;
+    $('#listCnt').textContent = A.fmt(r.total) + '건 · ' + r.ms + 'ms';
+    $('#totalTxt').textContent = A.fmt(r.total);
+    paint();
+  }
+  function paint() {
+    var slice = rows.slice(page * 25, page * 25 + 25);
+    $('#body').innerHTML = slice.map(function (f) {
+      return '<tr data-id="' + f.id + '">'
+        + '<td class="cbx"><input type="checkbox" aria-label="선택"></td>'
+        + '<td class="num t3">' + f.id + '</td>'
+        + '<td><span class="ttl trunc" style="display:block;max-width:340px">' + A.esc(f.t) + '</span>'
+        + '<span class="xs t3">' + f.l + '</span></td>'
+        + '<td class="sm t3">' + f.cn + '</td>'
+        + '<td>' + A.fmtTags(f.f) + '</td>'
+        + '<td class="num t3">' + f.r + '</td>'
+        + '<td class="num t3 tr">' + A.fmt(f.d) + '</td>'
+        + '<td>' + A.gradeBadge(f.g) + '</td>'
+        + '<td><span class="sev ok">공개</span></td>'
+        + '<td class="tr" style="padding-right:14px"><button class="btn sm" data-edit="' + f.id + '">편집</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+  ['q', 'fCat', 'fGrade'].forEach(function (id) {
+    $('#' + id).addEventListener(id === 'q' ? 'input' : 'change', function () { page = 0; load(); });
+  });
+  $('#next').addEventListener('click', function () { page++; paint(); });
+  $('#all').addEventListener('change', function () {
+    var on = this.checked;
+    $('#body').querySelectorAll('input').forEach(function (i) { i.checked = on; i.closest('tr').classList.toggle('sel', on); });
+  });
+  $('#body').addEventListener('change', function (e) {
+    if (e.target.type === 'checkbox') e.target.closest('tr').classList.toggle('sel', e.target.checked);
+  });
+  $('#bulkGrade').addEventListener('click', function () {
+    var n = $('#body').querySelectorAll('input:checked').length;
+    if (!n) { A.toast('등급을 바꿀 서식을 먼저 선택해 주세요.', 'bad'); return; }
+    A.toast('선택한 <b>' + n + '건</b>의 이용등급을 바꿉니다.');
+  });
+
+  /* 드로어 */
+  var cur = null;
+  function openD(f) {
+    cur = f;
+    $('#dTitle').textContent = '서식 편집';
+    $('#dId').textContent = 'ID ' + f.id;
+    $('#dName').value = f.t;
+    $('#dCat').value = f.c;
+    $('#dGrade').value = f.g;
+    $('#dLaw').value = f.l;
+    $('#dRev').value = f.r;
+    $('#dOffice').value = f.o;
+    $('#dFiles').innerHTML = f.f.map(function (x) {
+      return '<div><dt>' + x + '</dt><dd class="mono">' + f.id + '_' + x.toLowerCase() + '.' + x.toLowerCase() + ' <span class="t3">· '
+        + (120 + (f.id % 700)) + 'KB</span></dd></div>';
+    }).join('');
+    $('#drawer').classList.add('on'); $('#mask').classList.add('on');
+  }
+  function closeD() { $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); }
+  $('#body').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-edit]'); if (!b) return;
+    openD(NARU.byId(b.dataset.edit));
+  });
+  $('#dClose').addEventListener('click', closeD);
+  $('#dCancel').addEventListener('click', closeD);
+  $('#mask').addEventListener('click', closeD);
+  $('#dSave').addEventListener('click', function () {
+    A.toast('<b>' + A.esc($('#dName').value.slice(0, 24)) + '…</b> 수정 내용을 저장했습니다.');
+    closeD();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeD(); });
+
+  /* 카테고리 트리 */
+  var SUB = {
+    civil: ['소장·신청', '답변·준비서면', '증거·신청', '상소', '조정·화해'],
+    exec: ['보전처분', '강제집행', '경매', '재산조회'],
+    reg: ['소유권', '담보물권', '용익물권', '표시변경', '가등기'],
+    creg: ['설립', '변경', '해산·청산', '의사록'],
+    family: ['이혼', '상속', '친권·양육', '후견'],
+    crime: ['고소·고발', '수사단계', '공판단계', '상소·재심'],
+    rehab: ['개인회생', '개인파산', '법인회생'],
+    nonc: ['과태료', '공시최고', '법인비송'],
+    depo: ['변제공탁', '집행공탁', '지급청구'],
+    admin: ['행정심판·소송', '정보공개', '내용증명', '계약서']
+  };
+  $('#treeBox').innerHTML = NARU.CATS.map(function (c) {
+    var subs = SUB[c.code] || [];
+    var each = Math.floor(c.n / Math.max(1, subs.length));
+    return '<li><div class="row"><span class="tw">▾</span>'
+      + '<span class="nm" style="color:var(--t1);font-weight:500">' + c.name + '</span>'
+      + '<span class="n">' + A.fmt(c.n) + '</span></div>'
+      + '<ul>' + subs.map(function (s, i) {
+          var n = i === subs.length - 1 ? c.n - each * (subs.length - 1) : each;
+          return '<li><div class="row"><span class="tw"></span><span class="nm">' + s + '</span><span class="n">' + A.fmt(n) + '</span></div></li>';
+        }).join('') + '</ul></li>';
+  }).join('');
+
+  load();
+})();
+</script>
+</body>
+</html>

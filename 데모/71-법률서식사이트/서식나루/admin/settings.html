@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>한도·보안 정책 · 서식나루 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.settbl { width: 100%; }
+.settbl th, .settbl td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13.5px; }
+.settbl thead th { background: var(--sunken); font-size: 12px; font-weight: 600; color: var(--t2); }
+.settbl tbody th { font-weight: 500; color: var(--t1); }
+.settbl tr:last-child th, .settbl tr:last-child td { border-bottom: 0; }
+.settbl .inp { height: 32px; width: 92px; font-family: var(--mono); font-size: 13px; }
+.switch { position: relative; width: 34px; height: 20px; flex: 0 0 auto; display: inline-block; vertical-align: middle; }
+.switch input { appearance: none; width: 34px; height: 20px; border-radius: 999px; background: var(--line-strong); border: 0; cursor: pointer; transition: background .16s var(--ease); }
+.switch input:checked { background: var(--ac); }
+.switch input::after { content: ''; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .16s var(--ease); }
+.switch input:checked::after { transform: translateX(14px); }
+.polrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+.polrow:last-child { border-bottom: 0; }
+.polrow .k { font-size: 13.5px; color: var(--t1); font-weight: 500; }
+.polrow .d { font-size: 12px; color: var(--t3); margin-top: 2px; }
+.rolebadge { display: inline-flex; height: 20px; padding: 0 7px; align-items: center; border-radius: var(--r-xs); font-size: 11px; font-weight: 500; }
+.rolebadge.super { background: var(--ac-soft); color: var(--ac); border: 1px solid #cbe3fb; }
+.rolebadge.op { background: var(--sunken); color: var(--t2); border: 1px solid var(--line); }
+.rolebadge.view { background: transparent; color: var(--t3); border: 1px solid var(--line-strong); }
+@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="adm">
+
+  <aside class="adm-side">
+    <div class="top"><div class="brand"><span class="mark">서식나루</span></div><span class="role">ADMIN CONSOLE</span></div>
+    <nav>
+      <h4>운영</h4>
+      <a href="index.html">대시보드</a>
+      <a href="forms.html">서식 관리 <span class="n">10,412</span></a>
+      <a href="members.html">회원·등급 <span class="n">412</span></a>
+      <a href="logs.html">내려받기 로그</a>
+      <h4>분류</h4>
+      <a href="forms.html#tree">카테고리 트리</a>
+      <a href="forms.html#tag">검색 태그</a>
+      <h4>설정</h4>
+      <a href="settings.html" class="on">한도·보안 정책</a>
+      <a href="settings.html#accounts">관리자 계정</a>
+    </nav>
+    <div class="btm">운영자 이지현 · 최고관리자<br><a href="../index.html" style="color:var(--ac)">서비스 화면으로</a></div>
+  </aside>
+
+  <div class="adm-main">
+    <div class="adm-bar">
+      <h1>한도·보안 정책</h1>
+      <span class="crumb">마지막 변경 2026-08-11 · 이지현</span>
+      <span style="flex:1 1 auto"></span>
+      <button class="btn sm" id="histBtn">변경 이력</button>
+      <button class="btn pri sm" id="saveBtn">정책 저장</button>
+    </div>
+
+    <div class="adm-body">
+
+      <div class="two">
+        <section class="panel" style="overflow:hidden">
+          <div class="hd">
+            <div class="h3">등급별 내려받기 한도</div>
+            <span class="sm t3">저장 즉시 적용</span>
+          </div>
+          <table class="settbl">
+            <thead><tr><th style="width:110px">등급</th><th>하루</th><th>한 달</th><th>일괄 1회</th></tr></thead>
+            <tbody>
+              <tr>
+                <th>일반</th>
+                <td><input class="inp" value="5"></td>
+                <td><input class="inp" value="60"></td>
+                <td><input class="inp" value="1"></td>
+              </tr>
+              <tr>
+                <th>정회원</th>
+                <td><input class="inp" value="50"></td>
+                <td><input class="inp" value="600"></td>
+                <td><input class="inp" value="10"></td>
+              </tr>
+              <tr>
+                <th>프리미엄</th>
+                <td><input class="inp" value="0" title="0 = 제한 없음"></td>
+                <td><input class="inp" value="0"></td>
+                <td><input class="inp" value="50"></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="xs t3" style="padding:10px 14px;border-top:1px solid var(--line)">0을 입력하면 제한 없음으로 적용됩니다. 회원별 개별 한도는 회원·등급 관리에서 따로 설정할 수 있습니다.</p>
+        </section>
+
+        <section class="panel">
+          <div class="hd"><div class="h3">유출 방지</div></div>
+          <div class="bd">
+            <div class="polrow">
+              <div><div class="k">확인 대상 자동 표시</div><div class="d">짧은 시간 대량 내려받기를 로그에 표시합니다</div></div>
+              <div class="row gap-8"><input class="inp" style="height:32px;width:64px" value="40"><span class="sm t3">건 /</span><input class="inp" style="height:32px;width:64px" value="10"><span class="sm t3">분</span></div>
+            </div>
+            <div class="polrow">
+              <div><div class="k">한도 도달 시 자동 차단</div><div class="d">확인 대상 임계를 넘으면 관리자 확인 전까지 내려받기를 멈춥니다</div></div>
+              <span class="switch"><input type="checkbox" checked aria-label="자동 차단"></span>
+            </div>
+            <div class="polrow">
+              <div><div class="k">업무시간 외 대량 내려받기 알림</div><div class="d">21시–07시 사이 20건 이상이면 관리자에게 메일을 보냅니다</div></div>
+              <span class="switch"><input type="checkbox" checked aria-label="야간 알림"></span>
+            </div>
+            <div class="polrow">
+              <div><div class="k">동일 서식 재다운로드 무료</div><div class="d">받은 서식을 다시 받을 때 한도에서 빼지 않는 기간</div></div>
+              <div class="row gap-8"><input class="inp" style="height:32px;width:64px" value="24"><span class="sm t3">시간</span></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="two">
+        <section class="panel">
+          <div class="hd"><div class="h3">세션 정책</div></div>
+          <div class="bd">
+            <div class="polrow">
+              <div><div class="k">1인 1세션</div><div class="d">새 기기 로그인 시 기존 접속을 자동 해제합니다</div></div>
+              <span class="switch"><input type="checkbox" checked aria-label="1인 1세션"></span>
+            </div>
+            <div class="polrow">
+              <div><div class="k">미사용 자동 로그아웃</div><div class="d">입력이 없으면 세션을 종료합니다</div></div>
+              <div class="row gap-8"><input class="inp" style="height:32px;width:64px" value="120"><span class="sm t3">분</span></div>
+            </div>
+            <div class="polrow">
+              <div><div class="k">동시 로그인 시도 알림</div><div class="d">서로 다른 IP 3곳 이상에서 30분 내 로그인하면 확인 대상으로 표시합니다</div></div>
+              <span class="switch"><input type="checkbox" checked aria-label="다중 접속 알림"></span>
+            </div>
+            <div class="polrow">
+              <div><div class="k">비밀번호 변경 주기 안내</div><div class="d">마지막 변경 후 일정 기간이 지나면 변경을 안내합니다</div></div>
+              <div class="row gap-8"><input class="inp" style="height:32px;width:64px" value="180"><span class="sm t3">일</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="accounts" style="overflow:hidden">
+          <div class="hd">
+            <div class="h3">관리자 계정</div>
+            <button class="btn sm" id="invBtn">관리자 초대</button>
+          </div>
+          <table class="tbl d44 static">
+            <thead><tr>
+              <th style="padding-left:16px">이름</th>
+              <th style="width:120px">권한</th>
+              <th style="width:120px">최근 접속</th>
+              <th style="width:130px">2단계 인증</th>
+              <th style="width:64px"></th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td style="padding-left:16px"><span class="t1" style="font-weight:500">이지현</span><div class="xs t3 mono">jh.lee@seosiknaru.kr</div></td>
+                <td><span class="rolebadge super">최고관리자</span></td>
+                <td class="sm t3">방금 전</td>
+                <td><span class="sev ok">사용 중</span></td>
+                <td class="tr" style="padding-right:14px"><button class="btn sm" data-mg="이지현">관리</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><span class="t1" style="font-weight:500">박준서</span><div class="xs t3 mono">js.park@seosiknaru.kr</div></td>
+                <td><span class="rolebadge op">서식 운영</span></td>
+                <td class="sm t3">1시간 전</td>
+                <td><span class="sev ok">사용 중</span></td>
+                <td class="tr" style="padding-right:14px"><button class="btn sm" data-mg="박준서">관리</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><span class="t1" style="font-weight:500">김세아</span><div class="xs t3 mono">sa.kim@seosiknaru.kr</div></td>
+                <td><span class="rolebadge op">회원 운영</span></td>
+                <td class="sm t3">어제</td>
+                <td><span class="sev warn">미설정</span></td>
+                <td class="tr" style="padding-right:14px"><button class="btn sm" data-mg="김세아">관리</button></td>
+              </tr>
+              <tr>
+                <td style="padding-left:16px"><span class="t1" style="font-weight:500">감사계정</span><div class="xs t3 mono">audit@seosiknaru.kr</div></td>
+                <td><span class="rolebadge view">열람 전용</span></td>
+                <td class="sm t3">5일 전</td>
+                <td><span class="sev ok">사용 중</span></td>
+                <td class="tr" style="padding-right:14px"><button class="btn sm" data-mg="감사계정">관리</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="xs t3" style="padding:10px 16px;border-top:1px solid var(--line)">권한은 최고관리자 · 서식 운영 · 회원 운영 · 열람 전용 4단계입니다. 정책 변경과 관리자 초대는 최고관리자만 할 수 있습니다.</p>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+<script>
+(function () {
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    A.toast('정책을 저장했습니다. <span class="sm t3">변경 내용은 즉시 적용됩니다</span>');
+  });
+  document.getElementById('histBtn').addEventListener('click', function () {
+    A.toast('최근 변경 3건<br><span class="sm t3">08-11 정회원 일괄 한도 5→10 · 08-02 야간 알림 켬 · 07-19 임계 30→40건</span>');
+  });
+  document.getElementById('invBtn').addEventListener('click', function () {
+    A.toast('초대 메일을 보낼 주소를 입력하는 창이 열립니다.');
+  });
+  document.querySelectorAll('[data-mg]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      A.toast('<b>' + b.dataset.mg + '</b> 계정의 권한·인증 설정 화면을 엽니다.');
+    });
+  });
+})();
+</script>
+</body>
+</html>

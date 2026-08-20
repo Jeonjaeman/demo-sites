@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내려받기 로그 · 서식나루 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.heat { display: grid; grid-template-columns: repeat(24, 1fr); gap: 2px; }
+.heat i { display: block; aspect-ratio: 1; border-radius: 2px; background: var(--sunken); }
+.heat i[data-l="1"] { background: #d1e8fe; }
+.heat i[data-l="2"] { background: #7bcdf5; }
+.heat i[data-l="3"] { background: #0091db; }
+.heat i[data-l="4"] { background: var(--ac); }
+.heatlbl { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--t3); margin-top: 6px; }
+.policy div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.policy div:last-child { border-bottom: 0; }
+.policy .k { font-size: 13px; color: var(--t2); }
+.policy .v { font-family: var(--mono); font-size: 13px; color: var(--t1); }
+.two { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; }
+@media (max-width: 1200px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="adm">
+
+  <aside class="adm-side">
+    <div class="top"><div class="brand"><span class="mark">서식나루</span></div><span class="role">ADMIN CONSOLE</span></div>
+    <nav>
+      <h4>운영</h4>
+      <a href="index.html">대시보드</a>
+      <a href="forms.html">서식 관리 <span class="n">10,412</span></a>
+      <a href="members.html">회원·등급 <span class="n">412</span></a>
+      <a href="logs.html" class="on">내려받기 로그</a>
+      <h4>분류</h4>
+      <a href="forms.html#tree">카테고리 트리</a>
+      <a href="forms.html#tag">검색 태그</a>
+      <h4>설정</h4>
+      <a href="settings.html">한도·보안 정책</a>
+      <a href="settings.html#accounts">관리자 계정</a>
+    </nav>
+    <div class="btm">운영자 이지현 · 최고관리자<br><a href="../index.html" style="color:var(--ac)">서비스 화면으로</a></div>
+  </aside>
+
+  <div class="adm-main">
+    <div class="adm-bar">
+      <h1>내려받기 로그</h1>
+      <span class="crumb">2026-08-20 · 오늘 <span class="mono">1,847</span>건</span>
+      <span style="flex:1 1 auto"></span>
+      <button class="btn sm" id="csvBtn">CSV 내려받기</button>
+    </div>
+
+    <div class="adm-body">
+
+      <div class="two">
+        <section class="panel">
+          <div class="hd">
+            <div class="h3">시간대별 내려받기</div>
+            <span class="sm t3">최근 7일 × 24시간</span>
+          </div>
+          <div class="bd">
+            <div class="heat" id="heat"></div>
+            <div class="heatlbl"><span>00시</span><span>06시</span><span>12시</span><span>18시</span><span>23시</span></div>
+            <p class="xs t3" style="margin-top:10px">업무시간(09–18시)에 전체의 <span class="mono t2">82%</span>가 집중됩니다. 이 시간대를 벗어난 대량 내려받기는 확인 대상으로 표시됩니다.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="hd"><div class="h3">현재 적용 중인 정책</div><a class="btn sm" href="settings.html">수정</a></div>
+          <div class="bd policy">
+            <div><span class="k">일반 하루 한도</span><span class="v">5건</span></div>
+            <div><span class="k">정회원 하루 한도</span><span class="v">50건</span></div>
+            <div><span class="k">프리미엄 하루 한도</span><span class="v">제한 없음</span></div>
+            <div><span class="k">한 번에 일괄 내려받기</span><span class="v">10건 / 50건</span></div>
+            <div><span class="k">확인 대상 임계</span><span class="v">10분 40건</span></div>
+            <div><span class="k">동일 서식 재다운로드</span><span class="v">24시간 내 무료</span></div>
+            <div><span class="k">동시 세션</span><span class="v">1</span></div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel" style="overflow:hidden">
+        <div class="toolbar">
+          <div class="srch">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <input id="q" type="search" placeholder="이용자, 서식명, IP">
+          </div>
+          <select class="inp" id="fp" style="width:118px"><option>오늘</option><option>최근 7일</option><option>최근 30일</option></select>
+          <select class="inp" id="fr" style="width:126px">
+            <option value="">전체 결과</option><option value="ok">완료</option>
+            <option value="deny">한도 초과</option><option value="block">권한 없음</option>
+          </select>
+          <label class="row gap-8 sm t2" style="margin-left:4px;cursor:pointer">
+            <input type="checkbox" id="onlyRisk"> 확인 대상만
+          </label>
+          <span class="grow"></span>
+          <span class="sm t3" id="cnt"></span>
+        </div>
+
+        <table class="tbl d36 static">
+          <thead><tr>
+            <th style="width:152px;padding-left:16px">일시</th>
+            <th style="width:150px">이용자</th>
+            <th>서식명</th>
+            <th style="width:62px">형식</th>
+            <th style="width:126px">IP</th>
+            <th style="width:96px">기기</th>
+            <th style="width:110px">결과</th>
+          </tr></thead>
+          <tbody id="body"></tbody>
+        </table>
+
+        <div class="row" style="justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line)">
+          <span class="sm t3">1–30 / <span class="mono" id="tot">1,847</span></span>
+          <div class="row gap-8"><button class="btn sm" disabled>이전</button><button class="btn sm" id="next">다음</button></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+
+  function rnd(seed) { var s = seed % 2147483647; if (s <= 0) s += 2147483646;
+    return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+  var r = rnd(9137);
+
+  /* 시간대 분포 */
+  var heat = '';
+  for (var d = 0; d < 7; d++) {
+    for (var h = 0; h < 24; h++) {
+      var base = (h >= 9 && h <= 18) ? 3 : (h >= 7 && h <= 21 ? 1 : 0);
+      if (d >= 5) base = Math.max(0, base - 2);
+      var lv = Math.min(4, Math.max(0, base + (r() < .28 ? 1 : 0)));
+      heat += '<i data-l="' + lv + '"></i>';
+    }
+  }
+  $('#heat').innerHTML = heat;
+
+  /* 로그 */
+  var NAMES = ['김도현', '이지훈', '박민석', '최재원', '정수빈', '강현우', '조태경', '윤유진', '장상혁', '임은정',
+               '한준호', '오세영', '서기범', '신나윤', '권동주', '황혜림', '안성민', '송가영', '류재훈', '전소연'];
+  var UIDS = ['dh.kim', 'jh.lee', 'ms.park', 'jw.choi', 'sb.jung', 'hw.kang', 'tk.cho', 'yj.yoon', 'sh.jang', 'ej.lim',
+              'jh.han', 'sy.oh', 'kb.seo', 'ny.shin', 'dj.kwon', 'hr.hwang', 'sm.ahn', 'gy.song', 'jh.ryu', 'sy.jeon'];
+  var pool = NARU.FORMS.slice().sort(function (a, b) { return b.d - a.d; }).slice(0, 900);
+
+  var LOGS = [];
+  var hh = 11, mm = 47, ss = 12;
+  for (var i = 0; i < 200; i++) {
+    mm -= Math.floor(r() * 4);
+    if (mm < 0) { mm += 60; hh--; }
+    if (hh < 6) { hh = 18; }
+    ss = Math.floor(r() * 60);
+    var ni = Math.floor(r() * NAMES.length);
+    var f = pool[Math.floor(r() * pool.length)];
+    var rr = r();
+    var res = rr < .93 ? 'ok' : (rr < .985 ? 'deny' : 'block');
+    var risk = res !== 'ok' || (r() < .04);
+    LOGS.push({
+      t: '2026-08-20 ' + String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0') + ':' + String(ss).padStart(2, '0'),
+      name: NAMES[ni], uid: UIDS[ni],
+      grade: r() < .12 ? 2 : (r() < .95 ? 1 : 0),
+      f: f,
+      ext: f.f[Math.floor(r() * f.f.length)],
+      ip: '211.' + (30 + Math.floor(r() * 200)) + '.' + Math.floor(r() * 250) + '.' + Math.floor(r() * 250),
+      dev: r() < .8 ? 'Windows' : 'macOS',
+      res: res, risk: risk
+    });
+  }
+
+  var RES = {
+    ok: '<span class="sev ok">완료</span>',
+    deny: '<span class="sev bad">한도 초과</span>',
+    block: '<span class="sev warn">권한 없음</span>'
+  };
+
+  document.getElementById('csvBtn').addEventListener('click', function () {
+    var rows = [['일시', '이용자', '아이디', '서식명', '형식', 'IP', '기기', '결과']];
+    var RS = { ok: '완료', deny: '한도 초과', block: '권한 없음' };
+    LOGS.forEach(function (l) {
+      rows.push([l.t, l.name, l.uid, l.f.t, l.ext, l.ip, l.dev, RS[l.res]]);
+    });
+    A.csv('내려받기로그_20260820.csv', rows);
+  });
+
+  var page = 0;
+  function paint() {
+    var q = $('#q').value.trim().toLowerCase();
+    var fr = $('#fr').value, only = $('#onlyRisk').checked;
+    var rows = LOGS.filter(function (l) {
+      if (q && (l.name + l.uid + l.f.t + l.ip).toLowerCase().indexOf(q) === -1) return false;
+      if (fr && l.res !== fr) return false;
+      if (only && !l.risk) return false;
+      return true;
+    });
+    $('#cnt').textContent = A.fmt(rows.length) + '건';
+    $('#tot').textContent = A.fmt(rows.length);
+    $('#body').innerHTML = rows.slice(page * 30, page * 30 + 30).map(function (l) {
+      return '<tr' + (l.risk ? ' style="background:#fdf5f5"' : '') + '>'
+        + '<td class="num t3" style="padding-left:16px">' + l.t + '</td>'
+        + '<td><span class="t1" style="font-weight:500">' + l.name + '</span> ' + A.gradeBadge(l.grade)
+        + '<div class="xs t3 mono">' + l.uid + '</div></td>'
+        + '<td><a class="ttl trunc" style="display:block;max-width:330px" href="../form.html?id=' + l.f.id + '">' + A.esc(l.f.t) + '</a></td>'
+        + '<td class="num t3">' + l.ext + '</td>'
+        + '<td class="num t3">' + l.ip + '</td>'
+        + '<td class="sm t3">' + l.dev + '</td>'
+        + '<td>' + RES[l.res] + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+  ['q', 'fr', 'onlyRisk', 'fp'].forEach(function (id) {
+    $('#' + id).addEventListener(id === 'q' ? 'input' : 'change', function () { page = 0; paint(); });
+  });
+  $('#next').addEventListener('click', function () { page++; paint(); });
+  paint();
+})();
+</script>
+</body>
+</html>

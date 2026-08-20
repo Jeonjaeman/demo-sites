@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 서식함 · 서식나루</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start; padding: 28px 0 72px; }
+
+.mnav { position: sticky; top: 84px; }
+.mnav h3 { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--ac); text-transform: uppercase; margin: 0 0 10px 8px; }
+.mnav a { display: flex; align-items: center; justify-content: space-between; height: 32px; padding: 0 10px; border-radius: var(--r-sm); font-size: 13.5px; color: var(--t2); transition: background .12s var(--ease), color .12s var(--ease); }
+.mnav a:hover { background: var(--hover); color: var(--t1); }
+.mnav a.on { background: var(--ac-soft); color: var(--ac); font-weight: 600; }
+.mnav a .n { font-family: var(--mono); font-size: 11px; color: var(--t3); }
+.mnav .grp + .grp { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); }
+
+.acct { display: grid; grid-template-columns: 1.4fr 1fr 1fr; border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+.acct > div { padding: 18px 20px; border-right: 1px solid var(--line); }
+.acct > div:last-child { border-right: 0; }
+.acct .who { font-size: 17px; font-weight: 600; color: var(--t1); letter-spacing: -.02em; }
+.acct .lb { font-size: 12px; color: var(--t3); margin-bottom: 6px; }
+.acct .big { font-family: var(--mono); font-size: 30px; font-weight: 600; letter-spacing: -.02em; color: var(--t1); line-height: 1.1; }
+.acct .big small { font-size: 13px; color: var(--t3); font-weight: 400; }
+
+.session { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); }
+.session .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex: 0 0 auto; box-shadow: 0 0 0 3px var(--ok-soft); }
+
+.folders { display: flex; gap: 6px; flex-wrap: wrap; }
+.folders button { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); font-size: 13px; color: var(--t1); transition: border-color .3s ease, background .3s ease, color .3s ease; }
+.folders button:hover { border-color: var(--ac); color: var(--ac); }
+.folders button.on { background: var(--ac); border-color: var(--ac); color: #fff; font-weight: 600; }
+.folders button .n { font-family: var(--mono); font-size: 11px; color: var(--t3); }
+.folders button.on .n { color: rgba(255,255,255,.72); }
+.folders button.add { border-style: dashed; color: var(--t3); }
+
+.tbl thead th { top: 60px; }
+
+.alertlist li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.alertlist li:last-child { border-bottom: 0; }
+.alertlist .dt { font-family: var(--mono); font-size: 11.5px; color: var(--t3); flex: 0 0 62px; padding-top: 2px; }
+.alertlist .bd { flex: 1 1 auto; min-width: 0; }
+.alertlist .bd a { font-size: 14px; color: var(--t1); font-weight: 500; }
+.alertlist .bd a:hover { color: var(--ac); text-decoration: underline; text-underline-offset: 3px; }
+.alertlist .bd p { font-size: 12.5px; color: var(--t3); margin-top: 2px; }
+
+.spark { display: flex; align-items: flex-end; gap: 3px; height: 44px; }
+.spark i { flex: 1 1 auto; background: var(--ac-soft); border-radius: 1px; transition: background .14s var(--ease); }
+.spark i:hover { background: var(--ac); }
+
+@media (max-width: 980px) {
+  .wrap { grid-template-columns: 1fr; }
+  .mnav { position: static; }
+  .acct { grid-template-columns: 1fr; }
+  .acct > div { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="shell">
+    <a class="brand" href="index.html"><span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span></a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="search.html">서식검색</a>
+      <a href="search.html#cat">분야별</a>
+      <a href="search.html#stage">절차별</a>
+      <a href="plan.html">이용등급</a>
+    </nav>
+    <div class="side">
+      <div class="hdr-search">
+        <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="서식명, 사건유형, 법령" aria-label="서식 검색">
+      </div>
+      <a class="btn ghost sm" href="mypage.html" style="color:var(--ac)">내 서식함</a>
+      <span class="badge std">정회원</span>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="wrap">
+
+    <aside class="mnav">
+      <div class="grp">
+        <h3>내 서식</h3>
+        <a href="#keep" class="on">서식함 <span class="n">36</span></a>
+        <a href="#recent">최근 내려받기 <span class="n">241</span></a>
+        <a href="#alert">개정 알림 <span class="n">4</span></a>
+      </div>
+      <div class="grp">
+        <h3>계정</h3>
+        <a href="plan.html">이용등급</a>
+        <a href="#session">접속 기기</a>
+        <a href="support.html#hwp">한글 연동 설정</a>
+        <a href="login.html">로그아웃</a>
+      </div>
+    </aside>
+
+    <main class="stack-40">
+
+      <!-- 계정 요약 -->
+      <section>
+        <div class="rule-head tight">
+          <span class="eyebrow">MY ACCOUNT</span>
+          <h1 class="h1">내 서식함</h1>
+          <div class="bar"></div>
+        </div>
+
+        <div class="acct">
+          <div>
+            <div class="lb">이용자</div>
+            <div class="who">김도현 법무사</div>
+            <p class="sm t3" style="margin-top:4px">도현법무사사무소 · 정회원</p>
+            <p class="sm t3" style="margin-top:10px">이용기간 2026-12-16까지 <span class="mono t2">D-118</span></p>
+          </div>
+          <div>
+            <div class="lb">오늘 내려받기</div>
+            <div class="big" id="dayBig">18<small> / 50건</small></div>
+            <div class="meter" style="margin-top:10px"><i id="dayBar" style="width:36%"></i></div>
+          </div>
+          <div>
+            <div class="lb">이번 달 내려받기</div>
+            <div class="big">241<small> / 600건</small></div>
+            <div class="spark" style="margin-top:10px" id="spark"></div>
+          </div>
+        </div>
+
+        <div class="session" id="session" style="margin-top:12px">
+          <span class="dot"></span>
+          <div class="grow">
+            <div class="sm t1">현재 접속 기기 1대 · Windows · Chrome 141</div>
+            <div class="xs t3">2026-08-20 09:12 접속 · 1인 1세션으로 운영되어 다른 기기에서 로그인하면 이 접속은 해제됩니다.</div>
+          </div>
+          <button class="btn sm" id="logoutAll">다른 기기 모두 로그아웃</button>
+        </div>
+      </section>
+
+      <!-- 서식함 -->
+      <section id="keep">
+        <div class="rule-head tight">
+          <div class="row">
+            <div><span class="eyebrow">SAVED</span><h2 class="h2">서식함</h2></div>
+            <span class="sm t3">보관 36 / 300건</span>
+          </div>
+          <div class="bar"></div>
+        </div>
+
+        <div class="folders" id="folders" style="margin-bottom:12px">
+          <button class="on" data-f="all">전체 <span class="n">36</span></button>
+          <button data-f="a">2026가단31402 대여금 <span class="n">9</span></button>
+          <button data-f="b">등기 진행건 <span class="n">12</span></button>
+          <button data-f="c">개인회생 <span class="n">7</span></button>
+          <button data-f="d">자주 쓰는 서식 <span class="n">8</span></button>
+          <button class="add">＋ 폴더 추가</button>
+        </div>
+
+        <div class="panel" style="overflow:hidden">
+          <table class="tbl d36 static">
+            <thead><tr>
+              <th class="cbx"><input type="checkbox" aria-label="전체 선택"></th>
+              <th>서식명</th><th style="width:110px">분야</th><th style="width:100px">파일</th>
+              <th style="width:104px">최종개정</th><th style="width:96px">담은 날짜</th><th style="width:70px"></th>
+            </tr></thead>
+            <tbody id="keepBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 최근 내려받기 -->
+      <section id="recent">
+        <div class="rule-head tight">
+          <div class="row">
+            <div><span class="eyebrow">HISTORY</span><h2 class="h2">최근 내려받기</h2></div>
+            <a class="sm ac" href="#" id="histCsv">전체 이력 내려받기 (CSV) →</a>
+          </div>
+          <div class="bar"></div>
+        </div>
+        <div class="panel" style="overflow:hidden">
+          <table class="tbl d36 static">
+            <thead><tr>
+              <th style="width:150px;padding-left:16px">일시</th>
+              <th>서식명</th><th style="width:64px">형식</th>
+              <th style="width:120px">기기</th><th style="width:80px" class="tr">결과</th>
+            </tr></thead>
+            <tbody id="histBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 개정 알림 -->
+      <section id="alert">
+        <div class="rule-head tight">
+          <div class="row">
+            <div><span class="eyebrow">NOTICE</span><h2 class="h2">담아둔 서식의 개정 알림</h2></div>
+            <span class="sm t3">최근 60일</span>
+          </div>
+          <div class="bar"></div>
+        </div>
+        <div class="panel"><div class="bd" style="padding:4px 16px">
+          <ul class="alertlist" id="alertList"></ul>
+        </div></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="meta" style="border:0;margin:0;padding:0">
+      <span>© 2026 서식나루</span>
+      <nav><a href="terms.html">이용약관</a><a href="terms.html#privacy">개인정보처리방침</a><a href="terms.html#biz">사업자정보</a><a href="support.html">고객지원</a><a href="admin/index.html">관리자</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var pool = NARU.FORMS.slice().sort(function (a, b) { return b.d - a.d; });
+
+  /* 서식함 */
+  var keep = pool.slice(3, 39);
+  var addDates = ['08-19', '08-18', '08-18', '08-14', '08-12', '08-11', '08-07', '08-05', '07-30', '07-28'];
+  function paintKeep(filter) {
+    var rows = keep;
+    if (filter === 'a') rows = keep.filter(function (f) { return f.c === 'civil'; }).slice(0, 9);
+    if (filter === 'b') rows = keep.filter(function (f) { return f.c === 'reg' || f.c === 'creg'; }).slice(0, 12);
+    if (filter === 'c') rows = keep.filter(function (f) { return f.c === 'rehab'; }).slice(0, 7);
+    if (filter === 'd') rows = keep.slice(0, 8);
+    if (!rows.length) rows = keep.slice(0, 6);
+    $('#keepBody').innerHTML = rows.slice(0, 14).map(function (f, i) {
+      return '<tr>'
+        + '<td class="cbx"><input type="checkbox" aria-label="선택"></td>'
+        + '<td><a class="ttl trunc" style="display:block;max-width:420px" href="form.html?id=' + f.id + '">' + A.esc(f.t) + '</a></td>'
+        + '<td class="sm t3">' + f.cn + '</td>'
+        + '<td>' + A.fmtTags(f.f) + '</td>'
+        + '<td class="num t3">' + f.r + '</td>'
+        + '<td class="num t3">' + (addDates[i % addDates.length]) + '</td>'
+        + '<td class="tr" style="padding-right:14px"><button class="btn sm" data-dl="' + f.id + '">받기</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+  paintKeep('all');
+
+  $('#folders').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    if (b.classList.contains('add')) { A.toast('폴더 이름을 입력하면 사건별로 서식을 나눠 담을 수 있습니다.'); return; }
+    $('#folders').querySelectorAll('button').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    paintKeep(b.dataset.f);
+  });
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-dl]'); if (!b) return;
+    A.download(NARU.byId(b.dataset.dl), 'HWP');
+  });
+
+  /* 내려받기 이력 */
+  var times = ['2026-08-20 11:42', '2026-08-20 11:08', '2026-08-20 10:31', '2026-08-20 09:57',
+               '2026-08-19 17:22', '2026-08-19 16:40', '2026-08-19 14:05', '2026-08-19 11:19',
+               '2026-08-18 16:51', '2026-08-18 15:33', '2026-08-18 10:12', '2026-08-17 17:04'];
+  $('#histBody').innerHTML = times.map(function (t, i) {
+    var f = pool[10 + i * 7];
+    var ext = f.f[i % f.f.length];
+    var fail = i === 7;
+    return '<tr>'
+      + '<td class="num t3" style="padding-left:16px">' + t + '</td>'
+      + '<td><a class="ttl trunc" style="display:block;max-width:400px" href="form.html?id=' + f.id + '">' + A.esc(f.t) + '</a></td>'
+      + '<td class="num t3">' + ext + '</td>'
+      + '<td class="sm t3">Windows</td>'
+      + '<td class="tr" style="padding-right:16px">' + (fail
+          ? '<span class="badge bad">한도 초과</span>'
+          : '<span class="badge ok">완료</span>') + '</td>'
+      + '</tr>';
+  }).join('');
+
+  /* 개정 알림 */
+  var revised = pool.slice(40, 44);
+  var notes = ['민사소송규칙 개정에 따라 준비서면 표지 항목이 정비되었습니다.',
+               '별지 목록 서식이 추가되고 인지액 안내문이 갱신되었습니다.',
+               '소관 예규 변경으로 기재사항 두 곳이 수정되었습니다.',
+               '전자제출 항목이 반영되어 HWPX 파일이 새로 등록되었습니다.'];
+  $('#alertList').innerHTML = revised.map(function (f, i) {
+    return '<li><span class="dt">' + ['08-18', '08-14', '08-07', '07-30'][i] + '</span>'
+      + '<div class="bd"><a href="form.html?id=' + f.id + '">' + A.esc(f.t) + '</a>'
+      + '<p>' + notes[i] + '</p></div>'
+      + '<button class="btn sm" data-dl="' + f.id + '">최신본 받기</button></li>';
+  }).join('');
+
+  /* 월간 추이 */
+  var vals = [12, 8, 15, 22, 9, 4, 0, 18, 26, 14, 11, 7, 19, 23, 16, 12, 5, 0, 21, 17];
+  $('#spark').innerHTML = vals.map(function (v) {
+    return '<i style="height:' + Math.max(8, v / 26 * 100) + '%" title="' + v + '건"></i>';
+  }).join('');
+
+  /* 한도 갱신 */
+  function paint() {
+    $('#dayBig').innerHTML = A.me.usedDay + '<small> / ' + A.me.quotaDay + '건</small>';
+    var p = Math.round(A.me.usedDay / A.me.quotaDay * 100);
+    $('#dayBar').style.width = p + '%';
+    $('#dayBar').parentNode.classList.toggle('warn', p > 80);
+  }
+  paint();
+  document.addEventListener('naru:download', paint);
+
+  document.getElementById('histCsv').addEventListener('click', function (e) {
+    e.preventDefault();
+    A.tableCsv(document.querySelector('#recent table'), '내려받기이력_20260820.csv');
+  });
+
+  $('#logoutAll').addEventListener('click', function () {
+    A.toast('다른 기기의 접속을 모두 해제했습니다.');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이용약관 · 서식나루</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { max-width: 820px; margin: 0 auto; padding: 32px 0 72px; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin: 20px 0 28px; }
+.tabs a { padding: 10px 14px; font-size: 14px; font-weight: 500; color: var(--t3); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .14s var(--ease), border-color .14s var(--ease); }
+.tabs a:hover { color: var(--t1); }
+.tabs a.on { color: var(--ac); border-bottom-color: var(--ac); font-weight: 700; }
+.pane { display: none; } .pane.on { display: block; }
+.law { font-size: 14px; line-height: 1.85; color: var(--t2); }
+.law h3 { font-size: 15px; font-weight: 600; color: var(--t1); margin: 26px 0 8px; }
+.law h3:first-child { margin-top: 0; }
+.law ol { counter-reset: c; margin: 6px 0; }
+.law ol li { padding-left: 24px; position: relative; margin: 4px 0; }
+.law ol li::before { counter-increment: c; content: counter(c) '.'; position: absolute; left: 4px; font-family: var(--mono); font-size: 12px; color: var(--t3); }
+.law .date { font-family: var(--mono); font-size: 12px; color: var(--t3); margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--line); }
+.bizinfo { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); overflow: hidden; }
+.bizinfo div { display: flex; border-bottom: 1px solid var(--line); }
+.bizinfo div:last-child { border-bottom: 0; }
+.bizinfo dt { flex: 0 0 180px; padding: 12px 18px; background: var(--sunken); font-size: 13px; color: var(--t2); }
+.bizinfo dd { flex: 1 1 auto; margin: 0; padding: 12px 18px; font-size: 14px; color: var(--t2); }
+</style>
+</head>
+<body>
+
+<header class="gnb">
+  <div class="shell">
+    <a class="brand" href="index.html"><span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span></a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="search.html">서식검색</a>
+      <a href="search.html#cat">분야별</a>
+      <a href="search.html#stage">절차별</a>
+      <a href="plan.html">이용등급</a>
+    </nav>
+    <div class="side">
+      <div class="hdr-search">
+        <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="서식명, 사건유형, 법령" aria-label="서식 검색">
+      </div>
+      <a class="btn ghost sm" href="login.html">로그인</a>
+      <a class="btn pri sm" href="mypage.html">내 서식함</a>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="wrap">
+    <div class="rule-head">
+      <span class="eyebrow">POLICY</span>
+      <h1 class="h1">약관 및 정책</h1>
+      <div class="bar"></div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <a href="#terms" class="on" data-p="terms">이용약관</a>
+      <a href="#privacy" data-p="privacy">개인정보처리방침</a>
+      <a href="#biz" data-p="biz">사업자정보</a>
+    </div>
+
+    <div class="pane on law" data-p="terms">
+      <h3>제1조 (목적)</h3>
+      <p>이 약관은 서식나루(이하 "회사")가 제공하는 법률서식 검색·내려받기 서비스(이하 "서비스")의 이용 조건과 절차, 회사와 이용자의 권리·의무를 정함을 목적으로 합니다.</p>
+      <h3>제2조 (서비스의 내용)</h3>
+      <ol>
+        <li>법원 제출용 법률서식의 검색, 열람 및 파일(HWP·HWPX·PDF) 내려받기</li>
+        <li>서식함 보관, 개정 알림 등 부가 기능</li>
+        <li>이용등급에 따라 이용 가능한 서식의 범위와 내려받기 한도가 다르며, 구체적 내용은 이용등급 안내 페이지에 따릅니다.</li>
+      </ol>
+      <h3>제3조 (계정과 세션)</h3>
+      <ol>
+        <li>하나의 계정은 한 명의 이용자만 사용할 수 있으며, 동시에 한 대의 기기에서만 접속할 수 있습니다.</li>
+        <li>다른 기기에서 로그인하는 경우 기존 접속은 자동으로 해제됩니다.</li>
+        <li>계정 공유가 확인되는 경우 회사는 이용을 제한할 수 있습니다.</li>
+      </ol>
+      <h3>제4조 (서식 파일의 이용 범위)</h3>
+      <ol>
+        <li>내려받은 서식은 이용자 본인 또는 소속 사무소의 업무 목적으로 사용할 수 있습니다.</li>
+        <li>서식 파일을 대량으로 수집하여 제3자에게 제공하거나 별도 서비스에 게재하는 행위는 금지됩니다.</li>
+        <li>회사는 비정상적 대량 내려받기가 감지되는 경우 해당 계정의 이용을 일시 제한할 수 있습니다.</li>
+      </ol>
+      <h3>제5조 (서식의 정확성)</h3>
+      <ol>
+        <li>회사는 법령·예규 개정을 서식에 반영하기 위해 노력하며, 개정 반영 일자를 각 서식에 표시합니다.</li>
+        <li>서식은 작성의 편의를 위한 자료이며, 개별 사건에의 적합성 판단과 기재 내용에 대한 책임은 이용자에게 있습니다.</li>
+      </ol>
+      <h3>제6조 (환불)</h3>
+      <p>월 단위 이용은 다음 결제일 전 해지 시 추가 청구가 없으며, 연 단위 결제는 이용 시작 후 7일 이내이고 내려받은 서식이 3건 이하인 경우 전액 환불합니다. 그 외의 경우 잔여 기간을 일할 계산하여 환불합니다.</p>
+      <p class="date">시행일 2026-03-01 · 공고일 2026-02-14</p>
+    </div>
+
+    <div class="pane law" data-p="privacy">
+      <h3>1. 수집하는 개인정보</h3>
+      <ol>
+        <li>필수: 이름, 아이디, 비밀번호, 이메일, 휴대전화번호</li>
+        <li>선택: 소속 사무소명, 법무사회 회원번호(정회원 요금 적용 확인 용도)</li>
+        <li>자동 수집: 접속 IP, 기기·브라우저 정보, 내려받기 기록</li>
+      </ol>
+      <h3>2. 이용 목적</h3>
+      <ol>
+        <li>회원 식별, 1인 1세션 운영 및 계정 보호</li>
+        <li>이용등급별 한도 관리와 내려받기 이력 제공</li>
+        <li>서식 개정 알림 등 서비스 안내</li>
+      </ol>
+      <h3>3. 보유 기간</h3>
+      <p>회원 탈퇴 시 지체 없이 파기합니다. 다만 내려받기 기록은 부정 이용 방지를 위해 탈퇴 후 6개월간 보관 후 파기하며, 관계 법령에 따라 보존이 필요한 정보는 해당 기간 동안 보관합니다.</p>
+      <h3>4. 제3자 제공</h3>
+      <p>이용자의 동의 없이 개인정보를 제3자에게 제공하지 않습니다. 법령에 근거한 수사기관의 적법한 요청이 있는 경우는 예외로 합니다.</p>
+      <h3>5. 이용자의 권리</h3>
+      <p>이용자는 언제든지 자신의 개인정보를 열람·정정·삭제 요청할 수 있습니다. 요청은 고객지원 메일(help@seosiknaru.kr)로 접수됩니다.</p>
+      <p class="date">시행일 2026-03-01 · 개인정보 보호책임자: 운영팀</p>
+    </div>
+
+    <div class="pane" data-p="biz">
+      <dl class="bizinfo">
+        <div><dt>상호</dt><dd>서식나루</dd></div>
+        <div><dt>대표</dt><dd>대표자 성명</dd></div>
+        <div><dt>사업자등록번호</dt><dd class="mono">000-00-00000</dd></div>
+        <div><dt>통신판매업 신고</dt><dd class="mono">제2026-서울서초-0000호</dd></div>
+        <div><dt>주소</dt><dd>서울특별시 서초구 (사무소 주소)</dd></div>
+        <div><dt>고객센터</dt><dd class="mono">1668-0274 · help@seosiknaru.kr</dd></div>
+        <div><dt>호스팅</dt><dd>자체 운영</dd></div>
+      </dl>
+      <p class="sm t3" style="margin-top:12px">사업자 정보는 계약 체결 시 실제 정보로 교체 등록됩니다.</p>
+    </div>
+
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="meta" style="border:0;margin:0;padding:0">
+      <span>© 2026 서식나루</span>
+      <nav><a href="terms.html">이용약관</a><a href="terms.html#privacy">개인정보처리방침</a><a href="terms.html#biz">사업자정보</a><a href="admin/index.html">관리자</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var tabs = document.querySelectorAll('#tabs a');
+  var panes = document.querySelectorAll('.pane');
+  function show(p) {
+    tabs.forEach(function (a) { a.classList.toggle('on', a.dataset.p === p); });
+    panes.forEach(function (x) { x.classList.toggle('on', x.dataset.p === p); });
+  }
+  function fromHash() {
+    var h = location.hash.replace('#', '');
+    show(h === 'privacy' || h === 'biz' ? h : 'terms');
+  }
+  window.addEventListener('hashchange', fromHash);
+  fromHash();
+})();
+</script>
+</body>
+</html>

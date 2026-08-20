@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>회원·등급 관리 · 서식나루 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.usebar { display: flex; align-items: center; gap: 8px; }
+.usebar .meter { width: 62px; flex: 0 0 62px; }
+.usebar .tx { font-family: var(--mono); font-size: 11.5px; color: var(--t3); }
+.switch { position: relative; width: 34px; height: 20px; flex: 0 0 auto; }
+.switch input { appearance: none; width: 34px; height: 20px; border-radius: 999px; background: var(--line-strong); border: 0; cursor: pointer; transition: background .16s var(--ease); }
+.switch input:checked { background: var(--ac); }
+.switch input::after { content: ''; position: absolute; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .16s var(--ease); }
+.switch input:checked::after { transform: translateX(14px); }
+</style>
+</head>
+<body>
+<div class="adm">
+
+  <aside class="adm-side">
+    <div class="top"><div class="brand"><span class="mark">서식나루</span></div><span class="role">ADMIN CONSOLE</span></div>
+    <nav>
+      <h4>운영</h4>
+      <a href="index.html">대시보드</a>
+      <a href="forms.html">서식 관리 <span class="n">10,412</span></a>
+      <a href="members.html" class="on">회원·등급 <span class="n">412</span></a>
+      <a href="logs.html">내려받기 로그</a>
+      <h4>분류</h4>
+      <a href="forms.html#tree">카테고리 트리</a>
+      <a href="forms.html#tag">검색 태그</a>
+      <h4>설정</h4>
+      <a href="settings.html">한도·보안 정책</a>
+      <a href="settings.html#accounts">관리자 계정</a>
+    </nav>
+    <div class="btm">운영자 이지현 · 최고관리자<br><a href="../index.html" style="color:var(--ac)">서비스 화면으로</a></div>
+  </aside>
+
+  <div class="adm-main">
+    <div class="adm-bar">
+      <h1>회원·등급 관리</h1>
+      <span class="crumb">활성 <span class="mono">412</span>명</span>
+      <span style="flex:1 1 auto"></span>
+      <button class="btn sm" id="addBtn">회원 등록</button>
+      <button class="btn sm" id="csvBtn">명단 내려받기</button>
+    </div>
+
+    <div class="adm-body">
+
+      <div class="kpis">
+        <div><div class="lb">정회원</div><div class="v">331</div><div class="d">이번 달 신규 24명</div></div>
+        <div><div class="lb">프리미엄(사무소)</div><div class="v">58</div><div class="d">연결 계정 214개</div></div>
+        <div><div class="lb">7일 내 만료</div><div class="v">14</div><div class="d">안내 메일 발송 대기</div></div>
+        <div><div class="lb">이용 차단</div><div class="v alert">3</div><div class="d dn">한도 초과 2 · 계정 공유 1</div></div>
+      </div>
+
+      <section class="panel" style="overflow:hidden">
+        <div class="toolbar">
+          <div class="srch">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            <input id="q" type="search" placeholder="이름, 아이디, 사무소명">
+          </div>
+          <select class="inp" id="fg" style="width:118px"><option value="">전체 등급</option><option value="0">일반</option><option value="1">정회원</option><option value="2">프리미엄</option></select>
+          <select class="inp" id="fs" style="width:118px"><option value="">전체 상태</option><option value="ok">정상</option><option value="warn">만료 임박</option><option value="bad">차단</option></select>
+          <span class="grow"></span>
+          <span class="sm t3" id="cnt"></span>
+          <button class="btn sm" id="bGrade">선택 등급 변경</button>
+          <button class="btn sm" id="bExt">이용기간 연장</button>
+        </div>
+
+        <table class="tbl d44 static">
+          <thead><tr>
+            <th class="cbx"><input type="checkbox" id="all" aria-label="전체 선택"></th>
+            <th style="width:150px">이용자</th>
+            <th style="width:170px">사무소</th>
+            <th style="width:88px">등급</th>
+            <th style="width:150px">오늘 사용량</th>
+            <th style="width:112px">이용기간</th>
+            <th style="width:120px">최근 접속</th>
+            <th style="width:96px">상태</th>
+            <th style="width:62px"></th>
+          </tr></thead>
+          <tbody id="body"></tbody>
+        </table>
+
+        <div class="row" style="justify-content:space-between;padding:12px 16px;border-top:1px solid var(--line)">
+          <span class="sm t3">1–20 / <span class="mono">412</span></span>
+          <div class="row gap-8"><button class="btn sm" disabled>이전</button><button class="btn sm">다음</button></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-mask" id="mask"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-labelledby="dTitle">
+  <div class="hd">
+    <div><div class="h3" id="dTitle">—</div><p class="xs t3 mono" id="dSub"></p></div>
+    <button class="btn ghost sm" id="dClose" aria-label="닫기">✕</button>
+  </div>
+  <div class="bd stack-16">
+    <dl class="deflist" id="dInfo"></dl>
+
+    <div>
+      <span class="lb" style="display:block;font-size:13px;font-weight:500;color:var(--t2);margin-bottom:8px">이용등급</span>
+      <div class="row gap-8">
+        <select class="inp grow" id="dGrade" style="height:38px">
+          <option value="0">일반 · 하루 5건</option>
+          <option value="1">정회원 · 하루 50건</option>
+          <option value="2">프리미엄 · 한도 없음</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row gap-12">
+      <label class="field grow"><span class="lb">이용 시작</span><input class="inp mono" value="2026-01-16"></label>
+      <label class="field grow"><span class="lb">이용 종료</span><input class="inp mono" id="dUntil" value="2026-12-16"></label>
+    </div>
+    <div class="row gap-8">
+      <button class="btn sm" data-ext="1">+1개월</button>
+      <button class="btn sm" data-ext="3">+3개월</button>
+      <button class="btn sm" data-ext="12">+12개월</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row" style="justify-content:space-between">
+      <div><div class="sm t1" style="font-weight:500">하루 내려받기 한도 개별 설정</div>
+        <div class="xs t3">등급 기본값 대신 이 계정에만 다른 한도를 적용합니다</div></div>
+      <span class="switch"><input type="checkbox" id="swQuota" aria-label="개별 한도 사용"></span>
+    </div>
+    <label class="field" id="quotaField" hidden><span class="lb">한도(건)</span><input class="inp mono" value="80" style="width:120px"></label>
+
+    <div class="row" style="justify-content:space-between">
+      <div><div class="sm t1" style="font-weight:500">이용 차단</div>
+        <div class="xs t3">차단하면 로그인과 파일 접근이 모두 막힙니다</div></div>
+      <span class="switch"><input type="checkbox" id="swBlock" aria-label="이용 차단"></span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div>
+      <div class="sm t1" style="font-weight:500;margin-bottom:8px">현재 접속</div>
+      <div class="panel sunk" style="padding:12px 14px">
+        <div class="row" style="justify-content:space-between">
+          <div class="sm t2" id="dDev">Windows · Chrome 141</div>
+          <button class="btn sm" id="killSession">세션 해제</button>
+        </div>
+        <div class="xs t3 mono" style="margin-top:4px" id="dIp"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ft">
+    <button class="btn" id="dCancel">취소</button>
+    <button class="btn pri" id="dSave">변경 사항 저장</button>
+  </div>
+</aside>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+
+  var SUR = ['김', '이', '박', '최', '정', '강', '조', '윤', '장', '임', '한', '오', '서', '신', '권', '황', '안', '송', '류', '전'];
+  var GIV = ['도현', '지훈', '민석', '재원', '수빈', '현우', '태경', '유진', '상혁', '은정', '준호', '세영', '기범', '나윤', '동주', '혜림', '성민', '가영', '재훈', '소연'];
+  var OFF = ['법무사사무소', '합동법무사사무소', '법무사법인'];
+  var CITY = ['서울 서초', '서울 강남', '서울 송파', '수원 영통', '인천 남동', '대전 서구', '부산 연제', '대구 수성', '광주 서구', '청주 흥덕', '창원 성산', '전주 덕진'];
+
+  function rnd(seed) { var s = seed % 2147483647; if (s <= 0) s += 2147483646;
+    return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+  var r = rnd(4241);
+
+  var ROM = { '김':'kim','이':'lee','박':'park','최':'choi','정':'jung','강':'kang','조':'cho','윤':'yoon',
+              '장':'jang','임':'lim','한':'han','오':'oh','서':'seo','신':'shin','권':'kwon','황':'hwang',
+              '안':'ahn','송':'song','류':'ryu','전':'jeon' };
+  var GROM = { '도현':'dh','지훈':'jh','민석':'ms','재원':'jw','수빈':'sb','현우':'hw','태경':'tk','유진':'yj',
+               '상혁':'sh','은정':'ej','준호':'jh','세영':'sy','기범':'kb','나윤':'ny','동주':'dj','혜림':'hr',
+               '성민':'sm','가영':'gy','재훈':'jh','소연':'sy' };
+  var MEM = [], seen = {};
+  for (var i = 0; i < 412; i++) {
+    var sn = SUR[Math.floor(r() * SUR.length)], gn = GIV[Math.floor(r() * GIV.length)];
+    var uid = GROM[gn] + '.' + ROM[sn];
+    seen[uid] = (seen[uid] || 0) + 1;
+    if (seen[uid] > 1) uid += seen[uid];
+    var g = r(); var grade = g < 0.06 ? 0 : (g < 0.86 ? 1 : 2);
+    var quota = grade === 0 ? 5 : (grade === 1 ? 50 : 0);
+    var used = quota ? Math.floor(r() * (quota + 6)) : Math.floor(r() * 120);
+    var d = Math.floor(r() * 400) - 20;
+    var status = d < 0 ? 'expired' : (d < 8 ? 'warn' : 'ok');
+    if (i === 3 || i === 11 || i === 27) status = 'bad';
+    var ud = new Date(2026, 7, 20 + d);
+    var untilStr = ud.getFullYear() + '-' + String(ud.getMonth() + 1).padStart(2, '0') + '-' + String(ud.getDate()).padStart(2, '0');
+    MEM.push({
+      id: 'm' + (10240 + i),
+      name: sn + gn,
+      uid: uid,
+      office: sn + gn + ' ' + OFF[Math.floor(r() * OFF.length)],
+      city: CITY[Math.floor(r() * CITY.length)],
+      grade: grade, quota: quota, used: used,
+      until: untilStr,
+      last: ['방금 전', '12분 전', '1시간 전', '3시간 전', '어제', '2일 전', '5일 전', '2주 전'][Math.floor(r() * 8)],
+      dev: r() < .78 ? 'Windows · Chrome' : 'macOS · Safari',
+      ip: '211.' + Math.floor(r() * 200) + '.' + Math.floor(r() * 250) + '.' + Math.floor(r() * 250),
+      status: status
+    });
+  }
+
+  var STATUS = {
+    ok: '<span class="sev ok">정상</span>',
+    warn: '<span class="sev warn">만료 임박</span>',
+    expired: '<span class="sev">기간 만료</span>',
+    bad: '<span class="sev bad">차단</span>'
+  };
+
+  function paint() {
+    var q = $('#q').value.trim().toLowerCase();
+    var fg = $('#fg').value, fs = $('#fs').value;
+    var rows = MEM.filter(function (m) {
+      if (q && (m.name + m.uid + m.office).toLowerCase().indexOf(q) === -1) return false;
+      if (fg !== '' && m.grade !== +fg) return false;
+      if (fs && m.status !== fs) return false;
+      return true;
+    });
+    $('#cnt').textContent = A.fmt(rows.length) + '명';
+    $('#body').innerHTML = rows.slice(0, 20).map(function (m) {
+      var pct = m.quota ? Math.min(100, m.used / m.quota * 100) : Math.min(100, m.used / 250 * 100);
+      var over = m.quota && m.used >= m.quota;
+      return '<tr data-id="' + m.id + '">'
+        + '<td class="cbx"><input type="checkbox" aria-label="선택"></td>'
+        + '<td><span class="t1" style="font-weight:500">' + m.name + '</span> <span class="xs t3">법무사</span>'
+        + '<div class="xs t3 mono">' + m.uid + '</div></td>'
+        + '<td class="sm t3 trunc" style="max-width:170px">' + m.office + '<div class="xs">' + m.city + '</div></td>'
+        + '<td>' + A.gradeBadge(m.grade === 0 ? 0 : m.grade) + '</td>'
+        + '<td><span class="usebar"><span class="meter ' + (over ? 'warn' : '') + '"><i style="width:' + pct + '%"></i></span>'
+        + '<span class="tx">' + m.used + (m.quota ? ' / ' + m.quota : '') + '</span></span></td>'
+        + '<td class="num t3">' + m.until + '</td>'
+        + '<td class="sm t3">' + m.last + '<div class="xs">' + m.dev.split(' · ')[0] + '</div></td>'
+        + '<td>' + STATUS[m.status] + '</td>'
+        + '<td class="tr" style="padding-right:14px"><button class="btn sm" data-edit="' + m.id + '">관리</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+  ['q', 'fg', 'fs'].forEach(function (id) {
+    $('#' + id).addEventListener(id === 'q' ? 'input' : 'change', paint);
+  });
+  $('#all').addEventListener('change', function () {
+    var on = this.checked;
+    $('#body').querySelectorAll('input').forEach(function (i) { i.checked = on; i.closest('tr').classList.toggle('sel', on); });
+  });
+  $('#body').addEventListener('change', function (e) {
+    if (e.target.type === 'checkbox') e.target.closest('tr').classList.toggle('sel', e.target.checked);
+  });
+  function selCount() { return $('#body').querySelectorAll('input:checked').length; }
+  $('#bGrade').addEventListener('click', function () {
+    var n = selCount();
+    if (!n) { A.toast('등급을 바꿀 회원을 먼저 선택해 주세요.', 'bad'); return; }
+    A.toast('선택한 <b>' + n + '명</b>의 등급을 변경합니다.');
+  });
+  $('#bExt').addEventListener('click', function () {
+    var n = selCount();
+    if (!n) { A.toast('연장할 회원을 먼저 선택해 주세요.', 'bad'); return; }
+    A.toast('선택한 <b>' + n + '명</b>의 이용기간을 연장했습니다.');
+  });
+
+  document.getElementById('csvBtn').addEventListener('click', function () {
+    var rows = [['이름', '아이디', '사무소', '지역', '등급', '오늘 사용', '이용기간 종료', '상태']];
+    var G = ['일반', '정회원', '프리미엄'];
+    var ST = { ok: '정상', warn: '만료 임박', expired: '기간 만료', bad: '차단' };
+    MEM.forEach(function (m) {
+      rows.push([m.name, m.uid, m.office, m.city, G[m.grade], m.used + (m.quota ? '/' + m.quota : ''), m.until, ST[m.status]]);
+    });
+    A.csv('회원명단_20260820.csv', rows);
+  });
+  document.getElementById('addBtn').addEventListener('click', function () {
+    A.toast('신규 회원 등록 창이 열립니다. <span class="sm t3">이름·아이디·등급·이용기간을 입력합니다</span>');
+  });
+
+  /* 드로어 */
+  function openD(m) {
+    $('#dTitle').textContent = m.name + ' 법무사';
+    $('#dSub').textContent = m.uid + ' · ' + m.id;
+    $('#dInfo').innerHTML = [
+      ['사무소', m.office], ['지역', m.city],
+      ['가입일', '2026-01-16'], ['누적 내려받기', A.fmt(600 + m.used * 13) + '건'],
+      ['이번 달', m.used * 9 + '건']
+    ].map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + x[1] + '</dd></div>'; }).join('');
+    $('#dGrade').value = m.grade;
+    $('#dUntil').value = m.until;
+    $('#swBlock').checked = m.status === 'bad';
+    $('#dDev').textContent = m.dev + ' 141';
+    $('#dIp').textContent = m.ip + ' · 최근 활동 ' + m.last;
+    $('#drawer').classList.add('on'); $('#mask').classList.add('on');
+  }
+  function closeD() { $('#drawer').classList.remove('on'); $('#mask').classList.remove('on'); }
+  $('#body').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-edit]'); if (!b) return;
+    var m = MEM.filter(function (x) { return x.id === b.dataset.edit; })[0];
+    openD(m);
+  });
+  $('#dClose').addEventListener('click', closeD);
+  $('#dCancel').addEventListener('click', closeD);
+  $('#mask').addEventListener('click', closeD);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeD(); });
+  $('#dSave').addEventListener('click', function () { A.toast('회원 설정을 저장했습니다.'); closeD(); });
+  $('#killSession').addEventListener('click', function () { A.toast('접속 세션을 해제했습니다.'); });
+  $('#swQuota').addEventListener('change', function () { $('#quotaField').hidden = !this.checked; });
+  document.querySelectorAll('[data-ext]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var v = $('#dUntil').value.split('-');
+      var d = new Date(+v[0], +v[1] - 1 + (+b.dataset.ext), +v[2]);
+      $('#dUntil').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    });
+  });
+
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>서식나루 · 법률 종합서식 검색</title>
+<meta name="description" content="법원 제출용 법률서식 10,412건을 분야·절차·소관기관으로 검색하고 한글(HWP) 파일로 바로 내려받습니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+/* ── 히어로 — eyebrow → 2행 디스플레이 → pill 검색 → 통계행 (poscoflow 문법) ── */
+.hero { position: relative; padding: 88px 0 72px; overflow: hidden; }
+.hero .eyebrow {
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  letter-spacing: .04em; color: var(--ac); text-transform: uppercase;
+}
+.hero h1 {
+  font-size: 56px; font-weight: 700; line-height: 1.12; letter-spacing: -.03em;
+  color: var(--t1); margin: 18px 0 18px;
+}
+.hero h1 em { font-style: normal; color: var(--ac); }
+.hero .lead { font-size: 17px; color: var(--t2); max-width: 62ch; line-height: 1.6; }
+
+.searchbox { margin-top: 36px; max-width: 720px; position: relative; }
+.searchbox .field-wrap {
+  display: flex; align-items: center; height: 64px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 999px;
+  transition: border-color .3s ease, box-shadow .3s ease;
+}
+.searchbox.focus .field-wrap { border-color: var(--ac); box-shadow: 0 0 0 1px var(--ac); }
+.searchbox svg.mg { flex: 0 0 auto; margin: 0 12px 0 24px; color: var(--t3); }
+.searchbox input {
+  flex: 1 1 auto; height: 100%; border: 0; background: none; outline: none;
+  font-size: 16px; letter-spacing: -.02em; min-width: 0;
+}
+.searchbox input::placeholder { color: var(--t3); }
+.searchbox .go { flex: 0 0 auto; margin: 0 8px 0 4px; height: 48px; padding: 0 24px; }
+.searchbox .kbd {
+  font-family: var(--mono); font-size: 11px; color: var(--t3);
+  border: 1px solid var(--line-strong); border-radius: var(--r-xs); padding: 2px 6px; margin-right: 8px;
+}
+
+.suggest {
+  position: absolute; left: 12px; right: 12px; top: 72px; z-index: 40;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-pop); overflow: hidden; display: none;
+}
+.suggest.open { display: block; }
+.suggest .hd {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 18px; background: var(--ac-soft); border-bottom: 1px solid var(--line);
+  font-size: 12px; color: var(--t2);
+}
+.suggest ul { max-height: 322px; overflow: auto; }
+.suggest li a {
+  display: flex; align-items: center; gap: 10px; padding: 10px 18px;
+  border-bottom: 1px solid var(--line); font-size: 14px; transition: background .3s ease;
+}
+.suggest li:last-child a { border-bottom: 0; }
+.suggest li a:hover, .suggest li.cur a { background: var(--hover); }
+.suggest .cat { font-size: 12px; color: var(--t3); flex: 0 0 84px; }
+.suggest .nm { color: var(--t1); flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.hotline { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.hotline .lb { font-size: 12px; color: var(--t3); margin-right: 4px; }
+.hotline .chip { height: 28px; font-size: 12.5px; }
+
+/* 통계행 — 세로 hairline 3분할 + Bai Jamjuree 카운트업 (poscoflow §2-3 통계 문법) */
+.stats { margin-top: 44px; display: flex; max-width: 860px; }
+.stats > div { flex: 1 1 0; padding: 0 28px; border-left: 1px solid var(--line-strong); }
+.stats > div:first-child { padding-left: 0; border-left: 0; }
+.stats .lb { font-size: 12px; color: var(--t3); margin-bottom: 6px; }
+.stats .v { font-family: var(--mono); font-size: 34px; font-weight: 600; line-height: 1; letter-spacing: -.03em; color: var(--t1); }
+.stats .v small { font-size: 14px; font-weight: 500; color: var(--t2); margin-left: 2px; letter-spacing: 0; }
+
+/* ── 분야 색인 — 카드 12px · 호버 시 #025997 반전 (뉴스카드 호버 문법) ── */
+.catgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.catgrid a {
+  position: relative; display: block; padding: 20px 18px 18px; min-height: 128px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  transition: background .3s ease, border-color .3s ease;
+}
+.catgrid .nm { font-size: 16px; font-weight: 600; color: var(--t1); transition: color .3s ease; }
+.catgrid .n { font-family: var(--mono); font-size: 12px; color: var(--t3); margin-top: 3px; transition: color .3s ease; }
+.catgrid .ex { font-size: 12px; color: var(--t2); margin-top: 10px; line-height: 1.5; transition: color .3s ease; }
+.catgrid .arw { position: absolute; right: 16px; top: 20px; color: var(--t3); transition: color .3s ease; }
+.catgrid a:hover { background: var(--ac); border-color: var(--ac); }
+.catgrid a:hover .nm, .catgrid a:hover .arw { color: #fff; }
+.catgrid a:hover .n, .catgrid a:hover .ex { color: rgba(255, 255, 255, .72); }
+
+/* ── 절차 레일 ─────────────────────────────────────────────── */
+.rail { display: flex; border: 1px solid var(--line-strong); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+.rail a {
+  flex: 1 1 0; padding: 18px 18px 20px; border-right: 1px solid var(--line);
+  transition: background .3s ease; position: relative;
+}
+.rail a:last-child { border-right: 0; }
+.rail a:hover { background: var(--ac-soft); }
+.rail .step { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--t3); transition: color .3s ease; }
+.rail .nm { font-size: 15px; font-weight: 600; color: var(--t1); margin-top: 7px; }
+.rail .n { font-family: var(--mono); font-size: 12px; color: var(--t3); margin-top: 2px; }
+.rail a::before {
+  content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: transparent;
+  transition: background .3s ease;
+}
+.rail a:hover::before { background: var(--ac); }
+.rail a:hover .step { color: var(--ac); }
+
+/* ── 2단 ──────────────────────────────────────────────────── */
+.two { display: grid; grid-template-columns: 1.55fr 1fr; gap: 48px; align-items: start; }
+
+.toplist li { display: flex; align-items: baseline; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.toplist li:first-child { border-top: 2px solid var(--t1); padding-top: 10px; }
+.toplist li:last-child { border-bottom: 0; }
+.toplist .rk { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--t3); flex: 0 0 22px; }
+.toplist li:nth-child(-n+3) .rk { color: var(--ac); }
+.toplist .nm { flex: 1 1 auto; font-size: 13.5px; color: var(--t1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: color .3s ease; }
+.toplist .nm:hover { color: var(--ac); text-decoration: underline; text-underline-offset: 3px; }
+.toplist .d { font-family: var(--mono); font-size: 12px; color: var(--t3); flex: 0 0 auto; }
+
+.notice li { padding: 11px 0; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: baseline; }
+.notice li:first-child { border-top: 2px solid var(--t1); }
+.notice li:last-child { border-bottom: 0; }
+.notice .dt { font-family: var(--mono); font-size: 12px; color: var(--t3); flex: 0 0 62px; }
+.notice .tx { font-size: 13.5px; color: var(--t2); }
+.notice .tx b { color: var(--t1); font-weight: 600; }
+
+/* ── 이용등급 — 풀블리드 다크 밴드 + 글래스 카드 (poscoflow ⑤ 네트워크 문법) ── */
+.plans-band { padding: 88px 0 96px; margin-top: 96px; position: relative; overflow: hidden; }
+.plans-band::before {
+  content: ''; position: absolute; right: -180px; top: -220px; width: 640px; height: 640px;
+  background: radial-gradient(circle, rgba(0, 163, 241, .16) 0%, transparent 62%);
+  pointer-events: none;
+}
+.plans-band .rule-head { margin-bottom: 36px; }
+.plans-band h2 { color: #fff; }
+.plans-band .lead { color: rgba(255, 255, 255, .64); font-size: 14.5px; }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; position: relative; }
+.plan-card { padding: 28px 26px 26px; display: flex; flex-direction: column; min-height: 320px; transition: border-color .3s ease, background .3s ease; }
+.plan-card:hover { border-color: rgba(0, 163, 241, .55); background: rgba(255, 255, 255, .04); }
+.plan-card .tier { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--ac2); text-transform: uppercase; }
+.plan-card .nm { font-size: 21px; font-weight: 700; color: #fff; margin-top: 8px; }
+.plan-card .price { font-family: var(--mono); font-size: 30px; font-weight: 600; letter-spacing: -.02em; color: #fff; margin-top: 16px; line-height: 1; }
+.plan-card .price small { font-size: 13px; font-weight: 400; color: rgba(255, 255, 255, .55); letter-spacing: 0; }
+.plan-card ul { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(209, 210, 212, .18); flex: 1 1 auto; }
+.plan-card li { font-size: 13.5px; color: rgba(255, 255, 255, .72); line-height: 2; }
+.plan-card li b { color: #fff; font-weight: 600; }
+.plan-card .btn { margin-top: 18px; border-color: rgba(255, 255, 255, .35); color: #fff; }
+.plan-card .btn:hover { background: #fff; border-color: #fff; color: var(--navy); }
+.plans-note { margin-top: 22px; font-size: 13px; color: rgba(255, 255, 255, .5); }
+.plans-band .btn-cta { color: #fff; }
+
+@media (max-width: 1080px) {
+  .catgrid { grid-template-columns: repeat(3, 1fr); }
+  .two { grid-template-columns: 1fr; gap: 36px; }
+  .rail { flex-wrap: wrap; }
+  .rail a { flex: 1 1 33%; border-bottom: 1px solid var(--line); }
+  .plans { grid-template-columns: 1fr; }
+  .plan-card { min-height: 0; }
+}
+@media (max-width: 720px) {
+  .hero { padding: 52px 0 48px; }
+  .hero h1 { font-size: 34px; }
+  .catgrid { grid-template-columns: repeat(2, 1fr); }
+  .searchbox .field-wrap { height: 56px; }
+  .searchbox .go span { display: none; }
+  .stats { flex-wrap: wrap; }
+  .stats > div { flex: 1 1 40%; padding: 10px 16px; }
+  .stats > div:first-child { padding-left: 16px; }
+  .stats .v { font-size: 26px; }
+  .plans-band { padding: 56px 0 64px; margin-top: 64px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="shell">
+    <a href="plan.html">이용등급 안내</a>
+    <span>·</span>
+    <a href="support.html">고객지원</a>
+    <span>·</span>
+    <a href="support.html#request">서식 등록 요청</a>
+    <span>·</span>
+    <a href="admin/index.html">관리자</a>
+  </div>
+</div>
+
+<header class="gnb">
+  <div class="shell">
+    <a class="brand" href="index.html">
+      <span class="mark">서식나루</span>
+      <span class="sub">LEGAL FORMS</span>
+    </a>
+    <nav>
+      <a href="index.html" class="on">홈</a>
+      <a href="search.html">서식검색</a>
+      <a href="search.html#cat">분야별</a>
+      <a href="search.html#stage">절차별</a>
+      <a href="plan.html">이용등급</a>
+    </nav>
+    <div class="side">
+      <div class="hdr-search" id="hdrSearch" style="opacity:0;pointer-events:none;transition:opacity .2s;">
+        <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="서식명, 사건유형, 법령" aria-label="서식 검색">
+      </div>
+      <a class="btn ghost sm" href="login.html">로그인</a>
+      <a class="btn pri sm" href="mypage.html">내 서식함</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="shell">
+      <span class="eyebrow">Legal Forms Library</span>
+      <h1 data-flash>필요한 서식을 3초 안에 찾고,<br><em>한글</em>로 바로 엽니다</h1>
+      <p class="lead">법원 공식 서식과 법무사회 표준 서식을 한곳에 모았습니다. 서식명이 정확히 기억나지 않아도 사건유형이나 근거 법령으로 찾을 수 있고, 고른 서식은 사무실 PC의 한글에서 그대로 열립니다.</p>
+
+      <div class="searchbox" id="sb">
+        <div class="field-wrap">
+          <svg class="mg" width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.2" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input id="q" type="search" autocomplete="off" placeholder="예: 가압류, 소유권이전등기, 답변서, 민사집행법" aria-label="서식 검색" aria-expanded="false" aria-controls="sug">
+          <span class="kbd">Enter</span>
+          <button class="btn pri go" id="goBtn">검색<span> 하기</span></button>
+        </div>
+        <div class="suggest" id="sug" role="listbox">
+          <div class="hd"><span id="sugHd">서식 제안</span><span class="mono" id="sugMs"></span></div>
+          <ul id="sugList"></ul>
+        </div>
+      </div>
+
+      <div class="hotline" id="hot"><span class="lb">많이 찾는 서식</span></div>
+
+      <div class="stats">
+        <div>
+          <div class="lb">등록 서식</div>
+          <div class="v"><b id="statTotal" data-count="10412">10,412</b><small>건</small></div>
+        </div>
+        <div>
+          <div class="lb">이번 주 개정 반영</div>
+          <div class="v"><b data-count="37">37</b><small>건</small></div>
+        </div>
+        <div>
+          <div class="lb">평균 검색 응답</div>
+          <div class="v"><b id="statMs">0.04</b><small>초</small></div>
+        </div>
+        <div>
+          <div class="lb">파일형식</div>
+          <div class="v" style="font-size:20px;line-height:34px">HWP · HWPX · PDF</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 분야 색인 -->
+  <section class="shell reveal" id="cat" style="margin-top:16px;">
+    <div class="rule-head">
+      <div class="row">
+        <div>
+          <span class="eyebrow">Category</span>
+          <h2 class="h2">분야별 서식</h2>
+        </div>
+        <a class="btn sm" href="search.html">전체 서식 보기 <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+      <div class="bar"></div>
+    </div>
+    <div class="catgrid" id="catGrid"></div>
+  </section>
+
+  <!-- 절차 레일 -->
+  <section class="shell reveal" id="stage" style="margin-top:48px;">
+    <div class="rule-head">
+      <div class="row">
+        <div>
+          <span class="eyebrow">Procedure</span>
+          <h2 class="h2">사건 진행 단계별 서식</h2>
+        </div>
+        <span class="sm t3">사건이 지금 어느 단계인지로 찾습니다</span>
+      </div>
+      <div class="bar"></div>
+    </div>
+    <div class="rail" id="rail"></div>
+  </section>
+
+  <!-- 최근 개정 + 많이 받은 서식 -->
+  <section class="shell reveal" style="margin-top:48px;">
+    <div class="two">
+      <div>
+        <div class="rule-head tight">
+          <div class="row">
+            <div>
+              <span class="eyebrow">Revised</span>
+              <h2 class="h2">최근 개정 반영 서식</h2>
+            </div>
+            <a class="btn sm" href="search.html?sort=new">개정순 전체 <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+          </div>
+          <div class="bar"></div>
+        </div>
+        <div class="panel" style="overflow:hidden">
+          <table class="tbl d36 static">
+            <thead><tr>
+              <th style="padding-left:16px">서식명</th><th style="width:76px">분야</th>
+              <th style="width:88px">파일</th><th style="width:90px">최종개정</th><th style="width:86px"></th>
+            </tr></thead>
+            <tbody id="recentBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <div class="rule-head tight">
+          <div class="row">
+            <div>
+              <span class="eyebrow">Most Used</span>
+              <h2 class="h2">많이 받은 서식</h2>
+            </div>
+            <span class="sm t3">최근 30일</span>
+          </div>
+          <div class="bar"></div>
+        </div>
+        <ul class="toplist" id="topList"></ul>
+
+        <div class="rule-head tight" style="margin-top:32px;">
+          <span class="eyebrow">Notice</span>
+          <h2 class="h2">개정 소식</h2>
+          <div class="bar"></div>
+        </div>
+        <ul class="notice">
+          <li><span class="dt">08-18</span><span class="tx"><b>민사소송규칙 개정</b> 반영, 준비서면 계열 서식 24건 갱신</span></li>
+          <li><span class="dt">08-14</span><span class="tx">부동산등기규칙 예규 변경에 따른 <b>확인서면 양식</b> 교체</span></li>
+          <li><span class="dt">08-07</span><span class="tx">개인회생 <b>변제계획안</b> 서울회생법원 실무준칙 반영</span></li>
+          <li><span class="dt">07-30</span><span class="tx">공탁규칙 개정으로 <b>형사공탁서</b> 기재사항 추가</span></li>
+          <li><span class="dt">07-22</span><span class="tx">가사소송규칙 개정, 양육비 산정 관련 서식 11건 갱신</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 이용등급 — 다크 밴드 -->
+  <section class="band-dark plans-band" id="plans">
+    <div class="shell">
+      <div class="rule-head">
+        <div class="row">
+          <div>
+            <span class="eyebrow">Membership</span>
+            <h2 class="h2" style="font-size:32px">등급에 따라 열리는 서식과<br>내려받기 한도가 다릅니다</h2>
+          </div>
+          <a class="btn-cta btn is-dark" href="plan.html">등급 상세 안내 <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+        </div>
+      </div>
+      <div class="plans">
+        <div class="glass plan-card">
+          <span class="tier">Free</span>
+          <div class="nm">일반</div>
+          <div class="price">0<small> 원</small></div>
+          <ul>
+            <li>무료 공개 서식 <b><span data-count="2703">2,703</span>건</b></li>
+            <li>하루 내려받기 <b>5건</b> · 월 60건</li>
+            <li>서식함 보관 10건</li>
+          </ul>
+          <a class="btn" href="login.html">바로 이용하기</a>
+        </div>
+        <div class="glass plan-card">
+          <span class="tier">Standard</span>
+          <div class="nm">정회원</div>
+          <div class="price">39,000<small> 원/월</small></div>
+          <ul>
+            <li>전체의 80% · <b><span data-count="8431">8,431</span>건</b> 이용</li>
+            <li>하루 내려받기 <b>50건</b> · 월 600건</li>
+            <li>담아둔 서식 <b>개정 알림</b></li>
+          </ul>
+          <a class="btn" href="login.html">정회원 신청</a>
+        </div>
+        <div class="glass plan-card">
+          <span class="tier">Premium</span>
+          <div class="nm">프리미엄</div>
+          <div class="price">89,000<small> 원/월</small></div>
+          <ul>
+            <li>전체 <b><span data-count="10412">10,412</span>건</b> · 한도 없음</li>
+            <li>사무소 계정 <b>최대 5인</b></li>
+            <li>분야 단위 개정 구독 · 메일 발송</li>
+          </ul>
+          <a class="btn" href="support.html#contact">사무소 문의</a>
+        </div>
+      </div>
+      <p class="plans-note">모든 등급은 1인 1세션으로 운영됩니다. 다른 기기에서 로그인하면 기존 접속은 자동으로 해제됩니다. 법무사회 회원은 등록 시 정회원 요금이 자동 적용됩니다.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="cols">
+      <div style="flex:1 1 220px">
+        <div class="brand" style="margin-bottom:10px">
+          <span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span>
+        </div>
+        <p class="sm t3" style="max-width:34ch">법원 제출용 법률서식을 검색하고 한글 파일로 내려받는 실무 도구입니다.</p>
+      </div>
+      <div>
+        <h4>서식</h4>
+        <ul>
+          <li><a href="search.html">전체 검색</a></li>
+          <li><a href="search.html#cat">분야별 색인</a></li>
+          <li><a href="search.html#stage">절차별 색인</a></li>
+          <li><a href="search.html?sort=new">개정 이력</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>이용</h4>
+        <ul>
+          <li><a href="plan.html">이용등급</a></li>
+          <li><a href="mypage.html">내 서식함</a></li>
+          <li><a href="support.html#request">서식 등록 요청</a></li>
+          <li><a href="plan.html#faq">자주 묻는 질문</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>지원</h4>
+        <ul>
+          <li><a href="support.html#guide">이용 안내</a></li>
+          <li><a href="support.html#hwp">한글 연동 설정</a></li>
+          <li><a href="support.html#contact">문의하기</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="meta">
+      <span>© 2026 서식나루</span>
+      <nav>
+        <a href="terms.html">이용약관</a><a href="terms.html#privacy" class="strong">개인정보처리방침</a><a href="terms.html#biz">사업자정보</a><a href="admin/index.html">관리자</a>
+      </nav>
+      <span class="slogan">Forms, Ready.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var CAT_EX = {
+    civil: '소장 · 답변서 · 준비서면',
+    exec:  '가압류 · 압류추심 · 경매',
+    reg:   '이전등기 · 근저당 · 가등기',
+    creg:  '설립 · 임원변경 · 해산',
+    family:'이혼 · 상속 · 후견',
+    crime: '고소장 · 의견서 · 탄원서',
+    rehab: '개인회생 · 파산 · 면책',
+    nonc:  '과태료 이의 · 공시최고',
+    depo:  '변제공탁 · 형사공탁',
+    admin: '행정심판 · 내용증명 · 계약서'
+  };
+
+  /* 분야 색인 */
+  document.getElementById('catGrid').innerHTML = NARU.CATS.map(function (c) {
+    return '<a href="search.html?cat=' + c.code + '">'
+      + '<span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>'
+      + '<div class="nm">' + c.name + '</div>'
+      + '<div class="n">' + A.fmt(c.n) + '건</div>'
+      + '<div class="ex">' + CAT_EX[c.code] + '</div></a>';
+  }).join('');
+
+  /* 절차 레일 */
+  var stageCount = {};
+  NARU.FORMS.forEach(function (f) { stageCount[f.st] = (stageCount[f.st] || 0) + 1; });
+  document.getElementById('rail').innerHTML = NARU.STAGES.map(function (s, i) {
+    return '<a href="search.html?stage=' + s.code + '">'
+      + '<div class="step">STEP ' + (i + 1) + '</div>'
+      + '<div class="nm">' + s.name + '</div>'
+      + '<div class="n">' + A.fmt(stageCount[s.code] || 0) + '건</div></a>';
+  }).join('');
+
+  /* 최근 개정 */
+  var recent = NARU.FORMS.slice().sort(function (a, b) { return a.r < b.r ? 1 : -1; }).slice(0, 8);
+  document.getElementById('recentBody').innerHTML = recent.map(function (f) {
+    return '<tr>'
+      + '<td style="padding-left:16px"><a class="ttl trunc" style="display:block;max-width:228px" href="form.html?id=' + f.id + '">' + A.esc(f.t) + '</a></td>'
+      + '<td class="sm t3">' + f.cn + '</td>'
+      + '<td>' + A.fmtTags(f.f) + '</td>'
+      + '<td class="num t3">' + f.r + '</td>'
+      + '<td class="tr" style="padding-right:16px">' + A.gradeBadge(f.g) + '</td>'
+      + '</tr>';
+  }).join('');
+
+  /* 많이 받은 서식 */
+  var top = NARU.FORMS.slice().sort(function (a, b) { return b.d - a.d; }).slice(0, 10);
+  document.getElementById('topList').innerHTML = top.map(function (f, i) {
+    return '<li><span class="rk">' + (i + 1) + '</span>'
+      + '<a class="nm" href="form.html?id=' + f.id + '">' + A.esc(f.t) + '</a>'
+      + '<span class="d">' + A.fmt(f.d) + '</span></li>';
+  }).join('');
+
+  /* 인기 키워드 */
+  var hot = document.getElementById('hot');
+  NARU.HOT.forEach(function (k) {
+    var a = document.createElement('a');
+    a.className = 'chip';
+    a.href = 'search.html?q=' + encodeURIComponent(k);
+    a.textContent = k;
+    hot.appendChild(a);
+  });
+
+  document.getElementById('statTotal').textContent = A.fmt(NARU.TOTAL);
+
+  /* ── 검색창: 입력 즉시 제안 ─────────────────────────────── */
+  var sb = document.getElementById('sb'), q = document.getElementById('q');
+  var sug = document.getElementById('sug'), list = document.getElementById('sugList');
+  var hd = document.getElementById('sugHd'), ms = document.getElementById('sugMs');
+  var cur = -1, rows = [];
+
+  function go() {
+    var v = q.value.trim();
+    location.href = 'search.html' + (v ? '?q=' + encodeURIComponent(v) : '');
+  }
+
+  function render() {
+    var v = q.value.trim();
+    if (!v) { sug.classList.remove('open'); q.setAttribute('aria-expanded', 'false'); return; }
+    var r = NARU.search(v, { sort: 'rel' });
+    rows = r.rows.slice(0, 7);
+    document.getElementById('statMs').textContent = (r.ms / 1000).toFixed(3).slice(1);
+    hd.innerHTML = '검색결과 <b class="t1">' + A.fmt(r.total) + '</b>건';
+    ms.textContent = r.ms + 'ms';
+    if (!rows.length) {
+      list.innerHTML = '<li><a><span class="cat">–</span><span class="nm t3">일치하는 서식이 없습니다. 사건유형이나 법령명으로 다시 찾아보세요.</span></a></li>';
+    } else {
+      list.innerHTML = rows.map(function (f, i) {
+        return '<li' + (i === cur ? ' class="cur"' : '') + '><a href="form.html?id=' + f.id + '">'
+          + '<span class="cat">' + f.cn + '</span>'
+          + '<span class="nm">' + A.mark(f.t, v) + '</span>'
+          + A.fmtTags(f.f) + '</a></li>';
+      }).join('');
+    }
+    sug.classList.add('open');
+    q.setAttribute('aria-expanded', 'true');
+  }
+
+  q.addEventListener('input', function () { cur = -1; render(); });
+  q.addEventListener('focus', function () { sb.classList.add('focus'); if (q.value.trim()) render(); });
+  q.addEventListener('blur', function () {
+    sb.classList.remove('focus');
+    setTimeout(function () { sug.classList.remove('open'); }, 160);
+  });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { if (cur > -1 && rows[cur]) { location.href = 'form.html?id=' + rows[cur].id; } else go(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); cur = Math.min(cur + 1, rows.length - 1); render(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); cur = Math.max(cur - 1, -1); render(); }
+    if (e.key === 'Escape') { sug.classList.remove('open'); q.blur(); }
+  });
+  document.getElementById('goBtn').addEventListener('click', go);
+
+  /* 히어로 검색창이 화면에서 사라지면 헤더 검색창이 자리를 넘겨받는다 */
+  var hdr = document.getElementById('hdrSearch');
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) {
+      var out = !e[0].isIntersecting;
+      hdr.style.opacity = out ? '1' : '0';
+      hdr.style.pointerEvents = out ? 'auto' : 'none';
+    }, { threshold: 0 }).observe(sb);
+  }
+})();
+</script>
+</body>
+</html>

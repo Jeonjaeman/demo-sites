@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대시보드 · 서식나루 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.two { display: grid; grid-template-columns: 1.6fr 1fr; gap: 24px; align-items: start; }
+.two > * { min-width: 0; }
+.risk li { display: flex; gap: 10px; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.risk li:last-child { border-bottom: 0; }
+.risk .tm { font-family: var(--mono); font-size: 11px; color: var(--t3); flex: 0 0 42px; padding-top: 2px; }
+.risk .bd { flex: 1 1 auto; min-width: 0; }
+.risk .bd b { font-size: 13.5px; color: var(--t1); font-weight: 500; }
+.risk .bd p { font-size: 12px; color: var(--t3); margin-top: 1px; }
+@media (max-width: 1200px) { .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="adm">
+
+  <aside class="adm-side">
+    <div class="top">
+      <div class="brand"><span class="mark">서식나루</span></div>
+      <span class="role">ADMIN CONSOLE</span>
+    </div>
+    <nav>
+      <h4>운영</h4>
+      <a href="index.html" class="on">대시보드</a>
+      <a href="forms.html">서식 관리 <span class="n">10,412</span></a>
+      <a href="members.html">회원·등급 <span class="n">412</span></a>
+      <a href="logs.html">내려받기 로그</a>
+      <h4>분류</h4>
+      <a href="forms.html#tree">카테고리 트리</a>
+      <a href="forms.html#tag">검색 태그</a>
+      <h4>설정</h4>
+      <a href="settings.html">한도·보안 정책</a>
+      <a href="settings.html#accounts">관리자 계정</a>
+    </nav>
+    <div class="btm">
+      운영자 이지현 · 최고관리자<br>
+      <a href="../index.html" style="color:var(--ac)">서비스 화면으로</a>
+    </div>
+  </aside>
+
+  <div class="adm-main">
+    <div class="adm-bar">
+      <h1>대시보드</h1>
+      <span class="crumb">2026-08-20 (목) 기준</span>
+      <span class="grow" style="flex:1 1 auto"></span>
+      <select class="inp" style="width:118px"><option>최근 14일</option><option>최근 30일</option><option>최근 90일</option></select>
+      <button class="btn sm" id="repBtn">보고서 내려받기</button>
+    </div>
+
+    <div class="adm-body">
+
+      <div class="kpis">
+        <div>
+          <div class="lb">등록 서식</div>
+          <div class="v" id="kForms">10,412</div>
+          <div class="d up">이번 주 +37건 개정 반영</div>
+        </div>
+        <div>
+          <div class="lb">오늘 내려받기</div>
+          <div class="v">1,847</div>
+          <div class="d up">전주 같은 요일 대비 +12.4%</div>
+        </div>
+        <div>
+          <div class="lb">활성 회원</div>
+          <div class="v">412</div>
+          <div class="d">정회원 331 · 프리미엄 58 · 일반 23</div>
+        </div>
+        <div>
+          <div class="lb">한도 초과 감지</div>
+          <div class="v alert">3</div>
+          <div class="d dn">확인이 필요한 계정 3건</div>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="panel">
+          <div class="hd">
+            <div>
+              <div class="h3">일별 내려받기</div>
+              <p class="xs t3" style="margin-top:2px">최근 14일 · 점선은 직전 14일</p>
+            </div>
+            <div class="legend">
+              <span class="a"><i></i>이번 기간</span>
+              <span class="b"><i></i>직전 기간</span>
+            </div>
+          </div>
+          <div class="bd">
+            <svg class="chart" id="chart" viewBox="0 0 720 200" preserveAspectRatio="none" role="img" aria-label="일별 내려받기 추이"></svg>
+            <div class="row" style="justify-content:space-between;margin-top:10px" id="xaxis"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="hd">
+            <div class="h3">확인이 필요한 활동</div>
+            <a class="sm ac" href="logs.html">로그 전체 →</a>
+          </div>
+          <div class="bd" style="padding:4px 16px">
+            <ul class="risk">
+              <li><span class="tm">11:42</span><div class="bd">
+                <b>박○○ (정회원)</b> <span class="badge bad">한도 초과</span>
+                <p>10분간 48건 내려받기 시도 · 일일 한도 50건 도달</p></div></li>
+              <li><span class="tm">10:19</span><div class="bd">
+                <b>정○○ (정회원)</b> <span class="badge warn" style="background:var(--warn-soft);color:var(--warn);border-color:#ecdcb4">다중 접속</span>
+                <p>서로 다른 IP 3곳에서 30분 내 로그인 시도</p></div></li>
+              <li><span class="tm">09:55</span><div class="bd">
+                <b>서○○ 사무소 (프리미엄)</b> <span class="badge line">대량</span>
+                <p>등기 분야 214건 일괄 내려받기 · 정상 범위</p></div></li>
+              <li><span class="tm">08:31</span><div class="bd">
+                <b>이용기간 만료 예정</b>
+                <p>7일 안에 만료되는 계정 <span class="mono">14건</span></p></div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="panel" style="overflow:hidden">
+          <div class="hd">
+            <div class="h3">많이 받은 서식</div>
+            <span class="sm t3">최근 7일</span>
+          </div>
+          <table class="tbl d36 static">
+            <thead><tr>
+              <th style="width:42px;padding-left:16px">#</th><th>서식명</th>
+              <th style="width:112px">분야</th><th style="width:96px" class="tr">7일</th><th style="width:88px">등급</th>
+            </tr></thead>
+            <tbody id="topBody"></tbody>
+          </table>
+        </div>
+
+        <div class="panel">
+          <div class="hd"><div class="h3">분야별 비중</div><span class="sm t3">등록 기준</span></div>
+          <div class="bd progress-rows" id="catBars"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  $('#kForms').textContent = A.fmt(NARU.TOTAL);
+
+  /* 차트 */
+  var cur = [1210, 1388, 1502, 1441, 1690, 742, 388, 1520, 1612, 1755, 1698, 1840, 806, 1847];
+  var prev = [1105, 1240, 1330, 1288, 1402, 690, 351, 1338, 1425, 1490, 1512, 1560, 742, 1644];
+  var labels = ['8/07','8/08','8/09','8/10','8/11','8/12','8/13','8/14','8/15','8/16','8/17','8/18','8/19','8/20'];
+  var W = 720, H = 200, PL = 40, PR = 8, PT = 14, PB = 20;
+  var max = 2000;
+  function pt(arr) {
+    return arr.map(function (v, i) {
+      var x = PL + i * (W - PL - PR) / (arr.length - 1);
+      var y = PT + (1 - v / max) * (H - PT - PB);
+      return [x, y];
+    });
+  }
+  function path(p) { return p.map(function (c, i) { return (i ? 'L' : 'M') + c[0].toFixed(1) + ' ' + c[1].toFixed(1); }).join(' '); }
+  var pc = pt(cur), pp = pt(prev);
+  var svg = '';
+  [0, 500, 1000, 1500, 2000].forEach(function (v) {
+    var y = PT + (1 - v / max) * (H - PT - PB);
+    svg += '<line class="grid" x1="' + PL + '" y1="' + y + '" x2="' + (W - PR) + '" y2="' + y + '"/>';
+    svg += '<text class="axis" x="' + (PL - 8) + '" y="' + (y + 3) + '" text-anchor="end">' + (v ? A.fmt(v) : '0') + '</text>';
+  });
+  svg += '<path class="areaA" d="' + path(pc) + ' L' + pc[pc.length - 1][0].toFixed(1) + ' ' + (H - PB) + ' L' + PL + ' ' + (H - PB) + ' Z"/>';
+  svg += '<path class="lineB" d="' + path(pp) + '"/>';
+  svg += '<path class="lineA" d="' + path(pc) + '"/>';
+  pc.forEach(function (c, i) {
+    svg += '<circle class="dot" cx="' + c[0].toFixed(1) + '" cy="' + c[1].toFixed(1) + '" r="' + (i === pc.length - 1 ? 3.4 : 1.9) + '"><title>' + labels[i] + ' · ' + A.fmt(cur[i]) + '건</title></circle>';
+  });
+  $('#chart').innerHTML = svg;
+  $('#xaxis').innerHTML = labels.map(function (l) { return '<span class="mono xs t3">' + l + '</span>'; }).join('');
+
+  document.getElementById('repBtn').addEventListener('click', function () {
+    var rows = [['날짜', '내려받기', '직전 기간']];
+    labels.forEach(function (l, i) { rows.push(['2026-' + l.replace('/', '-'), cur[i], prev[i]]); });
+    A.csv('운영보고_내려받기추이_20260820.csv', rows);
+  });
+
+  /* 인기 서식 */
+  var top = NARU.FORMS.slice().sort(function (a, b) { return b.d - a.d; }).slice(0, 8);
+  $('#topBody').innerHTML = top.map(function (f, i) {
+    return '<tr><td class="num t3" style="padding-left:16px">' + (i + 1) + '</td>'
+      + '<td><a class="ttl trunc" style="display:block;max-width:320px" href="../form.html?id=' + f.id + '">' + A.esc(f.t) + '</a></td>'
+      + '<td class="sm t3">' + f.cn + '</td>'
+      + '<td class="num t2 tr">' + A.fmt(Math.round(f.d * 0.008)) + '</td>'
+      + '<td>' + A.gradeBadge(f.g) + '</td></tr>';
+  }).join('');
+
+  /* 분야별 비중 */
+  var maxN = Math.max.apply(null, NARU.CATS.map(function (c) { return c.n; }));
+  $('#catBars').innerHTML = NARU.CATS.map(function (c) {
+    return '<div><span class="k">' + c.name + '</span>'
+      + '<span class="meter" style="flex:1 1 auto"><i style="width:' + (c.n / maxN * 100) + '%"></i></span>'
+      + '<span class="v">' + A.fmt(c.n) + '</span></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

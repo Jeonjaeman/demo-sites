@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로그인 · 서식나루</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+body { min-height: 100vh; display: flex; flex-direction: column; }
+.split { flex: 1 1 auto; display: grid; grid-template-columns: 1fr 460px; }
+
+/* 좌: 브랜드 면 */
+.brandside {
+  position: relative; background: var(--navy);
+  padding: 56px 64px; display: flex; flex-direction: column; justify-content: space-between;
+  overflow: hidden;
+}
+.brandside::before {
+  content: ''; position: absolute; right: -160px; bottom: -200px; width: 560px; height: 560px;
+  background: radial-gradient(circle, rgba(0, 163, 241, .18) 0%, transparent 62%);
+  pointer-events: none;
+}
+.brandside .brand .mark { color: #fff; }
+.brandside .brand .sub { color: var(--ac2); }
+.brandside .inner { position: relative; max-width: 520px; }
+.brandside h1 { font-size: 34px; font-weight: 700; line-height: 1.3; letter-spacing: -.03em; color: #fff; margin: 26px 0 14px; }
+.brandside p { font-size: 15px; color: rgba(255,255,255,.66); line-height: 1.8; max-width: 46ch; }
+.factlist { margin-top: 38px; border-top: 1px solid rgba(209,210,212,.28); }
+.factlist div { display: flex; gap: 18px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid rgba(209,210,212,.16); }
+.factlist .k { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: -.02em; color: var(--ac2); flex: 0 0 118px; }
+.factlist .v { font-size: 13.5px; color: rgba(255,255,255,.66); }
+.brandside .btm { position: relative; font-size: 12px; color: rgba(255,255,255,.4); }
+
+/* 우: 폼 */
+.formside { padding: 56px 48px; display: flex; flex-direction: column; justify-content: center; background: var(--bg); }
+.formside .box { max-width: 340px; width: 100%; margin: 0 auto; }
+.formside h2 { font-size: 21px; font-weight: 700; letter-spacing: -.025em; color: var(--t1); }
+.formside .sub { font-size: 13.5px; color: var(--t3); margin-top: 6px; }
+.formside form { margin-top: 26px; }
+.formside .field + .field { margin-top: 14px; }
+.opts { display: flex; align-items: center; justify-content: space-between; margin: 16px 0 20px; font-size: 13px; }
+.opts label { display: flex; align-items: center; gap: 7px; color: var(--t2); cursor: pointer; }
+.opts a { color: var(--t3); }
+.opts a:hover { color: var(--t1); }
+.altline { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 13px; color: var(--t3); text-align: center; }
+.altline a { color: var(--ac); font-weight: 500; }
+.notice-1s {
+  margin-top: 22px; padding: 12px 14px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: var(--r-sm); font-size: 12.5px; color: var(--t3); line-height: 1.6;
+}
+.notice-1s b { color: var(--t2); font-weight: 500; }
+
+/* 중복 로그인 안내 */
+.mask { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+.mask.on { display: flex; }
+.modal { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-modal); max-width: 400px; width: 100%; padding: 28px; }
+.modal h3 { font-size: 17px; font-weight: 600; color: var(--t1); letter-spacing: -.02em; }
+.modal p { font-size: 13.5px; color: var(--t2); line-height: 1.7; margin-top: 10px; }
+.modal .devbox { margin-top: 16px; padding: 12px 14px; background: var(--sunken); border-radius: var(--r-sm); font-size: 12.5px; color: var(--t2); }
+.modal .devbox .mono { color: var(--t3); font-size: 11.5px; }
+.modal .acts { display: flex; gap: 8px; margin-top: 20px; }
+.modal .acts .btn { flex: 1 1 auto; }
+
+@media (max-width: 940px) {
+  .split { grid-template-columns: 1fr; }
+  .brandside { padding: 40px 24px; }
+  .brandside::before { display: none; }
+  .formside { padding: 40px 24px 64px; }
+}
+</style>
+</head>
+<body>
+
+<div class="split">
+  <section class="brandside">
+    <div class="inner">
+      <a class="brand" href="index.html"><span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span></a>
+      <h1>사무실에서 쓰는 서식,<br>매번 다시 찾지 않도록</h1>
+      <p>법원 공식 서식과 법무사회 표준 서식을 한곳에 모아 두었습니다. 사건별로 서식함에 담아 두면 개정될 때 알려드리고, 최신본만 내려받으면 됩니다.</p>
+      <div class="factlist">
+        <div><span class="k">10,412</span><span class="v">민사·가사·등기·집행 등 10개 분야 등록 서식</span></div>
+        <div><span class="k">37</span><span class="v">이번 주 법령·예규 개정을 반영해 갱신한 서식</span></div>
+        <div><span class="k">HWP</span><span class="v">내려받으면 사무실 PC의 한글에서 그대로 열립니다</span></div>
+      </div>
+    </div>
+    <div class="btm">© 2026 서식나루</div>
+  </section>
+
+  <section class="formside">
+    <div class="box">
+      <h2>로그인</h2>
+      <p class="sub">등록하신 아이디로 이용하실 수 있습니다.</p>
+
+      <form id="loginForm" autocomplete="off">
+        <label class="field">
+          <span class="lb">아이디</span>
+          <input class="inp" type="text" id="uid" value="dh.kim" autocomplete="username">
+        </label>
+        <label class="field">
+          <span class="lb">비밀번호</span>
+          <input class="inp" type="password" id="pw" value="법무사서식2026" autocomplete="current-password">
+        </label>
+        <div class="opts">
+          <label><input type="checkbox" checked> 아이디 저장</label>
+          <a href="#" id="findId">아이디 · 비밀번호 찾기</a>
+        </div>
+        <button class="btn pri lg block" type="submit">로그인</button>
+      </form>
+
+      <div class="notice-1s">
+        <b>1인 1세션으로 운영됩니다.</b> 하나의 계정은 한 대의 기기에서만 접속할 수 있습니다. 다른 기기에서 로그인하면 기존 접속은 자동으로 해제됩니다.
+      </div>
+
+      <div class="altline">
+        아직 계정이 없으신가요? <a href="support.html#contact">사무소 단위로 신청하기</a><br>
+        <span class="xs" style="color:var(--t3)">법무사회 회원은 회원번호 확인 후 정회원 요금이 적용됩니다.</span>
+      </div>
+
+      <div class="altline" style="border-top:0;margin-top:8px;padding-top:0">
+        <a href="admin/index.html" style="color:var(--t3)">운영자이신가요? 관리자 콘솔 →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="mask" id="mask">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h3 id="mTitle">다른 기기에서 접속 중입니다</h3>
+    <p>이 계정은 지금 다른 기기에서 사용되고 있습니다. 계속 진행하면 기존 접속이 해제되고 이 기기에서 이용하게 됩니다.</p>
+    <div class="devbox">
+      <div>Windows · Chrome 141 · 사무실</div>
+      <div class="mono">최근 활동 2026-08-20 09:12 · 서울</div>
+    </div>
+    <div class="acts">
+      <button class="btn" id="mCancel">취소</button>
+      <button class="btn pri" id="mGo">기존 접속 해제하고 로그인</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var mask = document.getElementById('mask');
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!document.getElementById('uid').value.trim() || !document.getElementById('pw').value) {
+      A.toast('아이디와 비밀번호를 모두 입력해 주세요.', 'bad');
+      return;
+    }
+    mask.classList.add('on');
+    document.getElementById('mGo').focus();
+  });
+  document.getElementById('findId').addEventListener('click', function (e) {
+    e.preventDefault();
+    A.toast('가입 시 등록한 이메일로 재설정 안내를 보내드립니다.<br><span class="sm t3">메일이 오지 않으면 고객센터 1668-0274로 연락해 주세요</span>');
+  });
+  document.getElementById('mCancel').addEventListener('click', function () { mask.classList.remove('on'); });
+  mask.addEventListener('click', function (e) { if (e.target === mask) mask.classList.remove('on'); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') mask.classList.remove('on'); });
+  document.getElementById('mGo').addEventListener('click', function () {
+    this.textContent = '접속 정리 중…';
+    setTimeout(function () { location.href = 'mypage.html'; }, 600);
+  });
+})();
+</script>
+</body>
+</html>

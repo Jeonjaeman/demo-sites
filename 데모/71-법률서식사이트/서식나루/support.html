@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고객지원 · 서식나루</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { display: grid; grid-template-columns: 200px 1fr; gap: 40px; align-items: start; padding: 32px 0 72px; }
+.snav { position: sticky; top: 84px; }
+.snav a { display: flex; align-items: center; height: 32px; padding: 0 10px; border-radius: var(--r-sm); font-size: 13.5px; color: var(--t2); transition: background .12s var(--ease), color .12s var(--ease); }
+.snav a:hover { background: var(--hover); color: var(--t1); }
+.snav a.on { background: var(--ac-soft); color: var(--ac); font-weight: 600; }
+
+.guide-steps { counter-reset: g; max-width: 74ch; }
+.guide-steps > div { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.guide-steps > div:last-child { border-bottom: 0; }
+.guide-steps .no { counter-increment: g; flex: 0 0 30px; }
+.guide-steps .no::before { content: counter(g, decimal-leading-zero); font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--ac); }
+.guide-steps h4 { font-size: 14.5px; font-weight: 600; color: var(--t1); margin-bottom: 4px; }
+.guide-steps p { font-size: 14px; color: var(--t2); line-height: 1.75; }
+.guide-steps p .mono { font-size: 12.5px; background: var(--sunken); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; }
+
+.contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+.contact-grid > div { padding: 18px 20px; border-right: 1px solid var(--line); }
+.contact-grid > div:last-child { border-right: 0; }
+.contact-grid .lb { font-size: 12px; color: var(--t3); }
+.contact-grid .v { font-family: var(--mono); font-size: 19px; font-weight: 600; color: var(--t1); margin-top: 4px; }
+.contact-grid .d { font-size: 12.5px; color: var(--t3); margin-top: 4px; }
+
+.reqform { max-width: 640px; }
+.reqform .field + .field, .reqform .row + .field, .reqform .field + .row { margin-top: 14px; }
+.filedrop { border: 1.5px dashed var(--line-strong); border-radius: var(--r-md); background: var(--surface); padding: 22px; text-align: center; font-size: 13px; color: var(--t3); transition: border-color .16s var(--ease), background .16s var(--ease); cursor: pointer; }
+.filedrop:hover, .filedrop.hot { border-color: var(--ac); background: var(--ac-soft); color: var(--ac-hover); }
+
+@media (max-width: 900px) { .wrap { grid-template-columns: 1fr; } .snav { position: static; display: flex; flex-wrap: wrap; gap: 4px; } .contact-grid { grid-template-columns: 1fr; } .contact-grid > div { border-right: 0; border-bottom: 1px solid var(--line); } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="shell">
+    <a href="plan.html">이용등급 안내</a><span>·</span>
+    <a href="support.html" style="color:var(--t1)">고객지원</a><span>·</span>
+    <a href="support.html#request">서식 등록 요청</a><span>·</span>
+    <a href="admin/index.html">관리자</a>
+  </div>
+</div>
+
+<header class="gnb">
+  <div class="shell">
+    <a class="brand" href="index.html"><span class="mark">서식나루</span><span class="sub">LEGAL FORMS</span></a>
+    <nav>
+      <a href="index.html">홈</a>
+      <a href="search.html">서식검색</a>
+      <a href="search.html#cat">분야별</a>
+      <a href="search.html#stage">절차별</a>
+      <a href="plan.html">이용등급</a>
+    </nav>
+    <div class="side">
+      <div class="hdr-search">
+        <svg class="ico" width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5 14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input type="search" placeholder="서식명, 사건유형, 법령" aria-label="서식 검색">
+      </div>
+      <a class="btn ghost sm" href="login.html">로그인</a>
+      <a class="btn pri sm" href="mypage.html">내 서식함</a>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+  <div class="wrap">
+
+    <aside class="snav" id="snav">
+      <a href="#guide" class="on">이용 안내</a>
+      <a href="#hwp">한글 연동 설정</a>
+      <a href="#request">서식 등록 요청</a>
+      <a href="#contact">문의하기</a>
+      <a href="plan.html#faq">자주 묻는 질문 →</a>
+    </aside>
+
+    <main class="stack-40">
+
+      <section id="guide">
+        <div class="rule-head">
+          <span class="eyebrow">GUIDE</span>
+          <h1 class="h1">이용 안내</h1>
+          <div class="bar"></div>
+        </div>
+        <div class="guide-steps">
+          <div><span class="no"></span><div>
+            <h4>서식을 찾습니다</h4>
+            <p>상단 검색창에 서식명, 사건유형(예: 대여금), 근거 법령(예: 민사집행법) 어느 것으로든 검색할 수 있습니다. 서식명이 기억나지 않으면 분야별 색인이나 사건 진행 단계별 색인에서 좁혀 들어가는 편이 빠릅니다.</p>
+          </div></div>
+          <div><span class="no"></span><div>
+            <h4>미리보기로 구성을 확인합니다</h4>
+            <p>서식 상세 화면에서 문서의 짜임과 기재 항목을 먼저 확인합니다. 작성 요령 탭에는 항목별 주의사항이, 첨부 서류 탭에는 제출 시 함께 내야 하는 서류 목록이 정리되어 있습니다.</p>
+          </div></div>
+          <div><span class="no"></span><div>
+            <h4>한글 파일로 내려받습니다</h4>
+            <p><span class="mono">한글 파일로 열기</span>를 누르면 HWP 파일이 내려받아지고 PC에 설치된 한글에서 바로 열립니다. 전자소송 제출용은 HWPX, 인쇄용은 PDF를 선택하면 됩니다. 하루 내려받기 한도는 이용등급에 따라 다릅니다.</p>
+          </div></div>
+          <div><span class="no"></span><div>
+            <h4>자주 쓰는 서식은 서식함에 담아 둡니다</h4>
+            <p>사건별로 폴더를 만들어 담아 두면 해당 서식이 개정될 때 알림을 받고 최신본만 다시 받을 수 있습니다. 정회원은 300건, 프리미엄은 제한 없이 보관됩니다.</p>
+          </div></div>
+        </div>
+      </section>
+
+      <section id="hwp">
+        <div class="rule-head">
+          <span class="eyebrow">HWP SETUP</span>
+          <h2 class="h2">한글 연동 설정</h2>
+          <div class="bar"></div>
+        </div>
+        <p class="sm t2" style="max-width:70ch;margin-bottom:8px">내려받은 파일이 한글에서 바로 열리지 않는 경우, 대부분 파일 연결 설정 문제입니다. 아래 순서로 확인해 주세요.</p>
+        <div class="guide-steps">
+          <div><span class="no"></span><div>
+            <h4>파일 연결 확인 (Windows)</h4>
+            <p>내려받은 <span class="mono">.hwp</span> 파일에서 마우스 오른쪽 버튼 → <span class="mono">연결 프로그램</span> → <span class="mono">한글</span>을 선택하고 "항상 이 앱 사용"에 체크합니다.</p>
+          </div></div>
+          <div><span class="no"></span><div>
+            <h4>브라우저 내려받기 설정</h4>
+            <p>Chrome·Edge에서 매번 저장 위치를 묻도록 되어 있으면 확인 단계가 하나 늘어납니다. 브라우저 설정 → 다운로드에서 저장 폴더를 고정해 두면 클릭 한 번으로 열립니다.</p>
+          </div></div>
+          <div><span class="no"></span><div>
+            <h4>HWPX가 열리지 않는 경우</h4>
+            <p>HWPX는 한글 2014 이상에서 열립니다. 이전 버전을 쓰고 계시면 HWP 형식으로 내려받으시면 됩니다. 모든 서식은 HWP를 기본으로 제공합니다.</p>
+          </div></div>
+        </div>
+      </section>
+
+      <section id="request">
+        <div class="rule-head">
+          <span class="eyebrow">REQUEST</span>
+          <h2 class="h2">서식 등록 요청</h2>
+          <div class="bar"></div>
+        </div>
+        <p class="sm t2" style="max-width:70ch;margin-bottom:16px">찾으시는 서식이 없으면 요청을 남겨 주세요. 법원 공식 서식은 보통 2영업일 안에, 실무 변형 서식은 검토 후 등록해 드립니다. 등록되면 알림으로 알려드립니다.</p>
+        <form class="reqform" id="reqForm">
+          <div class="row gap-12">
+            <label class="field grow"><span class="lb">서식명 <span style="color:var(--bad)">*</span></span><input class="inp" id="reqName" placeholder="예: 임차권등기명령 신청서"></label>
+            <label class="field" style="width:180px"><span class="lb">분야</span><select class="inp" id="reqCat" style="height:40px"></select></label>
+          </div>
+          <label class="field"><span class="lb">근거 법령 · 제출기관 (아는 범위에서)</span><input class="inp" placeholder="예: 주택임대차보호법 · 관할 지방법원"></label>
+          <label class="field"><span class="lb">참고 사항</span><textarea class="inp" rows="3" placeholder="쓰려는 상황이나 참고할 만한 출처가 있으면 적어 주세요"></textarea></label>
+          <div class="field">
+            <span class="lb">가지고 계신 파일이 있다면 (선택)</span>
+            <div class="filedrop" id="reqDrop">파일을 끌어다 놓거나 눌러서 선택 · HWP · PDF · 10MB 이하</div>
+          </div>
+          <div class="row gap-8" style="margin-top:18px">
+            <button class="btn pri lg" type="submit">등록 요청 보내기</button>
+            <span class="sm t3">요청 처리 현황은 내 서식함에서 확인할 수 있습니다</span>
+          </div>
+        </form>
+      </section>
+
+      <section id="contact">
+        <div class="rule-head">
+          <span class="eyebrow">CONTACT</span>
+          <h2 class="h2">문의하기</h2>
+          <div class="bar"></div>
+        </div>
+        <div class="contact-grid">
+          <div>
+            <div class="lb">전화</div>
+            <div class="v">1668-0274</div>
+            <div class="d">평일 09:00–18:00 · 점심 12:30–13:30</div>
+          </div>
+          <div>
+            <div class="lb">메일</div>
+            <div class="v">help@seosiknaru.kr</div>
+            <div class="d">영업일 기준 24시간 안에 회신</div>
+          </div>
+          <div>
+            <div class="lb">사무소 도입 상담</div>
+            <div class="v">biz@seosiknaru.kr</div>
+            <div class="d">프리미엄 · 3인 이상 단체 요금</div>
+          </div>
+        </div>
+        <p class="sm t3" style="margin-top:12px">아이디나 비밀번호를 잊으신 경우 가입 시 등록한 이메일로 재설정 안내를 보내드립니다. 로그인 화면의 <a class="ac" href="login.html">아이디 · 비밀번호 찾기</a>를 이용해 주세요.</p>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<footer class="foot">
+  <div class="shell">
+    <div class="meta" style="border:0;margin:0;padding:0">
+      <span>© 2026 서식나루</span>
+      <nav><a href="terms.html">이용약관</a><a href="terms.html#privacy">개인정보처리방침</a><a href="terms.html#biz">사업자정보</a><a href="admin/index.html">관리자</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  var sel = document.getElementById('reqCat');
+  sel.innerHTML = '<option>모름 · 기타</option>' + NARU.CATS.map(function (c) { return '<option>' + c.name + '</option>'; }).join('');
+
+  document.getElementById('reqForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var nm = document.getElementById('reqName').value.trim();
+    if (!nm) { A.toast('서식명을 입력해 주세요.', 'bad'); return; }
+    A.toast('<b>' + A.esc(nm) + '</b> 등록 요청을 접수했습니다.<br><span class="sm t3">접수번호 R-20260820-114 · 처리되면 알림으로 알려드립니다</span>');
+    this.reset();
+  });
+
+  var drop = document.getElementById('reqDrop');
+  drop.addEventListener('click', function () { A.toast('파일 선택 창이 열립니다.'); });
+  ['dragenter','dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('hot'); }); });
+  ['dragleave','drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('hot'); }); });
+
+  /* 사이드 내비 현재 위치 표시 */
+  var links = document.querySelectorAll('#snav a[href^="#"]');
+  var secs = ['guide', 'hwp', 'request', 'contact'].map(function (id) { return document.getElementById(id); });
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (ents) {
+      ents.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + e.target.id); });
+      });
+    }, { rootMargin: '-30% 0px -55% 0px' });
+    secs.forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
