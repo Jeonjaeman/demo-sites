@@ -256,8 +256,9 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 }
 
 /* ---------- 섹션 공통 (100vh 리듬 · 정렬 교대) ---------- */
-.sec { min-height: 100vh; display: grid; align-content: center; padding: 10rem 0; position: relative; }
-.sec-head { display: grid; gap: 1.25rem; margin-bottom: 3.75rem; }
+/* 사용자 교정(2026.08): 100vh 강제·과대 패딩이 내용 대비 과해 단락 간격이 벌어짐 → 패딩 기반 리듬으로 */
+.sec { display: grid; align-content: center; padding: 8.75rem 0; position: relative; }
+.sec-head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
 .sec-head .t-cap { max-width: 44em; }
 .sec-right .sec-head { justify-items: end; text-align: right; }
 .sec-center .sec-head { justify-items: center; text-align: center; }
@@ -268,12 +269,12 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 .sec-dark-navy .eyebrow, .sec-dark-black .eyebrow { color: var(--accent); }
 
 /* ---------- 통계 (다크 네이비 · 글래스 카드 · countup) ---------- */
-.stats-grid { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.stats-grid { display: flex; gap: 1.25rem; flex-wrap: nowrap; } /* 데스크톱: 줄바꿈 금지 — 3장이 항상 한 줄 */
 /* 우측 정렬 섹션에선 카드도 우측으로 — 정렬 교대가 의도로 읽히게 */
 .sec-right .stats-grid { justify-content: flex-end; }
 .stat-card {
-  /* 레퍼런스 글래스 카드 원형 280×280@1920 — 전폭으로 늘어나지 않게 고정 */
-  flex: 0 1 17.5rem; width: 17.5rem; aspect-ratio: 1;
+  /* 글래스 카드 — 컬럼 폭에 맞춰 3등분, 최대 280@1920 캡 */
+  flex: 1 1 0; min-width: 0; max-width: 17.5rem; aspect-ratio: 1;
   border: 1px solid rgba(209, 210, 212, 0.2); border-radius: 0.75rem;
   backdrop-filter: blur(10px);
   display: grid; align-content: end; gap: 0.5rem; padding: 1.75rem 1.5rem 1.5rem;
@@ -332,10 +333,17 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 .svc-row { display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none;
   padding: 4px max(calc(50vw - 45.75rem), 20px) 8px; }
 .svc-row::-webkit-scrollbar { display: none; }
+/* 중앙 정렬 섹션의 카드 행 — 공간이 남으면 중앙, 넘치면 auto 마진이 0이 되어 스크롤 정상 (justify-content:center는 넘칠 때 좌측이 잘림) */
+.sec-center .svc-row > :first-child { margin-left: auto; }
+.sec-center .svc-row > :last-child { margin-right: auto; }
 .svc-card {
-  flex: 0 0 clamp(300px, 24vw, 24rem); border-radius: 0.75rem; overflow: hidden;
+  /* 데스크톱: 컨테이너(91.5rem) 안에 4장 + gap 3개가 정확히 들어가는 폭 → 넘침 없이 중앙 정렬 성립 */
+  flex: 0 1 21.9rem; min-width: 0; border-radius: 0.75rem; overflow: hidden;
   position: relative; aspect-ratio: 0.82; scroll-snap-align: start;
   border: 1px solid var(--line); background: var(--dark-black); color: #fff;
+}
+@media (max-width: 1024px) {
+  .svc-card { flex: 0 0 300px; min-width: 300px; } /* 모바일·태블릿: 스크롤 캐러셀 */
 }
 .svc-bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.75;
   transition: transform 0.7s var(--ease-css), opacity 0.4s var(--ease-css); }
@@ -587,4 +595,35 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
   .hist-item:nth-child(odd)::before, .hist-item:nth-child(even)::before { left: 2px; right: auto; }
   .event-item { grid-template-columns: 1fr; gap: 8px; }
   .popup { left: 16px; bottom: 16px; }
+}
+
+/* ---------- 통계 좌측 그래픽 (상승 영역 차트 · 셀프 드로우) ---------- */
+.stats-layout { display: grid; grid-template-columns: 1fr 1.3fr; gap: 4.5rem; align-items: center; }
+.stats-visual { display: grid; gap: 0.875rem; }
+.stats-chart { width: 100%; height: auto; overflow: visible; }
+.chart-grid line { stroke: rgba(255, 255, 255, 0.07); stroke-width: 1; }
+.chart-line {
+  fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round;
+  stroke-dasharray: 900; stroke-dashoffset: 900;
+}
+.chart-area { opacity: 0; }
+.chart-dot { fill: #fff; opacity: 0; }
+.chart-dot-ring { fill: none; stroke: rgba(255, 255, 255, 0.5); stroke-width: 1.5; opacity: 0; transform-origin: 560px 96px; }
+.stats-visual.in .chart-line { transition: stroke-dashoffset 1.6s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s; stroke-dashoffset: 0; }
+.stats-visual.in .chart-area { transition: opacity 0.8s ease 1.2s; opacity: 1; }
+.stats-visual.in .chart-dot { transition: opacity 0.3s ease 1.6s; opacity: 1; }
+.stats-visual.in .chart-dot-ring { opacity: 1; animation: dotPulse 2.4s ease-out 1.8s infinite; }
+@keyframes dotPulse {
+  0% { transform: scale(0.4); opacity: 0.8; }
+  70%, 100% { transform: scale(1.4); opacity: 0; }
+}
+.chart-caption { font-family: "Bai Jamjuree", sans-serif; font-size: 13px; fill: rgba(255, 255, 255, 0.45); letter-spacing: 0.06em; }
+.stats-visual-cap { font-size: 0.875rem; color: rgba(255, 255, 255, 0.45); }
+@media (prefers-reduced-motion: reduce) {
+  .chart-line { stroke-dashoffset: 0 !important; transition: none !important; }
+  .chart-area, .chart-dot, .chart-dot-ring { opacity: 1 !important; transition: none !important; animation: none !important; }
+}
+@media (max-width: 1024px) {
+  .stats-layout { grid-template-columns: 1fr; gap: 40px; }
+  .stats-visual { max-width: 520px; }
 }

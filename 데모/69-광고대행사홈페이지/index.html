@@ -77,16 +77,40 @@
 
 <!-- ══════════ 실적 — 다크 네이비 · 글래스 카드 · 카운트업 ══════════ -->
 <section class="sec sec-dark-navy sec-right" id="stats">
-  <div class="shell">
-    <div class="sec-head">
-      <p class="eyebrow rv">SCALE</p>
-      <h2 class="t-sec rv" style="color:#fff">숫자가 먼저 말합니다</h2>
-      <p class="t-cap rv">규모가 아니라 밀도의 숫자입니다 — 데모용 가상 수치, 실제 구축 시 실적 데이터로 대체</p>
+  <div class="shell stats-layout">
+    <!-- 좌측 그래픽 — 상승 영역 차트 (리빌 시 셀프 드로우) -->
+    <div class="stats-visual rv" aria-hidden="true">
+      <svg viewBox="0 0 560 420" class="stats-chart" id="statsChart">
+        <defs>
+          <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#00A3F1" stop-opacity=".34"/>
+            <stop offset="1" stop-color="#00A3F1" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g class="chart-grid">
+          <line x1="0" y1="105" x2="560" y2="105"/><line x1="0" y1="210" x2="560" y2="210"/>
+          <line x1="0" y1="315" x2="560" y2="315"/><line x1="0" y1="420" x2="560" y2="420"/>
+        </g>
+        <path class="chart-area" d="M0 356 C90 340 140 300 210 286 C290 270 320 220 400 172 C450 143 500 118 560 96 L560 420 L0 420 Z" fill="url(#areaFill)"/>
+        <path class="chart-line" d="M0 356 C90 340 140 300 210 286 C290 270 320 220 400 172 C450 143 500 118 560 96"/>
+        <circle class="chart-dot-ring" cx="560" cy="96" r="16"/>
+        <circle class="chart-dot" cx="560" cy="96" r="6"/>
+        <text class="chart-caption" x="0" y="404">2017</text>
+        <text class="chart-caption" x="560" y="404" text-anchor="end">2026</text>
+      </svg>
+      <p class="stats-visual-cap">캠페인 누적 — 아홉 해의 기울기</p>
     </div>
-    <div class="stats-grid">
-      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="217"><b>0</b><span class="unit">캠페인</span></span><span class="stat-label">2017년부터 집행한 캠페인</span></div>
-      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="91"><b>0</b><span class="unit">%</span></span><span class="stat-label">재계약률 — 3개월 단위 계약의 결과</span></div>
-      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="9.2" data-decimal="1"><b>0</b><span class="unit">Y</span></span><span class="stat-label">평균 담당 경력</span></div>
+    <div class="stats-body">
+      <div class="sec-head">
+        <p class="eyebrow rv">SCALE</p>
+        <h2 class="t-sec rv" style="color:#fff">숫자가 먼저 말합니다</h2>
+        <p class="t-cap rv">규모가 아니라 밀도의 숫자입니다 — 데모용 가상 수치, 실제 구축 시 실적 데이터로 대체</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card rv-c"><span class="display-num stat-num" data-count="217"><b>0</b><span class="unit">캠페인</span></span><span class="stat-label">2017년부터 집행한 캠페인</span></div>
+        <div class="stat-card rv-c"><span class="display-num stat-num" data-count="91"><b>0</b><span class="unit">%</span></span><span class="stat-label">재계약률 — 3개월 단위 계약의 결과</span></div>
+        <div class="stat-card rv-c"><span class="display-num stat-num" data-count="9.2" data-decimal="1"><b>0</b><span class="unit">Y</span></span><span class="stat-label">평균 담당 경력</span></div>
+      </div>
     </div>
   </div>
 </section>
