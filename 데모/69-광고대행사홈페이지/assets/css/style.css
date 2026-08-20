@@ -259,6 +259,9 @@ a:hover .arw::after, button:hover .arw::after, .card-link:hover .arw::after { tr
 /* 사용자 교정(2026.08): 100vh 강제·과대 패딩이 내용 대비 과해 단락 간격이 벌어짐 → 패딩 기반 리듬으로 */
 .sec { display: grid; align-content: center; padding: 8.75rem 0; position: relative; }
 .sec-head { display: grid; gap: 1rem; margin-bottom: 2.5rem; }
+/* 배경 전환이 없는 라이트 연속 구간(services→hub)은 패딩이 겹쳐 보여 축소 */
+#services { padding-bottom: 4.375rem; }
+#hub { padding-top: 3.125rem; }
 .sec-head .t-cap { max-width: 44em; }
 .sec-right .sec-head { justify-items: end; text-align: right; }
 .sec-center .sec-head { justify-items: center; text-align: center; }
