@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>UNFRAME 언프레임 — 틀 밖에서, 브랜드를 정렬하다</title>
+<title>UNFRAME 언프레임 — 브랜드를 정렬하는 광고대행사</title>
 <meta name="description" content="브랜드 캠페인·퍼포먼스·콘텐츠. 흩어진 메시지를 하나의 축으로 정렬하는 광고대행사 UNFRAME. (제안용 데모 — 가상 브랜드)">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%23025997%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Arial%27 font-size=%2718%27 font-weight=%27bold%27 fill=%27white%27 text-anchor=%27middle%27%3EU%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<header class="nav" id="nav">
-  <div class="shell nav-in">
-    <a class="brand" href="index.html" aria-current="page" aria-label="UNFRAME 홈">
+<header class="nav is-white" id="nav">
+  <div class="shell-wide nav-in">
+    <a class="brand" href="index.html" aria-label="UNFRAME 홈">
       <span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span>
     </a>
     <nav class="nav-links" aria-label="주 메뉴">
@@ -23,7 +24,7 @@
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
     </nav>
-    <a class="btn-cta nav-cta" href="contact.html">프로젝트 문의</a>
+    <a class="btn btn-primary nav-cta" href="contact.html">프로젝트 문의</a>
     <button class="nav-burger" id="navBurger" aria-label="메뉴 열기" aria-expanded="false">
       <span></span><span></span>
     </button>
@@ -36,7 +37,7 @@
 
 <aside class="popup" id="eventPopup" hidden role="dialog" aria-label="이벤트 안내">
   <div class="popup-body">
-    <p class="overline">EVENT · 진행 중</p>
+    <p class="popup-tag">EVENT · 진행 중</p>
     <p class="popup-title" id="popupTitle"></p>
     <p class="popup-desc" id="popupDesc"></p>
     <div class="popup-actions">
@@ -49,123 +50,120 @@
 
 <main>
 
-<!-- 히어로 — 스크롤 스크럽 (6s) -->
-<section class="hero" id="hero" data-scrub-len="4200">
-  <div class="hero-sticky">
-    <div class="hero-media">
-      <img class="hero-poster" id="heroPoster" src="assets/img/hero-poster.webp" alt="" aria-hidden="true">
-      <video class="hero-video" id="heroVideo" muted playsinline preload="none" aria-hidden="true"></video>
-      <div class="hero-grain" aria-hidden="true"></div>
+<!-- ══════════ KV — clip-path 확장 히어로 ══════════ -->
+<section class="kv-wrap" id="kv">
+  <div class="kv-sticky">
+    <div class="shell kv-titlebox" id="kvTitlebox">
+      <p class="eyebrow">ADVERTISING AGENCY</p>
+      <h1 class="display-lg kv-page-name">틀 밖에서,<br>브랜드를 정렬하다</h1>
     </div>
-    <div class="hero-load" id="heroLoad" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15.5"/></svg></div>
-
-    <div class="hero-band" data-band="0.00,0.15">
-      <p class="hero-cap">수많은 메시지가<br>흩어져 있습니다</p>
+    <div class="kv-media" id="kvMedia">
+      <img src="assets/img/hero-poster.webp" alt="" aria-hidden="true">
+      <video id="kvVideo" muted loop playsinline preload="metadata" poster="assets/img/hero-poster.webp" src="assets/video/hero-scrub.mp4" aria-hidden="true"></video>
+      <div class="kv-scrim" aria-hidden="true"></div>
     </div>
-    <div class="hero-band" data-band="0.25,0.45">
-      <p class="hero-cap">문제는 크리에이티브가 아니라,<br><em>정렬</em>입니다</p>
-    </div>
-    <div class="hero-band" data-band="0.55,0.75">
-      <p class="hero-cap">타깃 · 채널 · 메시지를<br>한 축에 놓으면</p>
-    </div>
-    <div class="hero-band hero-settle" data-band="0.85,1.00">
-      <p class="overline settle-eyebrow">ADVERTISING AGENCY UNFRAME</p>
-      <h1 class="display-xl settle-title" id="settleTitle">틀 밖에서,<br>브랜드를 정렬하다</h1>
-      <div class="settle-actions">
-        <a class="btn-cta btn-lg" href="contact.html">프로젝트 문의</a>
-        <a class="btn-ghost" href="works.html">Works 보기</a>
+    <div class="shell kv-copy" id="kvCopy">
+      <h2 class="display-xl kv-title"><span class="row">WE ALIGN</span><span class="row">BRANDS.</span></h2>
+      <p class="kv-desc">캠페인 하나를 크게 만드는 대신, 타깃과 채널과 메시지를 한 축에 놓습니다.
+      정렬된 브랜드는 광고가 끝난 뒤에도 같은 목소리로 말합니다.</p>
+      <div class="kv-actions">
+        <a class="btn btn-primary" href="works.html">Works 보기 <span class="arw"><i>→</i></span></a>
+        <a class="btn btn-ondark" href="contact.html">프로젝트 문의</a>
       </div>
     </div>
+    <div class="kv-hint" id="kvHint" aria-hidden="true"><span>SCROLL</span><i></i></div>
+  </div>
+</section>
 
-    <div class="hero-hint" id="heroHint" aria-hidden="true">
-      <span>SCROLL</span><i></i>
+<!-- ══════════ 실적 — 다크 네이비 · 글래스 카드 · 카운트업 ══════════ -->
+<section class="sec sec-dark-navy sec-right" id="stats">
+  <div class="shell">
+    <div class="sec-head">
+      <p class="eyebrow rv">SCALE</p>
+      <h2 class="t-sec rv" style="color:#fff">숫자가 먼저 말합니다</h2>
+      <p class="t-cap rv">규모가 아니라 밀도의 숫자입니다 — 데모용 가상 수치, 실제 구축 시 실적 데이터로 대체</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="217"><b>0</b><span class="unit">캠페인</span></span><span class="stat-label">2017년부터 집행한 캠페인</span></div>
+      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="91"><b>0</b><span class="unit">%</span></span><span class="stat-label">재계약률 — 3개월 단위 계약의 결과</span></div>
+      <div class="stat-card rv-c"><span class="display-num stat-num" data-count="9.2" data-decimal="1"><b>0</b><span class="unit">Y</span></span><span class="stat-label">평균 담당 경력</span></div>
     </div>
   </div>
 </section>
 
-<!-- 숫자 3종 -->
-<section class="stats">
-  <div class="shell stats-grid">
-    <div class="stat rv"><strong class="stat-num" data-count="217" data-suffix="">0</strong><span class="stat-label">캠페인 집행</span></div>
-    <div class="stat rv"><strong class="stat-num" data-count="91" data-suffix="%">0</strong><span class="stat-label">재계약률</span></div>
-    <div class="stat rv"><strong class="stat-num" data-count="9.2" data-decimal="1" data-suffix="Y">0</strong><span class="stat-label">평균 담당 경력</span></div>
-  </div>
-  <p class="shell stats-note rv">숫자는 데모용 가상 수치입니다 · 실제 구축 시 실적 데이터로 대체</p>
-</section>
-
-<!-- Works 슬라이드 (주요 포트폴리오 → works.html) -->
-<section class="works" id="worksPreview">
-  <div class="shell works-head">
-    <p class="overline rv">WORKS</p>
-    <h2 class="display-lg rv" data-chars>일이 말하게 합니다</h2>
+<!-- ══════════ Works 슬라이드 ══════════ -->
+<section class="sec" id="worksPreview">
+  <div class="shell sec-head">
+    <p class="eyebrow rv">WORKS</p>
+    <h2 class="t-sec wf" data-wf>일이 말하게 합니다</h2>
+    <p class="t-cap rv">게시 동의를 받은 케이스만 공개합니다. 성과 수치에는 측정 도구와 기간을 함께 적습니다.</p>
   </div>
   <div class="works-slider-wrap bleed rv">
     <div class="works-slider" id="worksSlider" aria-label="주요 포트폴리오 슬라이드"><!-- JS 렌더 --></div>
     <div class="slider-nav shell">
-      <button class="slider-btn" id="slidePrev" aria-label="이전 슬라이드">←</button>
-      <button class="slider-btn" id="slideNext" aria-label="다음 슬라이드">→</button>
+      <button class="btn-circle" id="slidePrev" aria-label="이전 슬라이드">←</button>
+      <button class="btn-circle" id="slideNext" aria-label="다음 슬라이드">→</button>
+      <a class="btn" href="works.html" style="margin-left:auto">전체 포트폴리오 <span class="arw"><i>→</i></span></a>
     </div>
   </div>
-  <div class="shell works-more rv">
-    <a class="btn-ghost btn-more" href="works.html">전체 포트폴리오 보기 — 카테고리별 필터 →</a>
+</section>
+
+<!-- ══════════ 슬로건 — wordFlash · 그라디언트 ══════════ -->
+<section class="sec slogan" id="slogan">
+  <div class="slogan-bg" id="sloganBg" aria-hidden="true"></div>
+  <div class="shell slogan-in">
+    <p class="slogan-line wf" data-wf>BRANDS,</p>
+    <p class="slogan-line wf" data-wf data-wf-delay="0.25">ALIGNED.</p>
+    <p class="slogan-sub rv">흩어진 것을 모아 하나의 목소리로 — 언프레임이 하는 단 하나의 일</p>
   </div>
 </section>
 
-<!-- Services -->
-<section class="services" id="services">
-  <div class="shell">
-    <p class="overline rv">SERVICES</p>
-    <h2 class="display-lg rv" data-chars>필요한 건 전부,<br>필요한 만큼만</h2>
+<!-- ══════════ Services ══════════ -->
+<section class="sec sec-center" id="services">
+  <div class="shell sec-head">
+    <p class="eyebrow rv">SERVICES</p>
+    <h2 class="t-sec wf" data-wf>필요한 건 전부, 필요한 만큼만</h2>
   </div>
-  <div class="shell svc-grid">
-    <article class="svc-card rv" data-tilt>
-      <div class="svc-bg" data-svc-bg="0"></div>
-      <div class="svc-in"><p class="overline">01</p><h3>브랜드 캠페인</h3>
-      <p>포지셔닝부터 캠페인 필름까지. 브랜드가 시장에서 차지할 한 문장을 정하고, 모든 접점이 그 문장을 말하게 합니다.</p></div>
-    </article>
-    <article class="svc-card rv" data-tilt>
-      <div class="svc-bg" data-svc-bg="1"></div>
-      <div class="svc-in"><p class="overline">02</p><h3>퍼포먼스 마케팅</h3>
-      <p>매체 운용과 소재 실험을 한 팀이 돌립니다. 리포트는 광고 용어가 아니라 매출의 언어로 씁니다.</p></div>
-    </article>
-    <article class="svc-card rv" data-tilt>
-      <div class="svc-bg" data-svc-bg="2"></div>
-      <div class="svc-in"><p class="overline">03</p><h3>콘텐츠 스튜디오</h3>
-      <p>숏폼·필름·그래픽을 내부에서 제작합니다. 외주 왕복 없이, 성과 데이터가 다음 컷을 결정합니다.</p></div>
-    </article>
-    <article class="svc-card rv" data-tilt>
-      <div class="svc-bg" data-svc-bg="3"></div>
-      <div class="svc-in"><p class="overline">04</p><h3>디지털 프로덕트</h3>
-      <p>캠페인이 도착하는 곳까지 만듭니다. 랜딩과 브랜드 사이트를 광고와 같은 톤, 같은 속도로.</p></div>
-    </article>
+  <div class="svc-row bleed">
+    <article class="svc-card rv-c"><div class="svc-bg" data-svc-bg="0"></div>
+      <div class="svc-in"><span class="svc-num">01</span><h3>브랜드 캠페인</h3>
+      <p>브랜드가 시장에서 차지할 한 문장을 정하고, 모든 접점이 그 문장을 말하게 합니다.</p></div></article>
+    <article class="svc-card rv-c"><div class="svc-bg" data-svc-bg="1"></div>
+      <div class="svc-in"><span class="svc-num">02</span><h3>퍼포먼스 마케팅</h3>
+      <p>매체 운용과 소재 실험을 한 팀이 돌립니다. 리포트는 매출의 언어로 씁니다.</p></div></article>
+    <article class="svc-card rv-c"><div class="svc-bg" data-svc-bg="2"></div>
+      <div class="svc-in"><span class="svc-num">03</span><h3>콘텐츠 스튜디오</h3>
+      <p>숏폼·필름·그래픽을 내부에서 제작합니다. 성과 데이터가 다음 컷을 결정합니다.</p></div></article>
+    <article class="svc-card rv-c"><div class="svc-bg" data-svc-bg="3"></div>
+      <div class="svc-in"><span class="svc-num">04</span><h3>디지털 프로덕트</h3>
+      <p>캠페인이 도착하는 곳까지 만듭니다. 랜딩과 브랜드 사이트를 같은 톤, 같은 속도로.</p></div></article>
   </div>
 </section>
 
-<!-- 풀블리드 매니페스토 -->
-<section class="manifesto bleed" id="manifesto">
-  <div class="mf-media" id="mfMedia"><img src="assets/img/manifesto.webp" alt="" loading="lazy"></div>
-  <div class="mf-scrim" aria-hidden="true"></div>
-  <div class="shell mf-copy">
-    <p class="overline rv">WHY UNFRAME</p>
-    <h2 class="display-lg rv-clip">좋은 광고는<br>목소리를 높이지 않습니다</h2>
-    <p class="mf-body rv">시선을 끄는 일은 쉽습니다. 어려운 것은 끌린 시선이 브랜드에 남게 하는 일입니다.
-    우리는 캠페인 하나를 크게 만드는 대신, 타깃과 채널과 메시지를 한 축에 놓습니다.
-    정렬된 브랜드는 광고가 끝난 뒤에도 같은 목소리로 말합니다.</p>
-    <a class="btn-ghost mf-link rv" href="about.html">UNFRAME이 일하는 방식 →</a>
+<!-- ══════════ 이벤트 · 문의 허브 ══════════ -->
+<section class="sec" id="hub">
+  <div class="shell sec-head">
+    <p class="eyebrow rv">NOW AT UNFRAME</p>
+    <h2 class="t-sec wf" data-wf>지금, 언프레임에서</h2>
+  </div>
+  <div class="shell hub-grid">
+    <a class="hub-card card-link rv-c" href="events.html" id="hubEvent"><!-- JS 렌더 --></a>
+    <a class="hub-card card-link rv-c" href="about.html">
+      <span class="chip">ABOUT</span>
+      <p class="hub-title">2017년부터, 틀 밖에서</p>
+      <p class="hub-desc">브랜드 캠페인·퍼포먼스·콘텐츠를 한 팀으로 묶은 독립 광고대행사. 일하는 방식 3원칙과 연혁을 소개합니다.</p>
+      <span class="hub-foot">회사 소개 <span class="arw"><i>→</i></span></span>
+    </a>
   </div>
 </section>
 
-<!-- 진행 이벤트 티저 -->
-<section class="ev-teaser">
-  <div class="shell ev-teaser-in rv" id="evTeaser"><!-- JS --></div>
-</section>
-
-<!-- CTA 밴드 -->
-<section class="cta-band">
+<!-- ══════════ CTA — 다크 · 회전 글로우 (사이트 유일) ══════════ -->
+<section class="sec sec-dark-black" id="cta">
   <div class="shell cta-band-in">
-    <h2 class="display-md rv" data-chars>정렬을 시작할 준비가 되셨나요</h2>
-    <p class="rv">하루 안에 답합니다. 아직 정리되지 않은 이야기여도 좋습니다.</p>
-    <a class="btn-cta btn-lg rv" href="contact.html">프로젝트 문의</a>
+    <p class="eyebrow rv">CONTACT</p>
+    <h2 class="t-sec wf" data-wf>정렬을 시작할 준비가 되셨나요</h2>
+    <p class="t-cap rv">하루 안에 답합니다. 아직 정리되지 않은 이야기여도 좋습니다.</p>
+    <a class="btn-cta-glow rv" href="contact.html">프로젝트 문의</a>
   </div>
 </section>
 
@@ -174,7 +172,8 @@
 <footer class="footer">
   <div class="shell footer-grid">
     <div>
-      <p class="footer-brand"><span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span></p>
+      <p class="footer-brand"><span class="brand-bracket" style="color:var(--primary)">[</span>UNFRAME<span class="brand-bracket" style="color:var(--primary)">]</span></p>
+      <p class="footer-slogan">Brands, Aligned.</p>
       <p class="footer-note">본 사이트는 제안용 데모이며, UNFRAME은 가상의 브랜드입니다.<br>모든 실적·고객사·수치는 시연을 위해 만들어진 가상 데이터입니다.</p>
     </div>
     <div class="footer-links">

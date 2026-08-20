@@ -6,13 +6,15 @@
 <title>Events — UNFRAME 언프레임</title>
 <meta name="description" content="UNFRAME 이벤트 안내 — 진행 중·예정·종료 이벤트. (제안용 데모)">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%23025997%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Arial%27 font-size=%2718%27 font-weight=%27bold%27 fill=%27white%27 text-anchor=%27middle%27%3EU%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<header class="nav solid" id="nav">
-  <div class="shell nav-in">
+<header class="nav is-white" id="nav">
+  <div class="shell-wide nav-in">
     <a class="brand" href="index.html" aria-label="UNFRAME 홈">
       <span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span>
     </a>
@@ -22,7 +24,7 @@
       <a href="events.html" aria-current="page">Events</a>
       <a href="contact.html">Contact</a>
     </nav>
-    <a class="btn-cta nav-cta" href="contact.html">프로젝트 문의</a>
+    <a class="btn btn-primary nav-cta" href="contact.html">프로젝트 문의</a>
     <button class="nav-burger" id="navBurger" aria-label="메뉴 열기" aria-expanded="false">
       <span></span><span></span>
     </button>
@@ -34,25 +36,26 @@
 </div>
 
 <main>
-<section class="insight page-top" id="insight">
-  <div class="shell">
-    <p class="overline rv">EVENTS</p>
-    <h1 class="display-lg rv" data-chars>지금, 언프레임에서</h1>
-    <p class="page-lede rv">참여형 이벤트와 세미나를 엽니다. 진행 중 이벤트는 메인 화면 팝업으로도 안내됩니다.</p>
-    <div class="event-tabs rv" role="tablist" aria-label="이벤트 상태">
-      <button role="tab" aria-selected="true" data-ev="live">진행 · 예정</button>
-      <button role="tab" aria-selected="false" data-ev="done">종료</button>
-    </div>
-    <ul class="event-list" id="eventList"><!-- JS 렌더 --></ul>
-    <p class="works-imweb-note rv">※ 기간·D-day·팝업 노출은 오늘 날짜로 실시간 계산됩니다 — 관리자에서 기간을 바꾸면 이 목록과 팝업이 함께 바뀝니다</p>
+<section class="shell page-intro">
+  <p class="eyebrow rv">EVENTS</p>
+  <h1 class="display-lg rv">지금, 언프레임에서</h1>
+  <p class="t-cap rv">참여형 이벤트와 세미나를 엽니다. 진행 중 이벤트는 메인 화면 팝업으로도 안내됩니다.</p>
+  <div class="event-tabs rv" role="tablist" aria-label="이벤트 상태">
+    <button role="tab" aria-selected="true" data-ev="live">진행 · 예정</button>
+    <button role="tab" aria-selected="false" data-ev="done">종료</button>
   </div>
+</section>
+<section class="shell">
+  <ul class="event-list" id="eventList"><!-- JS 렌더 --></ul>
+  <p class="works-note" style="margin:-6rem 0 9rem">※ 기간·D-day·팝업 노출은 오늘 날짜로 실시간 계산됩니다 — 관리자에서 기간을 바꾸면 이 목록과 팝업이 함께 바뀝니다</p>
 </section>
 </main>
 
 <footer class="footer">
   <div class="shell footer-grid">
     <div>
-      <p class="footer-brand"><span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span></p>
+      <p class="footer-brand"><span style="color:var(--primary)">[</span>UNFRAME<span style="color:var(--primary)">]</span></p>
+      <p class="footer-slogan">Brands, Aligned.</p>
       <p class="footer-note">본 사이트는 제안용 데모이며, UNFRAME은 가상의 브랜드입니다.<br>모든 실적·고객사·수치는 시연을 위해 만들어진 가상 데이터입니다.</p>
     </div>
     <div class="footer-links">

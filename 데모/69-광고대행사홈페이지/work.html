@@ -6,13 +6,15 @@
 <title>Case — UNFRAME 언프레임</title>
 <meta name="description" content="UNFRAME 포트폴리오 상세 — 문제·접근·성과. (제안용 데모 — 가상 케이스)">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%23025997%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Arial%27 font-size=%2718%27 font-weight=%27bold%27 fill=%27white%27 text-anchor=%27middle%27%3EU%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="page-dark">
+<body>
 
-<header class="nav solid" id="nav">
-  <div class="shell nav-in">
+<header class="nav is-white" id="nav">
+  <div class="shell-wide nav-in">
     <a class="brand" href="index.html" aria-label="UNFRAME 홈">
       <span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span>
     </a>
@@ -22,7 +24,7 @@
       <a href="events.html">Events</a>
       <a href="contact.html">Contact</a>
     </nav>
-    <a class="btn-cta nav-cta" href="contact.html">프로젝트 문의</a>
+    <a class="btn btn-primary nav-cta" href="contact.html">프로젝트 문의</a>
     <button class="nav-burger" id="navBurger" aria-label="메뉴 열기" aria-expanded="false">
       <span></span><span></span>
     </button>
@@ -34,15 +36,14 @@
 </div>
 
 <main>
-<article class="case page-top shell" id="caseRoot">
-  <!-- JS 렌더 -->
-</article>
+<article class="case shell" id="caseRoot" style="padding-top:5rem"><!-- JS 렌더 --></article>
 </main>
 
 <footer class="footer">
   <div class="shell footer-grid">
     <div>
-      <p class="footer-brand"><span class="brand-bracket">[</span>UNFRAME<span class="brand-bracket">]</span></p>
+      <p class="footer-brand"><span style="color:var(--primary)">[</span>UNFRAME<span style="color:var(--primary)">]</span></p>
+      <p class="footer-slogan">Brands, Aligned.</p>
       <p class="footer-note">본 사이트는 제안용 데모이며, UNFRAME은 가상의 브랜드입니다.<br>모든 실적·고객사·수치는 시연을 위해 만들어진 가상 데이터입니다.</p>
     </div>
     <div class="footer-links">
@@ -73,22 +74,21 @@ const w = pub[idx];
 if (!w) {
   root.innerHTML = `
     <div class="case-missing">
-      <p class="overline">CASE NOT FOUND</p>
-      <h1 class="display-md">이 케이스는 공개 상태가 아닙니다</h1>
+      <p class="eyebrow">CASE NOT FOUND</p>
+      <h1 class="t-sec">이 케이스는 공개 상태가 아닙니다</h1>
       <p>게시 동의 확보 전이거나 주소가 잘못되었습니다. 비공개 케이스는 미팅에서 공유합니다.</p>
-      <a class="btn-cta" href="works.html">Works 목록으로</a>
+      <a class="btn btn-primary" href="works.html">Works 목록으로 <span class="arw"><i>→</i></span></a>
     </div>`;
-  document.title = "Case — UNFRAME 언프레임";
 } else {
   document.title = `${w.title} — UNFRAME`;
   const prev = pub[(idx - 1 + pub.length) % pub.length];
   const next = pub[(idx + 1) % pub.length];
   root.innerHTML = `
     <nav class="crumbs rv in" aria-label="breadcrumb"><a href="works.html">Works</a><span>/</span><b>${w.title}</b></nav>
-    <p class="overline rv in">${w.cats.map((c) => CAT_LABEL[c]).join(" · ")} · ${w.year}</p>
-    <h1 class="display-lg case-title rv in" data-chars>${w.title}</h1>
-    <p class="wd-sub rv in">${w.client} — 가상 케이스</p>
-    <div class="case-cover rv-clip">${w.img ? `<img src="${w.img}" alt="${w.title} 키 비주얼">` : ""}</div>
+    <p class="eyebrow rv in">${w.cats.map((c) => CAT_LABEL[c]).join(" · ")} · ${w.year}</p>
+    <h1 class="display-lg case-title rv in">${w.title}</h1>
+    <p class="case-sub rv in">${w.client} — 가상 케이스</p>
+    <div class="case-cover rv-c">${w.img ? `<img src="${w.img}" alt="${w.title} 키 비주얼">` : ""}</div>
     <div class="case-grid">
       <div class="wd-block rv"><h4>Problem</h4><p>${w.problem}</p></div>
       <div class="wd-block rv"><h4>Approach</h4><p>${w.solve}</p></div>
@@ -99,16 +99,15 @@ if (!w) {
         <button class="film-play" id="filmPlay" aria-label="캠페인 필름 재생"><i></i><span>${w.videoLabel || "캠페인 필름"}</span></button>
       </div></div>` : ""}
     <div class="wd-block rv"><h4>Result</h4>
-      <div class="wd-results">${w.results.map(([n, l]) => `<div class="wd-result"><strong>${n}</strong><span>${l}</span></div>`).join("")}</div>
+      <div class="wd-results">${w.results.map(([n, l]) => `<div class="wd-result rv-c"><strong>${n}</strong><span>${l}</span></div>`).join("")}</div>
       <p class="wd-evidence">근거 ${w.evidence} · 성과 표기는 표시광고법 실증 원칙을 따릅니다</p>
     </div>
     <div class="case-nav">
-      <a class="case-nav-link" href="work.html?id=${prev.id}"><span class="overline">← PREV</span><b>${prev.title}</b></a>
-      <a class="case-nav-link next" href="work.html?id=${next.id}"><span class="overline">NEXT →</span><b>${next.title}</b></a>
+      <a class="case-nav-link card-link" href="work.html?id=${prev.id}"><span class="dir">← PREV</span><b>${prev.title}</b></a>
+      <a class="case-nav-link card-link next" href="work.html?id=${next.id}"><span class="dir">NEXT →</span><b>${next.title}</b></a>
     </div>
-    <div class="wd-cta rv"><a class="btn-cta btn-lg" href="contact.html">이런 프로젝트 문의하기</a></div>`;
+    <div class="wd-cta rv"><a class="btn btn-primary" href="contact.html">이런 프로젝트 문의하기 <span class="arw"><i>→</i></span></a></div>`;
 
-  // 영상 뷰어 — 자동재생 없음, 방문자가 눌러야 재생
   const playBtn = document.getElementById("filmPlay");
   if (playBtn) {
     playBtn.addEventListener("click", () => {
@@ -119,11 +118,20 @@ if (!w) {
     });
   }
 
-  // 리빌 재관찰 (동적 삽입분)
+  // 동적 삽입분 리빌 재관찰
   const io2 = new IntersectionObserver((ents) => {
-    ents.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io2.unobserve(e.target); } });
+    ents.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      if (el.classList.contains("rv-c")) {
+        const sibs = [...el.parentElement.children].filter((x) => x.classList.contains("rv-c"));
+        el.style.transitionDelay = (sibs.indexOf(el) * 0.15).toFixed(2) + "s";
+      }
+      el.classList.add("in");
+      io2.unobserve(el);
+    });
   }, { threshold: 0.15 });
-  $$(".rv:not(.in), .rv-clip", root).forEach((el) => io2.observe(el));
+  $$(".rv:not(.in), .rv-c", root).forEach((el) => io2.observe(el));
 }
 })();
 </script>
