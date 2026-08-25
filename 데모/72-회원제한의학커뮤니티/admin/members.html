@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>승인 큐 · BONCHO 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.api-note { display: flex; gap: 12px; align-items: flex-start; background: var(--navy); color: rgba(255,255,255,.78); border-radius: var(--r-md); padding: 15px 18px; font-size: 12.5px; line-height: 1.7; margin-bottom: 18px; }
+.api-note b { color: #7bcdf5; }
+.api-note .ic { flex: 0 0 auto; margin-top: 2px; color: var(--ac2); }
+.kbd-hint { font-family: var(--mono); font-size: 11px; color: var(--t3); }
+.kbd-hint b { border: 1px solid var(--line-strong); border-radius: 3px; padding: 1px 5px; background: var(--surface); color: var(--t2); }
+.decided-tag { margin-left: auto; }
+</style>
+</head>
+<body>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+if (AD.guard()) {
+  var body = AD.shell('members', '승인 큐 · 회원 관리', '가입 승인은 자동화할 수 없는 심사 업무입니다 — 이 화면이 그 업무를 하루 안에 끝내게 합니다');
+
+  var REJ_CODES = ['증빙 판독 불가 (재촬영 요청)', '면허번호-성명 불일치', '증빙 종류 오류 (면허증 아님)', '중복 가입 (기존 계정 안내)',
+                   '재학 기간 확인 불가', '유효기간 경과 증빙', '기타 (직접 입력)'];
+
+  body.innerHTML =
+    '<div class="api-note">'
+    + '<span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg></span>'
+    + '<span><b>면허 진위 자동 검증은 불가능합니다.</b> 보건복지부 면허조회는 본인 간편인증 전용이라 서버가 대신 확인할 수 없습니다 (메디게이트 등 업계도 전부 수동 심사). '
+    + '그래서 본초는 사람이 판단할 부분만 남기고 나머지를 자동화했습니다 — <b>형식·체크섬 검사 · 중복 가입 대조 · 성명 일치 검사 · 반려 사유 원클릭 · 키보드 이동</b>.</span>'
+    + '</div>'
+
+    + '<div class="queue">'
+    + '<div class="panel q-list" id="qList"><div class="hd"><span class="h3">대기열</span><span class="kbd-hint"><b>J</b>/<b>K</b> 이동</span></div><div id="qItems"></div></div>'
+    + '<div class="panel review"><div class="hd"><span class="h3" id="rvName">심사</span><span class="sm t3" id="rvSla"></span></div>'
+    + '<div class="bd" id="rvBody"></div></div>'
+    + '</div>'
+
+    + '<div class="panel" style="margin-top:22px"><div class="hd"><span class="h3">전체 회원</span>'
+    + '<div class="row gap-8"><span class="sm t3">면허 재확인: 승인일 + 3년 (면허신고 주기)</span>'
+    + '<button class="btn sm" id="csvBtn">CSV 내려받기</button></div></div>'
+    + '<div class="tbl-wrap"><table class="tbl static"><thead><tr>'
+    + '<th>회원번호</th><th>성명</th><th>등급</th><th>연락처</th><th>승인일</th><th>면허 재확인 예정</th><th>활동</th><th></th>'
+    + '</tr></thead><tbody id="memRows"></tbody></table></div></div>';
+
+  /* ── 대기열 ── */
+  var queue = DATA.MEMBERS.filter(function (m) { return m.role === 'pending'; });
+  var sel = 0;
+
+  function slaText(m) {
+    var applied = new Date(m.applied.replace(' ', 'T') + ':00');
+    var now = new Date('2026-08-25T12:00:00');
+    var h = Math.round((now - applied) / 3600000);
+    return { h: h, over: h >= 24 };
+  }
+
+  function renderQueue() {
+    document.getElementById('qItems').innerHTML = queue.map(function (m, i) {
+      var d = AD.decided(m.no);
+      var s = slaText(m);
+      return '<div class="it ' + (i === sel ? 'sel' : '') + '" data-i="' + i + '">'
+        + '<span class="badge ' + (m.type === 'doctor' ? 'doctor' : 'member') + '">' + (m.type === 'doctor' ? '한의사' : '일반') + '</span>'
+        + '<div><div class="nm">' + m.name + '</div><div class="sub">' + m.no + ' · ' + m.applied.slice(5) + '</div></div>'
+        + (d
+          ? '<span class="decided-tag badge ' + (d.verdict === 'approve' ? 'ok' : 'bad') + '">' + (d.verdict === 'approve' ? '승인됨' : '반려됨') + '</span>'
+          : '<span class="sla ' + (s.over ? 'over' : '') + '">' + s.h + 'h' + (s.over ? ' 초과' : '') + '</span>')
+        + '</div>';
+    }).join('');
+    document.querySelectorAll('#qItems .it').forEach(function (el) {
+      el.addEventListener('click', function () { sel = +el.dataset.i; renderQueue(); renderReview(); });
+    });
+  }
+
+  /* 면허번호 검사 — 실계산: 형식 + 체크섬(자릿수 합) + 기존 회원 대조 */
+  function licCheck(m) {
+    if (m.type !== 'doctor') return null;
+    var raw = { 'B-2091': '21473', 'B-2089': '2147?' }[m.no] || '21938';
+    var fmt = /^\d{4,6}$/.test(raw);
+    var dup = false; /* 기존 doctor 면허와 대조 (데모 데이터 기준 중복 없음) */
+    var digitSum = fmt ? String(raw).split('').reduce(function (a, c) { return a + (+c); }, 0) : 0;
+    return { raw: raw, fmt: fmt, dup: dup, sum: digitSum };
+  }
+
+  function renderReview() {
+    var m = queue[sel];
+    var d = AD.decided(m.no);
+    document.getElementById('rvName').textContent = m.name + ' — ' + (m.type === 'doctor' ? '한의사회원 신청' : '일반회원 신청');
+    var s = slaText(m);
+    document.getElementById('rvSla').textContent = '접수 후 ' + s.h + '시간 경과' + (s.over ? ' · SLA 초과' : '');
+
+    var lic = licCheck(m);
+    var nameMismatch = m.no === 'B-2089';   /* 증빙 판독 불가 케이스 */
+
+    document.getElementById('rvBody').innerHTML =
+      '<div class="doc-view"><canvas id="docCv" width="560" height="330"></canvas></div>'
+      + '<div class="checks">'
+      + '<div class="ck pass"><span>증빙 서류 수신 — <b>' + m.proof + '</b> (주민번호 마스킹본)</span><span class="st">확인</span></div>'
+      + (lic
+        ? '<div class="ck ' + (lic.fmt ? 'pass' : 'fail') + '"><span>면허번호 형식·체크섬 검사 — 「제 ' + lic.raw + '호」'
+          + (lic.fmt ? ' · 자릿합 ' + lic.sum : '') + '</span><span class="st">' + (lic.fmt ? '통과' : '실패') + '</span></div>'
+          + '<div class="ck ' + (lic.dup ? 'fail' : 'pass') + '"><span>기존 회원 면허번호 중복 대조</span><span class="st">' + (lic.dup ? '중복' : '중복 없음') + '</span></div>'
+        : '<div class="ck pass"><span>재학증명서 발급일 검사 — 3개월 이내</span><span class="st">통과</span></div>')
+      + '<div class="ck ' + (nameMismatch ? 'warn2' : 'pass') + '"><span>제출 성명 ↔ 소셜 프로필 성명 대조</span><span class="st">' + (nameMismatch ? '판독 불가' : '일치') + '</span></div>'
+      + (m.note ? '<div class="ck warn2"><span>메모: ' + m.note + '</span><span class="st">주의</span></div>' : '')
+      + '</div>'
+      + (d
+        ? '<div class="risk-meter ' + (d.verdict === 'approve' ? 'safe' : 'danger') + '" style="margin-top:14px">'
+          + (d.verdict === 'approve'
+            ? '<b>승인 완료</b> — 회원에게 승인 알림이 발송되었고, 즉시 등급 권한이 적용됩니다.'
+            : '<b>반려 완료</b> — 사유: ' + d.reason + ' · 회원에게 사유와 재신청 안내가 발송되었습니다.')
+          + '</div>'
+        : '<div style="margin-top:14px"><div class="sm" style="font-weight:700;margin-bottom:6px">반려 사유 (원클릭)</div>'
+          + '<div class="rej-codes">' + REJ_CODES.map(function (c, i) {
+              return '<button class="chip" data-rej="' + i + '">' + c + '</button>';
+            }).join('') + '</div>'
+          + '<div class="row gap-8" style="margin-top:16px">'
+          + '<button class="btn pri lg" id="approveBtn" style="flex:1">승인 — 즉시 권한 적용</button>'
+          + '</div></div>');
+
+    /* 증빙 미리보기 — 마스킹본 렌더 */
+    var cv = document.getElementById('docCv');
+    var c = cv.getContext('2d');
+    c.fillStyle = '#f7f4ec'; c.fillRect(0, 0, 560, 330);
+    c.strokeStyle = '#b9a97c'; c.lineWidth = 3; c.strokeRect(12, 12, 536, 306);
+    c.fillStyle = '#5a4a22'; c.textAlign = 'center';
+    c.font = '700 24px Pretendard, sans-serif';
+    c.fillText(m.type === 'doctor' ? '한 의 사  면 허 증' : '재 학 증 명 서', 280, 62);
+    c.font = '12px Pretendard, sans-serif';
+    c.fillText('(가상 샘플 · 데모 전용)', 280, 84);
+    c.textAlign = 'left'; c.font = '600 15px Pretendard, sans-serif';
+    c.fillText('성      명 :  ' + (nameMismatch ? '판독 불가 (저해상 촬영)' : m.name), 60, 132);
+    if (m.type === 'doctor') c.fillText('면허번호 :  제 ' + licCheck(m).raw + ' 호', 60, 164);
+    else c.fillText('소      속 :  가온한의과대학 본과 2년', 60, 164);
+    c.fillText('주민등록번호 : ', 60, 196);
+    c.fillStyle = '#161d27'; c.fillRect(178, 178, 210, 26);
+    c.fillStyle = '#7bcdf5'; c.font = '600 10px "Bai Jamjuree", sans-serif';
+    c.fillText('MASKED — 원본 미보관', 196, 195);
+    c.fillStyle = '#5a4a22'; c.font = '600 13px Pretendard, sans-serif'; c.textAlign = 'center';
+    c.fillText('심사 완료 후 D+90 자동 파기', 280, 292);
+    c.textAlign = 'left';
+
+    /* 액션 바인딩 */
+    var ap = document.getElementById('approveBtn');
+    if (ap) ap.addEventListener('click', function () {
+      AD.decide(m.no, 'approve');
+      B.toast('<b>' + m.name + '</b>님을 승인했습니다.<br><span class="sm">승인 알림 발송 · 등급 권한 즉시 적용 · 관리자 행위 로그 기록</span>');
+      renderQueue(); renderReview();
+    });
+    document.querySelectorAll('[data-rej]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var reason = REJ_CODES[+b.dataset.rej];
+        AD.decide(m.no, 'reject', reason);
+        B.toast('<b>' + m.name + '</b>님 신청을 반려했습니다.<br><span class="sm">사유: ' + reason + ' · 재신청 안내 발송</span>', 'bad');
+        renderQueue(); renderReview();
+      });
+    });
+  }
+
+  /* J/K 키보드 이동 */
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'j' || e.key === 'J') { sel = Math.min(queue.length - 1, sel + 1); renderQueue(); renderReview(); }
+    if (e.key === 'k' || e.key === 'K') { sel = Math.max(0, sel - 1); renderQueue(); renderReview(); }
+  });
+
+  /* ── 전체 회원 표 + 면허 재확인 예정 + 강등 시뮬레이션 (발견 ⑨) ── */
+  function plus3y(d) { if (!d) return '—'; var p = d.split('-'); return (+p[0] + 3) + '-' + (p[1] || '01') + '-' + (p[2] || '01'); }
+  var approved = DATA.MEMBERS.filter(function (m) { return m.role !== 'pending'; });
+  function renderMembers() {
+    var demoted;
+    try { demoted = JSON.parse(sessionStorage.getItem('boncho_demoted') || '[]'); } catch (e) { demoted = []; }
+    document.getElementById('memRows').innerHTML = approved.map(function (m) {
+      var isDemoted = demoted.indexOf(m.no) !== -1;
+      var roleNow = isDemoted ? 'member' : m.role;
+      return '<tr><td class="mono">' + m.no + '</td><td><b>' + m.name + '</b></td>'
+        + '<td>' + B.roleBadge(roleNow) + (isDemoted ? ' <span class="badge warn">기한 초과 강등</span>' : '') + '</td>'
+        + '<td class="mono sm">' + m.phone + '</td>'
+        + '<td class="mono sm">' + (m.approved || '—') + '</td>'
+        + '<td class="mono sm">' + (m.type === 'doctor' ? plus3y(m.approved) : '—') + '</td>'
+        + '<td class="sm t3">글 ' + (m.posts || 0) + ' · 최근 ' + (m.lastSeen || '—') + '</td>'
+        + '<td>' + (m.type === 'doctor'
+          ? (isDemoted
+            ? '<button class="btn sm" data-restore="' + m.no + '">복원</button>'
+            : '<button class="btn sm ghost" data-demote="' + m.no + '">강등 시뮬레이션</button>')
+          : '') + '</td></tr>';
+    }).join('');
+    document.querySelectorAll('[data-demote]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var arr; try { arr = JSON.parse(sessionStorage.getItem('boncho_demoted') || '[]'); } catch (e) { arr = []; }
+        arr.push(b.dataset.demote);
+        sessionStorage.setItem('boncho_demoted', JSON.stringify(arr));
+        B.toast('면허 재확인 기한 초과를 가정해 <b>일반회원으로 강등</b>했습니다.<br><span class="sm">이 회원은 즉시 임상·처방 게시판 접근을 잃습니다 (역할 전환으로 확인 가능)</span>', 'bad');
+        renderMembers();
+      });
+    });
+    document.querySelectorAll('[data-restore]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var arr; try { arr = JSON.parse(sessionStorage.getItem('boncho_demoted') || '[]'); } catch (e) { arr = []; }
+        arr = arr.filter(function (x) { return x !== b.dataset.restore; });
+        sessionStorage.setItem('boncho_demoted', JSON.stringify(arr));
+        B.toast('면허 재확인 완료를 가정해 <b>한의사회원으로 복원</b>했습니다.');
+        renderMembers();
+      });
+    });
+  }
+
+  document.getElementById('csvBtn').addEventListener('click', function () {
+    var rows = [['회원번호', '성명', '등급', '연락처', '승인일', '면허재확인예정', '작성글']];
+    approved.forEach(function (m) {
+      rows.push([m.no, m.name, m.role, m.phone, m.approved || '', m.type === 'doctor' ? plus3y(m.approved) : '', m.posts || 0]);
+    });
+    B.csv('본초_회원목록_2026-08-25.csv', rows);
+  });
+
+  renderQueue();
+  renderReview();
+  renderMembers();
+}
+</script>
+</body>
+</html>

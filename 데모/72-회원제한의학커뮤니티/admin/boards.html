@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게시판 관리 · BONCHO 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.newboard { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.newboard .full { grid-column: 1 / -1; }
+.rls-tbl td, .rls-tbl th { font-size: 12px; text-align: center; padding: 7px 6px; }
+.rls-tbl th:first-child, .rls-tbl td:first-child { text-align: left; font-weight: 600; white-space: nowrap; }
+.rls-tbl th { border-top: 2px solid var(--t1); border-bottom: 1px solid var(--line-strong); }
+.rls-tbl td { border-bottom: 1px solid var(--line); }
+.rls-dot { display: inline-block; width: 20px; height: 20px; border-radius: var(--r-xs); line-height: 20px; font-size: 11px; font-weight: 700; cursor: default; }
+.rls-dot.ok { background: var(--ok-soft); color: var(--ok); }
+.rls-dot.miss { background: var(--bad-soft); color: var(--bad); cursor: pointer; }
+.leak-sim { background: var(--navy-deep); color: #7bcdf5; border-radius: var(--r-sm); padding: 12px 14px; font-family: var(--mono); font-size: 11px; line-height: 1.8; margin-top: 12px; max-height: 190px; overflow: auto; }
+.leak-sim .bad2 { color: #ff7b6b; }
+</style>
+</head>
+<body>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+if (AD.guard()) {
+  var body = AD.shell('boards', '게시판 관리 (CMS)', '「게시판 약 6종」의 "약"에 대한 답 — 7번째 게시판은 개발자 없이 이 화면에서 만듭니다');
+
+  body.innerHTML =
+    '<div class="grid-31">'
+    + '<div class="panel"><div class="hd"><span class="h3">공개범위 매트릭스</span><span class="sm t3">셀을 클릭해 열람 권한 변경 → 사용자 화면 즉시 반영</span></div>'
+    + '<div class="bd matrix"><table><thead><tr><th>게시판</th><th>비회원</th><th>승인대기</th><th>일반회원</th><th>한의사</th><th>글 수</th></tr></thead><tbody id="mxRows"></tbody></table>'
+    + '<div class="risk-meter safe" id="riskMeter" style="margin-top:14px"></div>'
+    + '</div></div>'
+
+    + '<div class="panel"><div class="hd"><span class="h3">게시판 만들기</span><span class="badge line">실동작</span></div>'
+    + '<div class="bd"><div class="newboard">'
+    + '<label class="field"><span class="lb">게시판 이름</span><input class="inp" id="nbName" value="약침 연구회"></label>'
+    + '<label class="field"><span class="lb">유형</span><select class="inp" id="nbType"><option>일반 게시판</option><option>갤러리형</option><option>영상형</option><option>공지형</option></select></label>'
+    + '<label class="field"><span class="lb">읽기 최소 등급</span><select class="inp" id="nbRead"><option value="1">일반회원부터</option><option value="2" selected>한의사회원부터</option><option value="0">비회원 포함</option></select></label>'
+    + '<label class="field"><span class="lb">쓰기 최소 등급</span><select class="inp" id="nbWrite"><option value="1">일반회원부터</option><option value="2" selected>한의사회원부터</option></select></label>'
+    + '<label class="field full"><span class="lb">설명</span><input class="inp" id="nbDesc" value="약침 시술 연구·증례를 나누는 게시판"></label>'
+    + '</div>'
+    + '<button class="btn pri block" id="nbCreate" style="margin-top:14px">게시판 생성 — 사용자 GNB에 즉시 등장</button>'
+    + '<p class="sm t3" style="margin-top:10px;line-height:1.6">생성된 게시판은 커뮤니티 탭에 바로 나타나고, 위 매트릭스에도 합류합니다. 게시판이 코드가 아니라 <b>데이터</b>이기 때문입니다.</p>'
+    + '<div id="nbList" style="margin-top:12px"></div>'
+    + '</div></div>'
+    + '</div>'
+
+    /* RLS 접근제어 점검 (발견 ④) */
+    + '<div class="panel" style="margin-top:16px"><div class="hd"><span class="h3">접근제어(RLS) 정책 점검</span>'
+    + '<span class="sm t3">Supabase 채택 시 — 정책이 빠진 테이블은 공개 anon 키만으로 전체가 읽힙니다 (CVE-2025-48757)</span></div>'
+    + '<div class="bd grid-2">'
+    + '<div class="tbl-wrap"><table class="rls-tbl"><thead><tr><th>테이블</th><th>SELECT</th><th>INSERT</th><th>UPDATE</th><th>DELETE</th></tr></thead><tbody id="rlsRows"></tbody></table>'
+    + '<p class="sm t3" style="margin-top:10px">붉은 칸을 클릭하면 그 상태에서 anon 키로 조회했을 때 무엇이 새는지 시뮬레이션합니다.</p></div>'
+    + '<div><div class="sm" style="font-weight:700;margin-bottom:8px">anon 키 조회 시뮬레이션</div>'
+    + '<div class="leak-sim" id="leakSim">테이블의 붉은 칸을 클릭하세요.</div></div>'
+    + '</div></div>'
+
+    /* 게시글·댓글 관리 */
+    + '<div class="panel" style="margin-top:16px"><div class="hd"><span class="h3">게시글 · 댓글 관리</span>'
+    + '<span class="sm t3">최근 게시글 — 블라인드는 신고 절차(§44-2)를 거치고, 삭제는 감사 로그에 남습니다</span></div>'
+    + '<div class="tbl-wrap"><table class="tbl static"><thead><tr>'
+    + '<th>게시판</th><th>제목</th><th>작성자</th><th>일자</th><th>조회</th><th>댓글</th><th></th>'
+    + '</tr></thead><tbody id="pmRows"></tbody></table></div></div>';
+
+  /* ── 매트릭스 ── */
+  var counts = {};
+  DATA.POSTS.forEach(function (p) { counts[p.b] = (counts[p.b] || 0) + 1; });
+
+  function cellState(read, rank) {
+    if (rank >= read) return 'full';
+    if (read >= 2) return 'hide';
+    return 'title';
+  }
+  var CELL_LABEL = { full: '전문', title: '메타만', hide: '숨김' };
+
+  function saveRead() {
+    var ov = {};
+    DATA.BOARDS.forEach(function (b) { ov[b.id] = b.read; });
+    localStorage.setItem('boncho_board_read', JSON.stringify(ov));
+  }
+
+  function renderMatrix() {
+    document.getElementById('mxRows').innerHTML = DATA.BOARDS.map(function (b) {
+      return '<tr><td>' + b.name + (b.custom ? ' <span class="badge line">CMS</span>' : '') + '</td>'
+        + [0, 0, 1, 2].map(function (rank, i) {
+            var st = cellState(b.read, rank);
+            return '<td><span class="cell ' + st + '" data-b="' + b.id + '" data-rank="' + rank + '" title="클릭해 이 등급부터 열람 허용/차단">' + CELL_LABEL[st] + '</span></td>';
+          }).join('')
+        + '<td class="mono sm">' + (counts[b.id] || 0) + '</td></tr>';
+    }).join('');
+    /* 셀 클릭 → 그 등급부터 열람 허용 (read = rank), 이미 그 상태면 한 단계 위로 */
+    document.querySelectorAll('.matrix .cell').forEach(function (c) {
+      c.addEventListener('click', function () {
+        var b = DATA.boardOf(c.dataset.b);
+        var rank = +c.dataset.rank;
+        b.read = (b.read === rank) ? rank + 1 : rank;
+        if (b.read > 2) b.read = 2;
+        saveRead();
+        renderMatrix();
+      });
+    });
+    renderRisk();
+  }
+
+  /* 의료법 리스크 실시간 평가 — 하드코딩 아님: 매트릭스 상태로 계산 (발견 ⑦) */
+  var CLINICAL = ['clinic', 'herb', 'mgmt'];
+  function renderRisk() {
+    var exposed = DATA.BOARDS.filter(function (b) {
+      return (CLINICAL.indexOf(b.id) !== -1 || (b.custom && b.origRead >= 2)) && b.read < 2;
+    });
+    var el = document.getElementById('riskMeter');
+    if (exposed.length) {
+      el.className = 'risk-meter danger';
+      el.innerHTML = '<b>고위험 — 비의료인 의료광고 소지 (의료법 §56)</b><br>'
+        + exposed.map(function (b) { return '「' + b.name + '」'; }).join(' · ')
+        + ' 게시판이 비의료인(일반회원 이하)에게 열려 있습니다. 한의사가 쓴 임상·처방 글이 소비자에게 도달하면 의료광고로 해석될 수 있습니다. 열람 등급을 한의사회원으로 되돌리세요.';
+    } else {
+      el.className = 'risk-meter safe';
+      el.innerHTML = '<b>안전 — 의료정보 게시판이 전부 한의사회원 전용입니다.</b><br>'
+        + '임상 증례·처방·경영 게시판은 면허 확인 회원에게만 열려 있어 의료법 §56(비의료인 대상 의료광고) 리스크가 차단된 상태입니다.';
+    }
+  }
+
+  /* ── 게시판 만들기 (실동작 — localStorage → 사용자 화면 합류) ── */
+  function customBoards() {
+    try { return JSON.parse(localStorage.getItem('boncho_boards') || '[]'); } catch (e) { return []; }
+  }
+  function renderCustomList() {
+    var list = customBoards();
+    document.getElementById('nbList').innerHTML = list.length
+      ? '<div class="sm" style="font-weight:700;margin-bottom:6px">CMS로 만든 게시판</div>'
+        + list.map(function (b) {
+            return '<div class="row gap-8" style="padding:7px 0;border-bottom:1px solid var(--line);font-size:13px">'
+              + '<b>' + B.esc(b.name) + '</b><span class="sm t3 grow">' + (b.read >= 2 ? '한의사 전용' : '일반회원부터') + '</span>'
+              + '<a class="btn sm ghost" href="../community.html?b=' + b.id + '">보기</a>'
+              + '<button class="btn sm ghost" data-del="' + b.id + '">삭제</button></div>';
+          }).join('')
+      : '';
+    document.querySelectorAll('[data-del]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var list2 = customBoards().filter(function (b) { return b.id !== btn.dataset.del; });
+        localStorage.setItem('boncho_boards', JSON.stringify(list2));
+        for (var i = DATA.BOARDS.length - 1; i >= 0; i--) if (DATA.BOARDS[i].id === btn.dataset.del) DATA.BOARDS.splice(i, 1);
+        B.toast('게시판을 삭제했습니다.');
+        renderCustomList(); renderMatrix();
+      });
+    });
+  }
+  document.getElementById('nbCreate').addEventListener('click', function () {
+    var name = document.getElementById('nbName').value.trim();
+    if (!name) { B.toast('게시판 이름을 입력해 주세요.', 'bad'); return; }
+    var id = 'cms-' + name.replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9가-힣-]/g, '').slice(0, 24);
+    if (DATA.boardOf(id)) { B.toast('같은 이름의 게시판이 이미 있습니다.', 'bad'); return; }
+    var b = {
+      id: id, name: name,
+      read: +document.getElementById('nbRead').value,
+      write: +document.getElementById('nbWrite').value,
+      desc: document.getElementById('nbDesc').value.trim() || 'CMS로 생성된 게시판'
+    };
+    b.origRead = b.read;
+    var list = customBoards(); list.push(b);
+    localStorage.setItem('boncho_boards', JSON.stringify(list));
+    b.custom = true; b.icon = 'M4 5h16v11H8l-4 4V5Z';
+    DATA.BOARDS.push(b);
+    B.toast('<b>' + B.esc(name) + '</b> 게시판이 생성되었습니다.<br><span class="sm">사용자 화면 커뮤니티 탭에 즉시 나타납니다</span>');
+    renderCustomList(); renderMatrix();
+  });
+
+  /* ── RLS 점검 ── */
+  var TABLES = [
+    { t: 'members (회원·연락처)', p: [1, 1, 1, 1], leak: ['no: B-0217, name: 김서연, phone: 010-****-1094, email: sy***@***.com', 'no: B-1042, name: 박지호, phone: 010-****-7758, …', '… 12 rows'] },
+    { t: 'posts (게시글)', p: [1, 1, 1, 0], leak: [] },
+    { t: 'attachments (첨부)', p: [1, 1, 0, 0], leak: [] },
+    { t: 'view_logs (열람 로그·IP)', p: [1, 1, 1, 1], leak: [] },
+    { t: 'proof_files (증빙 서류)', p: [1, 0, 1, 1], leak: ['B-2091_면허증사본.webp (서명 URL)', 'B-2090_재학증명서.webp (서명 URL)', '… 4 files'] },
+    { t: 'lecture_history (수강 이력)', p: [1, 1, 1, 0], leak: [] },
+    { t: 'reports (신고)', p: [0, 1, 1, 1], leak: ['post: 205, reason: 명예훼손 주장, by: B-1203', 'post: 502, reason: 의료광고 우려, by: B-0492', '… 4 rows'] },
+    { t: 'notices (공지)', p: [1, 1, 1, 1], leak: [] }
+  ];
+  var OPS = ['SELECT', 'INSERT', 'UPDATE', 'DELETE'];
+  document.getElementById('rlsRows').innerHTML = TABLES.map(function (tb, ti) {
+    return '<tr><td>' + tb.t + '</td>' + tb.p.map(function (ok, oi) {
+      return '<td><span class="rls-dot ' + (ok ? 'ok' : 'miss') + '" data-t="' + ti + '" data-o="' + oi + '">' + (ok ? '✓' : '✕') + '</span></td>';
+    }).join('') + '</tr>';
+  }).join('');
+  document.querySelectorAll('.rls-dot.miss').forEach(function (d) {
+    d.addEventListener('click', function () {
+      var tb = TABLES[+d.dataset.t];
+      var op = OPS[+d.dataset.o];
+      var sim = document.getElementById('leakSim');
+      var lines = ['$ curl -H "apikey: anon-public-key" \\', '  /rest/v1/' + tb.t.split(' ')[0] + '?select=*', ''];
+      if (op === 'SELECT' && tb.leak.length) {
+        lines.push('<span class="bad2">200 OK — 정책 누락: 전체 행이 응답됩니다</span>');
+        tb.leak.forEach(function (l) { lines.push('<span class="bad2">→ ' + l + '</span>'); });
+        lines.push('', '조치: CREATE POLICY "member_scope" ON ' + tb.t.split(' ')[0]);
+        lines.push('  FOR SELECT USING (auth.uid() = owner_id OR is_admin());');
+      } else {
+        lines.push('<span class="bad2">' + op + ' 정책 누락 — anon 키로 쓰기·수정이 허용됩니다</span>');
+        lines.push('', '조치: FOR ' + op + ' 정책을 역할 조건으로 작성해야 합니다.');
+      }
+      sim.innerHTML = lines.join('<br>');
+    });
+  });
+
+  /* ── 게시글·댓글 관리 ── */
+  (function () {
+    var removed = {};
+    function renderPosts() {
+      var rows = DATA.POSTS.slice().sort(function (a, b) { return b.d.localeCompare(a.d); }).slice(0, 8);
+      document.getElementById('pmRows').innerHTML = rows.map(function (p) {
+        var bd = DATA.boardOf(p.b);
+        var gone = removed[p.id];
+        return '<tr' + (gone ? ' style="opacity:.45"' : '') + '><td class="sm">' + (bd ? bd.name : p.b) + '</td>'
+          + '<td class="sm"><a class="ttl" href="../post.html?id=' + p.id + '">' + B.esc(p.t).slice(0, 34) + '</a>'
+          + (gone ? ' <span class="badge bad">삭제됨</span>' : '') + '</td>'
+          + '<td class="sm">' + p.an + '</td><td class="mono sm">' + p.d + '</td>'
+          + '<td class="mono sm">' + B.fmt(p.v) + '</td><td class="mono sm">' + p.cm + '</td>'
+          + '<td>' + (gone ? '' : '<button class="btn sm ghost" data-pm-del="' + p.id + '">삭제</button>') + '</td></tr>';
+      }).join('');
+      document.querySelectorAll('[data-pm-del]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          removed[+b.dataset.pmDel] = true;
+          B.toast('게시글을 삭제 처리했습니다. 삭제 이력이 감사 로그에 기록됩니다.', 'bad');
+          renderPosts();
+        });
+      });
+    }
+    renderPosts();
+  })();
+
+  renderCustomList();
+  renderMatrix();
+}
+</script>
+</body>
+</html>

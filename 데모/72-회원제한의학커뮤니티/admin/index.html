@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대시보드 · BONCHO 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.mini-list li { display: flex; gap: 10px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.mini-list li:last-child { border-bottom: 0; }
+.mini-list .d { font-family: var(--mono); font-size: 11.5px; color: var(--t3); flex: 0 0 auto; }
+.mini-list .t { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gauge-wrap { display: flex; align-items: center; gap: 18px; }
+.gauge-wrap .desc3 { font-size: 12.5px; color: var(--t2); line-height: 1.65; }
+canvas.spark { width: 100%; height: 120px; display: block; }
+</style>
+</head>
+<body>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+if (AD.guard()) {
+  var body = AD.shell('dash', '대시보드', '2026-08-25 (화) · 승인·신고·열람 현황 요약');
+  var pend = DATA.MEMBERS.filter(function (m) { return m.role === 'pending' && !AD.decided(m.no); });
+  var over = pend.filter(function (m) { return m.applied < '2026-08-24 12:00'; });
+  var open = DATA.REPORTS.filter(function (r) { return r.status === 'blinded' || r.status === 'reviewing'; });
+  var todayLogs = DATA.LOGS.filter(function (l) { return l.at.indexOf('2026-08-25') === 0; }).length + B.sessionLogs().length;
+
+  body.innerHTML =
+    '<div class="kpis">'
+    + '<div class="kpi ac"><div class="lb">승인 대기 <a class="sm ac" href="members.html">처리 →</a></div>'
+    + '<div class="v"><b data-count="' + pend.length + '">' + pend.length + '</b><small> 건</small></div>'
+    + '<div class="sub">평균 처리 9.4시간 · SLA 24시간</div></div>'
+    + '<div class="kpi ' + (over.length ? 'bad' : '') + '"><div class="lb">24시간 초과 대기</div>'
+    + '<div class="v"><b data-count="' + over.length + '">' + over.length + '</b><small> 건</small></div>'
+    + '<div class="sub">' + (over.length ? '지연 — 오늘 중 처리 필요' : '지연 없음') + '</div></div>'
+    + '<div class="kpi warn"><div class="lb">신고 처리 중 <a class="sm ac" href="reports.html">보기 →</a></div>'
+    + '<div class="v"><b data-count="' + open.length + '">' + open.length + '</b><small> 건</small></div>'
+    + '<div class="sub">임시조치 30일 기한 관리 중</div></div>'
+    + '<div class="kpi"><div class="lb">오늘 열람 기록</div>'
+    + '<div class="v"><b data-count="' + todayLogs + '">' + todayLogs + '</b><small> 행</small></div>'
+    + '<div class="sub">강의·게시글·첨부 다운로드 합산</div></div>'
+    + '</div>'
+
+    + '<div class="grid-31">'
+    + '<div class="panel"><div class="hd"><span class="h3">주간 열람 추이</span><span class="sm t3">강의 재생 + 게시글 열람</span></div>'
+    + '<div class="bd"><canvas class="spark" id="spark"></canvas></div></div>'
+
+    /* 의료광고 사전심의 트리거 모니터 (발견 ⑦) */
+    + '<div class="panel"><div class="hd"><span class="h3">의료광고 사전심의 트리거</span><span class="badge ok">해당 없음</span></div>'
+    + '<div class="bd"><div class="gauge-wrap">'
+    + '<div style="flex:0 0 auto;text-align:center"><div class="v mono" style="font-size:24px;font-weight:600">412</div><div class="sm t3">일일 평균 이용자</div></div>'
+    + '<div class="grow"><div class="meter"><i style="width:0%" data-w="0.412"></i></div>'
+    + '<div class="sm t3" style="margin-top:6px">기준 100,000명의 <b class="ac">0.4%</b></div></div>'
+    + '</div>'
+    + '<p class="desc3" style="margin-top:12px">의료법 시행령 제24조 — 직전 3개월 일 평균 이용자 10만 명 이상 매체는 의료광고 사전심의 대상이 됩니다. '
+    + '현재 규모는 대상이 아니지만, 이 게이지가 커지면 자동 알림이 발송됩니다.</p></div></div>'
+    + '</div>'
+
+    + '<div class="grid-2" style="margin-top:16px">'
+    + '<div class="panel"><div class="hd"><span class="h3">승인 대기 최신</span><a class="btn sm" href="members.html">승인 큐 열기</a></div>'
+    + '<div class="bd"><ul class="mini-list">'
+    + pend.slice(0, 4).map(function (m) {
+        return '<li><span class="badge ' + (m.type === 'doctor' ? 'doctor' : 'member') + '">' + (m.type === 'doctor' ? '한의사' : '일반') + '</span>'
+          + '<span class="t"><b>' + m.name + '</b> · ' + m.proof + '</span><span class="d">' + m.applied.slice(5) + '</span></li>';
+      }).join('')
+    + '</ul></div></div>'
+    + '<div class="panel"><div class="hd"><span class="h3">최근 열람 로그</span><a class="btn sm" href="logs.html">전체 로그</a></div>'
+    + '<div class="bd"><ul class="mini-list">'
+    + B.sessionLogs().concat(DATA.LOGS).slice(0, 4).map(function (l) {
+        return '<li><span class="badge line">' + l.kind + '</span><span class="t">' + l.name + ' — ' + B.esc(l.title) + '</span><span class="d">' + l.at.slice(5) + '</span></li>';
+      }).join('')
+    + '</ul></div></div>'
+    + '</div>';
+
+  /* 게이지 성장 */
+  setTimeout(function () {
+    var bar = body.querySelector('.meter i');
+    if (bar) bar.style.width = Math.max(1.2, parseFloat(bar.dataset.w)) + '%';
+  }, 250);
+
+  /* 주간 열람 스파크라인 — canvas 직접 (dpr 대응) */
+  (function () {
+    var cv = document.getElementById('spark');
+    var dpr = window.devicePixelRatio || 1;
+    var W = cv.clientWidth, H = 120;
+    cv.width = W * dpr; cv.height = H * dpr;
+    var c = cv.getContext('2d'); c.scale(dpr, dpr);
+    var data = [182, 214, 168, 240, 296, 262, 341];
+    var labels = ['8/19', '8/20', '8/21', '8/22', '8/23', '8/24', '8/25'];
+    var max = Math.max.apply(null, data) * 1.15;
+    var px = function (i) { return 18 + i * (W - 36) / (data.length - 1); };
+    var py = function (v) { return H - 24 - (v / max) * (H - 40); };
+    /* 채움 */
+    var grad = c.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, 'rgba(0,163,241,.22)'); grad.addColorStop(1, 'rgba(0,163,241,0)');
+    c.beginPath(); c.moveTo(px(0), H - 24);
+    data.forEach(function (v, i) { c.lineTo(px(i), py(v)); });
+    c.lineTo(px(data.length - 1), H - 24); c.closePath();
+    c.fillStyle = grad; c.fill();
+    /* 선 */
+    c.beginPath();
+    data.forEach(function (v, i) { i ? c.lineTo(px(i), py(v)) : c.moveTo(px(i), py(v)); });
+    c.strokeStyle = '#025997'; c.lineWidth = 2; c.stroke();
+    /* 점·라벨 */
+    c.font = '10px "Bai Jamjuree", sans-serif'; c.textAlign = 'center';
+    data.forEach(function (v, i) {
+      c.beginPath(); c.arc(px(i), py(v), 3, 0, 7); c.fillStyle = '#fff'; c.fill();
+      c.strokeStyle = '#025997'; c.lineWidth = 1.6; c.stroke();
+      c.fillStyle = '#818286'; c.fillText(labels[i], px(i), H - 8);
+    });
+    c.fillStyle = '#161d27'; c.font = '600 11px "Bai Jamjuree", sans-serif';
+    c.fillText(data[data.length - 1], px(data.length - 1), py(data[data.length - 1]) - 9);
+  })();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>마이페이지 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { max-width: 980px; margin: 0 auto; padding: 48px 0 0; }
+.page-title h1 { font-size: 32px; font-weight: 700; letter-spacing: -.03em; margin-top: 8px; }
+.grid2 { display: grid; grid-template-columns: 300px 1fr; gap: 22px; margin-top: 26px; align-items: start; }
+
+.profile { text-align: center; padding: 30px 24px; }
+.profile .av { width: 72px; height: 72px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 26px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.profile .nm { font-size: 19px; font-weight: 700; }
+.profile .sub { font-size: 12.5px; color: var(--t2); margin-top: 4px; }
+.profile .no { font-family: var(--mono); font-size: 12px; color: var(--t3); margin-top: 8px; }
+.profile .divider { margin: 16px 0; }
+.profile dl div { display: flex; justify-content: space-between; font-size: 12.5px; padding: 5px 0; }
+.profile dt { color: var(--t3); }
+.profile dd { font-weight: 600; }
+
+/* 면허 확인 상태 (발견 ⑨ — 3년 주기 재확인) */
+.lic-card .bd { font-size: 13px; }
+.lic-card .stat { display: flex; align-items: center; gap: 10px; }
+.lic-card .stat .big { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--ac); }
+.lic-card .desc2 { font-size: 12px; color: var(--t3); margin-top: 8px; line-height: 1.65; }
+
+.hist li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.hist li:last-child { border-bottom: 0; }
+.hist .k { font-size: 11px; font-weight: 700; color: var(--ac); background: var(--ac-soft); border-radius: 3px; padding: 2px 7px; flex: 0 0 auto; }
+.hist .t { flex: 1 1 auto; min-width: 0; font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hist .d { font-family: var(--mono); font-size: 11.5px; color: var(--t3); flex: 0 0 auto; }
+.hist .meter { flex: 0 0 90px; }
+.hist a.t:hover { color: var(--ac); }
+
+.bm li { display: flex; gap: 10px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+.bm li:last-child { border-bottom: 0; }
+.bm .b { font-size: 11px; color: var(--t3); flex: 0 0 auto; }
+.bm a { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; transition: color .3s ease; }
+.bm a:hover { color: var(--ac); }
+
+/* 승인 대기 뷰 */
+.waitbig { padding: 44px 34px; text-align: center; }
+.waitbig .ic { width: 60px; height: 60px; border-radius: 50%; background: var(--warn-soft); color: var(--warn); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.waitbig h2 { font-size: 22px; font-weight: 700; }
+.waitbig p { font-size: 13.5px; color: var(--t2); margin-top: 10px; line-height: 1.75; }
+
+@media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<main class="shell"><div class="wrap" id="host"></div></main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('');
+B.footer('');
+
+(function () {
+  var role = B.role();
+  var me = B.me();
+  var host = document.getElementById('host');
+
+  if (!me) {
+    host.innerHTML = '<div class="empty" style="padding-top:96px"><div class="h3">로그인이 필요합니다</div>'
+      + '<a class="btn pri" style="margin-top:18px" href="login.html">로그인</a></div>';
+    return;
+  }
+
+  var head = '<div class="page-title reveal">'
+    + '<span style="font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ac);text-transform:uppercase">My Page</span>'
+    + '<h1>마이페이지</h1></div>';
+
+  /* 승인 대기 화면 — 도메인 레퍼런스에 없는 구멍을 채우는 차별점 */
+  if (role === 'pending') {
+    host.innerHTML = head
+      + '<div class="panel waitbig reveal" style="margin-top:26px">'
+      + '<div class="ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>'
+      + '<h2>' + me.name + '님, 승인 심사가 진행 중입니다</h2>'
+      + '<p>접수번호 <b class="mono">' + me.no + '</b> · ' + me.joined + ' 접수<br>'
+      + '관리자가 제출하신 증빙과 면허번호를 대조하고 있습니다. 평균 9.4시간, 영업일 기준 최대 1~2일이 걸립니다.<br>'
+      + '결과는 알림으로 안내되며, 반려 시 사유와 재신청 방법을 함께 보내드립니다.</p>'
+      + '<div class="row gap-8" style="justify-content:center;margin-top:22px;flex-wrap:wrap">'
+      + '<a class="btn" href="community.html?b=notice">공지사항 보기 (대기 중 열람 가능)</a>'
+      + '<a class="btn ghost" href="index.html">홈으로</a></div>'
+      + '</div>';
+    B.reveal(host);
+    return;
+  }
+
+  var hist = DATA.MY_HISTORY[role] || [];
+  var bms = B.bookmarks();
+  var isDoc = role === 'doctor';
+
+  /* 보수교육 이수 평점 (실계산) */
+  var pts = 0;
+  hist.forEach(function (h) {
+    if (h.kind === '강의' && h.prog === 100) { var L = DATA.lectureOf(h.ref); if (L) pts += L.cpd; }
+  });
+
+  /* 면허 재확인 예정일: 승인일 + 3년 (발견 ⑨) */
+  function plus3y(d) { var p = d.split('-'); return (+p[0] + 3) + '-' + p[1] + '-' + p[2]; }
+
+  host.innerHTML = head
+    + '<div class="grid2">'
+    + '<div>'
+    + '<div class="panel profile reveal">'
+    + '<div class="av">' + me.name.charAt(0) + '</div>'
+    + '<div class="nm">' + me.name + ' ' + B.roleBadge(me.role) + '</div>'
+    + '<div class="sub">' + (me.clinic || me.school || '') + '</div>'
+    + '<div class="no">회원번호 ' + me.no + ' · ' + me.joined + ' 승인</div>'
+    + '<div class="divider"></div>'
+    + '<dl>'
+    + '<div><dt>등급</dt><dd>' + B.roleName() + ' (Tier ' + B.rank() + ')</dd></div>'
+    + '<div><dt>작성 글</dt><dd>' + DATA.POSTS.filter(function (p) { return p.a === me.no; }).length + '건</dd></div>'
+    + '<div><dt>북마크</dt><dd>' + bms.length + '건</dd></div>'
+    + (isDoc ? '<div><dt>보수교육 평점</dt><dd>' + pts + ' / 8평점</dd></div>' : '')
+    + '</dl>'
+    + '<button class="btn block" id="logoutBtn" style="margin-top:14px">로그아웃</button>'
+    + '</div>'
+    + (isDoc
+      ? '<div class="panel lic-card reveal" style="margin-top:16px"><div class="hd"><span class="h3">면허 확인 상태</span><span class="badge ok">유효</span></div>'
+        + '<div class="bd"><div class="stat"><span class="big">' + plus3y(me.joined) + '</span></div>'
+        + '<div class="sm t2" style="margin-top:4px">다음 재확인 예정일</div>'
+        + '<p class="desc2">한의사 면허는 3년마다 신고 의무가 있어(미신고 시 효력 정지) 본초도 3년 주기로 면허 상태를 재확인합니다. '
+        + '예정일 90일 전부터 알림으로 안내됩니다.</p></div></div>'
+      : '')
+    + '</div>'
+
+    + '<div>'
+    + '<div class="panel reveal"><div class="hd"><span class="h3">열람 이력 · 이어보기</span>'
+    + '<span class="sm t3">모든 열람은 기록됩니다</span></div>'
+    + '<div class="bd"><ul class="hist">'
+    + (hist.length ? hist.map(function (h) {
+        var href = h.kind === '강의' ? 'lecture.html?id=' + h.ref : 'post.html?id=' + h.ref;
+        return '<li><span class="k">' + h.kind + '</span>'
+          + '<a class="t" href="' + href + '">' + B.esc(h.title) + '</a>'
+          + (h.prog != null
+            ? (h.prog === 100
+              ? '<span class="badge ok">수강 완료</span>'
+              : '<div class="meter"><i style="width:' + h.prog + '%"></i></div><span class="num">' + h.prog + '%</span>')
+            : '')
+          + '<span class="d">' + h.at.slice(5) + '</span></li>';
+      }).join('') : '<li class="sm t3">아직 열람 이력이 없습니다.</li>')
+    + '</ul></div></div>'
+
+    + '<div class="panel reveal" style="margin-top:16px"><div class="hd"><span class="h3">북마크</span></div>'
+    + '<div class="bd"><ul class="bm">'
+    + (bms.length ? bms.map(function (id) {
+        var p = null; DATA.POSTS.forEach(function (x) { if (x.id === id) p = x; });
+        if (!p) return '';
+        var bd = DATA.boardOf(p.b);
+        return '<li><span class="b">' + bd.name + '</span><a href="post.html?id=' + p.id + '">' + B.esc(p.t) + '</a>'
+          + '<span class="d mono sm t3">' + p.d + '</span></li>';
+      }).join('') : '<li class="sm t3">북마크한 글이 없습니다. 게시글의 ☆ 버튼으로 추가하세요.</li>')
+    + '</ul></div></div>'
+    + '</div>'
+    + '</div>';
+
+  B.reveal(host);
+
+  var lo = document.getElementById('logoutBtn');
+  if (lo) lo.addEventListener('click', function () {
+    B.toast('로그아웃되었습니다.');
+    setTimeout(function () {
+      try { localStorage.setItem('boncho_role', 'guest'); } catch (e) {}
+      location.href = 'index.html';
+    }, 700);
+  });
+})();
+</script>
+</body>
+</html>

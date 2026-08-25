@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>커뮤니티 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+/* 페이지 타이틀 — eyebrow → 페이지명 (poscoflow 서브페이지 문법) */
+.page-title { padding: 52px 0 34px; }
+.page-title .eyebrow { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .06em; color: var(--ac); text-transform: uppercase; }
+.page-title h1 { font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin-top: 10px; }
+.page-title .desc { font-size: 14.5px; color: var(--t2); margin-top: 12px; }
+
+/* 게시판 탭 — 스티키 탭바, 활성 하단 3px (poscoflow §5-2) */
+.btabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line-strong); overflow-x: auto; }
+.btabs a {
+  padding: 0 16px; height: 46px; display: inline-flex; align-items: center; gap: 7px;
+  font-size: 15px; font-weight: 600; color: var(--t2); white-space: nowrap;
+  border-bottom: 3px solid transparent; margin-bottom: -1px;
+  transition: color .3s ease, border-color .3s ease;
+}
+.btabs a:hover { color: var(--ac); }
+.btabs a.on { color: var(--ac); border-bottom-color: var(--ac); font-weight: 700; }
+.btabs a .n { font-family: var(--mono); font-size: 11.5px; color: var(--t3); }
+.btabs a .lk { font-size: 11px; opacity: .6; }
+
+.list-tools { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 22px 0 14px; flex-wrap: wrap; }
+.list-tools .search { position: relative; flex: 0 1 320px; }
+.list-tools .search input { width: 100%; height: 38px; padding: 0 14px 0 34px; border: 1px solid var(--line-strong); border-radius: 999px; font-size: 13px; transition: border-color .3s ease, box-shadow .3s ease; }
+.list-tools .search input:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 1px var(--ac); }
+.list-tools .search svg { position: absolute; left: 12px; top: 11px; color: var(--t3); }
+
+/* 목록 행 */
+.plist { border-top: 2px solid var(--t1); }
+.prow { display: flex; align-items: center; gap: 14px; padding: 14px 6px; border-bottom: 1px solid var(--line); transition: background .3s ease; }
+.prow:hover { background: var(--hover); }
+.prow .no { font-family: var(--mono); font-size: 12px; color: var(--t3); flex: 0 0 44px; }
+.prow .main { flex: 1 1 auto; min-width: 0; }
+.prow .ttl { font-size: 15px; font-weight: 600; color: var(--t1); transition: color .3s ease; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+a.prow:hover .ttl { color: var(--ac); }
+.prow .ttl .cm { font-family: var(--mono); font-size: 12px; color: var(--ac); font-weight: 600; }
+.prow .sub { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--t3); margin-top: 4px; }
+.prow .sub .who { display: inline-flex; align-items: center; gap: 6px; color: var(--t2); }
+.prow .views { font-family: var(--mono); font-size: 12px; color: var(--t3); flex: 0 0 auto; text-align: right; }
+.prow.pin { background: var(--ac-soft); }
+.prow.pin .no { color: var(--ac); font-weight: 700; }
+
+/* 마스킹 행 — 실측 문법: 제목은 서버에서 치환, 메타데이터만 공개 */
+.prow.masked .ttl { color: var(--t3); font-weight: 500; }
+.prow.masked:hover { background: transparent; }
+
+/* 블라인드 공시 블록 (정보통신망법 §44-2 공시 의무) */
+.prow.blinded .ttl { color: var(--t3); font-weight: 500; font-style: normal; }
+.prow.blinded .notice-chip {
+  display: inline-flex; align-items: center; gap: 5px; height: 21px; padding: 0 8px;
+  border-radius: var(--r-xs); background: var(--warn-soft); color: var(--warn); font-size: 11px; font-weight: 600;
+}
+
+/* 한의사 전용 잠금 패널 */
+.lockpanel { border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 64px 32px; text-align: center; margin-top: 8px; }
+.lockpanel .ic { width: 52px; height: 52px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.lockpanel .tt { font-size: 18px; font-weight: 700; }
+.lockpanel .ds { font-size: 13.5px; color: var(--t2); margin-top: 8px; line-height: 1.7; max-width: 46ch; margin-left: auto; margin-right: auto; }
+.lockpanel .btn { margin-top: 20px; }
+
+@media (max-width: 720px) {
+  .page-title h1 { font-size: 30px; }
+  .prow .views { display: none; }
+}
+</style>
+</head>
+<body>
+
+<main class="shell">
+  <div class="page-title reveal">
+    <span class="eyebrow">Community</span>
+    <h1 id="pageName">커뮤니티</h1>
+    <p class="desc" id="pageDesc"></p>
+  </div>
+
+  <div class="btabs" id="btabs"></div>
+
+  <div class="list-tools">
+    <div class="search">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="제목·작성자 검색" value="">
+    </div>
+    <div class="row gap-8">
+      <span class="sm t3" id="cnt"></span>
+      <button class="btn sm pri" id="writeBtn">글쓰기
+        <span class="arw"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="listHost"></div>
+  <div class="pager" id="pager"></div>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+var boardId = B.qs('b') || 'free';
+if (!DATA.boardOf(boardId)) boardId = 'free';
+B.header(boardId === 'notice' ? 'notice' : 'community');
+B.footer('');
+
+(function () {
+  var board = DATA.boardOf(boardId);
+  var acc = B.boardAccess(board);
+  var blinded = DATA.blindedPosts();
+  var PAGE = 8;
+  var page = 1;
+
+  document.getElementById('pageName').textContent = board.name;
+  document.getElementById('pageDesc').textContent = board.desc + (board.custom ? ' · 관리자 CMS로 생성된 게시판' : '');
+  document.title = board.name + ' · BONCHO 본초';
+
+  /* 탭 — 모든 게시판 노출, 자격 미달은 잠금 아이콘 (역할 전환 시 즉시 변화) */
+  var counts = {};
+  DATA.POSTS.forEach(function (p) { counts[p.b] = (counts[p.b] || 0) + 1; });
+  document.getElementById('btabs').innerHTML = DATA.BOARDS.map(function (bd) {
+    var a = B.boardAccess(bd);
+    return '<a href="community.html?b=' + bd.id + '" class="' + (bd.id === boardId ? 'on' : '') + '"'
+      + (bd.id === boardId ? ' aria-current="page"' : '') + '>'
+      + bd.name
+      + (a === 'full' ? '<span class="n">' + (counts[bd.id] || 0) + '</span>' : '<span class="lk">🔒</span>')
+      + '</a>';
+  }).join('');
+
+  var writeBtn = document.getElementById('writeBtn');
+  if (B.canWrite(board)) {
+    writeBtn.addEventListener('click', function () { location.href = 'write.html?b=' + boardId; });
+  } else {
+    writeBtn.disabled = true;
+    writeBtn.title = '이 게시판에 글을 쓸 권한이 없습니다';
+  }
+
+  var host = document.getElementById('listHost');
+
+  /* 한의사 전용 게시판 + 자격 미달 → 목록 자체를 숨긴다 (의료법 §56 대응) */
+  if (acc === 'hidden') {
+    document.querySelector('.list-tools').style.display = 'none';
+    host.innerHTML = '<div class="lockpanel reveal">'
+      + '<div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>'
+      + '<div class="tt">한의사회원 전용 게시판입니다</div>'
+      + '<p class="ds">임상 증례·처방 정보가 비의료인에게 노출되면 의료법 제56조(의료광고) 소지가 생깁니다. '
+      + '그래서 이 게시판은 면허가 확인된 한의사회원에게만 <b>목록부터</b> 열립니다. 제목도 보이지 않습니다.</p>'
+      + '<a class="btn pri" href="join.html">한의사회원 가입 신청</a>'
+      + '</div>';
+    B.reveal(host);
+    return;
+  }
+
+  function render() {
+    var q = document.getElementById('q').value.trim().toLowerCase();
+    var rows = DATA.POSTS.filter(function (p) { return p.b === boardId; });
+    if (q && acc === 'full') {
+      rows = rows.filter(function (p) {
+        return p.t.toLowerCase().indexOf(q) !== -1 || p.an.toLowerCase().indexOf(q) !== -1;
+      });
+    }
+    rows.sort(function (a, b) { return (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || b.d.localeCompare(a.d); });
+    document.getElementById('cnt').textContent = '전체 ' + rows.length + '건';
+
+    var totalPages = Math.max(1, Math.ceil(rows.length / PAGE));
+    if (page > totalPages) page = totalPages;
+    var slice = rows.slice((page - 1) * PAGE, page * PAGE);
+
+    host.innerHTML = '<div class="plist">' + slice.map(function (p, i) {
+      var no = rows.length - ((page - 1) * PAGE + i);
+      var bl = blinded[p.id];
+
+      /* 블라인드 공시 — 목록에서도 차단 사실과 기한을 공시 (§44-2) */
+      if (bl && acc === 'full') {
+        return '<div class="prow blinded">'
+          + '<span class="no">' + no + '</span>'
+          + '<div class="main"><div class="ttl">신고 접수로 임시 접근 차단 중인 게시물입니다 '
+          + '<span class="notice-chip">임시조치 · ' + bl.due + '까지</span></div>'
+          + '<div class="sub"><span>정보통신망법 제44조의2에 따른 조치 · 게시자 이의신청 가능</span></div></div>'
+          + '</div>';
+      }
+
+      /* 비회원·미승인 티저 — 제목은 렌더하지 않고 메타데이터만 (모어덴 실측 문법) */
+      if (acc !== 'full') {
+        return '<div class="prow masked">'
+          + '<span class="no">' + no + '</span>'
+          + '<div class="main"><div class="ttl">승인된 회원만 열람할 수 있습니다</div>'
+          + '<div class="sub"><span class="who">' + B.roleBadge(p.role) + '</span>'
+          + '<span>' + p.d + '</span><span>댓글 ' + p.cm + '</span></div></div>'
+          + '<span class="views">조회 ' + B.fmt(p.v) + '</span>'
+          + '</div>';
+      }
+
+      return '<a class="prow' + (p.pin ? ' pin' : '') + '" href="post.html?id=' + p.id + '">'
+        + '<span class="no">' + (p.pin ? '공지' : no) + '</span>'
+        + '<div class="main"><div class="ttl">' + B.esc(p.t)
+        + (p.cm ? '<span class="cm">[' + p.cm + ']</span>' : '')
+        + (p.att.length ? '<span class="fmt">' + B.fmtTags(p.att) + '</span>' : '')
+        + (p.custom ? '<span class="badge line">CMS</span>' : '')
+        + '</div>'
+        + '<div class="sub"><span class="who">' + B.roleBadge(p.role) + '<b>' + p.an + '</b></span>'
+        + '<span>' + p.d + '</span></div></div>'
+        + '<span class="views">조회 ' + B.fmt(p.v) + '</span>'
+        + '</a>';
+    }).join('') + '</div>';
+
+    /* 티저 하단 가입 유도 */
+    if (acc !== 'full') {
+      host.innerHTML += '<div class="lockpanel" style="margin-top:24px;padding:36px 28px">'
+        + '<div class="tt" style="font-size:16px">안이 활발하다는 건 보이시죠?</div>'
+        + '<p class="ds">가입 승인 후 모든 글과 첨부를 열람할 수 있습니다. 평균 승인 소요 9.4시간.</p>'
+        + '<a class="btn pri" href="join.html">가입 신청하기</a></div>';
+    }
+
+    var pg = document.getElementById('pager');
+    if (totalPages <= 1) { pg.innerHTML = ''; return; }
+    var h = '<button class="nav" data-p="' + Math.max(1, page - 1) + '">‹</button>';
+    for (var t = 1; t <= totalPages; t++) {
+      h += '<button data-p="' + t + '" class="' + (t === page ? 'on' : '') + '">' + t + '</button>';
+    }
+    h += '<button class="nav" data-p="' + Math.min(totalPages, page + 1) + '">›</button>';
+    pg.innerHTML = h;
+    pg.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { page = +b.dataset.p; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    });
+  }
+
+  document.getElementById('q').addEventListener('input', function () { page = 1; render(); });
+  render();
+})();
+</script>
+</body>
+</html>

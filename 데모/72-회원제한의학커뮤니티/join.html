@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가입 신청 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { max-width: 760px; margin: 0 auto; padding: 48px 0 0; }
+.page-title h1 { font-size: 34px; font-weight: 700; letter-spacing: -.03em; margin-top: 8px; }
+.page-title .desc { font-size: 14px; color: var(--t2); margin-top: 10px; line-height: 1.7; }
+
+/* 단계 표시 */
+.stepbar { display: flex; gap: 0; margin: 28px 0 30px; border: 1px solid var(--line-strong); border-radius: 999px; overflow: hidden; }
+.stepbar span { flex: 1 1 0; text-align: center; font-size: 12.5px; font-weight: 600; color: var(--t3); padding: 9px 4px; background: var(--surface); transition: background .3s ease, color .3s ease; }
+.stepbar span.on { background: var(--ac); color: #fff; }
+.stepbar span.done { color: var(--ac); }
+
+.step { display: none; }
+.step.on { display: block; }
+
+/* 유형 선택 — 2트랙 카드 (도메인 실측 문법) */
+.tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.track { border: 1px solid var(--line-strong); border-radius: var(--r-lg); padding: 26px 24px; cursor: pointer; transition: border-color .3s ease, background .3s ease; position: relative; }
+.track:hover { border-color: var(--ac); }
+.track.sel { border-color: var(--ac); background: var(--ac-soft); box-shadow: 0 0 0 1px var(--ac); }
+.track .tt { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.track .ds { font-size: 13px; color: var(--t2); margin-top: 8px; line-height: 1.7; }
+.track ul { margin-top: 14px; }
+.track li { font-size: 12.5px; color: var(--t2); line-height: 1.9; display: flex; gap: 7px; align-items: baseline; }
+.track li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--ac); flex: 0 0 auto; position: relative; top: -3px; }
+.track li.no { color: var(--t3); }
+.track li.no::before { background: var(--line-strong); }
+
+.social { display: flex; flex-direction: column; gap: 9px; margin-top: 22px; }
+.social button { height: 46px; border-radius: var(--r-md); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: filter .3s ease; }
+.social button:hover { filter: brightness(.95); }
+.social .kakao { background: #fee500; color: #191919; }
+.social .naver { background: #03c75a; color: #fff; }
+.social .note { font-size: 11.5px; color: var(--t3); text-align: center; }
+
+.formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+.formgrid .full { grid-column: 1 / -1; }
+.lic-check { display: flex; gap: 8px; }
+.lic-check .inp { flex: 1 1 auto; }
+.lic-ok { font-size: 12px; margin-top: 5px; font-weight: 600; }
+.lic-ok.pass { color: var(--ok); }
+.lic-ok.fail { color: var(--bad); }
+
+/* ── 주민번호 마스킹 업로더 (발견 ② 구현) ── */
+.mask-box { border: 1px solid var(--line-strong); border-radius: var(--r-lg); overflow: hidden; margin-top: 8px; }
+.mask-box .hd { padding: 13px 16px; background: var(--sunken); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.mask-box .hd .tt { font-size: 13.5px; font-weight: 700; }
+.mask-box .hd .st { font-size: 12px; font-weight: 600; }
+.mask-box .hd .st.warn { color: var(--bad); }
+.mask-box .hd .st.ok { color: var(--ok); }
+.mask-stage { position: relative; background: #2a2e33; display: flex; align-items: center; justify-content: center; padding: 18px; }
+.mask-stage canvas { max-width: 100%; border-radius: var(--r-sm); cursor: crosshair; touch-action: none; }
+.mask-empty { padding: 44px 20px; text-align: center; color: var(--t2); font-size: 13.5px; }
+.mask-tools { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--line); flex-wrap: wrap; align-items: center; }
+.mask-tools .sp { flex: 1 1 auto; }
+.mask-note { font-size: 12px; color: var(--t3); padding: 0 16px 14px; line-height: 1.65; }
+.mask-note b { color: var(--ac); }
+
+/* 승인 대기 타임라인 */
+.waitline { border: 1px solid var(--line-strong); border-radius: var(--r-lg); padding: 30px 28px; margin-top: 8px; }
+.waitline .row1 { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.waitline .num { font-family: var(--mono); font-size: 13px; font-weight: 700; color: var(--ac); background: var(--ac-soft); border-radius: 999px; padding: 5px 14px; }
+.tsteps { margin-top: 22px; }
+.tstep { display: flex; gap: 14px; padding-bottom: 22px; position: relative; }
+.tstep::before { content: ''; position: absolute; left: 13px; top: 30px; bottom: 0; width: 2px; background: var(--line); }
+.tstep:last-child::before { display: none; }
+.tstep .dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--surface); flex: 0 0 auto; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--t3); z-index: 1; }
+.tstep.done .dot { background: var(--ac); border-color: var(--ac); color: #fff; }
+.tstep.cur .dot { border-color: var(--ac); color: var(--ac); animation: pulse 1.8s ease infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 var(--ac-ring); } 50% { box-shadow: 0 0 0 7px transparent; } }
+.tstep .tt { font-size: 14.5px; font-weight: 700; }
+.tstep .ds { font-size: 12.5px; color: var(--t2); margin-top: 3px; line-height: 1.6; }
+.nav-bar { display: flex; justify-content: space-between; gap: 12px; margin-top: 28px; }
+
+@media (max-width: 720px) { .tracks, .formgrid { grid-template-columns: 1fr; } .page-title h1 { font-size: 27px; } }
+</style>
+</head>
+<body>
+
+<main class="shell"><div class="wrap">
+  <div class="page-title reveal">
+    <span class="eyebrow" style="font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ac);text-transform:uppercase">Join</span>
+    <h1>가입 신청</h1>
+    <p class="desc">본초는 승인제로 운영됩니다. 면허 진위를 실시간 확인해 주는 공공 API가 없어 관리자가 증빙을 직접 대조하며,
+      평균 9.4시간 안에 승인이 완료됩니다.</p>
+  </div>
+
+  <div class="stepbar reveal">
+    <span data-s="1" class="on">1 · 유형 선택</span>
+    <span data-s="2">2 · 정보 입력</span>
+    <span data-s="3">3 · 증빙 제출</span>
+    <span data-s="4">4 · 승인 대기</span>
+  </div>
+
+  <!-- STEP 1 : 유형 선택 (2트랙) -->
+  <section class="step on" data-step="1">
+    <div class="tracks">
+      <div class="track sel" data-type="doctor" role="button" tabindex="0">
+        <div class="tt">한의사회원 <span class="badge doctor">Tier 2</span></div>
+        <p class="ds">한의사 면허를 소지한 분. 커뮤니티·강의·갤러리 전체를 이용합니다.</p>
+        <ul>
+          <li>임상 증례 · 처방 자료실 · 경영 게시판</li>
+          <li>임상·경영 강의 전 편 + 보수교육 평점</li>
+          <li>첨부파일 다운로드 (기록·워터마크)</li>
+        </ul>
+      </div>
+      <div class="track" data-type="member" role="button" tabindex="0">
+        <div class="tt">일반회원 <span class="badge member">Tier 1</span></div>
+        <p class="ds">한의과대학 재학생·졸업 예정자. 학습 콘텐츠 중심으로 이용합니다.</p>
+        <ul>
+          <li>자유게시판 · 학술 게시판</li>
+          <li>학부·국시 강의</li>
+          <li class="no">임상 증례·처방 자료실은 목록부터 비공개</li>
+        </ul>
+      </div>
+    </div>
+    <div class="social">
+      <button class="kakao" id="kakaoBtn"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 3C6.48 3 2 6.54 2 10.9c0 2.8 1.86 5.26 4.66 6.65l-.95 3.53c-.08.31.27.56.54.38l4.21-2.79c.5.05 1.02.08 1.54.08 5.52 0 10-3.54 10-7.85S17.52 3 12 3z"/></svg>카카오로 3초 만에 시작</button>
+      <button class="naver" id="naverBtn"><b style="font-family:var(--mono);font-size:16px">N</b> 네이버로 시작</button>
+      <p class="note">소셜 로그인은 본인 확인용입니다 · 면허·재학 증빙은 다음 단계에서 별도 심사합니다</p>
+    </div>
+  </section>
+
+  <!-- STEP 2 : 정보 입력 -->
+  <section class="step" data-step="2">
+    <div class="formgrid">
+      <label class="field"><span class="lb">성명 <span class="req">*</span></span><input class="inp" id="fName" value="강민재"></label>
+      <label class="field"><span class="lb">휴대전화 <span class="req">*</span></span><input class="inp" id="fPhone" value="010-4172-3921"></label>
+      <label class="field full" id="licRow"><span class="lb">한의사 면허번호 <span class="req">*</span></span>
+        <div class="lic-check"><input class="inp" id="fLic" value="제 21473호" placeholder="예: 제 12345호"><button class="btn" id="licBtn">형식·중복 검사</button></div>
+        <div class="lic-ok" id="licMsg"></div>
+      </label>
+      <label class="field full" id="schoolRow" style="display:none"><span class="lb">소속 한의과대학 · 학년 <span class="req">*</span></span><input class="inp" id="fSchool" value="가온한의과대학 본과 2년"></label>
+      <label class="field full"><span class="lb">근무처 (선택)</span><input class="inp" id="fClinic" value="민재한의원 (서울 관악)"></label>
+    </div>
+    <p class="sm t3" style="margin-top:14px;line-height:1.7">수집 항목은 심사에 필요한 최소한으로 제한됩니다. <b class="t2">주민등록번호·상세 주소·면허증 원본은 수집하지 않습니다.</b>
+      제출 정보는 승인 심사에만 사용하고, 심사 완료 90일 후 증빙 서류를 파기합니다.</p>
+    <div class="nav-bar"><button class="btn" data-go="1">이전</button><button class="btn pri" id="toStep3">다음 — 증빙 제출</button></div>
+  </section>
+
+  <!-- STEP 3 : 증빙 제출 + 주민번호 마스킹 -->
+  <section class="step" data-step="3">
+    <div class="mask-box">
+      <div class="hd">
+        <span class="tt">증빙 서류 업로드 — 주민등록번호 마스킹</span>
+        <span class="st warn" id="maskState">마스킹 전 — 제출 불가</span>
+      </div>
+      <div class="mask-stage" id="maskStage">
+        <div class="mask-empty" id="maskEmpty">
+          면허증·재학증명서에는 주민등록번호가 인쇄되어 있습니다.<br>
+          법령 근거 없는 주민번호 수집은 금지되므로(개인정보보호법 §24-2),<br>
+          <b>브라우저 안에서 가린 뒤 마스킹본만</b> 전송됩니다. 원본은 서버로 나가지 않습니다.<br><br>
+          <button class="btn pri" id="sampleBtn">샘플 서류로 체험해 보기</button>
+        </div>
+        <canvas id="maskCanvas" style="display:none"></canvas>
+      </div>
+      <div class="mask-tools" id="maskTools" style="display:none">
+        <button class="btn sm pri" id="autoMask">주민번호 영역 자동 마스킹</button>
+        <button class="btn sm" id="clearMask">마스킹 초기화</button>
+        <span class="sp"></span>
+        <span class="sm t3">드래그로 영역을 직접 가릴 수도 있습니다</span>
+      </div>
+      <p class="mask-note">전송되는 것은 <b>마스킹이 구워진(burn-in) 이미지 1장</b>뿐입니다. 마스킹을 하지 않으면 아래 제출 버튼이 실제로 잠깁니다.</p>
+    </div>
+    <div class="nav-bar"><button class="btn" data-go="2">이전</button><button class="btn pri lg" id="submitJoin" disabled>가입 신청 제출</button></div>
+  </section>
+
+  <!-- STEP 4 : 승인 대기 -->
+  <section class="step" data-step="4">
+    <div class="waitline">
+      <div class="row1">
+        <span class="num" id="waitNum">접수번호 B-2091</span>
+        <span class="badge warn">승인 대기</span>
+        <span class="sm t3">평균 처리 9.4시간 · 영업일 기준 최대 1~2일</span>
+      </div>
+      <div class="tsteps">
+        <div class="tstep done"><span class="dot">✓</span><div><div class="tt">신청 접수</div><div class="ds">방금 · 소셜 계정 연결과 기본 정보가 확인되었습니다</div></div></div>
+        <div class="tstep cur"><span class="dot">2</span><div><div class="tt">관리자 심사 중</div><div class="ds">제출한 증빙과 면허번호·성명을 대조하고 있습니다. 자동 검증이 불가능한 절차라 사람이 직접 확인합니다</div></div></div>
+        <div class="tstep"><span class="dot">3</span><div><div class="tt">승인 완료</div><div class="ds">승인되면 알림으로 안내되고, 즉시 모든 게시판·강의가 열립니다. 반려 시 사유와 재신청 방법을 함께 안내합니다</div></div></div>
+      </div>
+      <div class="row gap-8" style="margin-top:8px;flex-wrap:wrap">
+        <a class="btn" href="community.html?b=notice">공지사항 보기 (대기 중에도 열람 가능)</a>
+        <a class="btn ghost" href="index.html">홈으로</a>
+      </div>
+    </div>
+  </section>
+</div></main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('');
+B.footer('');
+
+(function () {
+  var type = 'doctor';
+  var cur = 1;
+
+  function goto(n) {
+    cur = n;
+    document.querySelectorAll('.step').forEach(function (s) { s.classList.toggle('on', +s.dataset.step === n); });
+    document.querySelectorAll('.stepbar span').forEach(function (s) {
+      var v = +s.dataset.s;
+      s.classList.toggle('on', v === n);
+      s.classList.toggle('done', v < n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  document.querySelectorAll('[data-go]').forEach(function (b) {
+    b.addEventListener('click', function () { goto(+b.dataset.go); });
+  });
+
+  /* 유형 선택 */
+  document.querySelectorAll('.track').forEach(function (t) {
+    t.addEventListener('click', function () {
+      type = t.dataset.type;
+      document.querySelectorAll('.track').forEach(function (x) { x.classList.toggle('sel', x === t); });
+      document.getElementById('licRow').style.display = type === 'doctor' ? '' : 'none';
+      document.getElementById('schoolRow').style.display = type === 'member' ? '' : 'none';
+    });
+  });
+  document.getElementById('kakaoBtn').addEventListener('click', function () {
+    B.toast('카카오 인증이 완료되었습니다. <b>강민재</b>님, 정보를 확인해 주세요.<br><span class="sm">실서비스: 카카오 로그인 → 콜백 → 자격 신청 단계로 연결</span>');
+    goto(2);
+  });
+  document.getElementById('naverBtn').addEventListener('click', function () {
+    B.toast('네이버 인증이 완료되었습니다. <b>강민재</b>님, 정보를 확인해 주세요.');
+    goto(2);
+  });
+
+  /* 면허번호 형식·중복 검사 — 실제 계산 (형식 + 기존 회원 대조) */
+  document.getElementById('licBtn').addEventListener('click', function () {
+    var v = document.getElementById('fLic').value.trim();
+    var msg = document.getElementById('licMsg');
+    var m = v.match(/^제?\s*(\d{4,6})\s*호?$/);
+    if (!m) {
+      msg.textContent = '✕ 형식이 올바르지 않습니다. 「제 12345호」 형태로 입력해 주세요.';
+      msg.className = 'lic-ok fail';
+      return;
+    }
+    /* 데모: 기존 회원 면허번호와 중복 검사 (21001 = 이미 가입) */
+    if (m[1] === '21001') {
+      msg.textContent = '✕ 이미 이 면허번호로 가입된 계정이 있습니다. 중복 가입은 관리자 심사에서 반려됩니다.';
+      msg.className = 'lic-ok fail';
+      return;
+    }
+    msg.textContent = '✓ 형식 확인 · 중복 없음 — 진위 여부는 관리자가 증빙과 대조해 최종 확인합니다.';
+    msg.className = 'lic-ok pass';
+  });
+
+  document.getElementById('toStep3').addEventListener('click', function () {
+    var name = document.getElementById('fName');
+    var phone = document.getElementById('fPhone');
+    var bad = false;
+    [name, phone].forEach(function (el) {
+      el.classList.remove('err');
+      if (!el.value.trim()) { el.classList.add('err'); bad = true; }
+    });
+    if (type === 'doctor') {
+      var lic = document.getElementById('fLic');
+      lic.classList.remove('err');
+      if (!/^제?\s*\d{4,6}\s*호?$/.test(lic.value.trim())) { lic.classList.add('err'); bad = true; }
+    }
+    if (bad) { B.toast('필수 항목을 확인해 주세요.', 'bad'); return; }
+    goto(3);
+  });
+
+  /* ── 마스킹 캔버스 ── */
+  var canvas = document.getElementById('maskCanvas');
+  var ctx = canvas.getContext('2d');
+  var masks = [];               /* {x,y,w,h} */
+  var jumin = null;             /* 주민번호 영역 (자동 마스킹 제안 대상) */
+  var drawing = null;
+
+  function drawDoc() {
+    var W = 640, H = 420;
+    canvas.width = W; canvas.height = H;
+    ctx.fillStyle = '#f7f4ec'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#b9a97c'; ctx.lineWidth = 3; ctx.strokeRect(14, 14, W - 28, H - 28);
+    ctx.fillStyle = '#5a4a22';
+    ctx.font = '700 30px Pretendard, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('한 의 사  면 허 증', W / 2, 78);
+    ctx.font = '15px Pretendard, sans-serif';
+    ctx.fillText('(가상 샘플 — 데모 전용 문서입니다)', W / 2, 104);
+    ctx.textAlign = 'left';
+    ctx.font = '600 18px Pretendard, sans-serif';
+    ctx.fillText('성      명 :  강 민 재', 70, 168);
+    ctx.fillText('면허번호 :  제 21473 호', 70, 208);
+    ctx.fillText('주민등록번호 :  880412 - 1●●●●●●', 70, 248);
+    jumin = { x: 208, y: 228, w: 264, h: 32 };
+    ctx.fillText('발급일자 :  2014년  3월  2일', 70, 288);
+    ctx.font = '600 17px Pretendard, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('보 건 복 지 부 장 관  (가상)', W / 2, 356);
+    ctx.textAlign = 'left';
+    /* 마스킹 렌더 */
+    masks.forEach(function (m) {
+      ctx.fillStyle = '#161d27';
+      ctx.fillRect(m.x, m.y, m.w, m.h);
+      ctx.fillStyle = '#7bcdf5';
+      ctx.font = '600 11px "Bai Jamjuree", sans-serif';
+      ctx.fillText('MASKED', m.x + 6, m.y + m.h / 2 + 4);
+    });
+    if (drawing) {
+      ctx.strokeStyle = '#00a3f1'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]);
+      ctx.strokeRect(drawing.x, drawing.y, drawing.w, drawing.h);
+      ctx.setLineDash([]);
+    }
+  }
+
+  function juminCovered() {
+    if (!jumin) return false;
+    return masks.some(function (m) {
+      return m.x <= jumin.x + 8 && m.y <= jumin.y + 6 &&
+             m.x + m.w >= jumin.x + jumin.w - 8 && m.y + m.h >= jumin.y + jumin.h - 6;
+    });
+  }
+  function updateState() {
+    var ok = juminCovered();
+    var st = document.getElementById('maskState');
+    st.textContent = ok ? '주민번호 마스킹 완료 — 제출 가능' : '마스킹 전 — 제출 불가';
+    st.className = 'st ' + (ok ? 'ok' : 'warn');
+    document.getElementById('submitJoin').disabled = !ok;
+  }
+
+  document.getElementById('sampleBtn').addEventListener('click', function () {
+    document.getElementById('maskEmpty').style.display = 'none';
+    canvas.style.display = 'block';
+    document.getElementById('maskTools').style.display = 'flex';
+    masks = [];
+    drawDoc();
+    updateState();
+    B.toast('샘플 면허증이 로드되었습니다. <b>주민번호 영역을 마스킹</b>해야 제출할 수 있습니다.');
+  });
+
+  document.getElementById('autoMask').addEventListener('click', function () {
+    masks.push({ x: jumin.x - 6, y: jumin.y - 4, w: jumin.w + 12, h: jumin.h + 8 });
+    drawDoc(); updateState();
+    B.toast('주민번호 추정 영역을 마스킹했습니다. 필요하면 드래그로 영역을 추가하세요.');
+  });
+  document.getElementById('clearMask').addEventListener('click', function () {
+    masks = []; drawDoc(); updateState();
+  });
+
+  function pos(e) {
+    var r = canvas.getBoundingClientRect();
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+    return { x: cx * canvas.width / r.width, y: cy * canvas.height / r.height };
+  }
+  function startDraw(e) { var p = pos(e); drawing = { x: p.x, y: p.y, w: 0, h: 0, sx: p.x, sy: p.y }; e.preventDefault(); }
+  function moveDraw(e) {
+    if (!drawing) return;
+    var p = pos(e);
+    drawing.x = Math.min(drawing.sx, p.x); drawing.y = Math.min(drawing.sy, p.y);
+    drawing.w = Math.abs(p.x - drawing.sx); drawing.h = Math.abs(p.y - drawing.sy);
+    drawDoc(); e.preventDefault();
+  }
+  function endDraw() {
+    if (drawing && drawing.w > 12 && drawing.h > 8) {
+      masks.push({ x: drawing.x, y: drawing.y, w: drawing.w, h: drawing.h });
+    }
+    drawing = null; drawDoc(); updateState();
+  }
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', moveDraw);
+  window.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', moveDraw, { passive: false });
+  canvas.addEventListener('touchend', endDraw);
+
+  /* 제출 → 승인 대기 */
+  document.getElementById('submitJoin').addEventListener('click', function () {
+    if (!juminCovered()) return;
+    B.toast('가입 신청이 접수되었습니다.<br><span class="sm">서버에는 마스킹된 이미지 1장만 전송되었습니다 (원본 미전송)</span>');
+    goto(4);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BONCHO 본초 · 회원제 한의학 커뮤니티</title>
+<meta name="description" content="승인된 한의사·한의대생만 모이는 회원제 한의학 커뮤니티 및 강의 콘텐츠 플랫폼. 임상 증례, 처방·본초 자료, 강의 영상을 권한별로 안전하게.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+/* ── 히어로 — 풀블리드 이미지 배경 + eyebrow → 2행 디스플레이 (poscoflow ②·KV 문법) ── */
+.hero {
+  position: relative; width: 100vw; margin-left: calc(50% - 50vw);
+  min-height: 560px; display: flex; align-items: flex-end; overflow: hidden;
+  color: #fff;
+}
+.hero .bg {
+  position: absolute; inset: 0;
+  background: url('assets/img/hero-yakjang.webp') center 38% / cover no-repeat;
+  transform: scale(1.06);
+  animation: hero-zoom 14s ease-out forwards;
+}
+@keyframes hero-zoom { to { transform: scale(1); } }
+.hero::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,14,18,.18) 0%, rgba(10,14,18,.42) 52%, rgba(10,14,18,.84) 100%);
+}
+.hero .inner { position: relative; z-index: 2; width: 100%; padding: 120px 0 64px; }
+.hero .eyebrow {
+  font-family: var(--mono); font-size: 14px; font-weight: 700;
+  letter-spacing: .06em; color: #7bcdf5; text-transform: uppercase;
+}
+.hero h1 {
+  font-size: 60px; font-weight: 700; line-height: 1.08; letter-spacing: -.03em;
+  margin: 16px 0 0; color: #fff;
+}
+.hero h1 em { font-style: normal; color: #00a3f1; }
+.hero .hairline { width: 46%; max-width: 430px; height: 1px; background: rgba(255,255,255,.34); margin: 26px 0 18px; }
+.hero .lead { font-size: 16.5px; color: rgba(255,255,255,.82); max-width: 56ch; line-height: 1.7; }
+.hero .ctas { margin-top: 30px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.hero .btn-cta { height: 50px; padding: 0 28px; font-size: 15px; font-weight: 700; }
+
+/* 히어로 하단 통계 — 세로 hairline 분할 + Bai Jamjuree 카운트업 (poscoflow 통계 문법) */
+.hero .stats { display: flex; margin-top: 44px; max-width: 760px; }
+.hero .stats > div { flex: 1 1 0; padding: 0 26px; border-left: 1px solid rgba(255,255,255,.26); }
+.hero .stats > div:first-child { padding-left: 0; border-left: 0; }
+.hero .stats .lb { font-size: 12px; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+.hero .stats .v { font-family: var(--mono); font-size: 34px; font-weight: 600; line-height: 1; letter-spacing: -.03em; color: #fff; }
+.hero .stats .v small { font-size: 14px; font-weight: 500; color: rgba(255,255,255,.62); margin-left: 2px; letter-spacing: 0; }
+
+/* ── 섹션 공통 ── */
+.sec { padding: 88px 0 0; }
+.sec .head-xl { margin-bottom: 36px; }
+.sec .head-xl .eyebrow {
+  font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .06em;
+  color: var(--ac); text-transform: uppercase; display: block; margin-bottom: 10px;
+}
+.sec .head-xl h2 { font-size: 34px; font-weight: 700; line-height: 1.28; letter-spacing: -.02em; }
+.sec .head-xl .row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.sec .head-xl .desc { font-size: 15px; color: var(--t2); margin-top: 10px; max-width: 62ch; }
+
+/* ── 권한 구조 — 풀블리드 다크 밴드 + 글래스 카드 (poscoflow ⑤ 네트워크 문법) ── */
+.roles-band { margin-top: 96px; padding: 88px 0 96px; position: relative; overflow: hidden; }
+.roles-band::before {
+  content: ''; position: absolute; right: -160px; top: -200px; width: 640px; height: 640px;
+  background: radial-gradient(circle, rgba(0,163,241,.15) 0%, transparent 62%);
+  pointer-events: none;
+}
+.roles-band h2 { color: #fff; font-size: 34px; font-weight: 700; line-height: 1.28; letter-spacing: -.02em; }
+.roles-band .desc { color: rgba(255,255,255,.62); font-size: 14.5px; margin-top: 10px; max-width: 62ch; }
+.roles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+.role-card { padding: 26px 24px; min-height: 250px; display: flex; flex-direction: column; transition: border-color .3s ease, background .3s ease; }
+.role-card:hover { border-color: rgba(0,163,241,.55); background: rgba(255,255,255,.045); }
+.role-card .tier { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--ac2); text-transform: uppercase; }
+.role-card .nm { font-size: 20px; font-weight: 700; color: #fff; margin-top: 8px; }
+.role-card ul { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(209,210,212,.18); flex: 1 1 auto; }
+.role-card li { font-size: 13.5px; color: rgba(255,255,255,.72); line-height: 2; display: flex; gap: 8px; align-items: baseline; }
+.role-card li::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--ac2); flex: 0 0 auto; position: relative; top: -3px; }
+.role-card li.no { color: rgba(255,255,255,.38); }
+.role-card li.no::before { background: rgba(255,255,255,.24); }
+.roles-note {
+  margin-top: 26px; display: flex; gap: 10px; align-items: flex-start;
+  font-size: 13px; color: rgba(255,255,255,.55); max-width: 74ch; line-height: 1.7;
+}
+.roles-note b { color: #7bcdf5; font-weight: 600; }
+
+/* ── 커뮤니티 티저 — 카드 6종, 권한 잠금이 실제로 걸림 ── */
+.bgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.bcard {
+  position: relative; display: block; padding: 22px 20px 20px; min-height: 148px;
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md);
+  transition: background .3s ease, border-color .3s ease;
+}
+.bcard .ic { width: 34px; height: 34px; border-radius: 50%; background: var(--ac-soft); color: var(--ac); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; transition: background .3s ease, color .3s ease; }
+.bcard .nm { font-size: 16.5px; font-weight: 700; color: var(--t1); transition: color .3s ease; }
+.bcard .ds { font-size: 12.5px; color: var(--t2); margin-top: 4px; transition: color .3s ease; }
+.bcard .cnt { font-family: var(--mono); font-size: 12px; color: var(--t3); margin-top: 12px; transition: color .3s ease; }
+.bcard .arw { position: absolute; right: 18px; top: 22px; color: var(--t3); transition: color .3s ease; }
+.bcard:hover { background: var(--ac); border-color: var(--ac); }
+.bcard:hover .nm, .bcard:hover .arw { color: #fff; }
+.bcard:hover .ds, .bcard:hover .cnt { color: rgba(255,255,255,.72); }
+.bcard:hover .ic { background: rgba(255,255,255,.16); color: #fff; }
+.bcard .lockchip {
+  position: absolute; right: 16px; bottom: 16px;
+  display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px;
+  border-radius: var(--r-xs); font-size: 11px; font-weight: 600;
+  background: var(--navy); color: #7bcdf5;
+}
+.bcard:hover .lockchip { background: rgba(255,255,255,.16); color: #fff; }
+
+/* ── 강의 티저 — 3열 카드 (poscoflow 미디어 카드 문법) ── */
+.lgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.lcard { display: block; position: relative; }
+.lcard .thumb { position: relative; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 16/9; background: var(--sunken); }
+.lcard .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.lcard:hover .thumb img { transform: scale(1.05); }
+.lcard .thumb .play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 46px; height: 46px; border-radius: 50%; background: rgba(10,14,18,.62);
+  display: flex; align-items: center; justify-content: center; color: #fff;
+  transition: background .3s ease;
+}
+.lcard:hover .thumb .play { background: var(--ac); }
+.lcard .thumb .dur {
+  position: absolute; right: 10px; bottom: 10px; font-family: var(--mono);
+  font-size: 11px; font-weight: 600; color: #fff; background: rgba(10,14,18,.7);
+  padding: 2px 7px; border-radius: 3px;
+}
+.lcard .meta { padding: 13px 2px 0; }
+.lcard .cat { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; color: var(--ac); text-transform: uppercase; }
+.lcard .nm { font-size: 15.5px; font-weight: 700; color: var(--t1); margin-top: 5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: color .3s ease; }
+.lcard:hover .nm { color: var(--ac); }
+.lcard .by { font-size: 12.5px; color: var(--t3); margin-top: 5px; }
+.lcard .grade {
+  position: absolute; left: 10px; top: 10px; z-index: 2;
+  height: 22px; padding: 0 9px; display: inline-flex; align-items: center; gap: 4px;
+  border-radius: var(--r-xs); font-size: 11px; font-weight: 700;
+  background: rgba(10,14,18,.72); color: #7bcdf5;
+}
+
+/* ── 가입 절차 — 3단계 레일 ── */
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line-strong); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+.steps > div { padding: 26px 24px 28px; border-right: 1px solid var(--line); position: relative; transition: background .3s ease; }
+.steps > div:last-child { border-right: 0; }
+.steps > div::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: transparent; transition: background .3s ease; }
+.steps > div:hover { background: var(--ac-soft); }
+.steps > div:hover::before { background: var(--ac); }
+.steps .no { font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--ac); }
+.steps .nm { font-size: 17px; font-weight: 700; margin-top: 8px; }
+.steps .ds { font-size: 13px; color: var(--t2); margin-top: 8px; line-height: 1.65; }
+.steps .tag { display: inline-flex; margin-top: 12px; height: 22px; padding: 0 8px; align-items: center; border-radius: var(--r-xs); background: var(--ac-soft); color: var(--ac); font-size: 11px; font-weight: 600; }
+
+/* ── 보안 스트립 ── */
+.sec-strip { margin-top: 96px; padding: 64px 0 70px; background: var(--sunken); width: 100vw; margin-left: calc(50% - 50vw); }
+.strip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.strip-card { display: flex; gap: 16px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 22px 22px; transition: border-color .3s ease; }
+.strip-card:hover { border-color: var(--ac); }
+.strip-card .ic { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: var(--ac-soft); color: var(--ac); display: flex; align-items: center; justify-content: center; }
+.strip-card .nm { font-size: 15.5px; font-weight: 700; }
+.strip-card .ds { font-size: 13px; color: var(--t2); margin-top: 5px; line-height: 1.65; }
+
+/* CTA 밴드 */
+.cta-band { margin-top: 0; padding: 84px 0 90px; text-align: center; }
+.cta-band h2 { color: #fff; font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.3; }
+.cta-band .desc { color: rgba(255,255,255,.6); font-size: 14.5px; margin-top: 12px; }
+.cta-band .btn-cta { margin-top: 30px; height: 52px; padding: 0 34px; font-size: 15px; font-weight: 700; }
+
+@media (max-width: 1080px) {
+  .roles, .bgrid, .lgrid { grid-template-columns: repeat(2, 1fr); }
+  .strip-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h1 { font-size: 44px; }
+}
+@media (max-width: 720px) {
+  .hero { min-height: 480px; }
+  .hero h1 { font-size: 34px; }
+  .hero .stats { flex-wrap: wrap; }
+  .hero .stats > div { flex: 1 1 40%; padding: 8px 16px; }
+  .hero .stats > div:first-child { padding-left: 16px; }
+  .roles, .bgrid, .lgrid, .steps, .strip-grid { grid-template-columns: 1fr; }
+  .steps > div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .sec .head-xl h2, .roles-band h2 { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <!-- 히어로 -->
+  <section class="hero">
+    <div class="bg"></div>
+    <div class="inner"><div class="shell">
+      <span class="eyebrow">Members-only Korean Medicine Community</span>
+      <h1>승인된 동료끼리만,<br>깊은 <em>임상</em>을 나눕니다</h1>
+      <div class="hairline"></div>
+      <p class="lead">본초는 면허·재학 증빙을 확인한 회원만 들어올 수 있는 한의학 커뮤니티입니다.
+        임상 증례와 처방 자료, 강의 영상이 회원 등급에 따라 안전하게 열립니다.</p>
+      <div class="ctas">
+        <a class="btn btn-cta is-dark" href="join.html">가입 신청하기
+          <span class="arw"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+        <a class="btn" style="border-color:rgba(255,255,255,.4);color:#fff" href="lectures.html">강의 둘러보기</a>
+      </div>
+      <div class="stats">
+        <div><div class="lb">누적 승인 회원</div><div class="v"><b data-count="1284">1,284</b><small>명</small></div></div>
+        <div><div class="lb">임상·자료 게시글</div><div class="v"><b data-count="3411">3,411</b><small>건</small></div></div>
+        <div><div class="lb">강의 영상</div><div class="v"><b data-count="126">126</b><small>편</small></div></div>
+        <div><div class="lb">평균 승인 소요</div><div class="v"><b data-count="9.4">9.4</b><small>시간</small></div></div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 커뮤니티 티저 -->
+  <section class="sec"><div class="shell">
+    <div class="head-xl reveal">
+      <span class="eyebrow">Community</span>
+      <div class="row">
+        <h2 data-flash>게시판 6종, 권한에 따라<br>보이는 것이 다릅니다</h2>
+        <a class="btn" href="community.html">커뮤니티 전체 보기
+          <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+      <p class="desc">임상 증례·처방 자료·경영 게시판은 면허가 확인된 한의사회원에게만 열립니다.
+        상단의 <b class="ac">역할 전환</b>을 눌러 등급별로 무엇이 보이고 잠기는지 직접 확인해 보세요.</p>
+    </div>
+    <div class="bgrid" id="boardTeaser"></div>
+  </div></section>
+
+  <!-- 권한 구조 — 다크 밴드 -->
+  <section class="band-dark roles-band"><div class="shell">
+    <div class="reveal">
+      <div class="rule-head"><span class="eyebrow">Access Tiers</span></div>
+      <h2>3단계 권한 구조가<br>이 서비스의 뼈대입니다</h2>
+      <p class="desc">같은 커뮤니티라도 등급에 따라 목록에서 아예 숨겨지거나, 제목까지만 보이거나, 전문과 첨부까지 열립니다.
+        의료정보가 비의료인에게 노출되지 않도록 화면 단위로 설계했습니다.</p>
+    </div>
+    <div class="roles">
+      <div class="glass role-card reveal reveal--card">
+        <span class="tier">Tier 1</span>
+        <div class="nm">일반회원 <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.5)">한의대생·예비 한의사</span></div>
+        <ul>
+          <li>자유게시판 · 학술 게시판 열람과 작성</li>
+          <li>학부·국시 강의 수강</li>
+          <li>갤러리 열람</li>
+          <li class="no">임상 증례 · 처방 자료실 — 목록에서 숨김</li>
+          <li class="no">첨부파일 다운로드 불가</li>
+        </ul>
+      </div>
+      <div class="glass role-card reveal reveal--card">
+        <span class="tier">Tier 2</span>
+        <div class="nm">한의사회원 <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.5)">면허 증빙 확인</span></div>
+        <ul>
+          <li>게시판 6종 전체 열람·작성</li>
+          <li>임상·경영 강의 전 편 수강</li>
+          <li>첨부파일 다운로드 (기록·워터마크)</li>
+          <li>강의 이어보기 · 열람 이력</li>
+        </ul>
+      </div>
+      <div class="glass role-card reveal reveal--card">
+        <span class="tier">Tier 3</span>
+        <div class="nm">관리자 <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,.5)">2~3명 · 비개발자</span></div>
+        <ul>
+          <li>가입 승인 큐 · 반려 사유 관리</li>
+          <li>신고 접수 → 30일 임시조치 관리</li>
+          <li>열람 로그 · 무결성 검증</li>
+          <li>게시판 생성·권한 설정 (코드 수정 없이)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="roles-note">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#7bcdf5" stroke-width="1.8" stroke-linecap="round" style="flex:0 0 auto;margin-top:3px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>
+      <span><b>왜 이렇게 나눴나</b> — 한의사가 쓴 임상 글이 비의료인에게 열리는 순간 의료법 제56조(의료광고) 소지가 생깁니다.
+      게시판 공개 범위는 관리자 화면에서 조정할 수 있고, 위험 조합을 선택하면 경고가 표시됩니다.</span>
+    </p>
+  </div></section>
+
+  <!-- 강의 티저 -->
+  <section class="sec"><div class="shell">
+    <div class="head-xl reveal">
+      <span class="eyebrow">Lectures</span>
+      <div class="row">
+        <h2>강의 영상은 기록 위에서<br>재생됩니다</h2>
+        <a class="btn" href="lectures.html">강의 전체 보기
+          <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+      <p class="desc">모든 재생 화면에는 회원번호 워터마크가 떠 있고, 열람 일시·콘텐츠·접속 IP가 기록됩니다.
+        유출이 발생해도 화면의 회원번호로 역추적할 수 있습니다.</p>
+    </div>
+    <div class="lgrid" id="lecTeaser"></div>
+  </div></section>
+
+  <!-- 가입 절차 -->
+  <section class="sec"><div class="shell">
+    <div class="head-xl reveal">
+      <span class="eyebrow">How to Join</span>
+      <h2>가입 신청부터 승인까지, 세 단계</h2>
+      <p class="desc">면허 진위를 실시간으로 확인해 주는 공공 API는 없습니다. 그래서 승인은 관리자가 증빙을 눈으로 대조하는
+        절차이고, 본초는 그 절차가 하루 안에 끝나도록 설계했습니다.</p>
+    </div>
+    <div class="steps reveal">
+      <div>
+        <span class="no">STEP 01</span>
+        <div class="nm">간편 가입</div>
+        <p class="ds">카카오·네이버 소셜 계정으로 3초 가입. 회원 유형(한의사 / 한의대생)을 선택합니다.</p>
+        <span class="tag">카카오 · 네이버 연동</span>
+      </div>
+      <div>
+        <span class="no">STEP 02</span>
+        <div class="nm">증빙 제출</div>
+        <p class="ds">면허증·재학증명서를 올리면 주민등록번호 영역을 브라우저에서 가린 뒤 마스킹본만 전송됩니다. 원본은 서버로 나가지 않습니다.</p>
+        <span class="tag">주민번호 마스킹 업로더</span>
+      </div>
+      <div>
+        <span class="no">STEP 03</span>
+        <div class="nm">승인 완료</div>
+        <p class="ds">관리자가 증빙을 대조해 승인합니다. 평균 9.4시간, 결과는 알림으로 안내되며 반려 시 사유가 함께 전달됩니다.</p>
+        <span class="tag">평균 9.4시간</span>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 보안 스트립 -->
+  <section class="sec-strip"><div class="shell">
+    <div class="head-xl reveal" style="margin-bottom:28px">
+      <span class="eyebrow" style="font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ac);text-transform:uppercase;display:block;margin-bottom:10px">Content Protection</span>
+      <h2 style="font-size:28px;font-weight:700;letter-spacing:-.02em">콘텐츠가 새지 않도록, 네 겹의 장치</h2>
+    </div>
+    <div class="strip-grid">
+      <div class="strip-card reveal reveal--card">
+        <div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4M7 11h10"/></svg></div>
+        <div class="nm">회원번호 워터마크</div>
+        <p class="ds">재생 화면 위를 떠다니는 회원번호+시각 오버레이. 캡처하면 반드시 함께 찍힙니다.</p>
+      </div>
+      <div class="strip-card reveal reveal--card">
+        <div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 3v13M6 10l6 6 6-6"/><path d="M4 21h16"/></svg></div>
+        <div class="nm">60초 만료 다운로드</div>
+        <p class="ds">첨부파일 링크는 발급 60초 뒤 만료됩니다. 링크를 퍼가도 다시 열리지 않습니다.</p>
+      </div>
+      <div class="strip-card reveal reveal--card">
+        <div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 7h16v13H4zM8 7V4h8v3"/><path d="M9 12h6"/></svg></div>
+        <div class="nm">열람 로그 · 해시 체인</div>
+        <p class="ds">누가 언제 무엇을 봤는지 위·변조 검증 가능한 형태로 기록합니다. 보관 1년.</p>
+      </div>
+      <div class="strip-card reveal reveal--card">
+        <div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+        <div class="nm">행 단위 접근제어</div>
+        <p class="ds">화면이 아니라 데이터 행 단위로 권한을 검사(RLS)합니다. 정책 누락은 관리자 화면에서 점검됩니다.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- CTA -->
+  <section class="band-dark band-deep cta-band"><div class="shell">
+    <div class="reveal">
+      <h2>동료들이 기다리고 있습니다</h2>
+      <p class="desc">가입 신청 후 평균 9.4시간이면 승인이 끝납니다. 지금 증빙 서류 하나만 준비하세요.</p>
+      <a class="btn btn-cta is-dark" href="join.html">가입 신청 시작하기
+        <span class="arw"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span></a>
+    </div>
+  </div></section>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('');
+B.footer('');
+
+/* 게시판 티저 — 역할에 따라 실제로 잠금/숨김이 걸린다 */
+(function () {
+  var host = document.getElementById('boardTeaser');
+  var counts = {};
+  DATA.POSTS.forEach(function (p) { counts[p.b] = (counts[p.b] || 0) + 1; });
+  host.innerHTML = DATA.BOARDS.map(function (bd) {
+    var acc = B.boardAccess(bd);
+    var locked = acc !== 'full';
+    var href = locked ? 'join.html' : 'community.html?b=' + bd.id;
+    var lockLabel = bd.read >= 2 ? '한의사회원 전용' : '승인 회원 전용';
+    return '<a class="bcard reveal reveal--card" href="' + href + '">'
+      + '<span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="' + bd.icon + '"/></svg></span>'
+      + '<span class="arw"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>'
+      + '<div class="nm">' + bd.name + '</div>'
+      + '<div class="ds">' + bd.desc + '</div>'
+      + '<div class="cnt">' + (locked && acc === 'hidden' ? '게시글 비공개' : '게시글 ' + (counts[bd.id] || 0) + '건') + '</div>'
+      + (locked ? '<span class="lockchip">🔒 ' + lockLabel + '</span>' : '')
+      + '</a>';
+  }).join('');
+  B.reveal(host);
+})();
+
+/* 강의 티저 3편 */
+(function () {
+  var host = document.getElementById('lecTeaser');
+  host.innerHTML = DATA.LECTURES.slice(0, 3).map(function (L) {
+    var ok = B.canLecture(L);
+    return '<a class="lcard reveal reveal--card" href="lecture.html?id=' + L.id + '">'
+      + '<div class="thumb">'
+      + (ok ? '' : '<span class="grade">🔒 ' + (L.grade >= 2 ? '한의사회원' : '승인 회원') + '</span>')
+      + '<img src="assets/img/' + L.img + '" alt="" loading="lazy">'
+      + '<span class="play"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
+      + '<span class="dur">' + L.min + '분 · ' + L.ep + '강</span>'
+      + '</div>'
+      + '<div class="meta"><span class="cat">' + L.cat + '</span>'
+      + '<div class="nm">' + B.esc(L.t) + '</div>'
+      + '<div class="by">' + L.tutor + ' · ' + L.tutorRole + '</div></div>'
+      + '</a>';
+  }).join('');
+  B.reveal(host);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강의 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.page-title { padding: 52px 0 30px; }
+.page-title .eyebrow { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .06em; color: var(--ac); text-transform: uppercase; }
+.page-title h1 { font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin-top: 10px; }
+.page-title .desc { font-size: 14.5px; color: var(--t2); margin-top: 12px; max-width: 66ch; }
+
+/* 이수 평점 카드 (보수교육 평점 = 1급 데이터 — 도메인 실측 교차 발견) */
+.cpd-card {
+  display: flex; align-items: center; gap: 22px; padding: 18px 22px; margin-bottom: 26px;
+  background: var(--ac-soft); border-radius: var(--r-md); flex-wrap: wrap;
+}
+.cpd-card .tt { font-size: 14px; font-weight: 700; }
+.cpd-card .ds { font-size: 12.5px; color: var(--t2); margin-top: 2px; }
+.cpd-card .v { font-family: var(--mono); font-size: 28px; font-weight: 600; letter-spacing: -.02em; color: var(--ac); }
+.cpd-card .v small { font-size: 13px; color: var(--t2); font-weight: 500; }
+.cpd-card .meter { flex: 1 1 200px; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+
+.lgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 20px; }
+.lcard { display: block; position: relative; }
+.lcard .thumb { position: relative; border-radius: var(--r-md); overflow: hidden; aspect-ratio: 16/9; background: var(--sunken); }
+.lcard .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.lcard:hover .thumb img { transform: scale(1.05); }
+.lcard .thumb .play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(10,14,18,.62); display: flex; align-items: center; justify-content: center; color: #fff; transition: background .3s ease; }
+.lcard:hover .thumb .play { background: var(--ac); }
+.lcard .thumb .dur { position: absolute; right: 10px; bottom: 10px; font-family: var(--mono); font-size: 11px; font-weight: 600; color: #fff; background: rgba(10,14,18,.7); padding: 2px 7px; border-radius: 3px; }
+.lcard .grade { position: absolute; left: 10px; top: 10px; z-index: 2; height: 22px; padding: 0 9px; display: inline-flex; align-items: center; gap: 4px; border-radius: var(--r-xs); font-size: 11px; font-weight: 700; background: rgba(10,14,18,.72); color: #7bcdf5; }
+.lcard .meta { padding: 13px 2px 0; }
+.lcard .tags { display: flex; gap: 6px; align-items: center; }
+.lcard .cat { font-family: var(--mono); font-size: 11px; font-weight: 700; letter-spacing: .05em; color: var(--ac); text-transform: uppercase; }
+.lcard .cpd { font-size: 10.5px; font-weight: 700; color: var(--ok); background: var(--ok-soft); border-radius: 3px; padding: 1px 6px; }
+.lcard .nm { font-size: 15.5px; font-weight: 700; color: var(--t1); margin-top: 6px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: color .3s ease; }
+.lcard:hover .nm { color: var(--ac); }
+.lcard .by { font-size: 12.5px; color: var(--t3); margin-top: 5px; display: flex; justify-content: space-between; gap: 8px; }
+
+@media (max-width: 1080px) { .lgrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 720px) { .lgrid { grid-template-columns: 1fr; } .page-title h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+
+<main class="shell">
+  <div class="page-title reveal">
+    <span class="eyebrow">Lectures</span>
+    <h1>강의</h1>
+    <p class="desc">유튜브 연동으로 재생되며, 모든 재생 화면에 회원번호 워터마크와 열람 기록이 남습니다.
+      임상·경영 강의는 한의사회원 전용입니다.</p>
+  </div>
+
+  <div id="cpdHost"></div>
+  <div class="filters" id="filters"></div>
+  <div class="lgrid" id="grid"></div>
+</main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('lectures');
+B.footer('');
+
+(function () {
+  var cat = B.qs('cat') || '전체';
+  var cats = ['전체'];
+  DATA.LECTURES.forEach(function (L) { if (cats.indexOf(L.cat) === -1) cats.push(L.cat); });
+
+  /* 한의사회원 — 연간 보수교육 이수 평점 집계 (완료 강의 cpd 합산, 실계산) */
+  if (B.role() === 'doctor') {
+    var done = (DATA.MY_HISTORY.doctor || []).filter(function (h) { return h.kind === '강의' && h.prog === 100; });
+    var pts = 0;
+    done.forEach(function (h) { var L = DATA.lectureOf(h.ref); if (L) pts += L.cpd; });
+    var goal = 8;
+    document.getElementById('cpdHost').innerHTML =
+      '<div class="cpd-card reveal">'
+      + '<div><div class="tt">올해 보수교육 이수 평점</div><div class="ds">한의사 면허신고에는 연 ' + goal + '평점 이수가 필요합니다</div></div>'
+      + '<span class="v"><b data-count="' + pts + '">' + pts + '</b><small> / ' + goal + '평점</small></span>'
+      + '<div class="meter"><i style="width:0%" data-w="' + Math.min(100, pts / goal * 100) + '"></i></div>'
+      + '<a class="btn sm" href="mypage.html">이수 내역 보기</a>'
+      + '</div>';
+    setTimeout(function () {
+      var bar = document.querySelector('.cpd-card .meter i');
+      if (bar) bar.style.width = bar.dataset.w + '%';
+    }, 300);
+  }
+
+  var fhost = document.getElementById('filters');
+  fhost.innerHTML = cats.map(function (c) {
+    var n = c === '전체' ? DATA.LECTURES.length : DATA.LECTURES.filter(function (L) { return L.cat === c; }).length;
+    return '<button class="chip ' + (c === cat ? 'on' : '') + '" data-c="' + c + '">' + c + ' <span class="n">' + n + '</span></button>';
+  }).join('');
+  fhost.querySelectorAll('.chip').forEach(function (ch) {
+    ch.addEventListener('click', function () {
+      cat = ch.dataset.c;
+      history.replaceState(null, '', 'lectures.html' + (cat === '전체' ? '' : '?cat=' + encodeURIComponent(cat)));
+      fhost.querySelectorAll('.chip').forEach(function (x) { x.classList.toggle('on', x.dataset.c === cat); });
+      render();
+    });
+  });
+
+  function render() {
+    var rows = DATA.LECTURES.filter(function (L) { return cat === '전체' || L.cat === cat; });
+    document.getElementById('grid').innerHTML = rows.map(function (L) {
+      var ok = B.canLecture(L);
+      return '<a class="lcard reveal reveal--card" href="lecture.html?id=' + L.id + '">'
+        + '<div class="thumb">'
+        + (ok ? '' : '<span class="grade">🔒 ' + (L.grade >= 2 ? '한의사회원' : '승인 회원') + '</span>')
+        + '<img src="assets/img/' + L.img + '" alt="" loading="lazy">'
+        + '<span class="play"><svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>'
+        + '<span class="dur">' + L.min + '분 · ' + L.ep + '강</span>'
+        + '</div>'
+        + '<div class="meta"><div class="tags"><span class="cat">' + L.cat + '</span>'
+        + (L.cpd ? '<span class="cpd">보수교육 ' + L.cpd + '평점</span>' : '')
+        + '</div>'
+        + '<div class="nm">' + B.esc(L.t) + '</div>'
+        + '<div class="by"><span>' + L.tutor + ' · ' + L.tutorRole + '</span><span>수강 ' + B.fmt(L.views) + '</span></div></div>'
+        + '</a>';
+    }).join('');
+    B.reveal(document.getElementById('grid'));
+  }
+  render();
+})();
+</script>
+</body>
+</html>

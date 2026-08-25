@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>신고 · 임시조치 · BONCHO 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.law-note { display: flex; gap: 12px; align-items: flex-start; background: var(--navy); color: rgba(255,255,255,.78); border-radius: var(--r-md); padding: 15px 18px; font-size: 12.5px; line-height: 1.7; margin-bottom: 18px; }
+.law-note b { color: #7bcdf5; }
+.notice-preview { background: var(--sunken); border-radius: var(--r-sm); padding: 11px 13px; font-size: 12px; color: var(--t2); line-height: 1.7; margin-top: 10px; border-left: 3px solid var(--ac); }
+</style>
+</head>
+<body>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+if (AD.guard()) {
+  var body = AD.shell('reports', '신고 · 임시조치', '「블라인드 버튼」이 아니라 정보통신망법 제44조의2가 요구하는 절차 전체 — 30일 기한 · 공시 · 양측 통지 · 이의신청');
+
+  var STATUS = {
+    blinded:   { name: '임시조치 중', badge: 'warn', flow: 2 },
+    reviewing: { name: '검토 중',     badge: 'member', flow: 1 },
+    restored:  { name: '복원 완료',   badge: 'ok', flow: 4 },
+    rejected:  { name: '신고 반려',   badge: 'guest', flow: 4 },
+    deleted:   { name: '삭제 확정',   badge: 'bad', flow: 4 }
+  };
+  var FLOW = ['접수', '검토', '임시조치·통지', '이의신청', '확정'];
+
+  /* 세션 상태 오버레이 */
+  function stateOf(r) {
+    try {
+      var ov = JSON.parse(sessionStorage.getItem('boncho_report_state') || '{}');
+      return ov[r.id] || r.status;
+    } catch (e) { return r.status; }
+  }
+  function setState(id, st) {
+    var ov;
+    try { ov = JSON.parse(sessionStorage.getItem('boncho_report_state') || '{}'); } catch (e) { ov = {}; }
+    ov[id] = st;
+    sessionStorage.setItem('boncho_report_state', JSON.stringify(ov));
+  }
+
+  function daysLeft(due) {
+    if (due === '—') return null;
+    var d = (new Date(due + 'T00:00:00') - new Date('2026-08-25T00:00:00')) / 86400000;
+    return Math.round(d);
+  }
+
+  function ring(left) {
+    if (left == null) return '';
+    var pct = Math.max(0, Math.min(1, left / 30));
+    var r = 21, cir = 2 * Math.PI * r;
+    var color = left <= 3 ? '#d60f0f' : (left <= 10 ? '#a8730a' : '#025997');
+    return '<div class="ring" title="임시조치 잔여 ' + left + '일 / 30일">'
+      + '<svg width="52" height="52"><circle cx="26" cy="26" r="' + r + '" fill="none" stroke="#e3e4e6" stroke-width="5"/>'
+      + '<circle cx="26" cy="26" r="' + r + '" fill="none" stroke="' + color + '" stroke-width="5" stroke-linecap="round" '
+      + 'stroke-dasharray="' + cir + '" stroke-dashoffset="' + (cir * (1 - pct)) + '"/></svg>'
+      + '<span class="txt" style="color:' + color + '">D-' + left + '</span></div>';
+  }
+
+  function postOf(id) { var p = null; DATA.POSTS.forEach(function (x) { if (x.id === id) p = x; }); return p; }
+
+  var me = B.me();
+
+  function render() {
+    var open = [], closed = [];
+    DATA.REPORTS.forEach(function (r) {
+      var st = stateOf(r);
+      (st === 'blinded' || st === 'reviewing' ? open : closed).push(r);
+    });
+
+    body.innerHTML =
+      '<div class="law-note">'
+      + '<span><b>절차 요건 4가지</b> — ① 임시조치는 <b>30일 이내</b>(무기한 차단 금지) ② 조치 사실을 게시판에 <b>공시</b> ③ <b>신고인·게시자 양측 통지</b> ④ 절차를 약관에 명시. '
+      + '이 화면의 상태 흐름과 D-일수 링, 공시 블록(사용자 화면), 통지 미리보기가 각각 그 요건을 이행합니다.</span></div>'
+      + '<div class="rule-head"><span class="h2">처리 중 ' + open.length + '건</span></div>'
+      + open.map(card).join('')
+      + '<div class="rule-head" style="margin-top:26px"><span class="h2">처리 완료 ' + closed.length + '건</span></div>'
+      + closed.map(card).join('');
+
+    bindActions();
+  }
+
+  function card(r) {
+    var st = stateOf(r);
+    var meta = STATUS[st];
+    var p = postOf(r.post);
+    var left = daysLeft(r.due);
+    var isMine = p && me && p.a === me.no;   /* 이해충돌 가드 */
+    return '<div class="report-card">'
+      + (st === 'blinded' ? ring(left) : '')
+      + '<div class="main">'
+      + '<div class="tt"><span class="mono sm t3">' + r.id + '</span>'
+      + (p ? B.esc(p.t) : '(삭제된 게시물)')
+      + '<span class="badge ' + meta.badge + '">' + meta.name + '</span></div>'
+      + '<div class="ds">사유: <b>' + r.reason + '</b> · 신고인 ' + r.by + ' · ' + r.at
+      + (st === 'blinded' ? ' · 임시조치 만료 <b>' + r.due + '</b>' : '')
+      + (r.memo ? '<br>메모: ' + r.memo : '') + '</div>'
+      + '<div class="flow">' + FLOW.map(function (f, i) {
+          var cls = i < meta.flow ? 'done' : (i === meta.flow ? 'cur' : '');
+          return '<i class="' + cls + '">' + f + '</i>' + (i < FLOW.length - 1 ? '→' : '');
+        }).join('') + '</div>'
+      + (st === 'reviewing'
+        ? '<div class="acts">'
+          + (isMine
+            ? '<span class="badge bad">본인 게시물 — 처리 불가</span><span class="sm t3">이해충돌 방지: 자기 글은 다른 관리자가 처리해야 합니다</span>'
+            : '<button class="btn sm pri" data-act="blind" data-id="' + r.id + '">임시조치 (30일 차단 + 양측 통지)</button>'
+              + '<button class="btn sm" data-act="reject" data-id="' + r.id + '">신고 반려</button>')
+          + '</div>'
+        : '')
+      + (st === 'blinded'
+        ? '<div class="acts">'
+          + '<button class="btn sm" data-act="restore" data-id="' + r.id + '">복원 (이의 인정)</button>'
+          + '<button class="btn sm danger" data-act="delete" data-id="' + r.id + '">삭제 확정</button>'
+          + '</div>'
+          + '<div class="notice-preview"><b>게시자 통지 미리보기</b> — "회원님의 게시물 「' + (p ? B.esc(p.t) : '') + '」에 권리 침해 신고가 접수되어 '
+          + r.due + '까지 접근이 임시 차단되었습니다. 이의신청은 마이페이지 → 내 게시물에서 할 수 있으며, 기간 내 이의가 없으면 삭제될 수 있습니다."</div>'
+        : '')
+      + '</div></div>';
+  }
+
+  function bindActions() {
+    body.querySelectorAll('[data-act]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var id = b.dataset.id, act = b.dataset.act;
+        if (act === 'blind') {
+          setState(id, 'blinded');
+          B.toast('임시조치를 적용했습니다.<br><span class="sm">게시물 접근 차단 · 게시판 공시 · 신고인/게시자 통지 발송 · 30일 타이머 시작</span>');
+        }
+        if (act === 'reject') { setState(id, 'rejected'); B.toast('신고를 반려했습니다. 신고인에게 사유가 통지됩니다.'); }
+        if (act === 'restore') { setState(id, 'restored'); B.toast('게시물을 복원했습니다. 게시자·신고인에게 결과가 통지됩니다.'); }
+        if (act === 'delete') { setState(id, 'deleted'); B.toast('삭제를 확정했습니다. 처리 이력은 감사 로그에 보존됩니다.', 'bad'); }
+        render();
+      });
+    });
+  }
+
+  render();
+}
+</script>
+</body>
+</html>

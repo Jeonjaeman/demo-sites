@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>글쓰기 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { max-width: 860px; margin: 0 auto; padding: 48px 0 0; }
+.page-title h1 { font-size: 32px; font-weight: 700; letter-spacing: -.03em; }
+.page-title .desc { font-size: 13.5px; color: var(--t2); margin-top: 8px; }
+.editor { margin-top: 26px; display: flex; flex-direction: column; gap: 16px; }
+.editor .rowline { display: flex; gap: 12px; }
+.editor .rowline .field:first-child { flex: 0 0 240px; }
+.editor .rowline .field:last-child { flex: 1 1 auto; }
+
+/* 의료법 실시간 가드 (발견 ⑦) */
+.guard {
+  display: none; border: 1px solid #eddfc0; background: var(--warn-soft);
+  border-radius: var(--r-md); padding: 16px 18px;
+}
+.guard.on { display: block; }
+.guard .tt { font-size: 14px; font-weight: 700; color: var(--warn); display: flex; align-items: center; gap: 8px; }
+.guard .ds { font-size: 13px; color: var(--t1); margin-top: 8px; line-height: 1.7; }
+.guard .hits { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.guard .hits i { font-style: normal; font-size: 12px; font-weight: 600; background: #fff; border: 1px solid #eddfc0; color: var(--warn); border-radius: var(--r-xs); padding: 2px 8px; }
+.guard .acts { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+.guard .ref { font-size: 11.5px; color: var(--t3); margin-top: 10px; }
+
+.attach-zone { border: 1px dashed var(--line-strong); border-radius: var(--r-md); padding: 22px; text-align: center; color: var(--t2); font-size: 13px; transition: border-color .3s ease, background .3s ease; cursor: pointer; }
+.attach-zone:hover { border-color: var(--ac); background: var(--ac-soft); }
+.attach-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.attach-list .it { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-strong); border-radius: 999px; height: 32px; padding: 0 8px 0 12px; font-size: 12.5px; }
+.attach-list .it button { color: var(--t3); font-size: 15px; line-height: 1; padding: 2px 6px; }
+.attach-list .it button:hover { color: var(--bad); }
+.submit-bar { display: flex; justify-content: space-between; gap: 12px; padding: 20px 0 0; border-top: 1px solid var(--line); margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<main class="shell"><div class="wrap">
+  <div class="page-title reveal">
+    <span class="eyebrow" style="font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--ac);text-transform:uppercase">Write</span>
+    <h1 style="margin-top:8px">글쓰기</h1>
+    <p class="desc">환자 식별 가능 정보(성명·생년월일·상세 주소·촬영 원본)는 게시할 수 없습니다. 증례는 비식별 처리 후 올려 주세요.</p>
+  </div>
+
+  <div class="editor reveal">
+    <div class="rowline">
+      <label class="field"><span class="lb">게시판 <span class="req">*</span></span>
+        <select class="inp" id="boardSel"></select>
+      </label>
+      <label class="field"><span class="lb">제목 <span class="req">*</span></span>
+        <input class="inp" id="titleInput" placeholder="제목을 입력하세요" value="만성 요통 환자 온침 병행 6주 경과 공유">
+      </label>
+    </div>
+
+    <label class="field"><span class="lb">본문 <span class="req">*</span></span>
+      <textarea class="inp" id="bodyInput" style="min-height:220px" placeholder="본문을 입력하세요">60대 남성, 3년 이상 지속된 만성 요통. 주 2회 침구 치료에 온침을 병행해 6주간 ODI 지수가 개선된 경과를 공유합니다. 치료 간격 설정에 대한 의견 부탁드립니다.
+
+※ 환자 정보는 비식별 처리했습니다.</textarea>
+    </label>
+
+    <!-- 의료법 가드 — 입력할 때마다 실제 패턴 검사 -->
+    <div class="guard" id="guard">
+      <div class="tt">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4 2 20h20L12 4Z"/><path d="M12 10v5M12 17.5v.5"/></svg>
+        이 게시판은 일반회원(비의료인)에게도 열립니다
+      </div>
+      <p class="ds">작성 중인 내용에 <b>의료광고로 해석될 수 있는 표현</b>이 있습니다. 비의료인이 열람 가능한 게시판에
+        치료 효과·특정 의료기관 정보가 게시되면 의료법 제56조(의료광고) 위반 소지가 생깁니다.</p>
+      <div class="hits" id="guardHits"></div>
+      <div class="acts">
+        <button class="btn sm" id="guardMove">한의사 전용 게시판으로 옮기기</button>
+        <button class="btn sm ghost" id="guardKeep">문구를 수정할게요</button>
+      </div>
+      <p class="ref">근거: 의료법 제56조 · 보건복지부 온라인 불법 의료광고 단속 사례 — 분석/기획_설계.md 참조</p>
+    </div>
+
+    <div class="field">
+      <span class="lb">첨부파일 <span class="sm t3" style="font-weight:400">PDF · HWP · XLSX · 이미지, 개당 20MB</span></span>
+      <div class="attach-zone" id="attachZone">파일을 끌어다 놓거나 클릭해서 추가 — 데모에서는 샘플 파일이 추가됩니다</div>
+      <div class="attach-list" id="attachList"></div>
+    </div>
+
+    <div class="submit-bar">
+      <a class="btn" href="community.html">취소</a>
+      <button class="btn pri lg" id="submitBtn">등록하기
+        <span class="arw"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
+      </button>
+    </div>
+  </div>
+</div></main>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('community');
+B.footer('');
+
+(function () {
+  var rank = B.rank();
+  var writable = DATA.BOARDS.filter(function (b) { return rank >= b.write; });
+  var host = document.querySelector('.wrap');
+
+  if (!writable.length) {
+    host.innerHTML = '<div class="empty" style="padding-top:96px"><div class="h3">글을 쓸 수 있는 게시판이 없습니다</div>'
+      + '<p class="sm t2">가입 승인 후 게시판별 권한에 따라 글쓰기가 열립니다.</p>'
+      + '<a class="btn pri" style="margin-top:18px" href="join.html">가입 신청하기</a></div>';
+    return;
+  }
+
+  var sel = document.getElementById('boardSel');
+  var pre = B.qs('b');
+
+  /* 수정 모드 — 기존 글 프리필 */
+  var editId = parseInt(B.qs('edit'), 10);
+  var editPost = null;
+  if (editId) DATA.POSTS.forEach(function (p) { if (p.id === editId) editPost = p; });
+  if (editPost) {
+    document.querySelector('.page-title h1').textContent = '글 수정';
+    document.getElementById('titleInput').value = editPost.t;
+    document.getElementById('bodyInput').value = editPost.body;
+    document.getElementById('submitBtn').firstChild.textContent = '수정 완료';
+    pre = editPost.b;
+  }
+  sel.innerHTML = writable.map(function (b) {
+    return '<option value="' + b.id + '"' + (b.id === pre ? ' selected' : '') + '>' + b.name
+      + (b.read < 2 ? ' (일반회원 열람 가능)' : ' (한의사 전용)') + '</option>';
+  }).join('');
+
+  /* ── 의료법 실시간 가드 — 하드코딩 아님: 패턴 × 게시판 공개범위로 계산 ── */
+  var PATTERNS = [
+    { re: /치료\s*후기|완치|100\s*%|효과\s*(보장|확실)/g, label: '치료 효과 단정' },
+    { re: /전후\s*사진|비포\s*애프터/g, label: '전후 사진' },
+    { re: /[가-힣]{2,}(한의원|한방병원)/g, label: '의료기관 실명' },
+    { re: /할인|이벤트\s*가|무료\s*시술/g, label: '가격 유인' }
+  ];
+  var guard = document.getElementById('guard');
+  var hits = document.getElementById('guardHits');
+  var dismissed = false;
+
+  function checkGuard() {
+    var board = DATA.boardOf(sel.value);
+    var open = board && board.read < 2;           /* 비의료인 열람 가능 게시판인가 */
+    var text = document.getElementById('titleInput').value + ' ' + document.getElementById('bodyInput').value;
+    var found = [];
+    PATTERNS.forEach(function (p) {
+      p.re.lastIndex = 0;
+      var m = text.match(p.re);
+      if (m) found.push({ label: p.label, ex: m[0] });
+    });
+    if (open && found.length && !dismissed) {
+      hits.innerHTML = found.map(function (f) { return '<i>' + f.label + ' — “' + B.esc(f.ex) + '”</i>'; }).join('');
+      guard.classList.add('on');
+    } else {
+      guard.classList.remove('on');
+    }
+  }
+  ['titleInput', 'bodyInput'].forEach(function (id) {
+    document.getElementById(id).addEventListener('input', function () { dismissed = false; checkGuard(); });
+  });
+  sel.addEventListener('change', function () { dismissed = false; checkGuard(); });
+
+  document.getElementById('guardMove').addEventListener('click', function () {
+    var target = writable.filter(function (b) { return b.read >= 2; })[0];
+    if (target) {
+      sel.value = target.id;
+      B.toast('게시판을 <b>' + target.name + '</b>(한의사 전용)으로 변경했습니다.');
+    } else {
+      B.toast('한의사 전용 게시판에 쓰기 권한이 없습니다. 문구를 수정해 주세요.', 'bad');
+    }
+    checkGuard();
+  });
+  document.getElementById('guardKeep').addEventListener('click', function () {
+    dismissed = true; checkGuard();
+    B.toast('경고를 닫았습니다. 등록 전 문구를 다시 확인해 주세요.');
+  });
+
+  /* 첨부 (데모: 샘플 추가) */
+  var samples = [
+    { n: '경과기록_비식별.pdf', f: 'PDF' },
+    { n: '치료프로토콜.hwp', f: 'HWP' },
+    { n: '측정데이터.xlsx', f: 'XLSX' }
+  ];
+  var attached = [];
+  var listEl = document.getElementById('attachList');
+  document.getElementById('attachZone').addEventListener('click', function () {
+    if (attached.length >= samples.length) { B.toast('데모 첨부는 3개까지입니다.', 'bad'); return; }
+    attached.push(samples[attached.length]);
+    renderAttach();
+  });
+  function renderAttach() {
+    listEl.innerHTML = attached.map(function (a, i) {
+      return '<span class="it"><span class="fmt"><i class="' + (a.f === 'HWP' ? 'hwp' : '') + '">' + a.f + '</i></span>'
+        + a.n + '<button data-i="' + i + '" aria-label="삭제">×</button></span>';
+    }).join('');
+    listEl.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { attached.splice(+b.dataset.i, 1); renderAttach(); });
+    });
+  }
+
+  /* 등록 — 검증이 실제로 차단 */
+  document.getElementById('submitBtn').addEventListener('click', function () {
+    var t = document.getElementById('titleInput');
+    var bd = document.getElementById('bodyInput');
+    var bad = false;
+    [t, bd].forEach(function (el) {
+      el.classList.remove('err');
+      if (!el.value.trim()) { el.classList.add('err'); bad = true; }
+    });
+    if (bad) { B.toast('제목과 본문을 입력해 주세요.', 'bad'); return; }
+    if (guard.classList.contains('on')) {
+      B.toast('의료법 경고를 확인해 주세요. 게시판을 옮기거나 문구 수정 후 등록할 수 있습니다.', 'bad');
+      return;
+    }
+    var board = DATA.boardOf(sel.value);
+    B.toast('<b>' + board.name + '</b>에 게시글이 등록되었습니다.<br><span class="sm">작성 기록이 활동 로그에 남았습니다</span>');
+    setTimeout(function () { location.href = 'community.html?b=' + board.id; }, 1100);
+  });
+
+  checkGuard();
+})();
+</script>
+</body>
+</html>

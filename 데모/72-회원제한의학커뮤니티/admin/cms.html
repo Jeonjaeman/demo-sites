@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공지 CMS · BONCHO 관리자</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+.tgl { position: relative; width: 40px; height: 22px; border-radius: 999px; background: var(--line-strong); transition: background .3s ease; flex: 0 0 auto; }
+.tgl::after { content: ''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .3s ease; }
+.tgl.on { background: var(--ac); }
+.tgl.on::after { left: 21px; }
+</style>
+</head>
+<body>
+
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/app.js"></script>
+<script src="../assets/js/admin.js"></script>
+<script>
+if (AD.guard()) {
+  var body = AD.shell('cms', '공지 CMS', '공지 작성·노출 관리 — 작성한 글은 사용자 화면 공지사항에 즉시 반영됩니다');
+
+  function customNotices() {
+    try { return JSON.parse(localStorage.getItem('boncho_notices') || '[]'); } catch (e) { return []; }
+  }
+  function saveNotices(list) { localStorage.setItem('boncho_notices', JSON.stringify(list)); }
+
+  body.innerHTML =
+    '<div class="grid-2">'
+    + '<div class="panel"><div class="hd"><span class="h3">공지 작성</span><span class="badge line">실동작</span></div>'
+    + '<div class="bd">'
+    + '<label class="field"><span class="lb">제목 <span class="req">*</span></span>'
+    + '<input class="inp" id="nTitle" value="추석 연휴 고객 응대 및 승인 처리 일정 안내"></label>'
+    + '<label class="field" style="margin-top:12px"><span class="lb">본문 <span class="req">*</span></span>'
+    + '<textarea class="inp" id="nBody" style="min-height:150px">추석 연휴(10/3~10/6) 동안 가입 승인 처리가 지연될 수 있습니다. 연휴 전 신청 건은 10/2까지 순차 처리되며, 연휴 중 신청 건은 10/7부터 처리됩니다.</textarea></label>'
+    + '<div class="row gap-8" style="margin-top:12px;justify-content:space-between">'
+    + '<label class="row gap-8 sm"><input type="checkbox" id="nPin" checked> 상단 고정</label>'
+    + '<button class="btn pri" id="nPublish">게시 — 사용자 화면 즉시 반영</button></div>'
+    + '</div></div>'
+
+    + '<div class="panel"><div class="hd"><span class="h3">게시 중인 공지</span><a class="btn sm" href="../community.html?b=notice">사용자 화면에서 보기</a></div>'
+    + '<div class="bd" id="nList"></div></div>'
+    + '</div>';
+
+  function renderList() {
+    var custom = customNotices();
+    var base = DATA.POSTS.filter(function (p) { return p.b === 'notice' && !p.custom; });
+    var host = document.getElementById('nList');
+    host.innerHTML =
+      (custom.length ? '<div class="sm" style="font-weight:700;margin-bottom:6px">CMS 작성분</div>' : '')
+      + custom.map(function (p, i) {
+          return '<div class="row gap-8" style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">'
+            + '<span class="tgl ' + (p.show !== false ? 'on' : '') + '" data-tgl="' + i + '" role="switch" tabindex="0" aria-checked="' + (p.show !== false) + '" title="노출 전환"></span>'
+            + '<span class="grow trunc"><b>' + B.esc(p.t) + '</b>' + (p.pin ? ' <span class="badge line">고정</span>' : '') + '</span>'
+            + '<span class="mono sm t3">' + p.d + '</span>'
+            + '<button class="btn sm ghost" data-del="' + i + '">삭제</button></div>';
+        }).join('')
+      + '<div class="sm" style="font-weight:700;margin:14px 0 6px">기본 공지</div>'
+      + base.map(function (p) {
+          return '<div class="row gap-8" style="padding:9px 0;border-bottom:1px solid var(--line);font-size:13px">'
+            + '<span class="grow trunc">' + B.esc(p.t) + '</span><span class="mono sm t3">' + p.d + ' · 조회 ' + B.fmt(p.v) + '</span></div>';
+        }).join('');
+
+    host.querySelectorAll('[data-tgl]').forEach(function (t) {
+      t.addEventListener('click', function () {
+        var list = customNotices();
+        var p = list[+t.dataset.tgl];
+        p.show = p.show === false;
+        saveNotices(list);
+        B.toast(p.show !== false ? '공지를 노출했습니다.' : '공지를 숨겼습니다.');
+        renderList();
+      });
+    });
+    host.querySelectorAll('[data-del]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var list = customNotices();
+        list.splice(+b.dataset.del, 1);
+        saveNotices(list);
+        B.toast('공지를 삭제했습니다.');
+        renderList();
+      });
+    });
+  }
+
+  document.getElementById('nPublish').addEventListener('click', function () {
+    var t = document.getElementById('nTitle');
+    var bd = document.getElementById('nBody');
+    if (!t.value.trim() || !bd.value.trim()) { B.toast('제목과 본문을 입력해 주세요.', 'bad'); return; }
+    var list = customNotices();
+    list.unshift({
+      id: 900 + list.length + 1, b: 'notice', t: t.value.trim(), body: bd.value.trim(),
+      a: 'A-0001', an: '이운영', role: 'admin', d: '2026-08-25', v: 0, cm: 0, att: [],
+      pin: document.getElementById('nPin').checked, show: true
+    });
+    saveNotices(list);
+    B.toast('<b>공지가 게시되었습니다.</b><br><span class="sm">사용자 화면 공지사항 목록에 즉시 나타납니다</span>');
+    renderList();
+  });
+
+  renderList();
+}
+</script>
+</body>
+</html>

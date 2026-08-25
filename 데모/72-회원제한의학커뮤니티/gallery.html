@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>갤러리 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.page-title { padding: 52px 0 30px; }
+.page-title .eyebrow { font-family: var(--mono); font-size: 13px; font-weight: 700; letter-spacing: .06em; color: var(--ac); text-transform: uppercase; }
+.page-title h1 { font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin-top: 10px; }
+.page-title .desc { font-size: 14.5px; color: var(--t2); margin-top: 12px; }
+.filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 22px; }
+
+/* 벤토 그리드 — 첫 항목 2×2 (poscoflow "4열 균등 회피" 문법) */
+.ggrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.gcard { position: relative; border-radius: var(--r-md); overflow: hidden; cursor: pointer; aspect-ratio: 4/3; background: var(--sunken); border: 0; padding: 0; text-align: left; }
+.gcard:first-child { grid-row: span 2; grid-column: span 2; aspect-ratio: auto; }
+.gcard img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); display: block; }
+.gcard:hover img { transform: scale(1.05); }
+.gcard .cap {
+  position: absolute; inset: auto 0 0 0; padding: 34px 16px 14px;
+  background: linear-gradient(0deg, rgba(10,14,18,.78), transparent);
+  color: #fff; opacity: 0; transition: opacity .3s ease;
+}
+.gcard:hover .cap { opacity: 1; }
+.gcard .cap .t { font-size: 14.5px; font-weight: 700; }
+.gcard .cap .m { font-size: 11.5px; color: rgba(255,255,255,.66); margin-top: 3px; }
+.gcard.locked img { filter: blur(14px) saturate(.7); transform: scale(1.08); }
+.gcard.locked .cap { opacity: 0 !important; }
+.gcard .lockveil2 {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(13, 26, 61, .38); color: #fff; font-size: 12.5px; font-weight: 600;
+}
+
+/* 라이트박스 */
+.lb-dim { position: fixed; inset: 0; background: rgba(10,14,18,.92); z-index: 300; display: none; align-items: center; justify-content: center; padding: 30px; }
+.lb-dim.open { display: flex; }
+.lb-box { max-width: 900px; width: 100%; }
+.lb-box img { width: 100%; max-height: 72vh; object-fit: contain; border-radius: var(--r-md); }
+.lb-box .cap { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-top: 14px; color: #fff; flex-wrap: wrap; }
+.lb-box .cap .t { font-size: 16px; font-weight: 700; }
+.lb-box .cap .m { font-size: 12.5px; color: rgba(255,255,255,.6); margin-top: 3px; }
+.lb-box .nav { display: flex; gap: 8px; }
+.lb-box .nav button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); color: #fff; display: flex; align-items: center; justify-content: center; transition: background .3s ease, border-color .3s ease; }
+.lb-box .nav button:hover { background: var(--ac); border-color: var(--ac); }
+
+@media (max-width: 900px) { .ggrid { grid-template-columns: repeat(2, 1fr); } .gcard:first-child { grid-column: span 2; grid-row: span 1; aspect-ratio: 16/9; } }
+@media (max-width: 720px) { .page-title h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+
+<main class="shell">
+  <div class="page-title reveal">
+    <span class="eyebrow">Gallery</span>
+    <h1>갤러리</h1>
+    <p class="desc" id="galDesc">학술 행사·견학·자료 사진 아카이브입니다. 승인된 회원만 원본을 열람할 수 있습니다.</p>
+  </div>
+  <div class="filters" id="filters" style="justify-content:space-between">
+    <div class="row gap-8" id="filterChips" style="flex-wrap:wrap"></div>
+    <button class="btn sm pri" id="upBtn">이미지 등록</button>
+  </div>
+  <div class="ggrid" id="grid"></div>
+</main>
+
+<div class="lb-dim" id="lbDim">
+  <div class="lb-box">
+    <img id="lbImg" src="" alt="">
+    <div class="cap">
+      <div><div class="t" id="lbT"></div><div class="m" id="lbM"></div></div>
+      <div class="nav">
+        <button id="lbPrev" aria-label="이전"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5M11 18l-6-6 6-6"/></svg></button>
+        <button id="lbNext" aria-label="다음"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg></button>
+        <button id="lbClose" aria-label="닫기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('gallery');
+B.footer('');
+
+(function () {
+  var canView = B.rank() >= 1;
+  var cat = '전체';
+  var cats = ['전체'];
+  DATA.GALLERY.forEach(function (g) { if (cats.indexOf(g.cat) === -1) cats.push(g.cat); });
+
+  if (!canView) {
+    document.getElementById('galDesc').innerHTML =
+      '비회원에게는 흐린 미리보기만 제공됩니다. 원본 열람은 <a class="ac" href="join.html" style="font-weight:700">가입 승인</a> 후 가능합니다.';
+  }
+
+  /* 이미지 등록 — 권한 확인 후 샘플 추가 실동작 */
+  var upBtn = document.getElementById('upBtn');
+  upBtn.addEventListener('click', function () {
+    if (!canView) { B.toast('이미지 등록은 승인된 회원만 할 수 있습니다.', 'bad'); return; }
+    var me = B.me();
+    DATA.GALLERY.unshift({ id: 'G-' + (100 + DATA.GALLERY.length), t: '새 자료 사진 (방금 등록)', img: 'gal-herbs2.webp', d: '2026-08-25', by: me.name, cat: '자료' });
+    if (cats.indexOf('자료') === -1) cats.push('자료');
+    B.toast('이미지가 등록되었습니다.<br><span class="sm">실서비스: 원본 검사(용량·형식) 후 스토리지에 권한 정책과 함께 저장</span>');
+    render();
+  });
+
+  var fhost = document.getElementById('filterChips');
+  fhost.innerHTML = cats.map(function (c) {
+    var n = c === '전체' ? DATA.GALLERY.length : DATA.GALLERY.filter(function (g) { return g.cat === c; }).length;
+    return '<button class="chip ' + (c === cat ? 'on' : '') + '" data-c="' + c + '">' + c + ' <span class="n">' + n + '</span></button>';
+  }).join('');
+  fhost.querySelectorAll('.chip').forEach(function (ch) {
+    ch.addEventListener('click', function () {
+      cat = ch.dataset.c;
+      fhost.querySelectorAll('.chip').forEach(function (x) { x.classList.toggle('on', x.dataset.c === cat); });
+      render();
+    });
+  });
+
+  var view = [];
+  function render() {
+    view = DATA.GALLERY.filter(function (g) { return cat === '전체' || g.cat === cat; });
+    document.getElementById('grid').innerHTML = view.map(function (g, i) {
+      return '<button class="gcard reveal reveal--card' + (canView ? '' : ' locked') + '" data-i="' + i + '">'
+        + '<img src="assets/img/' + g.img + '" alt="' + B.esc(g.t) + '" loading="lazy">'
+        + (canView
+          ? '<span class="cap"><span class="t">' + B.esc(g.t) + '</span><span class="m">' + g.cat + ' · ' + g.by + ' · ' + g.d + '</span></span>'
+          : '<span class="lockveil2">🔒 승인 회원 전용</span>')
+        + '</button>';
+    }).join('');
+    B.reveal(document.getElementById('grid'));
+    document.querySelectorAll('.gcard').forEach(function (c) {
+      c.addEventListener('click', function () {
+        if (!canView) { B.toast('가입 승인 후 원본을 열람할 수 있습니다.', 'bad'); return; }
+        open(+c.dataset.i);
+      });
+    });
+  }
+
+  /* 라이트박스 */
+  var cur = 0;
+  var dim = document.getElementById('lbDim');
+  function open(i) {
+    cur = i;
+    var g = view[cur];
+    document.getElementById('lbImg').src = 'assets/img/' + g.img;
+    document.getElementById('lbT').textContent = g.t;
+    document.getElementById('lbM').textContent = g.cat + ' · ' + g.by + ' 등록 · ' + g.d + ' · 열람 기록됨';
+    dim.classList.add('open');
+    B.logView('갤러리', g.id, g.t);
+  }
+  document.getElementById('lbPrev').addEventListener('click', function () { open((cur - 1 + view.length) % view.length); });
+  document.getElementById('lbNext').addEventListener('click', function () { open((cur + 1) % view.length); });
+  document.getElementById('lbClose').addEventListener('click', function () { dim.classList.remove('open'); });
+  dim.addEventListener('click', function (e) { if (e.target === dim) dim.classList.remove('open'); });
+  document.addEventListener('keydown', function (e) {
+    if (!dim.classList.contains('open')) return;
+    if (e.key === 'Escape') dim.classList.remove('open');
+    if (e.key === 'ArrowLeft') open((cur - 1 + view.length) % view.length);
+    if (e.key === 'ArrowRight') open((cur + 1) % view.length);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

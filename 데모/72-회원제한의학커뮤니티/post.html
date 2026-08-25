@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게시글 · BONCHO 본초</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<style>
+.wrap { max-width: 860px; margin: 0 auto; padding: 48px 0 0; }
+.crumb { font-size: 13px; color: var(--t3); display: flex; gap: 8px; align-items: center; }
+.crumb a { color: var(--ac); font-weight: 600; }
+.post-head { padding: 18px 0 22px; border-bottom: 2px solid var(--t1); }
+.post-head h1 { font-size: 27px; font-weight: 700; line-height: 1.35; letter-spacing: -.02em; }
+.post-head .meta { display: flex; align-items: center; gap: 12px; margin-top: 14px; font-size: 13px; color: var(--t3); flex-wrap: wrap; }
+.post-head .meta .who { display: inline-flex; align-items: center; gap: 7px; color: var(--t1); font-weight: 600; }
+.post-body { padding: 28px 0; font-size: 15.5px; line-height: 1.85; color: var(--t1); white-space: pre-line; border-bottom: 1px solid var(--line); }
+
+/* 첨부 — 60초 만료 서명 URL (발견 ④ Storage 서명 URL 함정 대응) */
+.atts { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.atts .lb { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.att-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border: 1px solid var(--line-strong); border-radius: var(--r-md); margin-bottom: 8px; flex-wrap: wrap; }
+.att-row .nm { font-size: 14px; font-weight: 600; flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 8px; }
+.att-row .sz { font-family: var(--mono); font-size: 12px; color: var(--t3); }
+.att-row .ttl-cd { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--ac); }
+.att-row .ttl-cd.exp { color: var(--bad); }
+.att-note { font-size: 12px; color: var(--t3); margin-top: 6px; line-height: 1.6; }
+
+.actions { display: flex; gap: 8px; padding: 20px 0; align-items: center; flex-wrap: wrap; }
+.actions .sp { flex: 1 1 auto; }
+
+/* 댓글 */
+.cmts { padding: 8px 0 0; }
+.cmts .lb { font-size: 15px; font-weight: 700; margin: 18px 0 12px; }
+.cmt { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.cmt .av { width: 34px; height: 34px; border-radius: 50%; background: var(--ac-soft); color: var(--ac); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.cmt .bd { flex: 1 1 auto; min-width: 0; }
+.cmt .who { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.cmt .who b { font-weight: 700; }
+.cmt .who .dt { color: var(--t3); font-size: 12px; }
+.cmt .tx { font-size: 14px; line-height: 1.7; margin-top: 4px; color: var(--t1); }
+.cmt-form { display: flex; gap: 10px; margin-top: 16px; }
+.cmt-form textarea { flex: 1 1 auto; min-height: 74px; }
+
+/* 블라인드 공시 (§44-2) */
+.blind-box { border: 1px solid var(--line-strong); border-radius: var(--r-md); padding: 44px 30px; text-align: center; margin-top: 24px; }
+.blind-box .ic { width: 48px; height: 48px; border-radius: 50%; background: var(--warn-soft); color: var(--warn); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.blind-box .tt { font-size: 17px; font-weight: 700; }
+.blind-box .ds { font-size: 13.5px; color: var(--t2); margin-top: 8px; line-height: 1.75; }
+
+/* 신고 모달 */
+.modal-dim { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(6px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-dim.open { display: flex; }
+.modal { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-pop); width: 440px; max-width: 100%; padding: 26px 24px; }
+.modal h3 { font-size: 18px; font-weight: 700; }
+.modal .ds { font-size: 13px; color: var(--t2); margin-top: 6px; line-height: 1.65; }
+.modal .opts { margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
+.modal .opts label { display: flex; align-items: center; gap: 9px; padding: 10px 13px; border: 1px solid var(--line-strong); border-radius: var(--r-md); font-size: 13.5px; cursor: pointer; transition: border-color .3s ease, background .3s ease; }
+.modal .opts label:hover { border-color: var(--ac); }
+.modal .opts input[type=radio] { accent-color: var(--ac); }
+.modal .foot-note { font-size: 11.5px; color: var(--t3); line-height: 1.6; margin-top: 12px; }
+
+.rel { margin: 32px 0 0; }
+.rel .lb { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+.rel a { display: flex; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--line); font-size: 13.5px; align-items: baseline; }
+.rel a .d { font-family: var(--mono); font-size: 12px; color: var(--t3); flex: 0 0 auto; }
+.rel a span { transition: color .3s ease; }
+.rel a:hover span:first-child { color: var(--ac); }
+</style>
+</head>
+<body>
+
+<main class="shell"><div class="wrap" id="host"></div></main>
+
+<div class="modal-dim" id="reportDim">
+  <div class="modal">
+    <h3>게시글 신고</h3>
+    <p class="ds">신고가 접수되면 정보통신망법 제44조의2에 따라 게시물 접근이 <b>즉시 임시 차단(최대 30일)</b>되고, 게시자와 신고인 모두에게 통지됩니다.</p>
+    <div class="opts">
+      <label><input type="radio" name="rs" value="명예훼손·권리 침해" checked> 명예훼손·권리 침해</label>
+      <label><input type="radio" name="rs" value="개인정보 노출"> 개인정보 노출 (환자 식별 가능 정보 포함)</label>
+      <label><input type="radio" name="rs" value="의료광고 규정 위반"> 의료광고 규정 위반 우려</label>
+      <label><input type="radio" name="rs" value="허위 정보·광고성 게시물"> 허위 정보 · 광고성 게시물</label>
+    </div>
+    <div class="row gap-8" style="justify-content:flex-end">
+      <button class="btn sm" id="reportCancel">취소</button>
+      <button class="btn sm pri" id="reportSubmit">신고 접수</button>
+    </div>
+    <p class="foot-note">허위 신고가 반복되면 신고 권한이 제한될 수 있습니다. 처리 결과는 알림으로 안내됩니다.</p>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+B.header('community');
+B.footer('');
+
+(function () {
+  var id = parseInt(B.qs('id'), 10) || 301;
+  var post = null;
+  DATA.POSTS.forEach(function (p) { if (p.id === id) post = p; });
+  var host = document.getElementById('host');
+  if (!post) { host.innerHTML = '<div class="empty"><div class="h3">게시글을 찾을 수 없습니다</div></div>'; return; }
+
+  var board = DATA.boardOf(post.b);
+  var acc = B.boardAccess(board);
+  var blinded = DATA.blindedPosts()[post.id];
+  document.title = post.t + ' · BONCHO 본초';
+
+  var crumb = '<div class="crumb reveal"><a href="community.html?b=' + board.id + '">' + board.name + '</a>'
+    + '<span>›</span><span>게시글</span></div>';
+
+  /* 권한 미달 → 본문 없이 안내만 */
+  if (acc !== 'full') {
+    host.innerHTML = crumb
+      + '<div class="blind-box reveal">'
+      + '<div class="ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>'
+      + '<div class="tt">' + (board.read >= 2 ? '한의사회원 전용 게시글입니다' : '승인된 회원만 열람할 수 있습니다') + '</div>'
+      + '<p class="ds">본문과 첨부는 렌더되지 않았습니다. 화면을 가린 것이 아니라 서버가 내려주지 않는 방식이라<br>개발자도구로도 내용을 볼 수 없습니다.</p>'
+      + '<a class="btn pri" style="margin-top:16px" href="join.html">가입 신청하기</a>'
+      + '</div>';
+    B.reveal(host);
+    return;
+  }
+
+  /* 블라인드 게시물 → 공시 블록 (§44-2 공시 의무 이행) */
+  if (blinded) {
+    host.innerHTML = crumb
+      + '<div class="blind-box reveal">'
+      + '<div class="ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4 2 20h20L12 4Z"/><path d="M12 10v5M12 17.5v.5"/></svg></div>'
+      + '<div class="tt">신고 접수로 임시 접근 차단 중입니다</div>'
+      + '<p class="ds">이 게시물은 권리 침해 신고가 접수되어 정보통신망법 제44조의2에 따라<br>'
+      + '<b>' + blinded.due + '까지</b> 접근이 임시 차단되었습니다. (신고 사유: ' + blinded.reason + ')<br>'
+      + '게시자는 이의신청할 수 있으며, 임시조치 기간 내 재게시 또는 삭제가 확정됩니다.</p>'
+      + '<div class="row gap-8" style="justify-content:center;margin-top:18px">'
+      + '<button class="btn sm" onclick="B.toast(\'이의신청이 접수되었습니다. 처리 결과는 알림으로 안내됩니다.\')">게시자 이의신청</button>'
+      + '<a class="btn sm" href="community.html?b=' + board.id + '">목록으로</a></div>'
+      + '</div>';
+    B.reveal(host);
+    return;
+  }
+
+  /* 열람 기록 — 실제 세션 로그에 적재 (관리자 로그 화면에 합류) */
+  B.logView('게시글', post.id, post.t);
+
+  var bm = B.bookmarks().indexOf(post.id) !== -1;
+  var comments = DATA.COMMENTS[post.id] || [];
+
+  host.innerHTML = crumb
+    + '<div class="post-head reveal"><h1>' + B.esc(post.t) + '</h1>'
+    + '<div class="meta"><span class="who">' + B.roleBadge(post.role) + post.an + '</span>'
+    + '<span>' + post.d + '</span><span>조회 ' + B.fmt(post.v + 1) + '</span>'
+    + '<span class="badge ok" title="이 열람은 열람 로그에 기록되었습니다">열람 기록됨</span></div></div>'
+    + '<div class="post-body reveal">' + B.esc(post.body) + '</div>'
+    + (post.att.length
+      ? '<div class="atts reveal"><div class="lb">첨부파일 ' + post.att.length + '</div>'
+        + post.att.map(function (a, i) {
+            return '<div class="att-row" data-i="' + i + '">'
+              + '<span class="nm"><span class="fmt"><i class="' + (a.f === 'HWP' ? 'hwp' : '') + '">' + a.f + '</i></span>' + B.esc(a.n) + '</span>'
+              + '<span class="sz">' + a.s + '</span>'
+              + '<span class="ttl-cd" data-cd></span>'
+              + '<button class="btn sm" data-dl>내려받기</button>'
+              + '</div>';
+          }).join('')
+        + '<p class="att-note">내려받기 링크는 발급 후 <b>60초</b>가 지나면 만료됩니다. 링크를 외부로 옮겨도 다시 열리지 않으며, 다운로드 1건마다 열람 로그가 1행 기록됩니다.</p>'
+        + '</div>'
+      : '')
+    + '<div class="actions reveal">'
+    + '<button class="btn sm" id="bmBtn">' + (bm ? '★ 북마크됨' : '☆ 북마크') + '</button>'
+    + '<button class="btn sm" id="reportBtn">신고</button>'
+    + '<span class="sp"></span>'
+    + (B.me() && B.me().no === post.a
+      ? '<a class="btn sm" href="write.html?b=' + board.id + '&edit=' + post.id + '">수정</a>'
+        + '<button class="btn sm danger" id="delBtn">삭제</button>'
+      : '')
+    + '<a class="btn sm" href="community.html?b=' + board.id + '">목록</a>'
+    + '</div>'
+    + '<div class="cmts reveal"><div class="lb">댓글 ' + comments.length + '</div>'
+    + comments.map(function (c) {
+        return '<div class="cmt"><span class="av">' + c.an.charAt(0) + '</span><div class="bd">'
+          + '<div class="who"><b>' + c.an + '</b>' + B.roleBadge(c.role) + '<span class="dt">' + c.d + '</span></div>'
+          + '<p class="tx">' + B.esc(c.tx) + '</p></div></div>';
+      }).join('')
+    + '<div class="cmt-form"><textarea class="inp" id="cmtInput" placeholder="댓글을 입력하세요. 환자 식별 가능 정보는 쓰지 마세요."></textarea>'
+    + '<button class="btn pri" id="cmtBtn" style="align-self:flex-end">등록</button></div>'
+    + '</div>'
+    + '<div class="rel"><div class="lb">' + board.name + '의 다른 글</div>'
+    + DATA.POSTS.filter(function (p) { return p.b === post.b && p.id !== post.id; }).slice(0, 4).map(function (p) {
+        return '<a href="post.html?id=' + p.id + '"><span class="grow trunc">' + B.esc(p.t) + '</span><span class="d">' + p.d + '</span></a>';
+      }).join('')
+    + '</div>';
+
+  B.reveal(host);
+
+  /* 첨부 — 60초 만료 서명 URL 재현 */
+  host.querySelectorAll('.att-row').forEach(function (row) {
+    var btn = row.querySelector('[data-dl]');
+    var cd = row.querySelector('[data-cd]');
+    var timer = null;
+    btn.addEventListener('click', function () {
+      var a = post.att[+row.dataset.i];
+      if (btn.dataset.state === 'ready') {
+        /* 실제 파일 생성 (데모: 텍스트 스텁) */
+        var blob = new Blob(['BONCHO 데모 첨부 — ' + a.n + '\n(실서비스에서는 원본 파일이 전송됩니다)'], { type: 'text/plain;charset=utf-8' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = a.n;
+        document.body.appendChild(link); link.click();
+        setTimeout(function () { URL.revokeObjectURL(link.href); link.remove(); }, 400);
+        B.logView('첨부', post.id, a.n + ' 다운로드');
+        B.toast('<b>' + B.esc(a.n) + '</b> 내려받았습니다.<br><span class="sm">다운로드 기록이 열람 로그에 남았습니다</span>');
+        return;
+      }
+      /* 서명 URL 발급 → 60초 카운트다운 */
+      btn.dataset.state = 'ready';
+      btn.textContent = '지금 내려받기';
+      var left = 60;
+      cd.textContent = '만료까지 ' + left + '초';
+      cd.classList.remove('exp');
+      clearInterval(timer);
+      timer = setInterval(function () {
+        left--;
+        if (left <= 0) {
+          clearInterval(timer);
+          btn.dataset.state = '';
+          btn.textContent = '내려받기';
+          cd.textContent = '링크 만료 — 재발급 필요';
+          cd.classList.add('exp');
+          return;
+        }
+        cd.textContent = '만료까지 ' + left + '초';
+      }, 1000);
+      B.toast('서명된 다운로드 링크가 발급되었습니다. <b>60초</b> 후 만료됩니다.');
+    });
+  });
+
+  /* 본인 글 삭제 */
+  var delBtn = document.getElementById('delBtn');
+  if (delBtn) delBtn.addEventListener('click', function () {
+    if (!confirm('이 게시글을 삭제할까요? 댓글과 첨부도 함께 삭제됩니다.')) return;
+    B.toast('게시글이 삭제되었습니다.<br><span class="sm">삭제 이력은 관리자 감사 로그에 보존됩니다</span>');
+    setTimeout(function () { location.href = 'community.html?b=' + board.id; }, 1000);
+  });
+
+  /* 북마크 */
+  document.getElementById('bmBtn').addEventListener('click', function () {
+    var on = B.toggleBookmark(post.id);
+    this.textContent = on ? '★ 북마크됨' : '☆ 북마크';
+    B.toast(on ? '북마크에 추가했습니다. 마이페이지에서 확인하세요.' : '북마크를 해제했습니다.');
+  });
+
+  /* 신고 */
+  var dim = document.getElementById('reportDim');
+  document.getElementById('reportBtn').addEventListener('click', function () { dim.classList.add('open'); });
+  document.getElementById('reportCancel').addEventListener('click', function () { dim.classList.remove('open'); });
+  dim.addEventListener('click', function (e) { if (e.target === dim) dim.classList.remove('open'); });
+  document.getElementById('reportSubmit').addEventListener('click', function () {
+    var rs = document.querySelector('input[name=rs]:checked').value;
+    dim.classList.remove('open');
+    B.toast('신고가 접수되었습니다. <b>' + rs + '</b><br><span class="sm">게시물 접근이 임시 차단되며 게시자·신고인에게 통지됩니다 (최대 30일)</span>');
+  });
+
+  /* 댓글 등록 (세션 데모) */
+  document.getElementById('cmtBtn').addEventListener('click', function () {
+    var v = document.getElementById('cmtInput').value.trim();
+    if (!v) { B.toast('댓글 내용을 입력해 주세요.', 'bad'); return; }
+    var me = B.me();
+    var list = document.querySelector('.cmts');
+    var div = document.createElement('div');
+    div.className = 'cmt';
+    div.innerHTML = '<span class="av">' + me.name.charAt(0) + '</span><div class="bd">'
+      + '<div class="who"><b>' + me.name + '</b>' + B.roleBadge(me.role) + '<span class="dt">방금</span></div>'
+      + '<p class="tx">' + B.esc(v) + '</p></div>';
+    list.insertBefore(div, document.querySelector('.cmt-form'));
+    document.getElementById('cmtInput').value = '';
+    B.toast('댓글이 등록되었습니다.');
+  });
+})();
+</script>
+</body>
+</html>
