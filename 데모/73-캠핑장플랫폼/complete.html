@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>예약 요청 결과 · 예약조회 — CAMP FLOW(가칭) 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href="index.html"><span class="mark" aria-hidden="true"></span>CAMP FLOW <span class="badge badge-neutral">데모</span></a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a href="search.html">캠핑장 찾기</a>
+      <a href="index.html">큐레이션</a>
+      <a href="complete.html#lookup" aria-current="page">예약조회</a>
+      <a href="complete.html#faq">이용안내</a>
+    </nav>
+    <div class="header-cta"><a class="btn btn-primary btn-compact" href="search.html">날짜로 찾기</a></div>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+  <div class="scrim"></div>
+  <div class="panel">
+    <button class="close-btn" type="button" aria-label="메뉴 닫기">✕</button>
+    <a href="search.html">캠핑장 찾기</a>
+    <a href="index.html">큐레이션</a>
+    <a href="complete.html#lookup" aria-current="page">예약조회</a>
+    <a href="complete.html#faq">이용안내</a>
+    <a class="btn btn-primary" href="search.html" style="margin-top:16px">날짜로 찾기</a>
+  </div>
+</div>
+
+<main id="main" class="container page-head">
+  <div id="complete-root"></div>
+
+  <!-- 예약조회 (예약조회 페이지 축약 패널) -->
+  <section id="lookup" style="margin-top:96px" aria-labelledby="lookup-t">
+    <p class="eyebrow">예약조회</p>
+    <h2 id="lookup-t" class="section-title" style="margin-top:12px">예약번호로 상태를 확인하세요.</h2>
+    <p class="lead" style="margin-top:12px">공개 데모는 실제 개인정보를 받지 않습니다. 예약번호와 고정 샘플 확인코드 0000으로 조회합니다.</p>
+    <form id="lookup-form" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;max-width:720px">
+      <div class="field" style="flex:2;min-width:220px"><label for="lk-code">예약번호</label>
+        <input class="input" id="lk-code" type="text" placeholder="CF-20260912-0001" autocomplete="off"></div>
+      <div class="field" style="flex:1;min-width:140px"><label for="lk-last4">샘플 확인코드</label>
+        <input class="input" id="lk-last4" type="text" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off"></div>
+      <div class="field" style="justify-content:end"><button class="btn btn-primary" type="submit">예약 조회</button></div>
+    </form>
+    <div id="lookup-result" style="margin-top:24px;max-width:760px" aria-live="polite"></div>
+  </section>
+
+  <!-- 이용안내 (이용안내 페이지 축약 패널) -->
+  <section id="faq" style="margin-top:96px" aria-labelledby="faq-t">
+    <p class="eyebrow">이용안내</p>
+    <h2 id="faq-t" class="section-title" style="margin-top:12px">예약 요청부터 확정까지, 보이는 흐름으로.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:32px">
+      <div class="card" style="padding:24px"><h3 style="font-size:18px">1. 날짜로 검색</h3><p class="small" style="margin-top:8px">날짜·지역·인원을 고르면 사이트별 가능 상태가 계산됩니다. 데모에서는 결정적 목 데이터를 사용합니다.</p></div>
+      <div class="card" style="padding:24px"><h3 style="font-size:18px">2. 요청과 결제 시뮬레이션</h3><p class="small" style="margin-top:8px">옵션과 예약자 정보를 확인하고 결제 시뮬레이션을 완료합니다. 실제 청구는 0원입니다.</p></div>
+      <div class="card" style="padding:24px"><h3 style="font-size:18px">3. 담당자 확인</h3><p class="small" style="margin-top:8px">접수된 요청은 담당자가 캠핑장에 연락해 확인합니다. 이 단계에서 상태가 '캠핑장 확인 중'으로 바뀝니다.</p></div>
+      <div class="card" style="padding:24px"><h3 style="font-size:18px">4. 확정 · 대체 · 취소</h3><p class="small" style="margin-top:8px">확정, 대체 사이트 제안, 취소 중 하나로 안내드립니다. 운영 데모 패널에서 상태 전환을 직접 체험할 수 있습니다.</p></div>
+    </div>
+    <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px">
+      <div style="border:var(--border);border-radius:12px;padding:20px"><h3 style="font-size:16px">결제는 실제로 일어나나요?</h3><p class="small" style="margin-top:6px">아니요. 이 데모의 모든 결제는 시뮬레이션이며 실제 청구는 0원입니다. 실제 PG 연동은 사업자 정보·통신판매업 신고·환불 정책·PG 심사가 끝난 뒤 별도 범위로 진행합니다.</p></div>
+      <div style="border:var(--border);border-radius:12px;padding:20px"><h3 style="font-size:16px">예약은 언제 확정되나요?</h3><p class="small" style="margin-top:6px">결제 시뮬레이션 완료는 '예약 요청 접수'이며 확정이 아닙니다. 담당자가 캠핑장에 확인한 뒤 확정·대체·취소가 결정됩니다.</p></div>
+      <div style="border:var(--border);border-radius:12px;padding:20px"><h3 style="font-size:16px">취소·환불은 어떻게 되나요?</h3><p class="small" style="margin-top:6px">숙박비는 체크인 D-7 이상 전액, D-3 70%, D-1 50%, 당일 0%로 계산하고, 옵션은 전일까지 전액 환불로 분리 계산합니다. 실제 정책은 확정 전 데모 값입니다.</p></div>
+      <div style="border:var(--border);border-radius:12px;padding:20px"><h3 style="font-size:16px">개인정보는 저장되나요?</h3><p class="small" style="margin-top:6px">실제 개인정보는 저장하지 않습니다. 예약 샘플은 이 브라우저의 localStorage에만 남는 가상 데이터이며, 언제든 브라우저 데이터 삭제로 지울 수 있습니다.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="complete.html#faq">이용약관(데모)</a>
+      <a href="complete.html#faq">개인정보처리방침(데모)</a>
+      <a href="complete.html#faq">문의</a>
+      <a href="credits.html">이미지 출처·라이선스</a>
+      <button type="button" data-admin-open>운영 데모 패널</button>
+    </div>
+    <p class="demo-notice">이 화면은 캠핑장 예약 MVP의 기능 검증용 데모입니다. 결제는 실제 청구되지 않습니다. 모든 캠핑장·예약자·업체 정보는 실존하지 않는 가상 데이터입니다.</p>
+  </div>
+</footer>
+
+<div class="admin-drawer" role="dialog" aria-modal="true" aria-label="운영 데모 패널">
+  <div class="scrim"></div>
+  <div class="panel">
+    <div class="panel-head">
+      <h2>운영 데모 패널</h2>
+      <span class="badge badge-neutral">가상 데이터</span>
+      <button class="close-btn btn btn-ghost btn-compact" type="button" style="margin-left:auto">닫기</button>
+    </div>
+    <div class="panel-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import { PG_CHECKLIST } from './assets/js/data.js';
+import { boot, $, toast, findReservation } from './assets/js/app.js';
+import { calcRefund, RESERVATION_STATUS, formatKRW } from './assets/js/core.js';
+
+boot();
+
+const params = new URLSearchParams(location.search);
+const code = params.get('code');
+const root = $('#complete-root');
+
+const STATUS_STEP = { received: 1, contacting: 2, confirmed: 3, alternative: 3, cancelled: 3 };
+const STATUS_BADGE = { received: 'badge-confirm', contacting: 'badge-confirm', confirmed: 'badge-success', alternative: 'badge-available', cancelled: 'badge-error' };
+
+function timelineHTML(r) {
+  const steps = [
+    ['received', '예약 요청 접수', '결제 시뮬레이션이 완료되고 요청이 접수됐어요.'],
+    ['contacting', '캠핑장 확인 중', '담당자가 캠핑장 운영자에게 가능 여부를 확인해요.'],
+    [r.status === 'cancelled' ? 'cancelled' : r.status === 'alternative' ? 'alternative' : 'confirmed',
+      r.status === 'cancelled' ? '취소 완료' : r.status === 'alternative' ? '대체 사이트 제안' : '예약 확정',
+      r.status === 'cancelled' ? '예약 요청이 취소됐어요. 실제 결제는 발생하지 않았습니다.'
+        : r.status === 'alternative' ? '선택한 사이트가 어려워 다른 사이트를 제안드려요.'
+        : '캠핑장 확인이 끝나면 확정으로 표시됩니다.'],
+  ];
+  const current = STATUS_STEP[r.status];
+  return `<ol class="timeline">${steps.map(([key, title, desc], i) => {
+    const cls = i + 1 < current ? 'done' : i + 1 === current ? 'current' : '';
+    return `<li class="${cls}"><span class="dot" aria-hidden="true"></span><div><p class="t-title">${title}</p><p class="t-desc">${desc}</p></div></li>`;
+  }).join('')}</ol>`;
+}
+
+function reservationCardHTML(r) {
+  const daysBefore = Math.max(0, Math.round((new Date(r.checkIn) - new Date(new Date().toISOString().slice(0, 10))) / 86400000));
+  const refund = calcRefund(daysBefore, r.stay, r.optionsTotal);
+  const optText = r.options.length ? r.options.map((o) => `${o.name} × ${o.qty}`).join(', ') : '선택 없음';
+  return `
+    <div class="complete-success-card">
+      <p class="complete-simulated-line">✓ 결제 시뮬레이션 완료 · 실제 청구 0원</p>
+      <h1>예약 요청이 접수됐어요</h1>
+      <p class="complete-not-confirmed"><strong>예약 요청 접수 · 캠핑장 확인 전</strong> — 아직 예약 확정이 아닙니다.</p>
+      <div class="complete-code-row">
+        <span class="num" style="font-size:20px;font-weight:600;letter-spacing:.02em" id="r-code">${r.code}</span>
+        <button class="btn btn-secondary btn-compact" type="button" id="copy-code">번호 복사</button>
+        <span class="badge ${STATUS_BADGE[r.status]}" id="r-status-badge">${RESERVATION_STATUS[r.status]}</span>
+      </div>
+      <dl style="margin-top:24px">
+        <div class="summary-row"><dt>캠핑장</dt><dd>${r.campName} · ${r.siteName}</dd></div>
+        <div class="summary-row"><dt>날짜</dt><dd class="num">${r.checkIn} ~ ${r.checkOut} (${r.nights}박)</dd></div>
+        <div class="summary-row"><dt>인원</dt><dd class="num">${r.guests}명</dd></div>
+        <div class="summary-row"><dt>옵션</dt><dd>${optText}</dd></div>
+        <div class="summary-row"><dt>결제 수단</dt><dd>${r.card} (시뮬레이션)</dd></div>
+        <div class="summary-row summary-total"><dt>총액</dt><dd class="num">₩${formatKRW(r.total)}</dd></div>
+        <div class="summary-row"><dt>실제 청구</dt><dd class="num" style="color:var(--color-success-700)">0원</dd></div>
+      </dl>
+      <h2 style="font-size:18px;margin-top:24px">진행 상태</h2>
+      <div id="r-timeline" style="margin-top:8px">${timelineHTML(r)}</div>
+      <h2 style="font-size:18px;margin-top:24px">지금 취소한다면 (데모 계산)</h2>
+      <p class="small" style="margin-top:8px">체크인 ${daysBefore}일 전 기준 · 숙박 ₩${formatKRW(refund.stayRefund)} + 옵션 ₩${formatKRW(refund.optionRefund)} = <strong class="num">₩${formatKRW(refund.stayRefund + refund.optionRefund)}</strong> 환불 예상</p>
+      <div class="actions" style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+        <a class="btn btn-primary" href="#lookup">예약 상태 확인</a>
+        <a class="btn btn-secondary" href="index.html">홈으로</a>
+        <button class="btn btn-ghost" type="button" data-admin-open-inline>운영 패널에서 상태 바꾸기</button>
+      </div>
+    </div>
+    <section style="margin-top:32px;max-width:760px" aria-label="PG 준비 체크리스트">
+      <h2 style="font-size:18px">실제 결제 오픈 전 준비 <span class="badge badge-neutral">데모 상태</span></h2>
+      <p class="small" style="margin-top:8px">아래는 실제 PG 심사에 필요한 항목의 데모 표시입니다. 실제 진행 상황이 아니며, 완료된 것처럼 보이지 않도록 '준비 중' 상태만 표시합니다.</p>
+      <ul class="pg-checklist" style="margin-top:8px">
+        ${PG_CHECKLIST.map((c) => `<li><span>${c.label}</span><span class="badge badge-confirm">${c.state}</span></li>`).join('')}
+      </ul>
+    </section>`;
+}
+
+function renderComplete() {
+  if (!code) {
+    document.body.classList.add('complete-no-code');
+    root.replaceChildren();
+    return;
+  }
+  document.body.classList.remove('complete-no-code');
+  const r = findReservation(code);
+  if (!r) {
+    root.innerHTML = `
+      <div class="state-block state-error" style="margin-top:48px;max-width:760px">
+        <h1 style="font-size:24px">예약 정보를 찾을 수 없어요.</h1>
+        <p>예약번호가 지워졌거나 다른 브라우저에서 접수했을 수 있어요. 이 데모는 같은 브라우저의 localStorage만 사용합니다.</p>
+        <div class="actions"><a class="btn btn-primary" href="#lookup">예약조회로 찾기</a></div>
+      </div>`;
+    return;
+  }
+  root.innerHTML = reservationCardHTML(r);
+  $('#copy-code').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(r.code);
+      toast('예약번호를 복사했어요.');
+    } catch {
+      toast('복사가 막혔어요. 번호를 직접 적어 주세요.', 'error');
+    }
+  });
+  $('[data-admin-open-inline]')?.addEventListener('click', () => $('[data-admin-open]')?.click());
+}
+
+renderComplete();
+
+// 운영 패널 상태 변경 → 같은 스토리지를 읽어 즉시 갱신
+window.addEventListener('campflow:reservations', renderComplete);
+window.addEventListener('storage', renderComplete);
+
+// 예약조회
+$('#lookup-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const codeInput = $('#lk-code').value.trim();
+  const last4 = $('#lk-last4').value.trim();
+  const box = $('#lookup-result');
+  const r = findReservation(codeInput);
+  if (!r || last4 !== '0000') {
+    box.innerHTML = `
+      <div class="state-block state-error" style="padding:24px">
+        <h2 style="font-size:17px">예약번호 또는 샘플 확인코드가 맞지 않아요.</h2>
+        <p>어느 값이 틀렸는지는 안내하지 않습니다. 입력값을 확인하고 다시 시도해 주세요.</p>
+      </div>`;
+    return;
+  }
+  box.innerHTML = `
+    <div style="border:var(--border);border-radius:16px;padding:24px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <h2 style="font-size:20px">${r.campName} · ${r.siteName}</h2>
+        <span class="badge ${STATUS_BADGE[r.status]}">${RESERVATION_STATUS[r.status]}</span>
+      </div>
+      <p class="small num" style="margin-top:8px">${r.code} · ${r.checkIn} ~ ${r.checkOut} · ${r.guests}명 · ₩${formatKRW(r.total)}</p>
+      <div style="margin-top:12px">${timelineHTML(r)}</div>
+      <a class="btn btn-secondary btn-compact" style="margin-top:12px" href="complete.html?code=${encodeURIComponent(r.code)}">상세 보기</a>
+    </div>`;
+  toast('예약을 찾았어요.');
+});
+</script>
+</body>
+</html>

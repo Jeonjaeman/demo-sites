@@ -1,0 +1,196 @@
+[
+  {
+    "file": "camp-caravan-01.webp",
+    "title": "Mountain lake landscape.JPG",
+    "creator": "unsigned",
+    "license": "Public Domain",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Mountain_lake_landscape.JPG",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true,
+    "replaced_visual_round2b": true,
+    "replaced_visual_round2c": true
+  },
+  {
+    "file": "camp-field-01.webp",
+    "title": "Wing Mountain Camping Area: FR 222A",
+    "creator": "Coconino NF Photography",
+    "license": "PDM 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://www.flickr.com/photos/42034606@N05/36222662093",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "camp-forest-01.webp",
+    "title": "Staircase Campground",
+    "creator": "pfly",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_page": "https://www.flickr.com/photos/24934185@N00/3712806839",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "derivative_license": "CC BY-SA 2.0"
+  },
+  {
+    "file": "camp-glamp-01.webp",
+    "title": "The Serai",
+    "creator": "BOMBMAN",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source_page": "https://www.flickr.com/photos/99622129@N00/16186037026",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "camp-glamp-02.webp",
+    "title": "Tent Camping (5f54eba0-1993-47d8-a640-e1038a89471a).JPG",
+    "creator": "NPS Photo",
+    "license": "Public Domain",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Tent_Camping_(5f54eba0-1993-47d8-a640-e1038a89471a).JPG",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  },
+  {
+    "file": "camp-lake-01.webp",
+    "title": "Our mini-tent at De Vier Elementen",
+    "creator": "TijsB",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_page": "https://www.flickr.com/photos/17997014@N00/10494112296",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "derivative_license": "CC BY-SA 2.0"
+  },
+  {
+    "file": "camp-night-01.webp",
+    "title": "Glowing tent in Ryan Campground",
+    "creator": "Joshua Tree National Park",
+    "license": "PDM 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://www.flickr.com/photos/115357548@N08/30774361270",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "camp-river-01.webp",
+    "title": "Views of Hintok River Camp tents located near River Kwai - Thailand",
+    "creator": "kthypryn",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source_page": "https://www.flickr.com/photos/44603071@N00/17120479178",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "detail-01.webp",
+    "title": "Boiling water over campfire at Dewey Lake in William O Douglas Wilderness. (54b8b3daa539454d8e14587e097c2b49).JPG",
+    "creator": "Steve Redman (MORA)",
+    "license": "Public Domain",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Boiling_water_over_campfire_at_Dewey_Lake_in_William_O_Douglas_Wilderness._(54b8b3daa539454d8e14587e097c2b49).JPG",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  },
+  {
+    "file": "detail-02.webp",
+    "title": "Landscape view at campground (53584942642).jpg",
+    "creator": "BLMUtah",
+    "license": "Public Domain",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Landscape_view_at_campground_(53584942642).jpg",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  },
+  {
+    "file": "detail-03.webp",
+    "title": "morning camping espresso",
+    "creator": "sashafatcat",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source_page": "https://www.flickr.com/photos/91255327@N00/2550663360",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "detail-04.webp",
+    "title": "Interieur du camp itinérant / Inside the temporary camp",
+    "creator": "peupleloup",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_page": "https://www.flickr.com/photos/10601432@N08/2640369883",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "derivative_license": "CC BY-SA 2.0"
+  },
+  {
+    "file": "hero-main.webp",
+    "title": "Tent camping Lake crescent campground orange nps photo (22350549763).jpg",
+    "creator": "Olympic National Park",
+    "license": "Public Domain",
+    "license_url": "https://creativecommons.org/publicdomain/mark/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Tent_camping_Lake_crescent_campground_orange_nps_photo_(22350549763).jpg",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  },
+  {
+    "file": "hero-sub-01.webp",
+    "title": "First Snow",
+    "creator": "Jeff Pang",
+    "license": "CC BY 2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source_page": "https://www.flickr.com/photos/29069842@N02/9911335176",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별"
+  },
+  {
+    "file": "hero-sub-02.webp",
+    "title": "Lake Gunn",
+    "creator": "Jocey K",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_page": "https://www.flickr.com/photos/48627921@N05/11144704295",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "derivative_license": "CC BY-SA 2.0"
+  },
+  {
+    "file": "mag-01.webp",
+    "title": "Lake Mountain Landscape.jpg",
+    "creator": "Bonnie Moreland",
+    "license": "CC0 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Lake_Mountain_Landscape.jpg",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  },
+  {
+    "file": "mag-02.webp",
+    "title": "Welcome to Harney County, Oregon",
+    "creator": "Ken Lund",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_page": "https://www.flickr.com/photos/75683070@N00/2580127305",
+    "provider": "flickr",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "derivative_license": "CC BY-SA 2.0"
+  },
+  {
+    "file": "theme-wide.webp",
+    "title": "Scenic landscape of Greek mountains and lake.jpg",
+    "creator": "Jevonin1",
+    "license": "CC0 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Scenic_landscape_of_Greek_mountains_and_lake.jpg",
+    "provider": "Wikimedia Commons 공식 API",
+    "modifications": "중앙 크롭, 리사이즈, WebP 변환 및 손실 압축; 색상 픽셀 보정 없음, 쿨톤 후보 우선 선별",
+    "replaced_in_round2": true
+  }
+]

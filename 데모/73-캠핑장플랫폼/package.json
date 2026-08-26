@@ -1,0 +1,14 @@
+{
+  "name": "campflow-demo73",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "캠핑장 예약 플랫폼 제안용 정적 MVP — 로컬 검증 전용 의존성",
+  "scripts": {
+    "test": "node --test tests/mvp.test.mjs",
+    "qa": "node scripts/qa.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.1"
+  }
+}

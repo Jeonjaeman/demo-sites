@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캠핑장 찾기 — CAMP FLOW(가칭) 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href="index.html"><span class="mark" aria-hidden="true"></span>CAMP FLOW <span class="badge badge-neutral">데모</span></a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a href="search.html" aria-current="page">캠핑장 찾기</a>
+      <a href="index.html">큐레이션</a>
+      <a href="complete.html#lookup">예약조회</a>
+      <a href="complete.html#faq">이용안내</a>
+    </nav>
+    <div class="header-cta"><a class="btn btn-primary btn-compact" href="search.html">날짜로 찾기</a></div>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+  <div class="scrim"></div>
+  <div class="panel">
+    <button class="close-btn" type="button" aria-label="메뉴 닫기">✕</button>
+    <a href="search.html" aria-current="page">캠핑장 찾기</a>
+    <a href="index.html">큐레이션</a>
+    <a href="complete.html#lookup">예약조회</a>
+    <a href="complete.html#faq">이용안내</a>
+    <a class="btn btn-primary" href="search.html" style="margin-top:16px">날짜로 찾기</a>
+  </div>
+</div>
+
+<main id="main" class="container page-head">
+  <p class="eyebrow">캠핑장 찾기</p>
+  <h1 class="page-title" style="margin-top:12px" id="result-title" aria-live="polite">예약 가능한 캠핑장</h1>
+  <p class="lead" style="margin-top:12px" id="result-summary">조건을 확인하고 있어요.</p>
+
+  <!-- 검색 조건 bar -->
+  <form class="search-bar" id="search-form" style="margin-top:32px" action="search.html" method="get">
+    <div class="field">
+      <label for="f-region">지역</label>
+      <select id="f-region" name="region"><option value="">전체</option></select>
+    </div>
+    <div class="field">
+      <label for="f-checkin">체크인 · 체크아웃</label>
+      <div style="display:flex;gap:8px">
+        <input id="f-checkin" name="checkIn" type="date" aria-label="체크인 날짜">
+        <input id="f-checkout" name="checkOut" type="date" aria-label="체크아웃 날짜">
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-guests">인원</label>
+      <select id="f-guests" name="guests">
+        <option value="2">2명</option><option value="3">3명</option>
+        <option value="4">4명</option><option value="6">6명</option>
+      </select>
+    </div>
+    <button class="btn btn-primary search-submit" type="submit">다시 검색</button>
+  </form>
+  <div class="search-compact-summary" aria-live="polite">
+    <strong id="compact-condition"></strong>
+    <button class="btn btn-secondary btn-compact" type="button" id="change-condition">조건 변경</button>
+  </div>
+
+  <!-- 필터 · 정렬 -->
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-top:24px">
+    <div class="filter-row" role="group" aria-label="조건 필터">
+      <button class="chip" type="button" data-filter="pets" aria-pressed="false">반려견 동반</button>
+      <button class="chip" type="button" data-filter="caravan" aria-pressed="false">카라반 진입</button>
+      <button class="chip" type="button" data-filter="electric" aria-pressed="false">전기 사용</button>
+      <button class="chip" type="button" data-filter="fire" aria-pressed="false">화로 가능</button>
+      <select id="f-type" class="select" style="width:auto;min-height:44px" aria-label="캠핑 유형">
+        <option value="">유형 전체</option>
+      </select>
+      <span class="small" id="filter-live" role="status">필터 0개 적용됨</span>
+    </div>
+    <select id="f-sort" class="select" style="width:auto;min-height:44px" aria-label="정렬">
+      <option value="recommended">추천순</option>
+      <option value="priceAsc">낮은 가격순</option>
+      <option value="priceDesc">높은 가격순</option>
+    </select>
+  </div>
+
+  <!-- 결과 -->
+  <section style="margin-top:32px" aria-label="검색 결과">
+    <div id="results" class="grid-results" aria-live="polite"></div>
+    <div id="state-area" style="margin-top:24px"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="complete.html#faq">이용약관(데모)</a>
+      <a href="complete.html#faq">개인정보처리방침(데모)</a>
+      <a href="complete.html#faq">문의</a>
+      <a href="credits.html">이미지 출처·라이선스</a>
+      <button type="button" data-admin-open>운영 데모 패널</button>
+    </div>
+    <p class="demo-notice">이 화면은 캠핑장 예약 MVP의 기능 검증용 데모입니다. 결제는 실제 청구되지 않습니다. 모든 캠핑장·예약자·업체 정보는 실존하지 않는 가상 데이터입니다.</p>
+  </div>
+</footer>
+
+<div class="admin-drawer" role="dialog" aria-modal="true" aria-label="운영 데모 패널">
+  <div class="scrim"></div>
+  <div class="panel">
+    <div class="panel-head">
+      <h2>운영 데모 패널</h2>
+      <span class="badge badge-neutral">가상 데이터</span>
+      <button class="close-btn btn btn-ghost btn-compact" type="button" style="margin-left:auto">닫기</button>
+    </div>
+    <div class="panel-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import { CAMPS, REGIONS, TYPES, defaultDates } from './assets/js/data.js';
+import { boot, $, $$, toast, loadCamps } from './assets/js/app.js';
+import { filterCamps, sortCamps, campStatus, calcNights, AVAILABILITY_LABEL, formatKRW, isISODate } from './assets/js/core.js';
+
+boot();
+const camps = loadCamps().filter((camp) => camp.visible !== false);
+
+const params = new URLSearchParams(location.search);
+const def = defaultDates();
+const guestParam = Number(params.get('guests'));
+const state = {
+  region: REGIONS.includes(params.get('region')) ? params.get('region') : '',
+  checkIn: isISODate(params.get('checkIn')) ? params.get('checkIn') : def.checkIn,
+  checkOut: isISODate(params.get('checkOut')) ? params.get('checkOut') : def.checkOut,
+  guests: [2, 3, 4, 6].includes(guestParam) ? guestParam : 2,
+  type: TYPES.includes(params.get('type')) ? params.get('type') : '',
+  pets: false, caravan: false, electric: false, fire: false,
+  sort: 'recommended',
+};
+if (calcNights(state.checkIn, state.checkOut) < 1 || calcNights(state.checkIn, state.checkOut) > 30) {
+  state.checkIn = def.checkIn;
+  state.checkOut = def.checkOut;
+}
+
+// 컨트롤 초기화
+const regionSel = $('#f-region');
+for (const r of REGIONS) regionSel.insertAdjacentHTML('beforeend', `<option value="${r}">${r}</option>`);
+const typeSel = $('#f-type');
+for (const t of TYPES) typeSel.insertAdjacentHTML('beforeend', `<option value="${t}">${t}</option>`);
+$('#f-region').value = state.region;
+$('#f-checkin').value = state.checkIn;
+$('#f-checkout').value = state.checkOut;
+$('#f-guests').value = String(state.guests);
+typeSel.value = state.type;
+
+$('#search-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const nextCheckIn = $('#f-checkin').value;
+  const nextCheckOut = $('#f-checkout').value;
+  const nextNights = calcNights(nextCheckIn, nextCheckOut);
+  if (nextNights < 1 || nextNights > 30) { toast('체크아웃은 체크인 이후 30일 이내여야 해요.', 'error'); return; }
+  state.region = REGIONS.includes($('#f-region').value) ? $('#f-region').value : '';
+  state.checkIn = nextCheckIn;
+  state.checkOut = nextCheckOut;
+  state.guests = [2, 3, 4, 6].includes(Number($('#f-guests').value)) ? Number($('#f-guests').value) : 2;
+  document.body.classList.remove('search-editing');
+  render(true);
+});
+$('#change-condition').addEventListener('click', () => {
+  document.body.classList.add('search-editing');
+  $('#f-region').focus();
+});
+
+$$('[data-filter]').forEach((chip) => {
+  chip.addEventListener('click', () => {
+    const key = chip.dataset.filter;
+    state[key] = !state[key];
+    chip.setAttribute('aria-pressed', String(state[key]));
+    render(true);
+  });
+});
+typeSel.addEventListener('change', () => { state.type = typeSel.value; render(true); });
+$('#f-sort').addEventListener('change', (e) => { state.sort = e.target.value; render(true); });
+
+function cardHTML(c, i) {
+  const nights = Math.max(1, calcNights(state.checkIn, state.checkOut));
+  const status = campStatus(c, state.checkIn, nights);
+  const badge = { available: 'badge-available', needs_confirmation: 'badge-confirm', sold_out: 'badge-soldout' }[status];
+  const q = new URLSearchParams({ id: c.id, checkIn: state.checkIn, checkOut: state.checkOut, guests: String(state.guests) });
+  return `
+  <article class="card">
+    <a class="card-link" href="camp.html?${q}">
+      <div class="card-img"><img src="${c.image}" alt="${c.name} 풍경 (가상 캠핑장)" width="800" height="600" loading="${i < 2 ? 'eager' : 'lazy'}"></div>
+      <div class="card-body">
+        <p class="card-meta">${c.region} · ${c.type}</p>
+        <h3 class="card-title">${c.name}</h3>
+        <div class="card-tags">${c.tags.slice(0, 3).map((t) => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="card-foot">
+          <p class="card-price">₩${formatKRW(c.pricePerNight)} <small>/ 1박</small></p>
+          <span class="badge ${badge}">${AVAILABILITY_LABEL[status]}</span>
+        </div>
+      </div>
+    </a>
+  </article>`;
+}
+
+function render(withLoading = false) {
+  const results = $('#results');
+  const stateArea = $('#state-area');
+  const nights = Math.max(1, calcNights(state.checkIn, state.checkOut));
+  const filterCount = ['pets', 'caravan', 'electric', 'fire'].filter((k) => state[k]).length + (state.type ? 1 : 0);
+  $('#filter-live').textContent = `필터 ${filterCount}개 적용됨`;
+
+  const doRender = () => {
+    const filtered = sortCamps(filterCamps(camps, state), state.sort);
+    $('#result-title').textContent = `${state.checkIn} ~ ${state.checkOut}, 예약 가능한 캠핑장`;
+    $('#result-summary').textContent = `${filtered.length}개 결과 · ${nights}박 · ${state.guests}명 기준`;
+    $('#compact-condition').textContent = `${state.region || '전체 지역'} · ${state.checkIn.slice(5)}–${state.checkOut.slice(5)} · ${state.guests}명`;
+    results.classList.toggle('results-list-variant', filtered.length > 0 && filtered.length <= 2);
+
+    if (filtered.length === 0) {
+      results.innerHTML = '';
+      stateArea.innerHTML = `
+        <div class="state-block">
+          <svg class="state-icon" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-400)" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/></svg>
+          <h2>선택한 날짜에 예약 가능한 캠핑장이 없어요.</h2>
+          <p>날짜를 바꾸거나 조건을 초기화하면 다시 볼 수 있어요. 선택한 조건은 그대로 두었습니다.</p>
+          <div class="actions">
+            <button class="btn btn-primary" type="button" id="reset-filters">조건 초기화</button>
+            <a class="btn btn-secondary" href="index.html">날짜 바꾸기</a>
+          </div>
+        </div>`;
+      $('#reset-filters').addEventListener('click', () => {
+        for (const k of ['pets', 'caravan', 'electric', 'fire']) {
+          state[k] = false;
+          $(`[data-filter="${k}"]`).setAttribute('aria-pressed', 'false');
+        }
+        Object.assign(state, { region: '', checkIn: def.checkIn, checkOut: def.checkOut, guests: 2, type: '', sort: 'recommended' });
+        $('#f-region').value = '';
+        $('#f-checkin').value = def.checkIn;
+        $('#f-checkout').value = def.checkOut;
+        $('#f-guests').value = '2';
+        typeSel.value = '';
+        $('#f-sort').value = 'recommended';
+        render(true);
+        toast('조건을 초기화했어요.');
+      });
+      return;
+    }
+    stateArea.innerHTML = '';
+    results.innerHTML = filtered.map(cardHTML).join('');
+  };
+
+  if (withLoading) {
+    results.innerHTML = Array.from({ length: 3 }, () => '<div class="skeleton"><div class="sk-img"></div><div class="sk-line"></div><div class="sk-line"></div><div class="sk-line"></div></div>').join('');
+    stateArea.innerHTML = '<p class="small" role="status">선택한 날짜의 예약 가능 여부를 확인하고 있어요.</p>';
+    setTimeout(doRender, 500);
+  } else {
+    doRender();
+  }
+}
+
+render(false);
+</script>
+</body>
+</html>

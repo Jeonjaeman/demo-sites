@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>예약하기 — CAMP FLOW(가칭) 데모</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">본문 바로가기</a>
+<header class="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href="index.html"><span class="mark" aria-hidden="true"></span>CAMP FLOW <span class="badge badge-neutral">데모</span></a>
+    <nav class="main-nav" aria-label="주요 메뉴">
+      <a href="search.html" aria-current="page">캠핑장 찾기</a>
+      <a href="index.html">큐레이션</a>
+      <a href="complete.html#lookup">예약조회</a>
+      <a href="complete.html#faq">이용안내</a>
+    </nav>
+    <div class="header-cta"><a class="btn btn-primary btn-compact" href="search.html">날짜로 찾기</a></div>
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-drawer" role="dialog" aria-modal="true" aria-label="모바일 메뉴">
+  <div class="scrim"></div>
+  <div class="panel">
+    <button class="close-btn" type="button" aria-label="메뉴 닫기">✕</button>
+    <a href="search.html">캠핑장 찾기</a>
+    <a href="index.html">큐레이션</a>
+    <a href="complete.html#lookup">예약조회</a>
+    <a href="complete.html#faq">이용안내</a>
+    <a class="btn btn-primary" href="search.html" style="margin-top:16px">날짜로 찾기</a>
+  </div>
+</div>
+
+<main id="main" class="container page-head">
+  <div id="booking-root"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-links">
+      <a href="complete.html#faq">이용약관(데모)</a>
+      <a href="complete.html#faq">개인정보처리방침(데모)</a>
+      <a href="complete.html#faq">문의</a>
+      <a href="credits.html">이미지 출처·라이선스</a>
+      <button type="button" data-admin-open>운영 데모 패널</button>
+    </div>
+    <p class="demo-notice">이 화면은 캠핑장 예약 MVP의 기능 검증용 데모입니다. 결제는 실제 청구되지 않습니다. 모든 캠핑장·예약자·업체 정보는 실존하지 않는 가상 데이터입니다.</p>
+  </div>
+</footer>
+
+<div class="admin-drawer" role="dialog" aria-modal="true" aria-label="운영 데모 패널">
+  <div class="scrim"></div>
+  <div class="panel">
+    <div class="panel-head">
+      <h2>운영 데모 패널</h2>
+      <span class="badge badge-neutral">가상 데이터</span>
+      <button class="close-btn btn btn-ghost btn-compact" type="button" style="margin-left:auto">닫기</button>
+    </div>
+    <div class="panel-body"></div>
+  </div>
+</div>
+
+<script type="module">
+import { CAMPS, SAMPLE_BOOKER, SAMPLE_CARDS, defaultDates } from './assets/js/data.js';
+import { boot, $, $$, toast, loadReservations, saveReservations, loadCamps } from './assets/js/app.js';
+import { calcNights, calcTotal, calcRefund, siteStatus, requestSite, generateReservationCode, formatKRW, parseBookingParams, validateReservationSelection } from './assets/js/core.js';
+
+boot();
+
+const params = new URLSearchParams(location.search);
+const def = defaultDates();
+const camps = loadCamps();
+const defaults = { campId: CAMPS[0].id, siteId: CAMPS[0].sites[0].id, checkIn: def.checkIn, checkOut: def.checkOut, guests: 2 };
+const parsed = parseBookingParams({ id: params.get('id'), siteId: params.get('siteId'), checkIn: params.get('checkIn'), checkOut: params.get('checkOut'), guests: params.get('guests') }, camps, defaults);
+const camp = camps.find((c) => c.id === parsed.value.campId);
+const root = $('#booking-root');
+
+if (!camp) {
+  root.innerHTML = `<div class="state-block" style="margin-top:48px"><h1>캠핑장을 찾을 수 없어요.</h1><div class="actions"><a class="btn btn-primary" href="search.html">캠핑장 찾기</a></div></div>`;
+} else {
+  const state = {
+    step: 1,
+    paramsAccepted: parsed.ok,
+    checkIn: parsed.value.checkIn,
+    checkOut: parsed.value.checkOut,
+    guests: parsed.value.guests,
+    siteId: parsed.value.siteId,
+    options: Object.fromEntries(camp.options.map((o) => [o.id, 0])),
+    sampleBookerSelected: false, agreeRequired: false,
+    card: SAMPLE_CARDS[0].id,
+    scenario: 'success',
+    paying: false,
+  };
+  const nights = () => calcNights(state.checkIn, state.checkOut);
+  const site = () => camp.sites.find((s) => s.id === state.siteId);
+  const validateCurrent = () => state.paramsAccepted
+    ? validateReservationSelection({ camps, campId: camp.id, siteId: state.siteId, checkIn: state.checkIn, checkOut: state.checkOut, guests: state.guests, existingRequests: loadReservations() })
+    : { ok: false, code: 'invalid_params', message: '주소의 예약 조건이 유효하지 않아요. 기본값으로 다시 시작해 주세요.' };
+  const totals = () => calcTotal({
+    nights: nights(),
+    pricePerNight: site().price,
+    options: camp.options.map((o) => ({ price: o.price, qty: state.options[o.id] })),
+  });
+
+  root.innerHTML = `
+    <p class="eyebrow">예약하기</p>
+    <h1 class="page-title" style="margin-top:12px" tabindex="-1" id="step-title">날짜와 인원을 확인해 주세요</h1>
+    <div style="margin-top:24px">
+      <ol class="steps" aria-label="예약 단계">
+        <li class="step" data-step="1"><span class="n">1</span>날짜·인원</li>
+        <li class="step" data-step="2"><span class="n">2</span>옵션</li>
+        <li class="step" data-step="3"><span class="n">3</span>예약자 정보</li>
+        <li class="step" data-step="4"><span class="n">4</span>결제 시뮬레이션</li>
+      </ol>
+      <div class="step-bar" role="status"><span id="step-bar-text">1 / 4 날짜·인원</span><div class="bar"><i id="step-bar-fill" style="width:25%"></i></div></div>
+    </div>
+    <div class="booking-compact-summary" aria-live="polite"><span id="compact-date"></span><span id="compact-site"></span><span id="compact-status"></span><strong id="compact-total" class="num"></strong></div>
+    ${parsed.ok ? '' : '<div class="state-block state-error" style="padding:16px;margin-top:16px"><p>주소의 예약 조건이 유효하지 않아 진행을 차단했어요.</p><button class="btn btn-secondary" type="button" id="accept-safe-defaults">안전한 기본값으로 다시 시작</button></div>'}
+
+    <div class="detail-layout" style="margin-top:32px">
+      <div id="step-body"></div>
+      <aside class="sticky-panel" aria-label="주문 요약">
+        <h2 style="font-size:20px">주문 요약</h2>
+        <dl id="summary"></dl>
+        <p class="small">데모 결제 · 실제 청구 없음. 예약은 담당자가 캠핑장에 확인한 뒤 확정됩니다.</p>
+        <div id="refund-mini" class="small"></div>
+      </aside>
+    </div>
+    <div class="booking-mobile-sticky"><div><span class="small">데모 총액</span><strong class="num" id="sticky-total"></strong></div><button class="btn btn-primary" type="button" id="booking-sticky-next">다음</button></div>`;
+
+  const body = $('#step-body');
+  $('#booking-sticky-next').addEventListener('click', () => body.querySelector('#next-1, #next-2, #next-3, #pay-btn')?.click());
+  $('#accept-safe-defaults')?.addEventListener('click', () => {
+    state.paramsAccepted = true;
+    $('#accept-safe-defaults').closest('.state-block').remove();
+    toast('안전한 데모 기본값으로 복구했어요.');
+  });
+
+  function renderSummary() {
+    const t = totals();
+    const status = siteStatus(camp, state.siteId, state.checkIn, Math.max(1, nights()));
+    const statusLabel = status === 'available' ? '예약 가능' : status === 'needs_confirmation' ? '확인 필요' : '마감';
+    const optRows = camp.options.filter((o) => state.options[o.id] > 0)
+      .map((o) => `<div class="summary-row"><dt>${o.name} × ${state.options[o.id]}</dt><dd class="num">₩${formatKRW(o.price * state.options[o.id])}</dd></div>`).join('');
+    $('#summary').innerHTML = `
+      <div class="summary-row"><dt>캠핑장</dt><dd>${camp.name}</dd></div>
+      <div class="summary-row"><dt>사이트</dt><dd>${site().name}</dd></div>
+      <div class="summary-row"><dt>날짜</dt><dd class="num">${state.checkIn} ~ ${state.checkOut} (${nights()}박)</dd></div>
+      <div class="summary-row"><dt>인원</dt><dd class="num">${state.guests}명</dd></div>
+      <div class="summary-row"><dt>사이트 상태</dt><dd>${statusLabel}</dd></div>
+      <div class="summary-row"><dt>숙박 금액</dt><dd class="num">₩${formatKRW(t.stay)}</dd></div>
+      ${optRows}
+      <div class="summary-row summary-total"><dt>총액</dt><dd id="summary-total" class="num">₩${formatKRW(t.total)}</dd></div>`;
+    $('#compact-date').textContent = `${state.checkIn.slice(5)}–${state.checkOut.slice(5)}`;
+    $('#compact-site').textContent = site().name;
+    $('#compact-status').textContent = statusLabel;
+    $('#compact-total').textContent = `₩${formatKRW(t.total)}`;
+    $('#sticky-total').textContent = `₩${formatKRW(t.total)}`;
+    const daysBefore = Math.max(0, Math.round((new Date(state.checkIn) - new Date(new Date().toISOString().slice(0, 10))) / 86400000));
+    const r = calcRefund(daysBefore, t.stay, t.optionsTotal);
+    $('#refund-mini').innerHTML = `지금 취소 시(체크인 ${daysBefore}일 전 기준) 숙박 ₩${formatKRW(r.stayRefund)} + 옵션 ₩${formatKRW(r.optionRefund)} 환불 예상 · 데모 계산`;
+  }
+
+  function animateTotal() {
+    const el = $('#summary-total');
+    if (!el) return;
+    const t = totals().total;
+    el.style.minWidth = el.offsetWidth + 'px';
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = '₩' + formatKRW(t);
+      return;
+    }
+    const start = t * 0.7;
+    const t0 = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - t0) / 1000);
+      el.textContent = '₩' + formatKRW(Math.round(start + (t - start) * p));
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function setStep(n) {
+    state.step = n;
+    $$('.step').forEach((el) => {
+      const s = Number(el.dataset.step);
+      el.classList.toggle('done', s < n);
+      if (s === n) el.setAttribute('aria-current', 'step');
+      else el.removeAttribute('aria-current');
+    });
+    $('#step-bar-text').textContent = `${n} / 4 ${['날짜·인원', '옵션 선택', '예약자 정보', '결제 시뮬레이션'][n - 1]}`;
+    $('#step-bar-fill').style.width = `${n * 25}%`;
+    renderStep();
+    renderSummary();
+    $('#booking-sticky-next').textContent = n === 4 ? '결제 시뮬레이션' : '다음';
+    const title = $('#step-title');
+    title.textContent = ['날짜와 인원을 확인해 주세요', '함께 요청할 옵션을 골라 주세요', '예약자 정보를 입력해 주세요', '결제 시뮬레이션을 진행해 주세요'][n - 1];
+    title.focus();
+  }
+
+  function renderStep() {
+    if (state.step === 1) {
+      body.innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:20px;max-width:560px">
+          <div class="field"><label for="b-checkin">체크인</label><input class="input" id="b-checkin" type="date" value="${state.checkIn}"></div>
+          <div class="field"><label for="b-checkout">체크아웃</label><input class="input" id="b-checkout" type="date" value="${state.checkOut}"></div>
+          <div class="field"><label for="b-guests">인원</label>
+            <select class="select" id="b-guests">${[2, 3, 4, 6].map((g) => `<option value="${g}" ${g === state.guests ? 'selected' : ''}>${g}명</option>`).join('')}</select></div>
+          <div class="field"><label for="b-site">사이트</label>
+            <select class="select" id="b-site">${camp.sites.map((s) => {
+              const st = siteStatus(camp, s.id, state.checkIn, nights());
+              return `<option value="${s.id}" ${s.id === state.siteId ? 'selected' : ''} ${st === 'sold_out' ? 'disabled' : ''}>${s.name} · ₩${formatKRW(s.price)} · ${st === 'sold_out' ? '마감' : st === 'needs_confirmation' ? '확인 필요' : '가능'}</option>`;
+            }).join('')}</select></div>
+          <button class="btn btn-primary" type="button" id="next-1">옵션 선택</button>
+        </div>`;
+      $('#b-checkin').addEventListener('change', (e) => { state.checkIn = e.target.value; renderSummary(); renderStep(); });
+      $('#b-checkout').addEventListener('change', (e) => { state.checkOut = e.target.value; renderSummary(); });
+      $('#b-guests').addEventListener('change', (e) => { state.guests = Number(e.target.value); renderSummary(); });
+      $('#b-site').addEventListener('change', (e) => { state.siteId = e.target.value; renderSummary(); });
+      $('#next-1').addEventListener('click', () => {
+        const validation = validateCurrent();
+        if (!validation.ok) { toast(validation.message, 'error'); return; }
+        setStep(2);
+      });
+    }
+
+    if (state.step === 2) {
+      body.innerHTML = `
+        <div style="max-width:640px">
+          <p class="small">수량을 바꾸면 오른쪽 주문 요약의 총액이 바로 계산됩니다. 옵션을 고르지 않아도 예약할 수 있어요.</p>
+          <div style="margin-top:8px">
+            ${camp.options.map((o) => `
+              <div class="option-row">
+                <div class="o-info"><p class="o-name">${o.name}</p><p class="o-price num">₩${formatKRW(o.price)} / ${o.unit}</p></div>
+                <div class="qty">
+                  <button type="button" data-dec="${o.id}" aria-label="${o.name} 수량 줄이기" ${state.options[o.id] === 0 ? 'disabled' : ''}>−</button>
+                  <output aria-live="polite" aria-label="${o.name} 수량" id="qty-${o.id}">${state.options[o.id]}</output>
+                  <button type="button" data-inc="${o.id}" aria-label="${o.name} 수량 늘리기">+</button>
+                </div>
+              </div>`).join('')}
+          </div>
+          <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+            <button class="btn btn-secondary" type="button" id="prev-2">이전</button>
+            <button class="btn btn-primary" type="button" id="next-2">예약자 정보</button>
+          </div>
+        </div>`;
+      body.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => {
+        const id = b.dataset.inc;
+        state.options[id] += 1;
+        $('#qty-' + id).textContent = state.options[id];
+        body.querySelector(`[data-dec="${id}"]`).disabled = false;
+        renderSummary();
+        animateTotal();
+      }));
+      body.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => {
+        const id = b.dataset.dec;
+        state.options[id] = Math.max(0, state.options[id] - 1);
+        $('#qty-' + id).textContent = state.options[id];
+        if (state.options[id] === 0) b.disabled = true;
+        renderSummary();
+      }));
+      $('#prev-2').addEventListener('click', () => setStep(1));
+      $('#next-2').addEventListener('click', () => setStep(3));
+    }
+
+    if (state.step === 3) {
+      body.innerHTML = `
+        <div style="max-width:560px;display:flex;flex-direction:column;gap:20px">
+          <div id="error-summary" class="state-block state-error" style="display:none;padding:16px;text-align:left" role="alert"></div>
+          <div class="state-block" style="padding:20px;text-align:left;align-items:flex-start">
+            <h2 style="font-size:18px">공개 데모는 샘플 예약자만 사용합니다.</h2>
+            <p>실제 이름·전화번호·이메일은 입력하거나 저장할 수 없습니다. 아래 가상 샘플을 선택하면 예약 레코드에는 개인 식별 정보 대신 <strong>sample-booker</strong> 식별자만 저장됩니다.</p>
+          </div>
+          <button class="card sample-booker-card" type="button" id="select-sample" aria-pressed="${state.sampleBookerSelected}" style="padding:20px;text-align:left">
+            <strong>${SAMPLE_BOOKER.name} · ${SAMPLE_BOOKER.phone}</strong>
+            <span class="small">가상 샘플 예약자 · 실제 개인정보 아님</span>
+          </button>
+          <label class="checkline" id="cw-agree"><input type="checkbox" id="b-agree" ${state.agreeRequired ? 'checked' : ''}>
+            <span>(필수) 샘플 데이터 사용과 취소·환불 데모 정책을 확인했습니다. 실제 개인정보와 결제정보는 처리하지 않습니다.</span></label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-secondary" type="button" id="prev-3">이전</button>
+            <button class="btn btn-primary" type="button" id="next-3">결제 시뮬레이션</button>
+          </div>
+        </div>`;
+      $('#select-sample').addEventListener('click', () => {
+        state.sampleBookerSelected = true;
+        $('#select-sample').setAttribute('aria-pressed', 'true');
+        toast('가상 샘플 예약자를 선택했어요.');
+      });
+      $('#prev-3').addEventListener('click', () => setStep(2));
+      $('#next-3').addEventListener('click', () => {
+        state.agreeRequired = $('#b-agree').checked;
+        const errors = [];
+        if (!state.sampleBookerSelected) errors.push(['select-sample', '가상 샘플 예약자를 선택해 주세요.']);
+        if (!state.agreeRequired) errors.push(['b-agree', '필수 확인을 체크해 주세요.']);
+        const box = $('#error-summary');
+        if (errors.length) {
+          box.style.display = 'flex';
+          box.innerHTML = `<div><h2 style="font-size:16px">입력을 확인해 주세요 (${errors.length}건)</h2><ul style="margin-top:8px;list-style:disc;padding-left:20px">${errors.map(([, m]) => `<li>${m}</li>`).join('')}</ul></div>`;
+          $('#' + errors[0][0]).focus();
+          return;
+        }
+        box.style.display = 'none';
+        setStep(4);
+      });
+    }
+
+    if (state.step === 4) {
+      const t = totals();
+      body.innerHTML = `
+        <div style="max-width:560px;display:flex;flex-direction:column;gap:20px">
+          <div class="state-block state-loading" style="padding:20px;text-align:left;align-items:flex-start">
+            <h2 style="font-size:17px">이 단계는 결제 시뮬레이션입니다.</h2>
+            <p style="color:var(--color-ink-900)">실제 PG와 연결되지 않으며 어떤 금액도 청구되지 않습니다. 결과 시나리오를 골라 흐름을 체험해 보세요.</p>
+          </div>
+          <div class="field"><label>데모 카드 선택 (실제 카드번호를 입력하지 마세요)</label>
+            <div class="filter-row" role="radiogroup" aria-label="데모 카드">
+              ${SAMPLE_CARDS.map((c) => `<button class="chip" type="button" role="radio" aria-checked="${c.id === state.card}" data-card="${c.id}">${c.label} ····${c.last4}</button>`).join('')}
+            </div></div>
+          <div class="field"><label>결과 시나리오</label>
+            <div class="filter-row" role="radiogroup" aria-label="결제 시뮬레이션 결과">
+              <button class="chip" type="button" role="radio" aria-checked="${state.scenario === 'success'}" data-sc="success">승인 성공</button>
+              <button class="chip" type="button" role="radio" aria-checked="${state.scenario === 'error'}" data-sc="error">승인 실패</button>
+              <button class="chip" type="button" role="radio" aria-checked="${state.scenario === 'cancel'}" data-sc="cancel">사용자 취소</button>
+            </div></div>
+          <dl style="border:var(--border);border-radius:12px;padding:20px">
+            <div class="summary-row"><dt>주문명</dt><dd>${camp.name} ${nights()}박</dd></div>
+            <div class="summary-row"><dt>결제 시뮬레이션 금액</dt><dd class="num">₩${formatKRW(t.total)}</dd></div>
+            <div class="summary-row"><dt>실제 청구</dt><dd class="num" style="color:var(--color-success-700)">0원</dd></div>
+          </dl>
+          <div id="pay-result" aria-live="assertive"></div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="btn btn-secondary" type="button" id="prev-4">이전</button>
+            <button class="btn btn-primary" type="button" id="pay-btn">₩${formatKRW(t.total)} 결제 시뮬레이션 완료</button>
+          </div>
+        </div>`;
+
+      body.querySelectorAll('[data-card]').forEach((b) => b.addEventListener('click', () => {
+        state.card = b.dataset.card;
+        body.querySelectorAll('[data-card]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+      }));
+      body.querySelectorAll('[data-sc]').forEach((b) => b.addEventListener('click', () => {
+        state.scenario = b.dataset.sc;
+        body.querySelectorAll('[data-sc]').forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+        $('#pay-result').innerHTML = '';
+      }));
+      $('#prev-4').addEventListener('click', () => setStep(3));
+
+      $('#pay-btn').addEventListener('click', () => {
+        if (state.paying) return;
+        const beforePayment = validateCurrent();
+        if (!beforePayment.ok) {
+          $('#pay-result').innerHTML = `<div class="state-block state-error" style="padding:20px"><h2 style="font-size:17px">예약 조건을 다시 확인해 주세요.</h2><p>${beforePayment.message} 입력한 옵션과 샘플 선택은 유지됩니다.</p><button class="btn btn-secondary" type="button" id="return-condition">날짜·사이트 확인</button></div>`;
+          $('#return-condition').addEventListener('click', () => setStep(1));
+          return;
+        }
+        state.paying = true;
+        const btn = $('#pay-btn');
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
+        btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> 결제 시뮬레이션 처리 중';
+        $('#pay-result').innerHTML = '<p class="small" role="status">마지막으로 예약 가능 여부를 확인하고 있어요. 실제 승인이 아닌 처리 시뮬레이션입니다.</p>';
+
+        setTimeout(() => {
+          state.paying = false;
+          btn.disabled = false;
+          btn.removeAttribute('aria-busy');
+          btn.textContent = `₩${formatKRW(totals().total)} 결제 시뮬레이션 완료`;
+
+          if (state.scenario === 'error') {
+            $('#pay-result').innerHTML = `
+              <div class="state-block state-error" style="padding:20px;text-align:left;align-items:flex-start">
+                <h2 style="font-size:17px">결제 시뮬레이션을 완료하지 못했어요. 실제 청구는 발생하지 않았습니다.</h2>
+                <p>입력한 예약 정보와 옵션은 그대로 유지됩니다. 다시 시도하거나 결과 시나리오를 바꿔 보세요.</p>
+              </div>`;
+            return;
+          }
+          if (state.scenario === 'cancel') {
+            $('#pay-result').innerHTML = `
+              <div class="state-block" style="padding:20px;text-align:left;align-items:flex-start">
+                <h2 style="font-size:17px">결제 시뮬레이션을 취소했어요. 입력한 예약 정보는 유지됩니다.</h2>
+                <p>실제 결제는 발생하지 않았습니다. 이전 단계로 돌아가 내용을 바꿀 수도 있어요.</p>
+              </div>`;
+            return;
+          }
+
+          // 승인 성공: 중복 요청 검사 후 예약 생성
+          const existing = loadReservations();
+          const finalValidation = validateCurrent();
+          if (!finalValidation.ok) {
+            $('#pay-result').innerHTML = `<div class="state-block state-error" style="padding:20px"><h2 style="font-size:17px">마지막 재고 확인에서 예약을 진행할 수 없어요.</h2><p>${finalValidation.message} 입력한 옵션과 샘플 선택은 유지됩니다.</p><button class="btn btn-secondary" type="button" id="return-condition">날짜·사이트 확인</button></div>`;
+            $('#return-condition').addEventListener('click', () => setStep(1));
+            return;
+          }
+          const req = requestSite(camp, state.siteId, state.checkIn, nights(), existing.map((r) => ({ ...r, siteId: r.siteId, campId: r.campId })));
+          const code = generateReservationCode(state.checkIn, existing.length + 1);
+          const t2 = totals();
+          const reservation = {
+            code,
+            campId: camp.id, campName: camp.name,
+            siteId: state.siteId, siteName: site().name,
+            checkIn: state.checkIn, checkOut: state.checkOut, nights: nights(),
+            guests: state.guests,
+            options: camp.options.filter((o) => state.options[o.id] > 0).map((o) => ({ name: o.name, qty: state.options[o.id], price: o.price })),
+            stay: t2.stay, optionsTotal: t2.optionsTotal, total: t2.total,
+            booker: { sampleId: 'sample-booker' },
+            card: SAMPLE_CARDS.find((c) => c.id === state.card).label,
+            status: req.status === 'alternative_offered' ? 'alternative' : 'received',
+            alternatives: req.alternatives || [],
+            history: [{ status: req.status === 'alternative_offered' ? 'alternative' : 'received', at: new Date().toISOString() }],
+            createdAt: new Date().toISOString(),
+            simulated: true,
+          };
+          saveReservations([...existing, reservation]);
+          location.href = `complete.html?code=${encodeURIComponent(code)}`;
+        }, 900);
+      });
+    }
+  }
+
+  setStep(1);
+}
+</script>
+</body>
+</html>
