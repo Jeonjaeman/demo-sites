@@ -55,6 +55,18 @@ test('금지 패턴이 없다: transition all, GSAP, Lenis, 스크롤 하이재�
   assert.ok(!/100vh/.test(css), '100vh 강제');
 });
 
+test('컨트롤 테두리는 8~16px radius를 쓰고 pill은 배지와 원형 상태에만 남긴다', () => {
+  const css = read('assets/css/style.css');
+  assert.match(css, /--radius-control:\s*12px/);
+  assert.match(css, /\.btn\s*\{[^}]*border-radius:\s*var\(--radius-control\)/s);
+  assert.match(css, /\.search-bar\s*\{[^}]*border-radius:\s*var\(--radius-panel\)/s);
+  assert.match(css, /\.chip\s*\{[^}]*border-radius:\s*var\(--radius-control\)/s);
+  assert.match(css, /\.input, \.select, \.textarea\s*\{[^}]*border-radius:\s*var\(--radius-control\)/s);
+  for (const selector of ['btn', 'chip', 'search-bar', 'step', 'qty']) {
+    assert.doesNotMatch(css, new RegExp(`\\.${selector}[^\\{]*\\{[^}]*border-radius:\\s*var\\(--radius-pill\\)`, 's'));
+  }
+});
+
 test('실제 개인정보로 보이는 값이 없다 (샘플은 010-0000 계열)', () => {
   const data = read('assets/js/data.js');
   assert.ok(!/010-[1-9]\d{3}-\d{4}/.test(data), '실제처럼 보이는 전화번호');
