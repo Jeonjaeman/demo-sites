@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23002f73%27/%3E%3Ctext x=%2716%27 y=%2721%27 font-family=%27Arial%27 font-size=%2713%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3EHG%3C/text%3E%3C/svg%3E">
+<title>공지 상세 — 헤리가드공제조합 (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-popup="off">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="헤리가드공제조합 메인으로"><span class="logo-mark" aria-hidden="true">HG</span><span class="logo-txt"><strong>헤리가드공제조합</strong><span>HERIGUARD</span></span></a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="about.html">조합소개</a><a href="business.html">조합업무</a><a href="verify.html">발급사실조회</a><a href="notice.html" aria-current="page">공지사항</a><a href="library.html">자료실</a><a href="support.html">고객센터</a>
+    </nav>
+    <a class="header-cta" href="login.html">조합원 로그인</a>
+    <button class="menu-btn" type="button" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="모바일 메뉴"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="메뉴 닫기">×</button>
+  <a href="about.html">조합소개</a><a href="business.html">조합업무</a><a href="verify.html">발급사실조회</a><a href="notice.html" aria-current="page">공지사항</a><a href="library.html">자료실</a><a href="support.html">고객센터</a><a href="login.html"><strong>조합원 로그인</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><span>›</span><a href="notice.html">공지사항</a><span>›</span><span>상세</span></nav>
+      <span class="eyebrow" id="v-cat">Notice</span>
+      <h1 id="v-title" style="font-size:34px">공지 상세</h1>
+      <p id="v-meta" class="num-en"></p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell" style="max-width:840px">
+      <div class="panel">
+        <div id="v-body" style="font-size:16.5px;line-height:1.9;color:var(--ink-2);white-space:pre-line"></div>
+        <div id="v-file" style="margin-top:28px"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:24px;gap:12px;flex-wrap:wrap">
+        <a class="btn btn-ghost btn-sm" href="notice.html">목록으로</a>
+        <div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" type="button" id="prev-btn">이전 글</button><button class="btn btn-ghost btn-sm" type="button" id="next-btn">다음 글</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+    <span>© 2026 HERIGUARD Mutual Aid Association. 데모 산출물.</span>
+    <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+  </div></div>
+</footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  var $ = HGCore.$;
+  var id = +(new URLSearchParams(location.search).get('id') || HG.NOTICES[0].id);
+  var sorted = HG.NOTICES.slice().sort(function (a, b) { return b.id - a.id; });
+  var idx = sorted.findIndex(function (n) { return n.id === id; });
+  if (idx < 0) idx = 0;
+  var n = sorted[idx];
+  document.title = n.title + ' — 헤리가드공제조합 (데모)';
+  $('#v-cat').textContent = n.cat;
+  $('#v-title').textContent = n.title;
+  $('#v-meta').textContent = n.date + ' · 조회 ' + n.views.toLocaleString();
+  $('#v-body').textContent = n.body;
+  if (n.file) {
+    $('#v-file').innerHTML = '<div style="border-top:1px solid var(--line);padding-top:18px"><b style="font-size:14px">첨부파일</b><br>' +
+      '<button class="btn btn-ghost btn-sm" type="button" id="dl" style="margin-top:10px">📎 ' + n.file + '</button></div>';
+    $('#dl').addEventListener('click', function () {
+      var blob = new Blob(['﻿헤리가드공제조합 데모 첨부파일 — ' + n.file + '\n(실제 파일 자리, 가상 데이터)'], { type: 'text/plain;charset=utf-8' });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = n.file.replace(/\.[^.]+$/, '') + '.txt'; a.click();
+      HGCore.toast('첨부파일을 내려받았습니다 (데모)');
+    });
+  }
+  function go(delta) {
+    var t = sorted[idx + delta];
+    if (t) location.href = 'notice-view.html?id=' + t.id;
+    else HGCore.toast(delta < 0 ? '최신 글입니다' : '마지막 글입니다');
+  }
+  $('#prev-btn').addEventListener('click', function () { go(-1); });
+  $('#next-btn').addEventListener('click', function () { go(1); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23002f73%27/%3E%3Ctext x=%2716%27 y=%2721%27 font-family=%27Arial%27 font-size=%2713%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3EHG%3C/text%3E%3C/svg%3E">
+<title>발급 사실 조회 — 헤리가드공제조합 (데모)</title>
+<meta name="description" content="보증서·공제증서의 발급 여부와 유효성을 비회원 상태로 확인하고 조회 확인서를 출력합니다. 데모 — 모든 데이터는 가상입니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-popup="off">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="헤리가드공제조합 메인으로">
+      <span class="logo-mark" aria-hidden="true">HG</span>
+      <span class="logo-txt"><strong>헤리가드공제조합</strong><span>HERIGUARD</span></span>
+    </a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="about.html">조합소개</a>
+      <a href="business.html">조합업무</a>
+      <a href="verify.html" aria-current="page">발급사실조회</a>
+      <a href="notice.html">공지사항</a>
+      <a href="library.html">자료실</a>
+      <a href="support.html">고객센터</a>
+    </nav>
+    <a class="header-cta" href="login.html">조합원 로그인</a>
+    <button class="menu-btn" type="button" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="모바일 메뉴">
+  <div class="drawer-bg"></div>
+  <nav class="drawer-panel">
+    <button class="drawer-close" type="button" aria-label="메뉴 닫기">×</button>
+    <a href="about.html">조합소개</a>
+    <a href="business.html">조합업무</a>
+    <a href="verify.html" aria-current="page">발급사실조회</a>
+    <a href="notice.html">공지사항</a>
+    <a href="library.html">자료실</a>
+    <a href="support.html">고객센터</a>
+    <a href="login.html"><strong>조합원 로그인</strong></a>
+  </nav>
+</div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><span>›</span><span>발급 사실 조회</span></nav>
+      <span class="eyebrow">Certificate Verification</span>
+      <h1>발급 사실 조회</h1>
+      <p>제출받은 보증서·공제증서의 발급 여부와 유효성을 회원가입 없이 확인합니다.
+      보증서 실물에 기재된 정보를 그대로 입력해 주세요 — 실물을 소지한 분만 조회할 수 있도록 여러 항목을 함께 대조합니다.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="verify-wrap">
+        <div>
+          <div class="panel">
+            <h2>증서 정보 입력</h2>
+            <p class="panel-sub">증서 종류·증권번호·발급일자·보증금액이 <strong>전부 일치해야</strong> 조회됩니다.
+            (업계 표준 다중 대조 — 무작위 대입을 막기 위한 설계입니다)</p>
+
+            <div class="demo-strip" role="group" aria-label="데모 체험용 예시">
+              <span class="ds-label">예시로 조회</span>
+              <button class="chip" type="button" data-demo="0">유효한 계약보증</button>
+              <button class="chip" type="button" data-demo="1">만료된 하자보증</button>
+              <button class="chip" type="button" data-demo="mismatch">금액이 다른 입력</button>
+              <button class="chip" type="button" data-demo="clear">지우기</button>
+            </div>
+
+            <div class="mode-row">
+              <span class="mode-label">입력 방식</span>
+              <div class="seg" role="group" aria-label="입력 방식 선택">
+                <button type="button" id="mode-multi" aria-pressed="true">다중 대조 (권장)</button>
+                <button type="button" id="mode-single" aria-pressed="false">증권번호 단독 (비교 시연)</button>
+              </div>
+            </div>
+            <div class="mode-row">
+              <span class="mode-label">연계 방식</span>
+              <div class="seg" role="group" aria-label="기존 시스템 연계 방식 (제안 검토용)">
+                <button type="button" data-link="api" aria-pressed="true">신규 조회 API</button>
+                <button type="button" data-link="screen" aria-pressed="false">기존 화면 연계</button>
+                <button type="button" data-link="mirror" aria-pressed="false">야간 미러 DB</button>
+              </div>
+            </div>
+            <div class="link-meta" id="link-meta" aria-live="polite"></div>
+
+            <form id="verify-form" class="verify-form" style="margin-top:24px" novalidate>
+              <div class="field">
+                <label for="f-type">증서 종류 <span class="req" aria-hidden="true">*</span></label>
+                <select id="f-type" required>
+                  <option value="">선택하세요</option>
+                  <option value="CT">계약보증</option>
+                  <option value="AD">선금급보증</option>
+                  <option value="DF">하자보수보증</option>
+                  <option value="PY">지급보증</option>
+                  <option value="MU">공제증서</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-no">증권번호 <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-no" type="text" inputmode="text" placeholder="예) 2026-CT-0001201" autocomplete="off" required>
+                <span class="hint">보증서 우측 상단에 기재되어 있습니다</span>
+              </div>
+              <div class="field" data-multi>
+                <label for="f-date">발급일자 <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-date" type="date" required>
+              </div>
+              <div class="field" data-multi>
+                <label for="f-amount">보증금액(원) <span class="req" aria-hidden="true">*</span></label>
+                <input id="f-amount" type="text" inputmode="numeric" placeholder="콤마 없이 숫자만" autocomplete="off" required>
+                <span class="hint">원 단위 · 콤마(,) 없이 입력</span>
+              </div>
+              <div class="full">
+                <button class="btn btn-primary" type="submit" style="width:100%">조회하기</button>
+              </div>
+            </form>
+
+            <div id="quota-line" class="result-note" aria-live="polite"></div>
+
+            <div class="result-box" id="result-box" hidden aria-live="polite"></div>
+
+            <div class="attack-box" id="attack-box" hidden>
+              <h3>⚠ 연속 조회 시뮬레이션 — 증권번호 단독 입력의 위험</h3>
+              <p style="font-size:14px;color:var(--ink-2)">증권번호는 연번입니다. 단독 입력을 허용하면 번호를 1씩 올려가며
+              다른 조합원의 증서를 차례로 조회할 수 있습니다. 아래 버튼으로 직접 확인해 보세요.</p>
+              <button class="btn btn-ghost btn-sm" type="button" id="attack-run" style="margin-top:12px">번호 30개 연속 조회 실행</button>
+              <div class="attack-log" id="attack-log" hidden></div>
+              <div class="attack-sum" id="attack-sum" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div class="panel" id="cert-panel" hidden style="margin-top:28px">
+            <h2>조회 확인서</h2>
+            <p class="panel-sub">조회 결과를 결재 증빙용 확인서로 출력합니다. 확인서의 검증번호로 언제든 같은 조회 내역을 재확인할 수 있습니다.</p>
+            <div class="cert-doc" id="cert-doc"></div>
+            <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="cert-close">닫기</button>
+            </div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <h2 style="font-size:18px">검증번호 재조회</h2>
+            <p class="panel-sub">발급받은 조회 확인서의 검증번호로 조회 내역을 재확인합니다.</p>
+            <div class="field">
+              <label for="f-verify-no">검증번호</label>
+              <input id="f-verify-no" type="text" placeholder="예) V-2026-000001" autocomplete="off">
+            </div>
+            <button class="btn btn-ghost btn-sm" type="button" id="verify-again" style="margin-top:12px;width:100%">재조회</button>
+            <div id="verify-again-out" class="result-note" aria-live="polite"></div>
+          </div>
+          <div class="panel" style="margin-top:20px">
+            <h2 style="font-size:18px">이용 안내</h2>
+            <ul style="display:flex;flex-direction:column;gap:12px;font-size:14.5px;color:var(--ink-2)">
+              <li><strong>무엇이 조회되나요?</strong><br>발급 여부·유효 상태(유효/만료/해지)·입력 항목의 일치 여부가 표시됩니다. 상호는 일부 마스킹되며, 대표자명 등 개인정보는 표시되지 않습니다.</li>
+              <li><strong>조회가 안 될 때</strong><br>입력 항목 중 하나라도 실물과 다르면 결과가 표시되지 않습니다. 실패 사유는 구분해 안내하지 않습니다(보안 정책).</li>
+              <li><strong>변경·감액된 증서</strong><br>공기연장·기재변경·감액 증서는 <u>원증서 발급일 기준</u>으로 조회하세요.</li>
+              <li><strong>이용 한도</strong><br>같은 IP에서 하루 30건까지 조회할 수 있으며, 3회 연속 실패 시 자동입력 방지 확인이 추가됩니다.</li>
+            </ul>
+          </div>
+          <div class="panel" style="margin-top:20px">
+            <h2 style="font-size:18px">함께 보기</h2>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <a class="card-more" href="library.html">발급 사실 조회 이용 안내서 →</a>
+              <a class="card-more" href="business-detail.html?type=guarantee">보증 종류별 효력 안내 →</a>
+              <a class="card-more" href="support.html">유선 확인: 02-000-0074 →</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-bar" style="border-top:0;padding-top:0">
+      <span>© 2026 HERIGUARD Mutual Aid Association. 데모 산출물.</span>
+      <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = HGCore.$, toast = HGCore.toast, LS = HGCore.LS;
+  var CERTS = HG.CERTS;
+  var TYPE_NAME = { CT: '계약보증', AD: '선금급보증', DF: '하자보수보증', PY: '지급보증', MU: '공제증서' };
+
+  var state = { mode: 'multi', link: 'api', fails: 0, captchaOK: false };
+
+  /* ── 연계 모드 메타 ── */
+  var LINK_META = {
+    api:    { name: '신규 조회 API', basis: '실시간', resp: '평균 0.3초', items: '전체 항목', down: '영업점 점검 시 조회 불가 → 안내 화면', note: '기존 영업점에 조회 API 신설 필요 (벤더 협조 전제)' },
+    screen: { name: '기존 화면 연계', basis: '실시간', resp: '평균 1.8초', items: '기존 화면 제공 항목만', down: '영업점 점검 시 함께 중단', note: '기존 조회 화면의 내부 파라미터 규약을 그대로 사용 — 개발 최소' },
+    mirror: { name: '야간 미러 DB', basis: '전일 03:00 기준', resp: '평균 0.1초', items: '전체 항목 (읽기전용 복제)', down: '영업점 점검과 무관하게 조회 가능', note: '기준시각 고지 필수 — 당일 발급분은 익일 조회 가능' }
+  };
+  function renderLinkMeta() {
+    var m = LINK_META[state.link];
+    $('#link-meta').innerHTML =
+      '<span>연계: <b>' + m.name + '</b></span>' +
+      '<span>데이터 기준: <b>' + m.basis + '</b></span>' +
+      '<span>응답: <b class="num-en">' + m.resp + '</b></span>' +
+      '<span>점검 시: ' + m.down + '</span>' +
+      '<span style="flex-basis:100%;color:var(--ink-3)">' + m.note + '</span>';
+  }
+
+  /* ── 입력 방식 토글 ── */
+  function setMode(mode) {
+    state.mode = mode;
+    $('#mode-multi').setAttribute('aria-pressed', String(mode === 'multi'));
+    $('#mode-single').setAttribute('aria-pressed', String(mode === 'single'));
+    HGCore.$$('[data-multi]').forEach(function (f) {
+      f.style.display = mode === 'multi' ? '' : 'none';
+      var inp = f.querySelector('input'); if (inp) inp.required = (mode === 'multi');
+    });
+    $('#attack-box').hidden = false;
+    var warn = mode === 'single';
+    $('#attack-box').style.borderColor = warn ? 'var(--bad)' : 'var(--line-2)';
+    $('#attack-box').querySelector('h3').textContent = warn
+      ? '⚠ 연속 조회 시뮬레이션 — 증권번호 단독 입력의 위험'
+      : '✓ 다중 대조 모드 — 같은 시뮬레이션이 전부 차단됩니다';
+    $('#attack-box').querySelector('h3').style.color = warn ? 'var(--bad)' : 'var(--ok)';
+    $('#attack-log').hidden = true; $('#attack-sum').textContent = '';
+    if (warn) toast('시연용 모드입니다 — 실제 서비스에는 다중 대조를 권장합니다');
+  }
+  $('#mode-multi').addEventListener('click', function () { setMode('multi'); });
+  $('#mode-single').addEventListener('click', function () { setMode('single'); });
+
+  HGCore.$$('[data-link]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      state.link = b.dataset.link;
+      HGCore.$$('[data-link]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      renderLinkMeta();
+    });
+  });
+
+  /* ── 예시 프리필 ── */
+  HGCore.$$('.chip[data-demo]').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var d = chip.dataset.demo;
+      if (d === 'clear') {
+        $('#verify-form').reset(); $('#result-box').hidden = true; $('#cert-panel').hidden = true;
+        return;
+      }
+      var c = d === 'mismatch' ? CERTS[2] : CERTS[+d];
+      $('#f-type').value = c.typeCode;
+      $('#f-no').value = c.no;
+      $('#f-date').value = c.issued;
+      $('#f-amount').value = d === 'mismatch' ? String(c.amount + 5000000) : String(c.amount);
+      toast(d === 'mismatch' ? '금액을 일부러 다르게 채웠습니다 — 조회해 보세요' : '보증서 실물의 정보를 그대로 채웠습니다');
+    });
+  });
+
+  /* ── 일 한도 카운터 ── */
+  function quota() {
+    var key = 'quota-' + HGCore.todayStr();
+    var n = LS.get(key, 0);
+    return { key: key, n: n };
+  }
+  function renderQuota() {
+    var q = quota();
+    $('#quota-line').textContent = '오늘 이 IP의 조회 ' + q.n + ' / 30건 · 연속 실패 ' + state.fails + '회' + (state.fails >= 3 && !state.captchaOK ? ' — 자동입력 방지 확인 필요' : '');
+  }
+
+  /* ── 조회 실행 ── */
+  var lastResult = null;
+  $('#verify-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = quota();
+    if (q.n >= 30) { toast('오늘 조회 한도(30건)를 초과했습니다. 유선(02-000-0074)으로 확인해 주세요.'); return; }
+    if (state.fails >= 3 && !state.captchaOK) {
+      if (!confirm('[데모] 자동입력 방지 확인 — 로봇이 아닙니다에 체크했다고 가정할까요?')) return;
+      state.captchaOK = true;
+    }
+    var type = $('#f-type').value, no = $('#f-no').value.trim();
+    var date = $('#f-date').value, amount = ($('#f-amount').value || '').replace(/[,\s]/g, '');
+    if (!type || !no || (state.mode === 'multi' && (!date || !amount))) {
+      toast('필수 항목을 모두 입력해 주세요'); return;
+    }
+    LS.set(q.key, q.n + 1);
+
+    var found = CERTS.find(function (c) { return c.no === no && c.typeCode === type; });
+    var match = found && (state.mode === 'single' || (found.issued === date && String(found.amount) === amount));
+
+    var box = $('#result-box');
+    box.hidden = false;
+    if (!match) {
+      state.fails += 1; lastResult = null;
+      box.innerHTML = '<div class="result-head"><span class="badge badge-bad">조회 결과 없음</span>' +
+        '<span class="rh-title">입력하신 정보와 일치하는 발급 내역이 없습니다</span></div>' +
+        '<p class="result-note">번호·발급일자·금액 중 하나라도 실물과 다르면 결과가 표시되지 않습니다. ' +
+        '실패 사유는 보안상 구분해 안내하지 않습니다.<br>변경·감액 증서는 원증서 발급일 기준으로 조회해 주세요. ' +
+        '반복해서 실패하면 유선(02-000-0074)으로 확인해 주세요.</p>';
+      renderQuota();
+      logAudit(no, false);
+      return;
+    }
+    state.fails = 0; state.captchaOK = false;
+    var mask = found.company.slice(0, 1) + '○'.repeat(Math.max(2, found.company.length - 1));
+    var stName = { valid: '유효', expired: '만료', revoked: '해지' }[found.status];
+    var stBadge = { valid: 'badge-ok', expired: 'badge-warn', revoked: 'badge-bad' }[found.status];
+    var basis = LINK_META[state.link].basis === '실시간' ? '실시간 (' + new Date().toLocaleString('ko-KR') + ')' : '전일 03:00 기준';
+    lastResult = { cert: found, mask: mask, stName: stName, basis: basis };
+    box.innerHTML =
+      '<div class="result-head"><span class="badge ' + stBadge + '">' + stName + '</span>' +
+      '<span class="rh-title">발급 사실이 확인되었습니다</span></div>' +
+      '<div class="result-grid">' +
+      '<div><div class="rk">증서 종류</div><div class="rv">' + found.typeName + '</div></div>' +
+      '<div><div class="rk">증권번호</div><div class="rv num-en">' + found.no + '</div></div>' +
+      '<div><div class="rk">조합원 상호</div><div class="rv">' + mask + ' <span style="font-size:12px;color:var(--ink-3)">(일부 마스킹)</span></div></div>' +
+      '<div><div class="rk">보증금액</div><div class="rv">입력 금액과 일치</div></div>' +
+      '<div><div class="rk">발급일자</div><div class="rv num-en">' + found.issued + '</div></div>' +
+      '<div><div class="rk">보증기간 만료</div><div class="rv num-en">' + found.expires + '</div></div>' +
+      '</div>' +
+      '<div class="link-meta"><span>데이터 기준: <b>' + basis + '</b></span><span>대조 항목: <b>' +
+      (state.mode === 'multi' ? '종류·번호·발급일·금액 4종 일치' : '종류·번호 2종 (시연 모드)') + '</b></span></div>' +
+      (found.status !== 'valid'
+        ? '<p class="result-note" style="color:var(--bad);font-weight:600">⚠ 이 증서는 현재 ' + stName + ' 상태입니다. 결재 전 반드시 상태를 확인하세요.</p>'
+        : '') +
+      '<div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">' +
+      '<button class="btn btn-action btn-sm" type="button" id="make-cert">조회 확인서 만들기</button></div>';
+    renderQuota();
+    logAudit(no, true);
+    $('#make-cert').addEventListener('click', makeCert);
+  });
+
+  /* ── 감사 로그 (관리자 화면과 연동) ── */
+  function logAudit(no, ok) {
+    var log = LS.get('audit', []);
+    log.unshift({ at: new Date().toISOString().slice(0, 16).replace('T', ' '), no: no, ok: ok, link: state.link, mode: state.mode });
+    LS.set('audit', log.slice(0, 200));
+  }
+
+  /* ── 조회 확인서 ── */
+  function makeCert() {
+    if (!lastResult) return;
+    var seq = LS.get('cert-seq', 0) + 1; LS.set('cert-seq', seq);
+    var vno = 'V-2026-' + String(seq).padStart(6, '0');
+    var r = lastResult;
+    var recs = LS.get('cert-recs', {});
+    recs[vno] = { no: r.cert.no, type: r.cert.typeName, st: r.stName, at: new Date().toLocaleString('ko-KR'), basis: r.basis };
+    LS.set('cert-recs', recs);
+    $('#cert-doc').innerHTML =
+      '<h3>발급사실 조회 확인서</h3>' +
+      '<div class="cert-rows">' +
+      '<div><span class="ck">검증번호</span><span class="num-en" style="font-weight:800">' + vno + '</span></div>' +
+      '<div><span class="ck">조회 일시</span><span>' + new Date().toLocaleString('ko-KR') + '</span></div>' +
+      '<div><span class="ck">증서 종류</span><span>' + r.cert.typeName + '</span></div>' +
+      '<div><span class="ck">증권번호</span><span class="num-en">' + r.cert.no + '</span></div>' +
+      '<div><span class="ck">조합원 상호</span><span>' + r.mask + '</span></div>' +
+      '<div><span class="ck">대조 결과</span><span>증권번호·발급일자·보증금액 일치</span></div>' +
+      '<div><span class="ck">증서 상태</span><span>' + r.stName + ' (' + r.basis + ')</span></div>' +
+      '</div>' +
+      '<div class="cert-stamp">헤리가드<br>공제조합<br>인</div>' +
+      '<p class="cert-foot">본 확인서는 조회 시점의 발급 사실을 증명하며 증서 원본을 대체하지 않습니다.<br>' +
+      '검증번호로 홈페이지에서 조회 내역을 재확인할 수 있습니다. · 데모 산출물(가상 데이터)</p>';
+    $('#cert-panel').hidden = false;
+    $('#cert-panel').scrollIntoView({ behavior: HGCore.reduced ? 'auto' : 'smooth', block: 'start' });
+    toast('확인서가 생성되었습니다 — 검증번호 ' + vno);
+  }
+  $('#cert-close').addEventListener('click', function () { $('#cert-panel').hidden = true; });
+
+  /* ── 검증번호 재조회 ── */
+  $('#verify-again').addEventListener('click', function () {
+    var v = $('#f-verify-no').value.trim();
+    var recs = LS.get('cert-recs', {});
+    var out = $('#verify-again-out');
+    if (recs[v]) {
+      var r = recs[v];
+      out.innerHTML = '✓ <b>' + v + '</b> — ' + r.at + ' 조회 · ' + r.type + ' <span class="num-en">' + r.no + '</span> · 당시 상태 <b>' + r.st + '</b>';
+      out.style.color = 'var(--ok)';
+    } else {
+      out.textContent = '해당 검증번호의 조회 내역이 없습니다. 확인서를 먼저 발급해 보세요.';
+      out.style.color = 'var(--bad)';
+    }
+  });
+
+  /* ── 열거 공격 시뮬레이션 ── */
+  var LEDGER = HG.SIM_LEDGER;
+  $('#attack-run').addEventListener('click', function () {
+    var log = $('#attack-log'), sum = $('#attack-sum');
+    log.hidden = false; log.innerHTML = ''; sum.textContent = '';
+    var base = 1201, hits = 0, i = 0;
+    var timer = setInterval(function () {
+      if (i >= LEDGER.length) {
+        clearInterval(timer);
+        if (state.mode === 'single') {
+          sum.innerHTML = '→ ' + LEDGER.length + '회 시도 중 <b style="color:var(--bad)">' + hits + '건의 타사 증서가 노출</b>되었습니다. 증권번호는 연번이므로, 단독 입력을 허용하면 사실상 전 조합원 발급 대장을 공개하는 것과 같습니다.';
+        } else {
+          sum.innerHTML = '→ ' + LEDGER.length + '회 시도 전부 차단 (<b style="color:var(--ok)">노출 0건</b>). 발급일·금액을 모르면 보증서 실물 없이는 조회할 수 없습니다.';
+        }
+        return;
+      }
+      var no = '2026-CT-' + String(base + i).padStart(7, '0');
+      var c = LEDGER[i];
+      var hit = c && state.mode === 'single';
+      if (hit) {
+        hits++;
+        log.innerHTML += '<div class="hit">' + no + ' → 조회됨: ' + c.company + ' · ' + c.typeName + ' · ' + c.amount.toLocaleString() + '원</div>';
+      } else if (state.mode === 'single') {
+        log.innerHTML += '<div class="miss">' + no + ' → 해당 번호 미발급(결번)</div>';
+      } else {
+        log.innerHTML += '<div class="miss">' + no + ' → 차단 (발급일·금액 대조 실패)</div>';
+      }
+      log.scrollTop = log.scrollHeight;
+      i++;
+    }, 60);
+  });
+
+  renderLinkMeta(); renderQuota(); setMode('multi');
+})();
+</script>
+</body>
+</html>

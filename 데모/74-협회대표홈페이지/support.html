@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23002f73%27/%3E%3Ctext x=%2716%27 y=%2721%27 font-family=%27Arial%27 font-size=%2713%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3EHG%3C/text%3E%3C/svg%3E">
+<title>고객센터 — 헤리가드공제조합 (데모)</title>
+<meta name="description" content="자주 묻는 질문, 문의하기, 부서별 연락처를 안내합니다. 데모 — 가상 데이터.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-popup="off">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="헤리가드공제조합 메인으로"><span class="logo-mark" aria-hidden="true">HG</span><span class="logo-txt"><strong>헤리가드공제조합</strong><span>HERIGUARD</span></span></a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="about.html">조합소개</a><a href="business.html">조합업무</a><a href="verify.html">발급사실조회</a><a href="notice.html">공지사항</a><a href="library.html">자료실</a><a href="support.html" aria-current="page">고객센터</a>
+    </nav>
+    <a class="header-cta" href="login.html">조합원 로그인</a>
+    <button class="menu-btn" type="button" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="모바일 메뉴"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="메뉴 닫기">×</button>
+  <a href="about.html">조합소개</a><a href="business.html">조합업무</a><a href="verify.html">발급사실조회</a><a href="notice.html">공지사항</a><a href="library.html">자료실</a><a href="support.html" aria-current="page">고객센터</a><a href="login.html"><strong>조합원 로그인</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><span>›</span><span>고객센터</span></nav>
+      <span class="eyebrow">Customer Support</span>
+      <h1>고객센터</h1>
+      <p>궁금한 점을 자주 묻는 질문에서 먼저 확인하시고, 필요하면 문의를 남겨 주세요.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="verify-wrap">
+        <div>
+          <h2 class="sec-title" style="font-size:26px;margin-bottom:20px">자주 묻는 질문</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="faq-cat">
+            <button class="chip" type="button" data-fc="all" aria-pressed="true">전체</button>
+            <button class="chip" type="button" data-fc="조회" aria-pressed="false">조회</button>
+            <button class="chip" type="button" data-fc="로그인" aria-pressed="false">로그인</button>
+            <button class="chip" type="button" data-fc="보증" aria-pressed="false">보증</button>
+            <button class="chip" type="button" data-fc="가입" aria-pressed="false">가입</button>
+          </div>
+          <div id="faq-list"></div>
+        </div>
+        <aside>
+          <div class="panel">
+            <h2 style="font-size:18px">부서별 연락처</h2>
+            <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px;font-size:15px">
+              <div><b>보증심사부</b><br><span class="num-en" style="color:var(--ink-2)">02-000-0074 (내선 1)</span></div>
+              <div><b>공제사업부</b><br><span class="num-en" style="color:var(--ink-2)">02-000-0074 (내선 2)</span></div>
+              <div><b>경영지원부·전산</b><br><span class="num-en" style="color:var(--ink-2)">02-000-0074 (내선 3)</span></div>
+              <div style="border-top:1px solid var(--line);padding-top:12px"><b>업무시간</b><br><span style="color:var(--ink-2)">평일 09:00 ~ 18:00<br>점심 12:00 ~ 13:00</span></div>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:20px">
+            <h2 style="font-size:18px">문의하기</h2>
+            <form id="ask-form" style="display:flex;flex-direction:column;gap:14px;margin-top:8px" novalidate>
+              <div class="field"><label for="q-name">이름 <span class="req">*</span></label><input id="q-name" type="text" required autocomplete="name"></div>
+              <div class="field"><label for="q-type">문의 유형</label><select id="q-type"><option>발급 사실 조회</option><option>보증 신청</option><option>로그인·인증서</option><option>가입 안내</option><option>기타</option></select></div>
+              <div class="field"><label for="q-body">내용 <span class="req">*</span></label><textarea id="q-body" rows="4" required></textarea></div>
+              <label style="display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:var(--ink-2)"><input type="checkbox" id="q-agree" style="margin-top:3px">개인정보 수집·이용에 동의합니다 (문의 처리 목적, 처리 후 파기)</label>
+              <button class="btn btn-primary btn-sm" type="submit">문의 남기기</button>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+    <span>© 2026 HERIGUARD Mutual Aid Association. 데모 산출물.</span>
+    <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+  </div></div>
+</footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  var $ = HGCore.$;
+  var fc = 'all';
+  function render() {
+    var list = HG.FAQ.filter(function (f) { return fc === 'all' || f.cat === fc; });
+    $('#faq-list').innerHTML = list.map(function (f) {
+      return '<div class="faq-item"><button class="faq-q" type="button"><span class="faq-cat">' + f.cat + '</span>' + f.q + '</button><div class="faq-a">' + f.a + '</div></div>';
+    }).join('');
+    HGCore.$$('#faq-list .faq-item').forEach(function (item) {
+      var q = item.querySelector('.faq-q');
+      if (q.dataset.bound === '1') return; q.dataset.bound = '1';
+      q.setAttribute('aria-expanded', 'false');
+      q.addEventListener('click', function () { var o = item.classList.toggle('open'); q.setAttribute('aria-expanded', String(o)); });
+    });
+  }
+  HGCore.$$('#faq-cat .chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fc = b.dataset.fc;
+      HGCore.$$('#faq-cat .chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      render();
+    });
+  });
+  render();
+
+  $('#ask-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!$('#q-name').value.trim() || !$('#q-body').value.trim()) { HGCore.toast('이름과 내용을 입력해 주세요'); return; }
+    if (!$('#q-agree').checked) { HGCore.toast('개인정보 수집·이용 동의가 필요합니다'); return; }
+    e.target.reset();
+    HGCore.toast('문의가 접수되었습니다. 영업일 기준 1일 내 답변드립니다 (데모)');
+  });
+})();
+</script>
+</body>
+</html>

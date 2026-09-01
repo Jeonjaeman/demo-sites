@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23002f73%27/%3E%3Ctext x=%2716%27 y=%2721%27 font-family=%27Arial%27 font-size=%2713%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3EHG%3C/text%3E%3C/svg%3E">
+<title>조합원 로그인 — 헤리가드공제조합 (데모)</title>
+<meta name="description" content="공동인증서 로그인 후 인터넷 영업점으로 연계됩니다. 브라우저 사전 진단과 인증서 종류 안내를 제공합니다. 데모 — 가상 데이터.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-popup="off">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="헤리가드공제조합 메인으로">
+      <span class="logo-mark" aria-hidden="true">HG</span>
+      <span class="logo-txt"><strong>헤리가드공제조합</strong><span>HERIGUARD</span></span>
+    </a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="about.html">조합소개</a>
+      <a href="business.html">조합업무</a>
+      <a href="verify.html">발급사실조회</a>
+      <a href="notice.html">공지사항</a>
+      <a href="library.html">자료실</a>
+      <a href="support.html">고객센터</a>
+    </nav>
+    <a class="header-cta" href="login.html" aria-current="page">조합원 로그인</a>
+    <button class="menu-btn" type="button" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="모바일 메뉴">
+  <div class="drawer-bg"></div>
+  <nav class="drawer-panel">
+    <button class="drawer-close" type="button" aria-label="메뉴 닫기">×</button>
+    <a href="about.html">조합소개</a>
+    <a href="business.html">조합업무</a>
+    <a href="verify.html">발급사실조회</a>
+    <a href="notice.html">공지사항</a>
+    <a href="library.html">자료실</a>
+    <a href="support.html">고객센터</a>
+    <a href="login.html" aria-current="page"><strong>조합원 로그인</strong></a>
+  </nav>
+</div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><span>›</span><span>조합원 로그인</span></nav>
+      <span class="eyebrow">Member Login</span>
+      <h1>조합원 로그인</h1>
+      <p>공동인증서로 로그인하면 인터넷 영업점의 회원 전용 업무로 한 번에 이어집니다.
+      로그인이 안 될 때가 잦은 원인을 먼저 진단해 드립니다.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="login-wrap">
+
+        <!-- 1. 사전 진단 -->
+        <div class="panel">
+          <h2>1. 로그인 사전 진단</h2>
+          <p class="panel-sub">공동인증서 로그인은 브라우저 환경에 민감합니다. 접속 환경을 먼저 점검합니다.</p>
+          <div class="diag-rows" id="diag-rows"></div>
+          <button class="btn btn-ghost btn-sm" type="button" id="diag-run" style="margin-top:16px">환경 다시 진단</button>
+        </div>
+
+        <!-- 2. 인증서 종류 -->
+        <div class="panel">
+          <h2>2. 인증서 선택</h2>
+          <p class="panel-sub">보유하신 인증서 종류를 선택하세요. <strong>용도가 제한된 인증서(전자세금용 등)로는 로그인할 수 없습니다.</strong></p>
+          <div class="cert-pick" role="group" aria-label="인증서 종류 선택">
+            <button class="cert-opt" type="button" data-cert="general" aria-pressed="false">
+              <div class="co-name">범용 사업자 공동인증서</div>
+              <div class="co-sub">모든 전자거래 이용 가능 · 연 110,000원</div>
+            </button>
+            <button class="cert-opt" type="button" data-cert="tax" aria-pressed="false">
+              <div class="co-name">전자세금용 (용도제한)</div>
+              <div class="co-sub">세금계산서 전용 · 연 4,400원 · 로그인 불가</div>
+            </button>
+            <button class="cert-opt" type="button" data-cert="finance" aria-pressed="false">
+              <div class="co-name">금융인증서</div>
+              <div class="co-sub">클라우드 저장 · 향후 지원 예정</div>
+            </button>
+            <button class="cert-opt" type="button" data-cert="simple" aria-pressed="false">
+              <div class="co-name">간편인증 (카카오·PASS 등)</div>
+              <div class="co-sub">향후 지원 예정</div>
+            </button>
+          </div>
+          <div id="cert-msg" class="result-note" aria-live="polite" style="margin-top:14px"></div>
+        </div>
+
+        <!-- 3. 인증 및 인계 -->
+        <div class="panel">
+          <h2>3. 인증 후 인터넷 영업점 연계</h2>
+          <p class="panel-sub">대표 홈페이지에서 인증을 마치면 1회용 연계 토큰으로 영업점 세션이 자동으로 이어집니다 —
+          영업점에서 다시 로그인할 필요가 없습니다.</p>
+          <div class="bridge">
+            <div class="bridge-step" id="bs-1"><div class="bs-no">STEP 01</div><div class="bs-name">인증서 서명</div><div class="bs-sub">대표 홈페이지에서 본인 인증</div></div>
+            <div class="bridge-step" id="bs-2"><div class="bs-no">STEP 02</div><div class="bs-name">1회용 토큰 발급</div><div class="bs-sub">서버 간 교환 · 60초 후 만료</div></div>
+            <div class="bridge-step" id="bs-3"><div class="bs-no">STEP 03</div><div class="bs-name">영업점 세션 성립</div><div class="bs-sub">회원 전용 업무로 이동</div></div>
+          </div>
+          <div class="token-view" id="token-view" hidden></div>
+          <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+            <button class="btn btn-primary" type="button" id="login-go">공동인증서로 로그인 (데모)</button>
+            <button class="btn btn-ghost" type="button" id="login-fail">연계 실패 시나리오 보기</button>
+          </div>
+          <div id="login-out" class="result-note" aria-live="polite" style="margin-top:14px"></div>
+        </div>
+
+        <div class="panel" style="background:var(--bg)">
+          <h2 style="font-size:17px">왜 로그인이 안 될까요? — 자주 있는 원인</h2>
+          <ul style="display:flex;flex-direction:column;gap:10px;font-size:14.5px;color:var(--ink-2);margin-top:8px">
+            <li>· <strong>브라우저별 등록</strong> — 공동인증서는 브라우저마다 따로 등록해야 합니다. 회사 크롬에 등록했다면 집·엣지·모바일에서는 인증서 가져오기가 필요합니다.</li>
+            <li>· <strong>용도제한 인증서</strong> — 전자세금계산서 전용 인증서로는 로그인이 안 됩니다. 범용 인증서가 필요합니다.</li>
+            <li>· <strong>팝업 차단</strong> — 인증 창이 팝업으로 열리므로 팝업 차단을 해제해야 합니다.</li>
+            <li>· <strong>보안 플러그인</strong> — 설치형 보안 프로그램은 단계적으로 폐지되고 있습니다. 본 홈페이지는 플러그인 없이 동작합니다.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer-bar" style="border-top:0;padding-top:0">
+      <span>© 2026 HERIGUARD Mutual Aid Association. 데모 산출물.</span>
+      <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = HGCore.$, toast = HGCore.toast;
+  var picked = null;
+
+  /* ── 사전 진단 (실제 navigator·팝업 판정) ── */
+  function diagnose() {
+    var ua = navigator.userAgent;
+    var isIE = /Trident|MSIE/.test(ua);
+    var storageOK = (function () { try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); return true; } catch (e) { return false; } })();
+    var browser = /Edg\//.test(ua) ? 'Microsoft Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : '기타';
+    // 팝업 테스트
+    var popupOK = true;
+    try { var w = window.open('', '', 'width=1,height=1,left=-1000,top=-1000'); if (!w) popupOK = false; else w.close(); } catch (e) { popupOK = false; }
+    var rows = [
+      { ok: true, label: '접속 브라우저', note: browser },
+      { ok: !isIE, label: 'IE 모드 아님', note: isIE ? 'IE 모드 감지 — 최신 브라우저를 사용하세요' : '정상' },
+      { ok: storageOK, label: '인증서 저장소 접근', note: storageOK ? '접근 가능' : '시크릿 모드일 수 있습니다' },
+      { ok: popupOK, label: '팝업 허용', note: popupOK ? '허용됨' : '팝업 차단 — 해제 필요' }
+    ];
+    $('#diag-rows').innerHTML = rows.map(function (r) {
+      return '<div class="diag-row ' + (r.ok ? 'pass' : 'fail') + '"><span class="d-ic">' + (r.ok ? '✓' : '!') + '</span>' +
+        '<span>' + r.label + '</span><span class="d-note">' + r.note + '</span></div>';
+    }).join('');
+  }
+  $('#diag-run').addEventListener('click', function () { diagnose(); toast('접속 환경을 다시 진단했습니다'); });
+
+  /* ── 인증서 선택 ── */
+  HGCore.$$('.cert-opt').forEach(function (b) {
+    b.addEventListener('click', function () {
+      HGCore.$$('.cert-opt').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      picked = b.dataset.cert;
+      var msg = $('#cert-msg');
+      if (picked === 'general') { msg.innerHTML = '✓ 범용 사업자 인증서로 로그인할 수 있습니다. 아래 3단계로 진행됩니다.'; msg.style.color = 'var(--ok)'; }
+      else if (picked === 'tax') { msg.innerHTML = '✕ <b>전자세금용 인증서로는 로그인할 수 없습니다.</b> 범용 사업자 공동인증서가 필요합니다. 발급 문의: 코스콤·금융결제원 등록대행기관.'; msg.style.color = 'var(--bad)'; }
+      else { msg.innerHTML = '이 인증 수단은 <b>향후 지원 예정</b>입니다. 현재는 공동인증서(범용)로 로그인해 주세요. (전자서명법 개정으로 인증 수단 확장 가능)'; msg.style.color = 'var(--warn)'; }
+    });
+  });
+
+  /* ── 로그인 & 인계 브리지 ── */
+  function resetBridge() {
+    ['bs-1', 'bs-2', 'bs-3'].forEach(function (id) { $('#' + id).classList.remove('on', 'done'); });
+    $('#token-view').hidden = true; $('#login-out').textContent = '';
+  }
+  function token() {
+    var s = 'HG-OTT-';
+    for (var i = 0; i < 24; i++) s += 'ABCDEF0123456789'[Math.floor((i * 7 + 3) % 16)];
+    return s + '.' + Date.now().toString(36);
+  }
+  $('#login-go').addEventListener('click', function () {
+    if (picked === 'tax') { toast('전자세금용 인증서로는 로그인할 수 없습니다'); return; }
+    if (picked && picked !== 'general') { toast('현재는 공동인증서(범용)로만 로그인할 수 있습니다'); return; }
+    if (!picked) { toast('먼저 인증서 종류를 선택해 주세요'); $('.cert-opt')[0].focus(); return; }
+    resetBridge();
+    var reduced = HGCore.reduced;
+    $('#bs-1').classList.add('on');
+    setTimeout(function () {
+      $('#bs-1').classList.remove('on'); $('#bs-1').classList.add('done');
+      $('#bs-2').classList.add('on');
+      $('#token-view').hidden = false;
+      $('#token-view').innerHTML = '// 서버 간 1회용 토큰 교환 (60초 만료)<br>POST /sso/token → ' + token() + '<br>← 200 OK { "session": "granted", "target": "cyberbiz" }';
+    }, reduced ? 0 : 700);
+    setTimeout(function () {
+      $('#bs-2').classList.remove('on'); $('#bs-2').classList.add('done');
+      $('#bs-3').classList.add('on');
+    }, reduced ? 0 : 1500);
+    setTimeout(function () {
+      $('#bs-3').classList.remove('on'); $('#bs-3').classList.add('done');
+      $('#login-out').innerHTML = '✓ 인증 완료 — 인터넷 영업점(cyberbiz.heriguard.example)으로 이동합니다. <span style="color:var(--ink-3)">(데모에서는 실제 이동하지 않습니다)</span>';
+      $('#login-out').style.color = 'var(--ok)';
+      toast('로그인 성공 — 영업점 세션이 이어졌습니다');
+    }, reduced ? 0 : 2300);
+  });
+
+  $('#login-fail').addEventListener('click', function () {
+    resetBridge();
+    $('#bs-1').classList.add('done'); $('#bs-2').classList.add('on');
+    $('#token-view').hidden = false;
+    $('#token-view').innerHTML = '// 토큰 발급 후 영업점 응답 지연/거부<br>POST /sso/token → ' + token() + '<br>← 504 Gateway Timeout (영업점 점검 중)';
+    $('#login-out').innerHTML = '✕ 연계에 실패했습니다. 이럴 때는 <b>영업점에 직접 로그인</b>하는 대체 경로를 안내합니다 → ' +
+      '<a class="card-more" style="display:inline" href="#">인터넷 영업점 바로가기</a><br>' +
+      '<span style="color:var(--ink-3)">대표 홈페이지가 인증 실패를 감지하면 사용자를 기존 로그인 화면으로 자연스럽게 넘깁니다 — 사용자는 로그인 자체가 막히지 않습니다.</span>';
+    $('#login-out').style.color = 'var(--bad)';
+  });
+
+  diagnose();
+})();
+</script>
+</body>
+</html>

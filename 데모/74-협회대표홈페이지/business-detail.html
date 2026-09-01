@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23002f73%27/%3E%3Ctext x=%2716%27 y=%2721%27 font-family=%27Arial%27 font-size=%2713%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3EHG%3C/text%3E%3C/svg%3E">
+<title>업무 상세 — 헤리가드공제조합 (데모)</title>
+<meta name="description" content="보증·공제·신용평가 업무의 대상, 구비서류, 요율, 처리 절차를 안내합니다. 데모 — 가상 데이터.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-popup="off">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="헤리가드공제조합 메인으로"><span class="logo-mark" aria-hidden="true">HG</span><span class="logo-txt"><strong>헤리가드공제조합</strong><span>HERIGUARD</span></span></a>
+    <nav class="gnb" aria-label="주 메뉴">
+      <a href="about.html">조합소개</a>
+      <a href="business.html" aria-current="page">조합업무</a>
+      <a href="verify.html">발급사실조회</a>
+      <a href="notice.html">공지사항</a>
+      <a href="library.html">자료실</a>
+      <a href="support.html">고객센터</a>
+    </nav>
+    <a class="header-cta" href="login.html">조합원 로그인</a>
+    <button class="menu-btn" type="button" aria-label="메뉴 열기" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="모바일 메뉴"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="메뉴 닫기">×</button>
+  <a href="about.html">조합소개</a><a href="business.html" aria-current="page">조합업무</a><a href="verify.html">발급사실조회</a><a href="notice.html">공지사항</a><a href="library.html">자료실</a><a href="support.html">고객센터</a><a href="login.html"><strong>조합원 로그인</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb" aria-label="현재 위치"><a href="index.html">홈</a><span>›</span><a href="business.html">조합업무</a><span>›</span><span id="crumb-name">상세</span></nav>
+      <span class="eyebrow" id="d-en">Service</span>
+      <h1 id="d-name">업무 상세</h1>
+      <p id="d-lead"></p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="verify-wrap">
+        <div>
+          <div class="panel">
+            <h2 id="items-title">보증 종류</h2>
+            <div class="tbl-scroll" style="margin-top:16px">
+              <table class="tbl">
+                <caption id="items-cap">종류별 개요 (가상 요율)</caption>
+                <thead><tr><th>종류</th><th>내용</th><th>요율</th><th>보증기간</th></tr></thead>
+                <tbody id="items-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top:24px">
+            <h2>구비서류</h2>
+            <ul id="docs-list" style="margin-top:14px;display:flex;flex-direction:column;gap:10px"></ul>
+          </div>
+
+          <div class="panel" style="margin-top:24px">
+            <h2>처리 절차</h2>
+            <div class="grid-2" id="steps-body" style="margin-top:16px;gap:14px"></div>
+          </div>
+        </div>
+
+        <aside>
+          <div class="panel">
+            <h2 style="font-size:18px">요율 계산 예시</h2>
+            <p class="panel-sub">보증금액·기간·신용등급을 넣으면 개략 수수료가 계산됩니다. 정확한 금액은 신청 시 산출됩니다.</p>
+            <div class="field" style="margin-bottom:14px"><label for="c-amount">보증금액(만원)</label><input id="c-amount" type="range" min="500" max="30000" step="500" value="5000"><div id="c-amount-v" class="num-en" style="font-weight:800;color:var(--brand)"></div></div>
+            <div class="field" style="margin-bottom:14px"><label for="c-term">보증기간(개월)</label><input id="c-term" type="range" min="3" max="36" step="1" value="12"><div id="c-term-v" class="num-en" style="font-weight:800;color:var(--brand)"></div></div>
+            <div class="field" style="margin-bottom:16px"><label for="c-grade">신용등급</label><select id="c-grade"><option value="0.42">A등급 (연 0.42%)</option><option value="0.68" selected>B등급 (연 0.68%)</option><option value="0.98">C등급 (연 0.98%)</option></select></div>
+            <div style="background:var(--action-soft);border-radius:var(--r-base);padding:16px;text-align:center">
+              <div style="font-size:13px;color:var(--ink-3)">개략 수수료</div>
+              <div id="c-out" class="num-en" style="font-size:28px;font-weight:800;color:var(--brand);margin-top:4px"></div>
+            </div>
+          </div>
+          <div class="panel" style="margin-top:20px">
+            <h2 style="font-size:18px">바로가기</h2>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <a class="card-more" href="login.html">조합원 로그인하고 신청 →</a>
+              <a class="card-more" href="library.html">신청 서식 내려받기 →</a>
+              <a class="card-more" href="verify.html">발급 사실 조회 →</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <div style="margin-top:36px">
+        <h2 class="sec-title" style="font-size:26px;margin-bottom:20px">자주 묻는 질문</h2>
+        <div id="faq-list"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+    <span>© 2026 HERIGUARD Mutual Aid Association. 데모 산출물.</span>
+    <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+  </div></div>
+</footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function () {
+  var $ = HGCore.$;
+  var params = new URLSearchParams(location.search);
+  var type = params.get('type') || 'guarantee';
+  var b = HG.BUSINESS[type] || HG.BUSINESS.guarantee;
+  var EN = { guarantee: 'Guarantee', mutual: 'Mutual Aid', credit: 'Credit Rating' };
+
+  document.title = b.name + ' — 헤리가드공제조합 (데모)';
+  $('#crumb-name').textContent = b.name;
+  $('#d-en').textContent = EN[type];
+  $('#d-name').textContent = b.name;
+  $('#d-lead').textContent = b.lead;
+  $('#items-title').textContent = b.name + ' 종류';
+
+  $('#items-body').innerHTML = b.items.map(function (it) {
+    return '<tr><td style="font-weight:700;white-space:nowrap">' + it.name + '</td><td>' + it.desc + '</td><td class="num-en" style="white-space:nowrap">' + it.rate + '</td><td style="white-space:nowrap">' + it.term + '</td></tr>';
+  }).join('');
+  $('#docs-list').innerHTML = b.docs.map(function (d) {
+    return '<li style="padding-left:22px;position:relative;font-size:15.5px;color:var(--ink-2)"><span style="position:absolute;left:2px;color:var(--action);font-weight:800">✓</span>' + d + '</li>';
+  }).join('');
+  $('#steps-body').innerHTML = b.steps.map(function (s, i) {
+    return '<div class="card" style="display:flex;gap:16px;align-items:flex-start;padding:22px"><span class="num-en" style="font-size:26px;font-weight:800;color:var(--action)">0' + (i + 1) + '</span><div style="font-weight:700;font-size:15.5px;padding-top:4px">' + s + '</div></div>';
+  }).join('');
+
+  // 요율 계산기 (보증만 의미 있지만 전 업무 공용)
+  function calc() {
+    var amt = +$('#c-amount').value, term = +$('#c-term').value, rate = +$('#c-grade').value;
+    $('#c-amount-v').textContent = amt.toLocaleString() + ' 만원';
+    $('#c-term-v').textContent = term + ' 개월';
+    var fee = Math.round(amt * 10000 * (rate / 100) * (term / 12));
+    $('#c-out').textContent = fee.toLocaleString() + ' 원';
+  }
+  ['c-amount', 'c-term', 'c-grade'].forEach(function (id) { $('#' + id).addEventListener('input', calc); });
+  calc();
+
+  // FAQ — 해당 카테고리 관련만
+  var faqCat = { guarantee: '보증', mutual: '보증', credit: '가입' }[type];
+  var faqs = HG.FAQ.filter(function (f) { return f.cat === faqCat || f.cat === '조회'; }).slice(0, 5);
+  $('#faq-list').innerHTML = faqs.map(function (f) {
+    return '<div class="faq-item"><button class="faq-q" type="button"><span class="faq-cat">' + f.cat + '</span>' + f.q + '</button><div class="faq-a">' + f.a + '</div></div>';
+  }).join('');
+  // FAQ 재바인딩 (core는 DOMContentLoaded 시점에만 바인딩)
+  HGCore.$$('.faq-item').forEach(function (item) {
+    var q = item.querySelector('.faq-q');
+    if (q.dataset.bound === '1') return; q.dataset.bound = '1';
+    q.setAttribute('aria-expanded', 'false');
+    q.addEventListener('click', function () { var o = item.classList.toggle('open'); q.setAttribute('aria-expanded', String(o)); });
+  });
+})();
+</script>
+</body>
+</html>
