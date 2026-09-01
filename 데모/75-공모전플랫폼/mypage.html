@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23100f0d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Georgia%27 font-size=%2714%27 font-weight=%27700%27 fill=%27%23c59d3d%27 text-anchor=%27middle%27%3EG%3C/text%3E%3C/svg%3E">
+<title>My Page — GYCA (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-nav" href="#main">Skip to content</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="GYCA home"><span class="logo-mark" aria-hidden="true">G</span><span class="logo-txt"><strong>GYCA</strong><span>Global Youth Creative Awards</span></span></a>
+    <nav class="gnb" aria-label="Main menu">
+      <a href="competitions.html" data-en="Competitions" data-ko="공모전">Competitions</a>
+      <a href="exhibitions.html" data-en="Exhibitions" data-ko="전시·공연">Exhibitions</a>
+      <a href="winners.html" data-en="Winners" data-ko="수상작">Winners</a>
+      <a href="about.html" data-en="About" data-ko="GYCA 소개">About</a>
+      <a href="notice.html" data-en="Notice" data-ko="공지사항">Notice</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="ko" aria-pressed="false">KO</button></div>
+    <a class="header-cta" href="apply.html" data-en="Submit Work" data-ko="작품 접수">Submit Work</a>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="Mobile menu"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="Close menu">×</button>
+  <a href="competitions.html">Competitions · 공모전</a><a href="exhibitions.html">Exhibitions · 전시·공연</a><a href="winners.html">Winners · 수상작</a><a href="about.html">About · GYCA 소개</a><a href="notice.html">Notice · 공지사항</a><a href="apply.html"><strong>Submit Work · 작품 접수</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero" style="padding-bottom:40px">
+    <div class="shell">
+      <nav class="crumb"><a href="index.html">Home</a><span>›</span><span>My Page</span></nav>
+      <span class="eyebrow">Participant · 참가자</span>
+      <h1>My Page</h1>
+      <p data-en="No login needed for this demo — the sample participant is signed in. One account routes to participant, juror or admin dashboards by role." data-ko="이 데모는 로그인 없이 샘플 참가자로 접속됩니다. 하나의 계정이 권한에 따라 참가자·심사위원·관리자 화면으로 자동 분기됩니다.">No login needed for this demo — the sample participant is signed in.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <!-- 역할 전환 (타이핑 없이 능가 포인트 ⑦) -->
+      <div class="panel" style="background:var(--accent-soft);border:0;margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <b style="font-size:14px">Switch role (no login):</b>
+        <a class="btn btn-dark btn-sm" href="mypage.html">Participant</a>
+        <a class="btn btn-ghost btn-sm" href="judge.html">Juror</a>
+        <a class="btn btn-ghost btn-sm" href="admin.html">Admin</a>
+        <span style="font-size:13px;color:var(--ink-2);margin-left:auto">Same login → role-based dashboard</span>
+      </div>
+
+      <div class="tabs" data-tabs="mp" role="tablist" aria-label="My page tabs">
+        <button role="tab" data-tab="subs" aria-selected="true">My Entries</button>
+        <button role="tab" data-tab="results" aria-selected="false">Results</button>
+        <button role="tab" data-tab="payments" aria-selected="false">Payments</button>
+        <button role="tab" data-tab="cert" aria-selected="false">Certificates</button>
+        <button role="tab" data-tab="profile" aria-selected="false">Profile</button>
+      </div>
+
+      <div data-tabpanel="mp" data-tab="subs"><div id="subs-body"></div></div>
+      <div data-tabpanel="mp" data-tab="results" hidden><div id="results-body"></div></div>
+      <div data-tabpanel="mp" data-tab="payments" hidden><div id="payments-body"></div></div>
+      <div data-tabpanel="mp" data-tab="cert" hidden><div id="cert-body"></div></div>
+      <div data-tabpanel="mp" data-tab="profile" hidden><div id="profile-body"></div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 Global Youth Creative Awards. Demo build.</span>
+  <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = GC.$, LS = GC.LS, toast = GC.toast;
+  // 샘플 접수 시드 (없으면)
+  var subs = LS.get('submissions', null);
+  if (!subs || !subs.length) {
+    subs = [
+      { no: 'GYCA-C1-0000481', comp: 'c1', title: '내일의 우리 도시', cat: 'art', status: 'submitted', paid: 'guardian', at: '2026-08-30', uses: { gallery: true, exhibit: true, publish: false, promo: false } },
+      { no: 'GYCA-C5-0000377', comp: 'c5', title: '순환의 의자', cat: 'design', status: 'won', grade: 'grand', at: '2026-05-20', uses: { gallery: true, exhibit: true, publish: true, promo: true } },
+      { no: 'GYCA-C3-0000402', comp: 'c3', title: '침묵의 화성', cat: 'music', status: 'judging', paid: 'self', at: '2026-08-10', uses: { gallery: true, exhibit: false, publish: false, promo: false } },
+    ];
+    LS.set('submissions', subs);
+  }
+  var STATUS = { draft: ['임시저장', 'badge-closed'], submitted: ['접수 완료', 'badge-open'], judging: ['심사 중', 'badge-judging'], finalist: ['본선 진출', 'badge-results'], won: ['최종 수상', 'badge-results'], notwon: ['미수상', 'badge-closed'] };
+
+  function renderSubs() {
+    var s = LS.get('submissions', subs);
+    $('#subs-body').innerHTML = s.length ? s.map(function (x) {
+      var comp = GYCA.compOf(x.comp), cat = GYCA.catOf(x.cat);
+      var st = STATUS[x.status] || STATUS.submitted;
+      var btn = x.status === 'won' ? '<a class="btn btn-gold btn-sm" href="#" data-cert="' + x.no + '">Certificate</a>' :
+        x.status === 'judging' ? '<span class="btn btn-ghost btn-sm" style="pointer-events:none">Under review</span>' :
+        x.status === 'draft' ? '<a class="btn btn-dark btn-sm" href="apply.html?comp=' + x.comp + '">Continue</a>' :
+        '<a class="btn btn-ghost btn-sm" href="competition.html?id=' + x.comp + '">View</a>';
+      return '<div class="panel" style="margin-bottom:14px;display:flex;gap:18px;align-items:center;flex-wrap:wrap">' +
+        '<img src="assets/img/' + cat.img + '" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:8px">' +
+        '<div style="flex:1;min-width:200px"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="badge ' + st[1] + '">' + st[0] + '</span>' +
+        '<span class="num" style="font-size:12px;color:var(--ink-3)">' + x.no + '</span></div>' +
+        '<h3 style="margin:8px 0 2px;font-size:18px">' + x.title + '</h3>' +
+        '<div style="font-size:13.5px;color:var(--ink-3)">' + (comp ? comp.title : '') + ' · ' + x.at + '</div></div>' + btn + '</div>';
+    }).join('') : '<div style="text-align:center;padding:60px 0;color:var(--ink-3)">No entries yet. <a class="btn btn-gold btn-sm" href="competitions.html" style="margin-left:8px">Find a competition</a></div>';
+    GC.$$('[data-cert]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); dlCert(b.dataset.cert); }); });
+  }
+
+  function renderResults() {
+    var s = LS.get('submissions', subs);
+    $('#results-body').innerHTML = s.map(function (x) {
+      var comp = GYCA.compOf(x.comp);
+      if (x.status === 'won') {
+        var g = GYCA.GRADES[x.grade];
+        return '<div class="panel" style="margin-bottom:14px"><span class="grade-badge" style="background:' + g.bg + ';color:' + g.ink + '">' + g.en + '</span>' +
+          '<h3 style="margin:10px 0 4px">' + x.title + '</h3><p style="color:var(--ink-2)">' + (comp ? comp.title : '') + ' — Congratulations! You may now apply for the overseas final.</p>' +
+          '<div style="margin-top:12px;display:flex;gap:8px"><a class="btn btn-gold btn-sm" href="#" data-cert="' + x.no + '">Download certificate</a><a class="btn btn-dark btn-sm" href="#" data-final>Apply for overseas final</a></div></div>';
+      }
+      if (x.status === 'judging') {
+        return '<div class="panel" style="margin-bottom:14px"><span class="badge badge-judging">심사 중</span><h3 style="margin:10px 0 4px">' + x.title + '</h3><p style="color:var(--ink-2)">Results on ' + (comp ? comp.resultDate : '—') + '. We\'ll email you.</p></div>';
+      }
+      // 미수상 화면 (F: 대다수가 보는 화면 — 설계서에 없던 것)
+      return '<div class="panel" style="margin-bottom:14px"><span class="badge badge-closed">Not selected this round</span><h3 style="margin:10px 0 4px">' + x.title + '</h3>' +
+        '<p style="color:var(--ink-2)">Thank you for entering. Here is your criteria-level feedback — use it and enter again.</p>' +
+        '<div class="tbl-scroll" style="margin-top:12px"><table class="tbl"><thead><tr><th>Criterion</th><th>Your band</th></tr></thead><tbody>' +
+        GYCA.RUBRIC.map(function (r, i) { var bands = ['High', 'Mid-high', 'Mid', 'Mid', 'Developing']; return '<tr><td>' + r.label + '</td><td>' + bands[i] + '</td></tr>'; }).join('') +
+        '</tbody></table></div><a class="btn btn-ghost btn-sm" href="competitions.html" style="margin-top:12px">Enter next round →</a></div>';
+    }).join('');
+    GC.$$('[data-cert]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); dlCert(b.dataset.cert); }); });
+    var fb = $('[data-final]'); if (fb) fb.addEventListener('click', function (e) { e.preventDefault(); openFinal(); });
+  }
+
+  function renderPayments() {
+    var s = LS.get('submissions', subs);
+    $('#payments-body').innerHTML = '<div class="panel"><h3 style="margin-bottom:14px">Payment history · 결제 내역</h3><div class="tbl-scroll"><table class="tbl"><thead><tr><th>Entry</th><th>Competition</th><th>Amount</th><th>Payer</th><th>Status</th></tr></thead><tbody>' +
+      s.map(function (x) { var comp = GYCA.compOf(x.comp); var payer = x.paid === 'waiver' ? '<span style="color:var(--info)">Fee waiver</span>' : x.paid === 'guardian' ? 'Guardian' : '<span style="color:var(--warn)">Self (minor)</span>'; return '<tr><td class="num">' + x.no + '</td><td>' + (comp ? comp.title : '') + '</td><td class="num">' + (x.paid === 'waiver' ? '—' : '₩' + comp.fee.toLocaleString()) + '</td><td>' + payer + '</td><td><span class="badge badge-open">Paid</span></td></tr>'; }).join('') +
+      '</tbody></table></div></div>';
+  }
+
+  function renderCert() {
+    var s = LS.get('submissions', subs).filter(function (x) { return x.status === 'won'; });
+    $('#cert-body').innerHTML = s.length ? s.map(function (x) {
+      var g = GYCA.GRADES[x.grade], comp = GYCA.compOf(x.comp);
+      return '<div class="panel" style="margin-bottom:14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span class="grade-badge" style="background:' + g.bg + ';color:' + g.ink + '">' + g.en + '</span>' +
+        '<div style="flex:1"><b>' + x.title + '</b><div style="font-size:13px;color:var(--ink-3)">' + (comp ? comp.title : '') + ' · Certificate ID: CERT-' + x.no.replace('GYCA-', '') + '</div></div>' +
+        '<a class="btn btn-dark btn-sm" href="#" data-cert="' + x.no + '">KO</a><a class="btn btn-dark btn-sm" href="#" data-cert-en="' + x.no + '">EN</a></div>';
+    }).join('') : '<div style="text-align:center;padding:60px 0;color:var(--ink-3)">Certificates appear here after you win. Bilingual (KO/EN) with a verifiable ID.</div>';
+    GC.$$('[data-cert]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); dlCert(b.dataset.cert, 'ko'); }); });
+    GC.$$('[data-cert-en]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); dlCert(b.dataset.certEn, 'en'); }); });
+  }
+
+  function renderProfile() {
+    var a = GYCA.SAMPLE_APPLICANT;
+    $('#profile-body').innerHTML = '<div class="panel"><h3 style="margin-bottom:14px">Profile · 개인정보</h3>' +
+      '<div class="tbl-scroll"><table class="tbl"><tbody>' +
+      [['Name', a.name + ' (' + a.nameEn + ')'], ['Birth', a.birth + ' · minor'], ['Country', a.country], ['School', a.school + ' ' + a.grade], ['Guardian', a.guardianName + ' · ' + a.guardianEmail], ['Passport name', a.passportName]].map(function (r) { return '<tr><td style="width:160px;color:var(--ink-3);font-weight:700">' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') +
+      '</tbody></table></div>' +
+      '<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ghost btn-sm" id="req-export">Request my data</button><button class="btn btn-ghost btn-sm" id="req-delete">Request deletion</button></div>' +
+      '<p style="font-size:13px;color:var(--ink-3);margin-top:10px">A minor\'s deletion/withdrawal request is routed to a guardian confirmation, per child data rules.</p></div>';
+    $('#req-export').addEventListener('click', function () { toast('Data export request received (demo)'); });
+    $('#req-delete').addEventListener('click', function () { toast('Deletion request routed to guardian confirmation (demo)'); });
+  }
+
+  function dlCert(no, lang) {
+    var s = LS.get('submissions', subs).find(function (x) { return x.no === no; });
+    var g = s && s.grade ? GYCA.GRADES[s.grade] : null;
+    var txt = '﻿GYCA Certificate (demo)\n' + (lang === 'en' ? '' : '수상 인증서\n') +
+      'Award: ' + (g ? g.en + ' / ' + g.ko : 'Winner') + '\nWork: ' + (s ? s.title : '') + '\nCertificate ID: CERT-' + no.replace('GYCA-', '') + '\nVerify at gyca.org/verify\n(가상 데이터)';
+    var blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'CERT-' + no.replace('GYCA-', '') + (lang === 'en' ? '-EN' : '') + '.txt'; a.click();
+    toast('Certificate downloaded · 인증서를 내려받았습니다');
+  }
+  function openFinal() {
+    GC.modal('Overseas Final Application', '<p style="color:var(--ink-2);margin-bottom:14px">Barcelona Design Week — grade winners are invited. Total cost is shown in full before you decide.</p>' +
+      '<div class="panel" style="background:var(--bg);border:0"><div style="display:flex;justify-content:space-between;padding:6px 0"><span>Final participation fee</span><b class="num">₩350,000</b></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0"><span>Grade support (Grand Prize)</span><b class="num" style="color:var(--ok)">− ₩350,000</b></div>' +
+      '<div style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)"><span><b>Your total</b></span><b class="num">₩0 (fully supported)</b></div></div>' +
+      '<p style="font-size:13px;color:var(--ink-3);margin:12px 0">Passport name (KIM HANEUL) and guardian accompaniment are collected here. Not attending the final does not revoke your grade.</p>' +
+      '<button class="btn btn-gold" style="width:100%" onclick="GC.toast(\'Final application submitted (demo)\')">Apply for the final</button>');
+  }
+
+  renderSubs(); renderResults(); renderPayments(); renderCert(); renderProfile();
+  // 탭 전환 시 각 렌더는 이미 되어 있으므로 core initTabs가 hidden 토글만 하면 됨
+});
+</script>
+</body>
+</html>

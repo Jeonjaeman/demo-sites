@@ -6,10 +6,20 @@
 
   /* ── 스크롤 리빌 — fade-up 단일 패턴 ── */
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 리빌 불가 환경(rAF 미발화·뷰포트 0)에서는 transition을 제거하고 즉시 표시 —
+  // 프레임이 안 돌면 opacity 보간이 0에 멈춰 콘텐츠가 영영 안 보이기 때문.
+  let revealDisabled = false;
+  function showAllReveals() {
+    document.documentElement.classList.add('reveal-off');
+    $$('.rv').forEach(e => e.classList.add('in'));
+  }
   function initReveal() {
     const els = $$('.rv');
     if (!els.length) return;
-    if (reduced || !('IntersectionObserver' in window)) { els.forEach(e => e.classList.add('in')); return; }
+    if (reduced || !('IntersectionObserver' in window)) { showAllReveals(); return; }
+    let rafOk = false;
+    try { requestAnimationFrame(() => { rafOk = true; }); } catch (e) { }
+    setTimeout(() => { if (!rafOk || !(window.innerHeight > 0)) { revealDisabled = true; showAllReveals(); } }, 250);
     const io = new IntersectionObserver(entries => {
       entries.forEach(en => {
         if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
@@ -23,17 +33,19 @@
     const target = parseFloat(el.dataset.count || '0');
     const dur = 1400;
     const fmt = n => Math.round(n).toLocaleString('ko-KR');
-    if (reduced) { el.textContent = fmt(target); return; }
+    if (reduced || revealDisabled) { el.textContent = fmt(target); return; }
     const t0 = performance.now();
+    let done = false;
     // 폭 잠금 — 최종값 폭으로 고정해 레이아웃 흔들림 방지
     el.style.minWidth = el.textContent === '' ? '' : el.offsetWidth + 'px';
     function tick(t) {
       const p = Math.min(1, (t - t0) / dur);
       const e = 1 - Math.pow(1 - p, 3);
       el.textContent = fmt(target * (0.7 + 0.3 * e)); // 70%에서 시작해 자라나는 문법
-      if (p < 1) requestAnimationFrame(tick); else el.textContent = fmt(target);
+      if (p < 1) requestAnimationFrame(tick); else { el.textContent = fmt(target); done = true; }
     }
     requestAnimationFrame(tick);
+    setTimeout(() => { if (!done) el.textContent = fmt(target); }, 400); // rAF 미발화 폴백
   }
   function initCount() {
     const els = $$('[data-count]');
@@ -43,6 +55,8 @@
       entries.forEach(en => { if (en.isIntersecting) { countUp(en.target); io.unobserve(en.target); } });
     }, { threshold: 0.4 });
     els.forEach(e => io.observe(e));
+    // 리빌 불가 환경 폴백: 관찰 미발화 시 최종값 강제
+    setTimeout(() => { if (revealDisabled) els.forEach(e => { if (!e.textContent || e.textContent === '0') countUp(e); }); }, 350);
   }
 
   /* ── 토스트 ── */

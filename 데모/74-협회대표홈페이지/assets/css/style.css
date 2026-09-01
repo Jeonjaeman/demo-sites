@@ -489,6 +489,8 @@ body.admin-body { background: #f2f2ef; }
 /* ── 리빌 (fade-up 단일 패턴 — KMAC AOS 문법) ── */
 .rv { opacity: 0; transform: translateY(24px); transition: opacity .5s var(--ease), transform .5s var(--ease); }
 .rv.in { opacity: 1; transform: none; }
+/* 리빌 불가 환경(프레임 미갱신): transition 제거로 즉시 표시 */
+.reveal-off .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
 .rv-d1 { transition-delay: .1s; } .rv-d2 { transition-delay: .2s; }
 
 /* ── 인쇄 (조회 확인서) ── */

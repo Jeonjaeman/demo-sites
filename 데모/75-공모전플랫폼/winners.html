@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23100f0d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Georgia%27 font-size=%2714%27 font-weight=%27700%27 fill=%27%23c59d3d%27 text-anchor=%27middle%27%3EG%3C/text%3E%3C/svg%3E">
+<title>Winners — GYCA (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-nav" href="#main">Skip to content</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="GYCA home"><span class="logo-mark" aria-hidden="true">G</span><span class="logo-txt"><strong>GYCA</strong><span>Global Youth Creative Awards</span></span></a>
+    <nav class="gnb" aria-label="Main menu">
+      <a href="competitions.html" data-en="Competitions" data-ko="공모전">Competitions</a>
+      <a href="exhibitions.html" data-en="Exhibitions" data-ko="전시·공연">Exhibitions</a>
+      <a href="winners.html" aria-current="page" data-en="Winners" data-ko="수상작">Winners</a>
+      <a href="about.html" data-en="About" data-ko="GYCA 소개">About</a>
+      <a href="notice.html" data-en="Notice" data-ko="공지사항">Notice</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="ko" aria-pressed="false">KO</button></div>
+    <a class="header-cta" href="apply.html" data-en="Submit Work" data-ko="작품 접수">Submit Work</a>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="Mobile menu"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="Close menu">×</button>
+  <a href="competitions.html">Competitions · 공모전</a><a href="exhibitions.html">Exhibitions · 전시·공연</a><a href="winners.html" aria-current="page">Winners · 수상작</a><a href="about.html">About · GYCA 소개</a><a href="notice.html">Notice · 공지사항</a><a href="apply.html"><strong>Submit Work · 작품 접수</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb"><a href="index.html">Home</a><span>›</span><span>Winners</span></nav>
+      <span class="eyebrow">Winners Gallery</span>
+      <h1>Recognized works</h1>
+      <p data-en="Filter by year, field, grade and country. Minors' names are masked by default — a guardian can adjust this." data-ko="연도·분야·등급·국가로 찾아보세요. 미성년 참가자의 이름은 기본적으로 마스킹되며 보호자가 조정할 수 있습니다.">Filter by year, field, grade and country. Minors' names are masked by default — a guardian can adjust this.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="filter-bar">
+        <span style="font-size:13px;font-weight:700;color:var(--ink-3);margin-right:4px">GRADE</span>
+        <button class="filter-chip" data-grade="all" aria-pressed="true">All</button>
+        <button class="filter-chip" data-grade="grand">Grand Prize</button>
+        <button class="filter-chip" data-grade="gold">Gold</button>
+        <button class="filter-chip" data-grade="silver">Silver</button>
+        <button class="filter-chip" data-grade="bronze">Bronze</button>
+        <button class="filter-chip" data-grade="finalist">Finalist</button>
+      </div>
+      <div class="filter-bar" id="cat-filter">
+        <span style="font-size:13px;font-weight:700;color:var(--ink-3);margin-right:4px">FIELD</span>
+        <button class="filter-chip" data-cat="all" aria-pressed="true">All</button>
+      </div>
+      <div class="filter-bar" id="year-filter">
+        <span style="font-size:13px;font-weight:700;color:var(--ink-3);margin-right:4px">YEAR</span>
+        <button class="filter-chip" data-year="all" aria-pressed="true">All</button>
+      </div>
+      <div class="filter-bar" id="country-filter">
+        <span style="font-size:13px;font-weight:700;color:var(--ink-3);margin-right:4px">COUNTRY</span>
+        <button class="filter-chip" data-country="all" aria-pressed="true">All</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <p id="count-line" style="color:var(--ink-3);font-size:14px"></p>
+        <label style="display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--ink-2)"><input type="checkbox" id="reveal-minor"> Show minors' names (guardian view)</label>
+      </div>
+      <div class="winner-grid" id="grid"></div>
+      <div id="empty" hidden style="text-align:center;padding:70px 0;color:var(--ink-3)">No winners match these filters.</div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 Global Youth Creative Awards. Demo build.</span>
+  <span class="demo-note">본 사이트는 제안용 데모이며 수상자·작품 등 모든 데이터는 가상입니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = GC.$, $$ = GC.$$;
+  var state = { grade: 'all', cat: 'all', year: 'all', country: 'all', reveal: false };
+  var cf = $('#cat-filter');
+  GYCA.CATEGORIES.forEach(function (c) { var b = document.createElement('button'); b.className = 'filter-chip'; b.dataset.cat = c.key; b.textContent = c.en; b.setAttribute('aria-pressed', 'false'); cf.appendChild(b); });
+  // 연도 필터
+  var years = GYCA.WINNERS.map(function (w) { return w.year; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort(function (a, b) { return b - a; });
+  var yf = $('#year-filter');
+  years.forEach(function (y) { var b = document.createElement('button'); b.className = 'filter-chip'; b.dataset.year = y; b.textContent = y; b.setAttribute('aria-pressed', 'false'); yf.appendChild(b); });
+  // 국가 필터
+  var countries = GYCA.WINNERS.map(function (w) { return w.country; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).sort();
+  var ctf = $('#country-filter');
+  countries.forEach(function (c) { var b = document.createElement('button'); b.className = 'filter-chip'; b.dataset.country = c; b.textContent = c; b.setAttribute('aria-pressed', 'false'); ctf.appendChild(b); });
+
+  function maskName(w) { if (!w.minor || state.reveal) return w.name; return w.name.slice(0, 1) + '○'.repeat(Math.max(1, w.name.length - 1)); }
+  function card(w) {
+    var g = GYCA.GRADES[w.grade], cat = GYCA.catOf(w.cat);
+    return '<div class="winner-card" data-w="' + w.id + '"><div class="wc-img"><img src="assets/img/' + w.img + '" alt="' + w.title + '">' +
+      '<span class="wc-grade grade-badge" style="background:' + g.bg + ';color:' + g.ink + '">' + g.en + '</span></div>' +
+      '<div class="wc-body"><div class="wc-title">' + w.title + '</div><div class="wc-name">' + maskName(w) + ' · ' + w.country + (w.minor ? ' · <span style="color:var(--warn)">minor</span>' : '') + '</div>' +
+      '<div style="margin-top:6px"><span class="cat-chip" style="background:' + cat.soft + ';color:' + cat.base + ';height:22px;font-size:11px">' + cat.en + '</span></div></div></div>';
+  }
+  function render() {
+    var list = GYCA.WINNERS.filter(function (w) {
+      return (state.grade === 'all' || w.grade === state.grade) && (state.cat === 'all' || w.cat === state.cat) &&
+        (state.year === 'all' || String(w.year) === String(state.year)) && (state.country === 'all' || w.country === state.country);
+    }).sort(function (a, b) { return GYCA.GRADES[a.grade].rank - GYCA.GRADES[b.grade].rank; });
+    $('#empty').hidden = list.length > 0;
+    $('#count-line').textContent = list.length + ' winning work' + (list.length === 1 ? '' : 's');
+    $('#grid').innerHTML = list.map(card).join('');
+    $$('#grid .winner-card').forEach(function (el) { el.addEventListener('click', function () { openDetail(el.dataset.w); }); });
+  }
+  function openDetail(id) {
+    var w = GYCA.WINNERS.find(function (x) { return x.id === id; });
+    var g = GYCA.GRADES[w.grade], cat = GYCA.catOf(w.cat), comp = GYCA.compOf(w.comp);
+    GC.modal(w.title, '<img src="assets/img/' + w.img + '" alt="' + w.title + '" style="width:100%;border-radius:10px;margin-bottom:16px">' +
+      '<span class="grade-badge" style="background:' + g.bg + ';color:' + g.ink + '">' + g.en + ' · ' + g.ko + '</span> ' +
+      '<span class="cat-chip" style="background:' + cat.soft + ';color:' + cat.base + '">' + cat.en + '</span>' +
+      '<h3 style="margin:14px 0 4px;font-family:var(--font-en);font-size:24px;font-weight:400">' + w.title + '</h3>' +
+      '<p style="color:var(--ink-3);font-size:14px">' + maskName(w) + ' · Age ' + w.age + ' · ' + w.country + ' · ' + (comp ? comp.title : '') + ' ' + w.year + '</p>' +
+      '<p style="margin-top:14px;color:var(--ink-2)">' + w.statement + '</p>' +
+      (w.minor ? '<p style="margin-top:14px;font-size:13px;color:var(--warn);background:var(--warn-soft);padding:10px 12px;border-radius:8px">This creator is a minor. Their name is masked in the public gallery unless a guardian allows it. Public visibility follows the usage permissions chosen at submission.</p>' : '') +
+      '<div style="margin-top:16px;display:flex;gap:8px"><span class="badge badge-open">Judge score: creativity ' + (28 + w.age % 3) + '/30</span></div>');
+  }
+  $$('[data-grade]').forEach(function (b) { b.addEventListener('click', function () { state.grade = b.dataset.grade; $$('[data-grade]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  $$('#cat-filter .filter-chip').forEach(function (b) { b.addEventListener('click', function () { state.cat = b.dataset.cat; $$('#cat-filter .filter-chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  $$('#year-filter .filter-chip').forEach(function (b) { b.addEventListener('click', function () { state.year = b.dataset.year; $$('#year-filter .filter-chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  $$('#country-filter .filter-chip').forEach(function (b) { b.addEventListener('click', function () { state.country = b.dataset.country; $$('#country-filter .filter-chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  $('#reveal-minor').addEventListener('change', function (e) { state.reveal = e.target.checked; render(); GC.toast(state.reveal ? 'Guardian view — minors\' names shown' : 'Public view — minors\' names masked'); });
+  render();
+});
+</script>
+</body>
+</html>

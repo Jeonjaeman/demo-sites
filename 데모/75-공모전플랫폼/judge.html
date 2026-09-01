@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23100f0d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Georgia%27 font-size=%2714%27 font-weight=%27700%27 fill=%27%23c59d3d%27 text-anchor=%27middle%27%3EG%3C/text%3E%3C/svg%3E">
+<title>Juror Portal — GYCA (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin-body">
+<a class="skip-nav" href="#main">Skip to content</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="GYCA home"><span class="logo-mark" aria-hidden="true">G</span><span class="logo-txt"><strong>GYCA</strong><span>Juror Portal</span></span></a>
+    <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+      <span style="font-size:14px;color:var(--ink-2)">Elena Rossi · Juror</span>
+      <a class="btn btn-ghost btn-sm" href="mypage.html">Switch role</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="page-hero" style="padding:44px 0 36px">
+    <div class="shell">
+      <span class="eyebrow">Juror Dashboard</span>
+      <h1 style="font-size:40px">Your judging queue</h1>
+      <p>Entries are anonymized — you see an entry number and a stripped file. Names are revealed only after scoring closes.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="admin-grid" style="margin-bottom:24px">
+        <div class="acard span-3"><div class="kpi-num" id="k-assigned">0</div><div class="kpi-cap">Assigned works · 배정 작품</div></div>
+        <div class="acard span-3"><div class="kpi-num" id="k-done" style="color:var(--ok)">0</div><div class="kpi-cap">Scored · 심사 완료</div></div>
+        <div class="acard span-3"><div class="kpi-num" id="k-left" style="color:var(--warn)">0</div><div class="kpi-cap">Remaining · 남은 작품</div></div>
+        <div class="acard span-3"><div class="kpi-num">Sep 19</div><div class="kpi-cap">Deadline · 마감일</div></div>
+      </div>
+
+      <div class="grid-2" style="align-items:start;gap:28px">
+        <div class="acard span-6">
+          <h2>Assigned entries · 배정 작품</h2>
+          <div class="tbl-scroll"><table class="tbl admin-tbl"><caption>Blind list — names hidden</caption><thead><tr><th>Entry no.</th><th>Field</th><th>Age band</th><th>Status</th><th></th></tr></thead><tbody id="queue"></tbody></table></div>
+        </div>
+        <div class="acard span-6" id="judge-panel">
+          <p style="color:var(--ink-3);padding:40px 0;text-align:center">Select an entry to score.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 Global Youth Creative Awards. Juror portal demo.</span>
+  <span class="demo-note">본 화면은 제안용 데모이며 모든 데이터는 가상입니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = GC.$, LS = GC.LS, toast = GC.toast;
+  var IMGS = ['work-abstract.webp', 'work-watercolor.webp', 'work-digital.webp', 'work-charcoal.webp', 'work-collage.webp', 'work-ceramic.webp', 'work-photo.webp', 'work-poster.webp'];
+  var CATS = ['art', 'design', 'music', 'art', 'design', 'art', 'design', 'art'];
+  var scores = LS.get('judge-scores', {});
+  // 이해충돌: 481은 심사위원의 소속 학생(데모 플래그)
+  var ENTRIES = [];
+  for (var i = 0; i < 8; i++) {
+    var no = 'GYCA-C1-000' + (481 + i);
+    ENTRIES.push({ no: no, cat: CATS[i], img: IMGS[i], age: ['13–15', '16–18', '19–22'][i % 3], conflict: i === 2 });
+  }
+
+  function refreshKpi() {
+    var done = Object.keys(scores).length;
+    $('#k-assigned').textContent = ENTRIES.length;
+    $('#k-done').textContent = done;
+    $('#k-left').textContent = ENTRIES.length - done;
+  }
+  function renderQueue() {
+    $('#queue').innerHTML = ENTRIES.map(function (e) {
+      var scored = scores[e.no];
+      var cat = GYCA.catOf(e.cat);
+      return '<tr><td class="num">' + e.no + '</td><td><span class="cat-chip" style="background:' + cat.soft + ';color:' + cat.base + ';height:22px;font-size:11px">' + cat.en + '</span></td>' +
+        '<td>' + e.age + '</td><td>' + (e.conflict ? '<span class="badge badge-bad">Conflict</span>' : scored ? '<span class="badge badge-open">Scored ' + scored.total + '</span>' : '<span class="badge badge-judging">To do</span>') + '</td>' +
+        '<td><button class="btn btn-ghost btn-sm" data-judge="' + e.no + '">' + (scored ? 'Edit' : 'Score') + '</button></td></tr>';
+    }).join('');
+    GC.$$('[data-judge]').forEach(function (b) { b.addEventListener('click', function () { openJudge(b.dataset.judge); }); });
+  }
+  function openJudge(no) {
+    var e = ENTRIES.find(function (x) { return x.no === no; });
+    var cat = GYCA.catOf(e.cat);
+    if (e.conflict) {
+      $('#judge-panel').innerHTML = '<h2>Entry ' + no + '</h2>' +
+        '<div style="background:var(--bad-soft);border-radius:12px;padding:20px;margin-top:12px"><b style="color:var(--bad)">Conflict of interest flagged</b>' +
+        '<p style="font-size:14px;color:var(--ink-2);margin:8px 0 14px">This entry is linked to you (same institution / prior mentee). To keep judging fair, you cannot score it — it is reassigned to another juror.</p>' +
+        '<button class="btn btn-dark btn-sm" id="recuse">Recuse &amp; reassign</button></div>';
+      $('#recuse').addEventListener('click', function () { toast('Recused — entry reassigned to another juror (demo)'); });
+      return;
+    }
+    var prev = scores[no] || {};
+    $('#judge-panel').innerHTML =
+      '<h2>Entry ' + no + ' <span class="badge badge-judging" style="margin-left:8px">Blind</span></h2>' +
+      '<img src="assets/img/' + e.img + '" alt="Anonymized entry ' + no + '" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin:12px 0">' +
+      '<p style="font-size:13px;color:var(--ink-3);margin-bottom:16px">File: <code>' + no + '.jpg</code> · author metadata stripped · ' + cat.en + ' · age band ' + e.age + '</p>' +
+      '<div id="rubric">' + GYCA.RUBRIC.map(function (r) {
+        var v = (prev.scores && prev.scores[r.key]) != null ? prev.scores[r.key] : Math.round(r.weight * 0.8);
+        return '<div class="rubric-row"><label>' + r.label + ' <span style="color:var(--ink-3);font-weight:400">/' + r.weight + '</span></label>' +
+          '<input type="range" min="0" max="' + r.weight + '" value="' + v + '" data-r="' + r.key + '" data-max="' + r.weight + '"><span class="rr-val" data-rv="' + r.key + '">' + v + '</span></div>';
+      }).join('') + '</div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0 16px;padding-top:12px;border-top:1px solid var(--line)"><b>Total</b><b class="num" id="total" style="font-size:24px;color:var(--gold-dk)">0</b></div>' +
+      '<div class="field"><label for="comment">Comment · 심사평</label><textarea id="comment" rows="3">' + (prev.comment || '') + '</textarea></div>' +
+      '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-ghost btn-sm" id="save-draft">Save draft</button><button class="btn btn-gold btn-sm" id="submit-score">Submit score</button></div>';
+    function updateTotal() {
+      var t = 0;
+      GC.$$('[data-r]').forEach(function (inp) { var v = +inp.value; t += v; $('[data-rv="' + inp.dataset.r + '"]').textContent = v; });
+      $('#total').textContent = t;
+      return t;
+    }
+    GC.$$('[data-r]').forEach(function (inp) { inp.addEventListener('input', updateTotal); });
+    updateTotal();
+    $('#save-draft').addEventListener('click', function () { toast('Draft saved · 임시저장'); });
+    $('#submit-score').addEventListener('click', function () {
+      if (!confirm('[Confirm] Submit final score for ' + no + '?\n\nAfter submission, scores are LOCKED and cannot be edited (admin approval required to reopen).\n점수 제출 후에는 수정이 제한됩니다.')) return;
+      var sc = {}; GC.$$('[data-r]').forEach(function (inp) { sc[inp.dataset.r] = +inp.value; });
+      scores[no] = { scores: sc, total: updateTotal(), comment: $('#comment').value };
+      LS.set('judge-scores', scores);
+      toast('Score submitted & locked · 심사 완료 (수정 제한)');
+      refreshKpi(); renderQueue();
+      $('#judge-panel').innerHTML = '<div style="text-align:center;padding:40px 0"><div style="font-size:40px;color:var(--ok)">✓</div><p style="margin-top:10px">Scored ' + no + '. Select the next entry.</p></div>';
+    });
+  }
+  refreshKpi(); renderQueue();
+});
+</script>
+</body>
+</html>

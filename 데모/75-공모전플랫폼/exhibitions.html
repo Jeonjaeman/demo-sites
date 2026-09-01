@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23100f0d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Georgia%27 font-size=%2714%27 font-weight=%27700%27 fill=%27%23c59d3d%27 text-anchor=%27middle%27%3EG%3C/text%3E%3C/svg%3E">
+<title>Exhibitions &amp; Performances — GYCA (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-nav" href="#main">Skip to content</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="GYCA home"><span class="logo-mark" aria-hidden="true">G</span><span class="logo-txt"><strong>GYCA</strong><span>Global Youth Creative Awards</span></span></a>
+    <nav class="gnb" aria-label="Main menu">
+      <a href="competitions.html" data-en="Competitions" data-ko="공모전">Competitions</a>
+      <a href="exhibitions.html" aria-current="page" data-en="Exhibitions" data-ko="전시·공연">Exhibitions</a>
+      <a href="winners.html" data-en="Winners" data-ko="수상작">Winners</a>
+      <a href="about.html" data-en="About" data-ko="GYCA 소개">About</a>
+      <a href="notice.html" data-en="Notice" data-ko="공지사항">Notice</a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="ko" aria-pressed="false">KO</button></div>
+    <a class="header-cta" href="apply.html" data-en="Submit Work" data-ko="작품 접수">Submit Work</a>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+  </div>
+</header>
+<div class="drawer" aria-label="Mobile menu"><div class="drawer-bg"></div><nav class="drawer-panel"><button class="drawer-close" type="button" aria-label="Close menu">×</button>
+  <a href="competitions.html">Competitions · 공모전</a><a href="exhibitions.html" aria-current="page">Exhibitions · 전시·공연</a><a href="winners.html">Winners · 수상작</a><a href="about.html">About · GYCA 소개</a><a href="notice.html">Notice · 공지사항</a><a href="apply.html"><strong>Submit Work · 작품 접수</strong></a>
+</nav></div>
+
+<main id="main">
+  <div class="page-hero">
+    <div class="shell">
+      <nav class="crumb"><a href="index.html">Home</a><span>›</span><span>Exhibitions &amp; Performances</span></nav>
+      <span class="eyebrow">International Program</span>
+      <h1>Where the work travels</h1>
+      <p data-en="Winning works move from the screen to real stages and galleries around the world. Pick a city to see its programs." data-ko="수상작은 화면을 떠나 세계 각 도시의 무대와 갤러리로 이어집니다. 도시를 선택해 프로그램을 확인하세요.">Winning works move from the screen to real stages and galleries around the world. Pick a city to see its programs.</p>
+    </div>
+  </div>
+
+  <section class="sec-fn">
+    <div class="shell">
+      <div class="filter-bar" id="city-filter">
+        <span style="font-size:13px;font-weight:700;color:var(--ink-3);margin-right:4px">CITY</span>
+        <button class="filter-chip" data-city="all" aria-pressed="true">All</button>
+      </div>
+      <div class="grid-3" id="ex-grid"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 Global Youth Creative Awards. Demo build.</span>
+  <span class="demo-note">본 사이트는 제안용 데모이며 모든 데이터는 가상입니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = GC.$, $$ = GC.$$;
+  var params = new URLSearchParams(location.search);
+  var state = { city: params.get('city') || 'all' };
+  var cf = $('#city-filter');
+  GYCA.CITIES.forEach(function (c) { var b = document.createElement('button'); b.className = 'filter-chip'; b.dataset.city = c.key; b.textContent = c.en; b.setAttribute('aria-pressed', String(state.city === c.key)); cf.appendChild(b); });
+  function render() {
+    var list = GYCA.CITIES.filter(function (c) { return state.city === 'all' || c.key === state.city; });
+    $('#ex-grid').innerHTML = list.map(function (c) {
+      return '<div class="comp-card"><div class="cc-img"><img src="assets/img/' + c.img + '" alt="' + c.ko + '"></div>' +
+        '<div class="cc-body"><div class="cc-city">' + c.country + ' · ' + c.tz + '</div><h3>' + c.en + ' <span style="font-size:14px;color:var(--ink-3)">' + c.ko + '</span></h3>' +
+        '<p class="cc-ko" style="margin-top:8px">' + c.program + '</p>' +
+        '<div class="cc-foot"><span class="cc-deadline">Exhibitions · Performances · Publishing</span>' +
+        '<button class="btn btn-dark btn-sm" data-city-detail="' + c.key + '">View archive</button></div></div></div>';
+    }).join('');
+    $$('[data-city-detail]').forEach(function (b) { b.addEventListener('click', function () { openCity(b.dataset.cityDetail); }); });
+  }
+  function openCity(key) {
+    var c = GYCA.cityOf(key);
+    GC.modal(c.en + ' · ' + c.ko, '<img src="assets/img/' + c.img + '" alt="' + c.ko + '" style="width:100%;border-radius:10px;margin-bottom:14px">' +
+      '<p style="color:var(--ink-2)">' + c.program + '</p>' +
+      '<div style="margin-top:16px"><b>Program archive</b><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">' +
+      '<div style="padding:12px;background:var(--bg);border-radius:8px;font-size:14px"><b>Exhibition</b> · ' + c.en + ' Youth Gallery — 24 works · photos & catalog</div>' +
+      '<div style="padding:12px;background:var(--bg);border-radius:8px;font-size:14px"><b>Performance</b> · Opening night — participating artists, video archive</div>' +
+      '<div style="padding:12px;background:var(--bg);border-radius:8px;font-size:14px"><b>Publishing</b> · Selected works anthology (with creators\' permission)</div>' +
+      '</div></div><a class="btn btn-gold btn-sm" href="winners.html" style="margin-top:16px">See works shown here →</a>');
+  }
+  $$('#city-filter .filter-chip').forEach(function (b) { b.addEventListener('click', function () { state.city = b.dataset.city; $$('#city-filter .filter-chip').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }); });
+  render();
+});
+</script>
+</body>
+</html>

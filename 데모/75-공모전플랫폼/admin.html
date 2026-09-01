@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23100f0d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Georgia%27 font-size=%2714%27 font-weight=%27700%27 fill=%27%23c59d3d%27 text-anchor=%27middle%27%3EG%3C/text%3E%3C/svg%3E">
+<title>Admin — GYCA (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="admin-body">
+<a class="skip-nav" href="#admin-main">Skip to content</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="GYCA home"><span class="logo-mark" aria-hidden="true">G</span><span class="logo-txt"><strong>GYCA</strong><span>Admin Console</span></span></a>
+    <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+      <span style="font-size:14px;color:var(--ink-2)">admin@gyca.org</span>
+      <a class="btn btn-ghost btn-sm" href="mypage.html">Switch role</a>
+    </div>
+  </div>
+</header>
+
+<div class="admin-layout">
+  <nav class="admin-nav" aria-label="Admin menu" id="admin-nav">
+    <button data-view="dash" aria-current="true"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg> Dashboard</button>
+    <div class="an-sep">Competitions</div>
+    <button data-view="comps"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9a6 6 0 0 0 12 0V4H6z"/><path d="M6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3M9 20h6M12 15v5"/></svg> Competitions</button>
+    <button data-view="entries"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg> Entries</button>
+    <button data-view="partners"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 12l3 3 5-6"/><circle cx="12" cy="12" r="9"/></svg> Partners</button>
+    <div class="an-sep">Judging</div>
+    <button data-view="judging"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v18M7 7l-4 6a4 4 0 0 0 8 0zM17 7l4 6a4 4 0 0 1-8 0z"/></svg> Judging &amp; Assign</button>
+    <button data-view="results"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="9" r="5"/><path d="M9 13.5L8 21l4-2 4 2-1-7.5"/></svg> Results</button>
+    <div class="an-sep">Operations</div>
+    <button data-view="payments"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg> Payments</button>
+    <button data-view="i18n"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg> Translation</button>
+    <button data-view="comms"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16v11H8l-4 4z"/></svg> Communication</button>
+    <button data-view="log"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Audit Log</button>
+  </nav>
+  <main class="admin-main" id="admin-main"></main>
+</div>
+
+<footer class="footer" style="margin-top:0"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 Global Youth Creative Awards. Admin console demo.</span>
+  <span class="demo-note">본 화면은 제안용 데모이며 모든 데이터는 가상입니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

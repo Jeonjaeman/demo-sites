@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%233f7d6e%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-family=%27Arial%27 font-size=%2716%27 font-weight=%27800%27 fill=%27white%27 text-anchor=%27middle%27%3E%EB%A7%88%3C/text%3E%3C/svg%3E">
+<title>의사 전용 웹 — 마음터 (데모)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="console">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<header class="header">
+  <div class="header-in">
+    <a class="logo" href="index.html" aria-label="마음터 홈"><span class="logo-mark" aria-hidden="true">마</span><span class="logo-txt"><strong>마음터</strong><span>DOCTOR WEB</span></span></a>
+    <div style="margin-left:auto;display:flex;gap:12px;align-items:center">
+      <span style="font-size:14px;color:var(--ink-2)">김서연 원장 · 서울 마음의원</span>
+      <a class="btn btn-ghost btn-sm" href="index.html">앱 화면</a>
+      <a class="btn btn-ghost btn-sm" href="admin.html">관리자</a>
+    </div>
+  </div>
+</header>
+
+<div class="console-hero">
+  <div class="shell">
+    <span class="eyebrow">의사 전용 웹</span>
+    <h1>진료 대시보드</h1>
+    <p>예약 관리와 상담 진행, 처방 작성을 한 화면에서. 비대면 처방 제한과 월 30% 상한이 실시간으로 반영됩니다.</p>
+  </div>
+</div>
+
+<main id="main" class="shell" style="padding-top:28px;padding-bottom:60px">
+  <!-- KPI + 30% 게이지 -->
+  <div class="admin-grid" style="margin-bottom:24px">
+    <div class="acard span-3"><div class="kpi-num" id="k-today">0</div><div class="kpi-cap">오늘 예약</div></div>
+    <div class="acard span-3"><div class="kpi-num" style="color:var(--sage-dk)" id="k-done">0</div><div class="kpi-cap">완료한 상담</div></div>
+    <div class="acard span-6"><h2 style="margin-bottom:10px">이번 달 비대면 비율 <span class="badge" id="ratio-badge"></span></h2>
+      <div class="gauge-track" style="margin:6px 0"><div class="gauge-fill" id="ratio-fill"></div><div class="gauge-limit" style="left:30%"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink-3)"><span id="ratio-text"></span><span>상한 30% ▲</span></div>
+      <p style="font-size:12px;color:var(--ink-3);margin-top:8px">개정 의료법상 의료기관별 월 비대면 비율은 30%로 제한됩니다. 상한 초과 시 신규 비대면 예약 슬롯이 자동 잠깁니다.</p>
+    </div>
+  </div>
+
+  <div class="admin-grid">
+    <!-- 예약/대기 -->
+    <div class="acard span-5">
+      <h2>오늘 예약 대기</h2>
+      <div id="queue"></div>
+    </div>
+    <!-- 진료 -->
+    <div class="acard span-7" id="visit-panel">
+      <p style="color:var(--ink-3);text-align:center;padding:40px 0">환자를 선택해 상담을 시작하세요.</p>
+    </div>
+  </div>
+</main>
+
+<footer class="footer" style="margin-top:0"><div class="shell"><div class="footer-bar" style="border-top:0;padding-top:0">
+  <span>© 2026 MAUMTER. 의사 전용 웹 데모.</span>
+  <span class="demo-note">본 화면은 제안용 데모이며 모든 데이터는 가상입니다. 실제 진료·처방이 아닙니다.</span>
+</div></div></footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var $ = MC.$, toast = MC.toast;
+  var me = MT.ADMIN_SEED.ratio[0]; // 김서연 (d1)
+  $('#k-today').textContent = 6;
+  $('#k-done').textContent = 4;
+  // 30% 게이지
+  var pct = me.pct;
+  $('#ratio-text').textContent = me.remote + ' / ' + me.total + '건 · ' + pct + '%';
+  var badge = $('#ratio-badge');
+  var over = pct > 30;
+  badge.className = 'badge ' + (over ? 'badge-bad' : 'badge-ok');
+  badge.textContent = over ? '상한 초과' : '정상';
+  setTimeout(function () { $('#ratio-fill').style.width = Math.min(100, pct / 0.4) + '%'; $('#ratio-fill').style.background = over ? 'var(--bad)' : (pct > 25 ? 'var(--warn)' : 'var(--sage)'); }, 100);
+
+  // 예약 대기 (가상 환자 — 가명 처리)
+  var patients = [
+    { id: 'p1', alias: '이○람', type: 'talk', first: true, survey: '불면·불안 중등도', crisis: false },
+    { id: 'p2', alias: '박○우', type: 'med', first: false, survey: '우울 재진', crisis: false },
+    { id: 'p3', alias: '정○은', type: 'med', first: true, survey: '공황 · 위기 신호 있음', crisis: true },
+  ];
+  function renderQueue() {
+    $('#queue').innerHTML = patients.map(function (p) {
+      return '<div class="app-card" data-pt="' + p.id + '" style="cursor:pointer;margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px">' +
+        '<b style="font-size:14.5px;flex:1">' + p.alias + ' <span style="font-size:11px;color:var(--ink-3);font-weight:500">' + (p.first ? '초진' : '재진') + '</span></b>' +
+        (p.crisis ? '<span class="badge badge-bad">위기 플래그</span>' : '') +
+        '<span class="code-badge ' + (p.type === 'talk' ? 'code-z' : 'code-f') + '">' + (p.type === 'talk' ? 'Z71.9' : 'F') + '</span></div>' +
+        '<p style="font-size:12.5px;color:var(--ink-3);margin-top:4px">문진: ' + p.survey + '</p></div>';
+    }).join('');
+    MC.$$('[data-pt]').forEach(function (el) { el.addEventListener('click', function () { openVisit(el.dataset.pt); }); });
+  }
+  function openVisit(id) {
+    var p = patients.find(function (x) { return x.id === id; });
+    var panel = $('#visit-panel');
+    var crisisBlock = p.crisis ? '<div class="crisis-panel" style="margin-bottom:14px"><h3>⚠ 위기 신호 감지된 환자</h3><p>문진에서 자해·자살 위험 응답이 있었습니다. 상담 시작 전 위기 평가를 우선하세요. 109 연계·응급 안내가 환자 앱에 이미 표시되었습니다.</p></div>' : '';
+    panel.innerHTML = '<h2>진료 · ' + p.alias + ' <span class="badge badge-mute">가명 처리</span></h2>' + crisisBlock +
+      '<div class="tbl-scroll" style="margin-bottom:14px"><table class="tbl admin-tbl"><caption>사전 문진 요약 (환자가 미리 입력)</caption><tbody>' +
+      '<tr><td style="width:140px;color:var(--ink-3)">유형</td><td>' + (p.type === 'talk' ? '상담 중심 (Z71.9) — 처방 없음' : '진료+처방 검토 (F코드)') + '</td></tr>' +
+      '<tr><td style="color:var(--ink-3)">주요 호소</td><td>' + p.survey + '</td></tr>' +
+      '<tr><td style="color:var(--ink-3)">본인확인</td><td><span class="badge badge-ok">완료</span></td></tr>' +
+      '</tbody></table></div>' +
+      (p.type === 'talk'
+        ? '<div style="padding:14px;background:var(--ok-soft);border-radius:10px;font-size:13.5px;color:var(--ok)">✓ 상담 중심 진료입니다. 처방 단계가 없어 진단명(F코드)이 기록되지 않습니다.</div><button class="btn btn-primary btn-block" id="finish-talk" style="margin-top:14px">상담 완료 (Z코드 청구)</button>'
+        : renderRx()) +
+      '<div style="margin-top:12px;font-size:12px;color:var(--ink-3)">이 환자의 상담 내용은 당신(진료 의사)만 열람할 수 있습니다. 다른 의사·관리자·간호사는 접근할 수 없습니다.</div>';
+    if (p.type === 'med') bindRx();
+    var ft = $('#finish-talk'); if (ft) ft.addEventListener('click', function () { toast('상담 완료 · Z71.9로 청구됩니다 (진단 기록 없음)'); });
+  }
+  function renderRx() {
+    return '<h3 style="font-size:15px;margin-bottom:8px">처방 작성</h3>' +
+      '<p style="font-size:12.5px;color:var(--ink-3);margin-bottom:10px">비대면으로 처방할 수 없는 향정신성·마약류 약물은 선택 시 자동 차단됩니다(개정 의료법 §34-3 ④).</p>' +
+      '<div class="drug-list">' + MT.DRUGS.map(function (d) {
+        return '<div class="drug-item ' + (d.controlled ? 'controlled' : '') + '" data-drug="' + d.ingredient + '" data-ctrl="' + d.controlled + '">' +
+          '<div><div class="di-name">' + d.name + '</div><div class="di-use">' + d.use + '</div></div>' +
+          '<span class="di-flag">' + (d.controlled ? '<span class="badge badge-bad">' + d.schedule + ' · 비대면 불가</span>' : '<span class="badge badge-ok">처방 가능</span>') + '</span></div>';
+      }).join('') + '</div>' +
+      '<div id="rx-selected" style="margin-top:12px"></div>' +
+      '<button class="btn btn-primary btn-block" id="issue-rx" style="margin-top:12px" disabled>처방전 발행</button>';
+  }
+  function bindRx() {
+    var selected = null;
+    MC.$$('[data-drug]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        if (el.dataset.ctrl === 'true') {
+          $('#rx-selected').innerHTML = '<div style="padding:12px;background:var(--bad-soft);border-radius:10px;font-size:13px;color:var(--bad)">✕ <b>' + el.querySelector('.di-name').textContent + '</b>은(는) 향정신성의약품으로 <b>비대면 처방이 법으로 금지</b>되어 있습니다. 대면 진료가 필요합니다.<br><button class="btn btn-ghost btn-sm" style="margin-top:8px" id="to-inperson">대면 진료 예약 안내</button></div>';
+          $('#issue-rx').disabled = true;
+          MC.$$('[data-drug]').forEach(function (x) { x.style.outline = 'none'; });
+          var ip = $('#to-inperson'); if (ip) ip.addEventListener('click', function () { toast('환자에게 거주 지역 내 대면 진료를 안내합니다 (데모)'); });
+          // 관리자 통계에 차단 카운트 반영
+          var log = MC.LS.get('rx-blocked', 0); MC.LS.set('rx-blocked', log + 1);
+          return;
+        }
+        selected = el.dataset.drug;
+        MC.$$('[data-drug]').forEach(function (x) { x.style.outline = 'none'; });
+        el.style.outline = '2px solid var(--sage)';
+        $('#rx-selected').innerHTML = '<div style="padding:12px;background:var(--ok-soft);border-radius:10px;font-size:13px;color:var(--ok)">✓ ' + el.querySelector('.di-name').textContent + ' — 비대면 처방 가능한 약물입니다.</div>';
+        $('#issue-rx').disabled = false;
+      });
+    });
+    $('#issue-rx').addEventListener('click', function () { toast('처방전이 발행되었습니다 (열람용 · 환자 앱에 전달)'); var log = MC.LS.get('rx-issued', 0); MC.LS.set('rx-issued', log + 1); });
+  }
+  renderQueue();
+});
+</script>
+</body>
+</html>
