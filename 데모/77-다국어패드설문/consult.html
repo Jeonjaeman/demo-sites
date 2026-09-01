@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko" data-lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GYEOL 결 — 상담실장 뷰 (데모)</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap">
+<link rel="stylesheet" href="assets/css/app.css">
+<style>
+  body { overflow: auto; }
+  .c-app { min-height: 100svh; display: flex; flex-direction: column; }
+  .c-hd { height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid var(--ink-08); background: var(--bone); position: sticky; top: 0; z-index: 20; }
+  .c-hd .hd-mark { font-size: 17px; }
+  .c-hd .role { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); border: 1px solid var(--gold); padding: 5px 12px; }
+  .c-main { flex: 1; display: grid; grid-template-columns: 360px 1fr; min-height: 0; }
+  .c-list { border-right: 1px solid var(--ink-08); overflow-y: auto; background: var(--paper); }
+  .c-list-head { padding: 20px 22px 12px; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-38); display: flex; justify-content: space-between; align-items: center; }
+  .c-row { width: 100%; text-align: left; padding: 16px 22px; border-bottom: 1px solid var(--ink-08); display: flex; flex-direction: column; gap: 5px; transition: background .2s var(--e-micro); }
+  .c-row:hover { background: var(--bone); }
+  .c-row.on { background: var(--bone); box-shadow: inset 3px 0 0 var(--gold-deep); }
+  .c-row .top { display: flex; align-items: center; gap: 8px; }
+  .c-row b { font-size: 15.5px; font-weight: 600; }
+  .c-row .lang-b { font-size: 10.5px; letter-spacing: .08em; border: 1px solid var(--ink-16); padding: 2px 7px; color: var(--ink-60); text-transform: uppercase; }
+  .c-row .meta { font-size: 12px; color: var(--ink-38); display: flex; gap: 10px; }
+  .st { font-size: 10.5px; letter-spacing: .06em; padding: 2px 8px; }
+  .st.done { color: #2c5a3f; border: 1px solid #9dbfa9; }
+  .st.partial { color: #8a5a1e; border: 1px solid #d9b98a; }
+  .c-detail { overflow-y: auto; padding: 34px 40px 60px; }
+  .c-empty { display: grid; place-items: center; height: 100%; color: var(--ink-38); font-size: 14px; }
+  .cd-head { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .cd-head h2 { font-size: 34px; font-weight: 500; letter-spacing: -0.02em; }
+  .cd-head .sub { font-size: 13.5px; color: var(--ink-60); }
+  .cd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 24px; align-items: start; }
+  .panel { background: var(--paper); border: 1px solid var(--ink-08); padding: 24px 26px; }
+  .panel h4 { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-38); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .kv { display: flex; justify-content: space-between; gap: 14px; padding: 9px 0; border-bottom: 1px solid var(--ink-08); font-size: 14.5px; }
+  .kv:last-child { border-bottom: 0; }
+  .kv .k { color: var(--ink-60); flex: 0 0 auto; }
+  .kv .v { text-align: right; font-weight: 500; }
+  .kv .v .orig { display: block; font-weight: 400; font-size: 12px; color: var(--ink-38); }
+  .mask-btn { font-size: 11.5px; color: var(--gold-deep); border: 1px solid var(--gold); padding: 3px 9px; margin-left: 8px; cursor: pointer; transition: background .2s var(--e-micro); }
+  .mask-btn:hover { background: rgba(191,160,114,.12); }
+  .tagchip { display: inline-block; font-size: 12.5px; border: 1px solid var(--ink-16); padding: 5px 11px; margin: 0 6px 6px 0; }
+  .tagchip small { color: var(--ink-38); }
+  .rec-line { border: 1px solid var(--ink-08); padding: 16px 18px; margin-bottom: 10px; background: var(--bone); }
+  .rec-line .nm { font-size: 15.5px; font-weight: 600; display: flex; justify-content: space-between; }
+  .rec-line .nm .match { font-size: 11px; color: var(--gold-deep); letter-spacing: .06em; }
+  .price-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .price-table td { font-size: 13px; padding: 6px 0; border-bottom: 1px dashed var(--ink-08); }
+  .price-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .price-table tr.floor td { color: #8a4b2f; }
+  .price-table tr.pub td { color: var(--ink-60); }
+  .alt-row { font-size: 12.5px; color: var(--ink-60); margin-top: 9px; }
+  .alt-row b { color: var(--ink); font-weight: 500; }
+  .note-consult { font-size: 11.5px; color: var(--ink-38); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--ink-08); }
+  .viewlog { font-size: 12px; color: var(--ink-38); line-height: 1.8; }
+  .fict-bar { text-align: center; font-size: 11.5px; color: var(--ink-38); padding: 14px; border-top: 1px solid var(--ink-08); }
+  @media (max-width: 900px) { .c-main { grid-template-columns: 1fr; } .c-list { max-height: 40svh; border-right: 0; border-bottom: 1px solid var(--ink-08); } .cd-grid { grid-template-columns: 1fr; } }
+  /* PIN 게이트 */
+  #gate { position: fixed; inset: 0; z-index: 60; background: var(--deep); display: grid; place-items: center; transition: opacity .6s var(--e-inout); }
+  #gate.hide { opacity: 0; pointer-events: none; }
+  .gate-box { text-align: center; color: #ece8df; }
+  .gate-box .mark { font-family: var(--fd); font-size: 44px; letter-spacing: .3em; padding-left: .3em; }
+  .gate-box .sub { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin-top: 8px; }
+  .gate-box input { margin-top: 26px; width: 200px; text-align: center; font-size: 26px; letter-spacing: .5em; background: transparent; border: 0; border-bottom: 1px solid rgba(236,232,223,.4); color: #ece8df; padding: 8px 0 8px .5em; outline: none; }
+  .gate-box .btn { margin-top: 26px; background: var(--gold-deep); color: #fff; }
+  .gate-hint { font-size: 11.5px; color: rgba(236,232,223,.45); margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="mark">GYEOL</div>
+    <div class="sub">Counselor Console</div>
+    <div><input id="pin" inputmode="numeric" maxlength="4" value="0000" aria-label="PIN"></div>
+    <button class="btn" id="gate-go">입장</button>
+    <div class="gate-hint">데모 PIN 0000 — 상담실장 전용 화면 · 고객 iPad에는 노출되지 않습니다</div>
+  </div>
+</div>
+
+<div class="c-app">
+  <header class="c-hd">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div class="hd-mark" style="font-family:var(--fd);letter-spacing:.3em;">GYEOL</div>
+      <span class="role">Counselor</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:12.5px;color:var(--ink-38);" id="today"></span>
+      <a class="btn sm ghost" href="index.html" style="text-decoration:none;">고객 화면</a>
+      <a class="btn sm ghost" href="admin.html" style="text-decoration:none;">관리자</a>
+    </div>
+  </header>
+  <div class="c-main">
+    <aside class="c-list">
+      <div class="c-list-head"><span>오늘 제출</span><span id="cnt"></span></div>
+      <div id="rows"></div>
+    </aside>
+    <section class="c-detail" id="detail"><div class="c-empty">좌측에서 고객을 선택하세요</div></section>
+  </div>
+  <div class="fict-bar">본 화면의 모든 고객·시술·가격은 데모용 가상 데이터입니다 · 연락처·생년월일은 기본 마스킹되며 「전체 보기」 시 열람 로그가 남습니다</div>
+</div>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/data.js"></script>
+<script>
+'use strict';
+const D = Store.load();
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const KO = k => t(k, 'ko');
+
+/* PIN 게이트 — 직원 기기 북마크용 ?pin= 파라미터 허용 */
+$('#gate-go').addEventListener('click', () => {
+  if ($('#pin').value === '0000') $('#gate').classList.add('hide');
+  else { $('#pin').value = ''; $('#pin').focus(); }
+});
+if (new URLSearchParams(location.search).get('pin') === '0000') $('#gate').classList.add('hide');
+$('#pin').addEventListener('keydown', e => { if (e.key === 'Enter') $('#gate-go').click(); });
+
+$('#today').textContent = '2026-09-02 (수) · 데모 기준일';
+
+/* 목록 */
+let cur = null;
+const unmasked = {};   // sid → true (열람 해제 상태)
+function subs() { return D.submissions.slice().sort((a, b) => b.at.localeCompare(a.at)); }
+function renderList() {
+  const list = subs();
+  $('#cnt').textContent = list.length + '건';
+  $('#rows').innerHTML = list.map(s => `
+    <button class="c-row ${cur === s.id ? 'on' : ''}" data-id="${s.id}">
+      <span class="top"><b>${esc(s.name)}</b><span class="lang-b">${s.lang}</span>
+        <span class="st ${s.status}">${s.status === 'done' ? '완료' : '진행 중 ' + (s.progress || 0) + '%'}</span></span>
+      <span class="meta"><span>${esc(s.at.slice(11, 16))}</span>
+        <span>${s.concerns.map(id => pick((D.concerns.find(c => c.id === id) || {}).short, 'ko')).join(' · ')}</span></span>
+    </button>`).join('');
+  $$('#rows .c-row').forEach(r => r.addEventListener('click', () => { cur = r.dataset.id; renderList(); renderDetail(); }));
+}
+
+/* 상세 — 4개 국어 응답이 동일 스키마로 정규화 (실측 발견 3) */
+function renderDetail() {
+  const s = D.submissions.find(x => x.id === cur);
+  if (!s) { $('#detail').innerHTML = '<div class="c-empty">좌측에서 고객을 선택하세요</div>'; return; }
+  const un = unmasked[s.id];
+  const age = ageOf(s.birth, '2026-09-02');
+  const recs = recommend(D, s.concerns, s.interests, s.dt || 'dt3');
+  const cv = D.consentVersions.find(v => v.v === s.consentV);
+  const dtLabel = s.dt ? KO(s.dt) : '미응답';
+  $('#detail').innerHTML = `
+    <div class="cd-head">
+      <h2>${esc(s.name)}</h2>
+      <span class="sub">${s.gender === 'F' ? '여성' : s.gender === 'M' ? '남성' : '-'} · ${age}세 · ${s.lang.toUpperCase()} 응답
+      ${s.minor ? ' · <b style="color:#8a4b2f">만 14세 미만 — 보호자 동의 확인</b>' : ''}</span>
+      <span class="st ${s.status}" style="font-size:12px;">${s.status === 'done' ? '설문 완료 ' + s.at.slice(11, 16) : '진행 중 ' + (s.progress || 0) + '% · 중단 ' + s.at.slice(11, 16)}</span>
+    </div>
+    <div class="cd-grid">
+      <div>
+        <div class="panel">
+          <h4>고객 정보 <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--ink-38);">기본 마스킹 · 열람 시 로그</span></h4>
+          <div class="kv"><span class="k">연락처</span><span class="v">${un ? esc(s.phone) : esc(maskMid(s.phone))}
+            ${un ? '' : `<button class="mask-btn" data-f="연락처">전체 보기</button>`}</span></div>
+          <div class="kv"><span class="k">생년월일</span><span class="v">${un ? esc(s.birth) : esc(s.birth.slice(0, 4)) + '-··-··'}
+            ${un ? '' : `<button class="mask-btn" data-f="생년월일">전체 보기</button>`}</span></div>
+          <div class="kv"><span class="k">마케팅 수신</span><span class="v">${s.marketing ? '동의' : '거부'}</span></div>
+          <div class="kv"><span class="k">동의 버전</span><span class="v">${esc(s.consentV)} (${cv ? '보유 ' + cv.retention + '일' : ''})${s.consentHash ? `<span class="orig">hash ${esc(s.consentHash)}</span>` : ''}</span></div>
+        </div>
+        <div class="panel" style="margin-top:22px;">
+          <h4>설문 응답 — 정규화</h4>
+          <div style="margin-bottom:6px;font-size:12px;color:var(--ink-38);">관심 부위</div>
+          <div>${s.concerns.map(id => {
+            const c = D.concerns.find(x => x.id === id); if (!c) return '';
+            const orig = s.lang !== 'ko' ? ` <small>${esc(pick(c.label, s.lang))}</small>` : '';
+            return `<span class="tagchip">${esc(pick(c.short, 'ko'))}${orig}</span>`;
+          }).join('')}</div>
+          <div style="margin:12px 0 6px;font-size:12px;color:var(--ink-38);">관심 시술</div>
+          <div>${s.interests.length ? s.interests.map(id => `<span class="tagchip">${esc(pick((D.treatments.find(t2 => t2.id === id) || {}).name, 'ko'))}</span>`).join('') : '<span style="font-size:13px;color:var(--ink-38);">추천 희망 (직접 선택 없음)</span>'}</div>
+          <div style="margin:12px 0 6px;font-size:12px;color:var(--ink-38);">시술 후 일정</div>
+          <div style="font-size:14.5px;font-weight:500;">${esc(dtLabel)}</div>
+        </div>
+        <div class="panel" style="margin-top:22px;">
+          <h4>열람 로그</h4>
+          <div class="viewlog" id="vlog">${vlogHTML(s.id)}</div>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <h4>추천 시술 · 상담가 <span style="font-weight:400;letter-spacing:0;text-transform:none;color:#8a4b2f;">고객 화면에는 정가만 노출</span></h4>
+          ${recs.map(r => consultPriceHTML(r)).join('') || '<div style="font-size:13px;color:var(--ink-38);">조건에 맞는 추천이 없습니다</div>'}
+          <div class="note-consult">정가는 비급여 고지 기준가(의료법 45조) — 고객 iPad에 항상 노출됩니다. 패키지가·최저 승인가는 이 화면 전용입니다.</div>
+        </div>
+      </div>
+    </div>`;
+  $$('#detail .mask-btn').forEach(b => b.addEventListener('click', () => {
+    D.viewLogs.push({ at: new Date().toISOString().slice(0, 16).replace('T', ' '), who: '박실장', sid: s.id, field: b.dataset.f });
+    Store.save();
+    unmasked[s.id] = true;
+    renderDetail();
+  }));
+}
+function vlogHTML(sid) {
+  const logs = D.viewLogs.filter(v => v.sid === sid);
+  return logs.length ? logs.map(v => `${esc(v.at)} · ${esc(v.who)} · ${esc(v.field)} 열람`).join('<br>') : '열람 기록 없음';
+}
+function consultPriceHTML(r) {
+  const tr = r.t, ev = eventActive(tr.event);
+  const alts = (tr.alt || []).map(id => pick((D.treatments.find(t2 => t2.id === id) || {}).name, 'ko')).filter(Boolean);
+  return `
+    <div class="rec-line">
+      <div class="nm">${esc(pick(tr.name, 'ko'))}<span class="match">가중치 ${r.s}</span></div>
+      <table class="price-table">
+        <tr class="pub"><td>정가 (고객 노출)</td><td>${fmtKRW(ev ? eventPrice(tr) : tr.price.list)}${ev ? ' · 이벤트 −' + tr.event.rate + '%' : ''}</td></tr>
+        <tr><td>3회 패키지 · 회당</td><td>${fmtKRW(tr.price.pkg.p3)}</td></tr>
+        <tr><td>5회 패키지 · 회당</td><td>${fmtKRW(tr.price.pkg.p5)}</td></tr>
+        <tr class="floor"><td>최저 승인가 (원장 승인선)</td><td>${fmtKRW(tr.price.consult.min)}</td></tr>
+      </table>
+      ${tr.price.consult.note ? `<div class="alt-row">비고 — ${esc(tr.price.consult.note)}</div>` : ''}
+      ${alts.length ? `<div class="alt-row">대안 제안 — <b>${esc(alts.join(' · '))}</b></div>` : ''}
+    </div>`;
+}
+
+/* 다른 탭 반영 */
+window.addEventListener('storage', e => {
+  if (e.key !== GYEOL_KEY) return;
+  Store._d = null; const nd = Store.load();
+  Object.keys(D).forEach(k => delete D[k]); Object.assign(D, nd);
+  renderList(); if (cur) renderDetail();
+});
+
+renderList();
+const first = subs()[0];
+if (first) { cur = first.id; renderList(); renderDetail(); }
+</script>
+</body>
+</html>

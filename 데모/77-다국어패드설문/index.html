@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" data-lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GYEOL 결 — 프리미엄 미용의원 iPad 컨설테이션 (데모)</title>
+<meta name="description" content="다국어 iPad 설문·시술 메뉴판 웹앱 데모 — 4개 국어, 럭셔리 카탈로그, 키오스크 세션 보호. 데모 데이터는 전부 가상입니다.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GYEOL">
+<meta name="theme-color" content="#f4f3ec">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/img/icon-192.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div id="app">
+  <header id="hd" class="hidden">
+    <div class="hd-mark">GYEOL<small>결 · PREMIUM AESTHETIC (DEMO)</small></div>
+    <div class="hd-side">
+      <span class="chip" id="net-chip"><span class="dot"></span><span id="net-label">온라인</span></span>
+      <button class="hd-lang" id="hd-lang" type="button">한국어</button>
+      <button class="hd-reset" id="hd-reset" type="button">다음 고객 준비</button>
+    </div>
+  </header>
+
+  <main id="stage">
+    <section class="screen" id="s-attract">
+      <div class="attract-bg"><img src="assets/img/hero-attract.webp" alt=""><div class="attract-veil"></div></div>
+      <div class="attract-inner">
+        <div class="attract-mark" id="attract-mark">GYEOL</div>
+        <div class="attract-sub">SEOUL · PREMIUM AESTHETIC CLINIC</div>
+        <div class="attract-line rv" id="attract-line"></div>
+        <button class="attract-cta" id="attract-cta" type="button">TOUCH TO BEGIN</button>
+        <div class="attract-langs">한국어 · English · 日本語 · 中文</div>
+      </div>
+      <div class="reset-note" id="reset-note"></div>
+    </section>
+
+    <section class="screen" id="s-lang">
+      <div class="bgt"><img src="assets/img/bg-stone.webp" alt=""></div>
+      <div class="lang-inner" id="lang-inner"></div>
+    </section>
+
+    <section class="screen" id="s-consent"><div class="step-wrap" id="consent-wrap"></div></section>
+    <section class="screen" id="s-info"><div class="step-wrap" id="info-wrap"></div></section>
+    <section class="screen" id="s-q1"><div class="step-wrap" id="q1-wrap"></div></section>
+    <section class="screen" id="s-q2"><div class="step-wrap" id="q2-wrap"></div></section>
+    <section class="screen" id="s-q3"><div class="step-wrap" id="q3-wrap"></div></section>
+    <section class="screen" id="s-rec"><div class="step-wrap" id="rec-wrap"></div></section>
+    <section class="screen" id="s-menu"><div class="step-wrap" id="menu-wrap"></div></section>
+    <section class="screen" id="s-detail"><div class="detail-scroll" id="detail-scroll"></div></section>
+    <section class="screen" id="s-notice"><div class="step-wrap scroll" id="notice-wrap"></div></section>
+    <section class="screen" id="s-finish"><div id="finish-wrap" style="display:flex;flex-direction:column;align-items:center;gap:14px;"></div></section>
+  </main>
+</div>
+
+<!-- 유휴 카운트다운 (A-2) -->
+<div class="overlay" id="idle-ov">
+  <div class="modal">
+    <h3 id="idle-title"></h3>
+    <div class="cnt" id="idle-cnt">10</div>
+    <p id="idle-body"></p>
+    <div class="row"><button class="btn" id="idle-stay" type="button"></button></div>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<!-- 데모 컨트롤 (심사자용 — 입력 없이 전 시나리오 체험) -->
+<button id="demo-fab" type="button" aria-label="데모 컨트롤">⚙</button>
+<aside id="demo-drawer">
+  <h4>Demo Control</h4>
+  <p class="sub">심사자용 패널입니다. 실제 납품 화면에는 포함되지 않습니다.</p>
+  <div class="dd-sec">시나리오 시연</div>
+  <button class="dd-row" id="dd-fast" type="button"><span>세션 타임아웃 시연<small>유휴 60초 → 8초로 단축해 자동 소거를 바로 확인</small></span><span class="sw"></span></button>
+  <button class="dd-row" id="dd-offline" type="button"><span>오프라인 시뮬레이션<small>Wi-Fi 단절 상태에서 제출 → 복귀 시 자동 전송</small></span><span class="sw"></span></button>
+  <button class="dd-row" id="dd-reg" type="button"><span>유치기관 등록 해제<small>등록번호를 비우면 日本語·中文 버튼이 실제로 잠깁니다</small></span><span class="sw"></span></button>
+  <div class="dd-sec">다른 표면</div>
+  <a class="dd-link" href="consult.html">상담실장 뷰 (PIN 0000)</a>
+  <a class="dd-link" href="admin.html">관리자 페이지</a>
+  <div class="dd-sec">초기화</div>
+  <button class="dd-row" id="dd-seed" type="button"><span>데모 데이터 리셋<small>모든 수정·제출을 시드 상태로 되돌립니다</small></span><span>↺</span></button>
+  <p class="fict">본 데모의 병원·시술·가격·인물·연락처는 전부 가상 데이터입니다. GYEOL 결은 실존 의료기관이 아닙니다.</p>
+</aside>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
