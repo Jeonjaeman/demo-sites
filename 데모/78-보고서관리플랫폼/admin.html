@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATTEST — 기관 관리자 (데모)</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  canvas.cv { width: 100%; height: 180px; display: block; }
+  .detail { margin-top: 16px; }
+  .pf { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .pf label { display: flex; align-items: center; gap: 8px; font-size: 14px; padding: 6px 0; cursor: pointer; }
+  .pf input { width: 16px; height: 16px; accent-color: var(--primary); }
+  .pf .lockd { color: var(--muted2); }
+  .qr-mini { display: flex; gap: 14px; align-items: center; padding: 12px; border-radius: var(--r); background: var(--surface); }
+  .qr-mini canvas { width: 96px !important; height: 96px !important; border-radius: 4px; background: #fff; }
+  .ho-tbl td:first-child { font-weight: 500; }
+  .chk { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: var(--r); background: var(--surface); font-size: 14px; margin-bottom: 6px; cursor: pointer; }
+  .chk input { width: 16px; height: 16px; margin-top: 3px; accent-color: var(--primary); }
+  .chk.done { background: var(--primary-tint); color: var(--primary-deep); }
+  .cost td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  .stack-why { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stack-why div { padding: 12px 14px; border-radius: var(--r); background: var(--surface); font-size: 13.5px; }
+  .stack-why b { display: block; font-size: 14px; margin-bottom: 2px; }
+  @media (max-width: 860px) { .pf, .stack-why { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><div class="mk">A</div><div><b>ATTEST</b><small>Institution Console · Demo</small></div></div>
+    <nav class="snav" id="snav">
+      <div class="grp">운영</div>
+      <button data-s="dash" class="on">대시보드</button>
+      <button data-s="reports">보고서 <span class="n" id="n-rep"></span></button>
+      <button data-s="register">보고서 등록</button>
+      <button data-s="qrs">QR 발급 · 이력 <span class="n" id="n-qr"></span></button>
+      <button data-s="orgs">고객사 · 사용자</button>
+      <div class="grp">데이터</div>
+      <button data-s="stats">스캔 통계</button>
+      <button data-s="audit">감사로그</button>
+      <div class="grp">신뢰 · 인계</div>
+      <button data-s="infra">보안 · 인프라 현황</button>
+      <button data-s="handover">인수인계 현황</button>
+    </nav>
+    <div class="side-foot"><div class="who"><div class="av">한</div><div><b>한지연</b><br><span class="muted">서울피부임상연구센터 · 기관 관리자</span></div></div>
+      <div style="margin-top:10px;"><a href="index.html">← 진입 화면</a> · <a href="client.html">고객사 포털</a> · <a href="r.html?t=7K9F2Q">공개 화면</a></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><h1 id="t-title">대시보드</h1><div class="sub" id="t-sub"></div></div><div class="row"><button class="btn sec sm" id="reset-demo">데모 데이터 리셋</button></div></header>
+    <div class="content">
+      <section class="sect on" id="s-dash"></section>
+      <section class="sect" id="s-reports"></section>
+      <section class="sect" id="s-register"></section>
+      <section class="sect" id="s-qrs"></section>
+      <section class="sect" id="s-orgs"></section>
+      <section class="sect" id="s-stats"></section>
+      <section class="sect" id="s-audit"></section>
+      <section class="sect" id="s-infra"></section>
+      <section class="sect" id="s-handover"></section>
+    </div>
+  </main>
+</div>
+<div class="ov" id="modal"><div class="modal" id="modal-box"></div></div>
+<div id="toast" role="status"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/rules.js"></script>
+<script src="assets/js/zip.js"></script>
+<script>
+'use strict';
+const D = Store.load();
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+let sect = 'dash', cur = 'r1', bots = true, filt = { q: '', org: '', st: '' };
+const I = {
+  check: '<svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg>', x: '<svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+  lock: '<svg class="i" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>',
+  dl: '<svg class="i" viewBox="0 0 16 16"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5M3 13h10"/></svg>',
+  search: '<svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>',
+  ext: '<svg class="i" viewBox="0 0 16 16"><path d="M6 3H3.5v9.5H13V10M9 3h4v4M13 3L7.5 8.5"/></svg>',
+};
+let toastTimer;
+function toast(m) { const el = $('#toast'); el.textContent = m; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 3000); }
+function modal(html) { $('#modal-box').innerHTML = html; $('#modal').classList.add('show'); }
+function closeModal() { $('#modal').classList.remove('show'); }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+function audit(action, target) { D.auditLogs.unshift({ at: nowStr(), who: '한지연 (기관)', action, target, where: '서울' }); }
+function newToken() { const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let t = ''; do { t = ''; for (let i = 0; i < 6; i++) t += A[Math.floor(Math.random() * A.length)]; } while (qrOf(D, t)); return t; }
+const TITLES = { dash: ['대시보드', '실계산 KPI · 만료 임박 · 신고 접수'], reports: ['보고서', '상태 머신 · 실증 요건 게이트 · 공개 항목 · 버전'], register: ['보고서 등록', '실증 요건을 등록 단계에서 확인합니다 (B-2)'], qrs: ['QR 발급 · 이력', '불변 토큰 · 보고서 1:N · 상태 4종 · 정적 QR 비교'], orgs: ['고객사 · 사용자', '조직 - 브랜드 - 사용자 3계층 · 역할 3종 · 계약'], stats: ['스캔 통계', '봇 제외 실계산 · 수집 항목 최소화'], audit: ['감사로그', '누가 · 언제 · 무엇을 · 어디서 · CSV(UTF-8 BOM)'], infra: ['보안 · 인프라 현황', '공고 제안 필수 ⑤ — 호스팅 방식·월 비용·보안 정책을 화면으로'], handover: ['인수인계 현황', '공고 제안 필수 ④ — 문서가 아니라 화면으로 증명 (C-6)'] };
+const RENDER = { dash: rDash, reports: rReports, register: rRegister, qrs: rQRs, orgs: rOrgs, stats: rStats, audit: rAudit, infra: rInfra, handover: rHandover };
+$$('#snav button').forEach(b => b.addEventListener('click', () => go(b.dataset.s)));
+function go(s) { sect = s; $$('#snav button').forEach(x => x.classList.toggle('on', x.dataset.s === s)); $$('.sect').forEach(x => x.classList.toggle('on', x.id === 's-' + s)); $('#t-title').textContent = TITLES[s][0]; $('#t-sub').textContent = TITLES[s][1]; RENDER[s](); counts(); }
+function counts() { $('#n-rep').textContent = D.reports.length; $('#n-qr').textContent = D.qrs.length; }
+$('#reset-demo').addEventListener('click', () => { Store.reset(); location.reload(); });
+
+/* ═══ 대시보드 ═══ */
+function rDash() {
+  const evFail = D.reports.filter(r => !evidenceCheck(r).pass).length;
+  const consentWait = D.reports.filter(r => !r.consent && ['registered', 'viewed'].includes(r.status)).length;
+  const raw = scanStats(D.scans), val = scanStats(D.scans, { excludeBots: true });
+  const expiring = D.orgs.filter(o => o.contract.status === 'active' && dday(o.contract.end) <= 30);
+  $('#s-dash').innerHTML = `
+    <div class="grid g5" style="margin-bottom:16px;">
+      <div class="kpi"><div class="k">보고서</div><div class="v">${D.reports.length}<small>건</small></div><div class="d">QR 활성 ${D.reports.filter(r => r.status === 'active').length} · 고객사 ${D.orgs.length}</div></div>
+      <div class="kpi"><div class="k">활성 QR</div><div class="v">${D.qrs.filter(q => q.status === 'active').length}<small>/ ${D.qrs.length}</small></div><div class="d">만료 ${D.qrs.filter(q => q.status === 'expired').length} · 정지 ${D.qrs.filter(q => q.status === 'suspended').length} · 폐기 ${D.qrs.filter(q => q.status === 'revoked').length}</div></div>
+      <div class="kpi"><div class="k">30일 유효 스캔</div><div class="v">${val.total.toLocaleString()}<small>회</small></div><div class="d">원시 ${raw.total} · 봇 ${raw.bots} 제외</div></div>
+      <div class="kpi ${evFail ? 'alert' : ''}"><div class="k">실증 요건 미충족</div><div class="v">${evFail}<small>건</small></div><div class="d">QR 발급 잠김 — 보고서에서 확인</div></div>
+      <div class="kpi ${consentWait ? 'alert' : ''}"><div class="k">공개 동의 대기</div><div class="v">${consentWait}<small>건</small></div><div class="d">고객사 동의 전 발급 불가</div></div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><h3>스캔 추이 30일</h3><div class="row"><span class="small muted">봇 제외</span><span class="tgl ${bots ? 'on' : ''}" id="d-bot"></span></div></div><canvas class="cv" id="d-cv"></canvas></div>
+      <div class="card"><div class="card-h"><h3>알림</h3></div>
+        ${expiring.map(o => `<div class="note warn" style="margin-bottom:8px;"><b>${esc(o.name)}</b> 계약 종료 D-${dday(o.contract.end)} (${esc(o.contract.end)}) — 종료 후 QR은 「만료 랜딩」으로 전환됩니다(404 없음). 연장 여부 확인 필요</div>`).join('')}
+        ${D.orgs.filter(o => o.contract.status === 'suspended').map(o => `<div class="note bad" style="margin-bottom:8px;"><b>${esc(o.name)}</b> 구독 미납 정지 — QR은 「일시 표시 제한」 랜딩 · 기본 진위확인은 유지 (${esc(o.contract.note || '')})</div>`).join('')}
+        ${D.reports.filter(r => !evidenceCheck(r).pass).map(r => `<div class="note bad" style="margin-bottom:8px;"><b>${esc(r.no)}</b> 실증 요건 미충족 — ${evidenceCheck(r).fails.map(f => f.label.split(' (')[0]).join(' · ')}</div>`).join('')}
+        <div class="label" style="margin:14px 0 6px;">도용·위조 신고 접수 ${D.demoReports.length}건</div>
+        ${D.demoReports.slice().reverse().map(x => `<div class="small" style="padding:6px 0;border-bottom:1px solid var(--line)"><span class="mono">${esc(x.id)}</span> · ${esc(x.at)} · QR ${esc(x.token)} · ${esc(x.reason)} <span class="chip warn" style="height:20px;font-size:11px;">${esc(x.status)}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;"><div class="card-h"><h3>최근 감사로그</h3><button class="btn ghost sm" id="d-audit">전체 보기</button></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>시각</th><th>누가</th><th>무엇을</th><th>대상</th></tr></thead><tbody>${D.auditLogs.slice(0, 6).map(a => `<tr><td class="mono">${esc(a.at)}</td><td>${esc(a.who)}</td><td>${esc(a.action)}</td><td class="mono">${esc(a.target)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  $('#d-bot').addEventListener('click', () => { bots = !bots; rDash(); });
+  $('#d-audit').addEventListener('click', () => go('audit'));
+  drawDaily($('#d-cv'), (bots ? val : raw).byDay);
+}
+function drawDaily(cv, byDay) {
+  const paint = () => {
+    const dpr = devicePixelRatio || 1, w = cv.clientWidth || 600, h = cv.clientHeight || 180;
+    cv.width = w * dpr; cv.height = h * dpr; const c = cv.getContext('2d'); c.scale(dpr, dpr);
+    const days = []; for (let i = 29; i >= 0; i--) days.push(addDays(TODAY, -i));
+    const vals = days.map(d => byDay[d] || 0), max = Math.max(...vals, 1), bw = (w - 30) / days.length;
+    c.font = '11px Geist Mono, monospace'; c.textAlign = 'left';
+    days.forEach((d, i) => { const x = 30 + i * bw, bh = (h - 28) * vals[i] / max; c.fillStyle = i === days.length - 1 ? '#005850' : '#d1ddd3'; c.fillRect(x + 2, h - 22 - bh, bw - 4, bh); if (i % 7 === 0) { c.fillStyle = '#9f9fa9'; c.fillText(d.slice(5), x, h - 6); } });
+    c.fillStyle = '#71717b'; c.fillText(String(max), 0, 12);
+  };
+  // 레이아웃 확정 전 측정(backing 수십 px) 방지 — 크기가 잡힐 때마다 다시 그림
+  if (cv._ro) cv._ro.disconnect();
+  cv._ro = new ResizeObserver(() => { if (cv.clientWidth > 60) paint(); });
+  cv._ro.observe(cv);
+  if (cv.clientWidth > 60) paint();
+}
+
+/* ═══ 보고서 ═══ */
+function rReports() {
+  const list = D.reports.filter(r => (!filt.q || r.no.toLowerCase().includes(filt.q.toLowerCase()) || r.product.includes(filt.q)) && (!filt.org || r.orgId === filt.org) && (!filt.st || r.status === filt.st));
+  $('#s-reports').innerHTML = `
+    <div class="card">
+      <div class="toolbar">
+        <div class="tb-search">${I.search}<input id="f-q" value="${esc(filt.q)}" placeholder="보고서 번호 · 제품명 (시험법 300종 규모 — 검색형 필터)"></div>
+        <select class="sel" id="f-org"><option value="">고객사 전체</option>${D.orgs.map(o => `<option value="${o.id}" ${filt.org === o.id ? 'selected' : ''}>${esc(o.name)}</option>`).join('')}</select>
+        <select class="sel" id="f-st"><option value="">상태 전체</option>${['registered', 'viewed', 'consented', 'active', 'expired', 'suspended', 'revoked'].map(s => `<option value="${s}" ${filt.st === s ? 'selected' : ''}>${statusLabel(s)}</option>`).join('')}</select>
+        <span class="sp"></span><span class="small muted">${list.length}건</span>
+      </div>
+      <div class="tbl-wrap"><table class="tbl click"><thead><tr><th>고객사</th><th>보고서 번호</th><th>시험 유형</th><th>제품명</th><th>발급일</th><th>실증</th><th>상태</th><th>QR</th></tr></thead><tbody>
+        ${list.map(r => { const ev = evidenceCheck(r), qs = D.qrs.filter(q => q.reportId === r.id); return `<tr data-id="${r.id}" class="${cur === r.id ? 'sel' : ''}"><td>${esc(orgOf(D, r.orgId).name)}</td><td class="mono">${esc(r.no)}</td><td>${esc(typeOf(D, r.type).ko)}</td><td>${esc(r.product)}</td><td>${esc(latestVersion(r).date)} · v${latestVersion(r).v}</td><td>${ev.pass ? `<span class="chip ok">${I.check} 충족</span>` : `<span class="chip bad">${I.x} ${ev.fails.length}건</span>`}</td><td><span class="chip ${r.status}">${esc(statusLabel(r.status))}</span></td><td>${qs.length ? qs.map(q => `<span class="chip ${q.status} mono" style="height:20px;font-size:10.5px;">${esc(q.token)}</span>`).join(' ') : '<span class="muted">—</span>'}</td></tr>`; }).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="detail" id="rep-detail"></div>`;
+  $('#f-q').addEventListener('input', e => { filt.q = e.target.value; rReports(); const el = $('#f-q'); el.focus(); el.setSelectionRange(filt.q.length, filt.q.length); });
+  $('#f-org').addEventListener('change', e => { filt.org = e.target.value; rReports(); });
+  $('#f-st').addEventListener('change', e => { filt.st = e.target.value; rReports(); });
+  $$('#s-reports tbody tr').forEach(tr => tr.addEventListener('click', () => { cur = tr.dataset.id; rReports(); $('#rep-detail').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+  rDetail();
+}
+function flowHTML(r) {
+  const steps = ['registered', 'viewed', 'consented', 'active'];
+  const idx = steps.indexOf(r.status), term = ['expired', 'suspended', 'revoked'].includes(r.status);
+  return `<div class="flow">${steps.map((s, i) => `<div class="st ${term ? 'done' : i < idx ? 'done' : i === idx ? 'cur' : ''}"><i></i>${statusLabel(s)}</div>${i < 3 ? '<div class="ln"></div>' : ''}`).join('')}${term ? `<div class="ln"></div><div class="st bad"><i></i>${statusLabel(r.status)}</div>` : ''}</div>`;
+}
+const PF_LABELS = { product: '제품명', type: '시험 유형', period: '시험 기간', subjects: '피험자 수(인원만)', verdict: '판정·결론 문장', adverse: '유해사례 결론', institution: '시험기관', supervisor: '시험책임자 성명·경력', method: '통계 분석 방법', irb: 'IRB 승인번호' };
+const PRIV = { photo: '피험자 사진·부위 이미지 마스킹 확인', initials: '이니셜·연령·성별 개별값 제거 확인', history: '병력·복용약 등 건강정보 제거 확인', signature: '피험자 서명란 제거 확인' };
+function rDetail() {
+  const r = reportOf(D, cur); if (!r) return;
+  const org = orgOf(D, r.orgId), ev = evidenceCheck(r), can = canIssueQR(r), qs = D.qrs.filter(q => q.reportId === r.id), v = latestVersion(r), pp = privacyPass(r);
+  $('#rep-detail').innerHTML = `
+    <div class="card">
+      <div class="card-h"><div><span class="label">${esc(r.no)} · ${esc(org.name)}</span><h2 style="margin-top:4px;">${esc(r.product)}</h2></div>
+        <div class="row"><span class="chip ${r.status}">${esc(statusLabel(r.status))}</span>${qs[0] ? `<a class="btn sec sm" href="r.html?t=${qs[0].token}" target="_blank">공개 화면 ${I.ext}</a>` : ''}</div></div>
+      ${flowHTML(r)}
+      <div class="grid g3" style="margin-top:16px;">
+        <div>
+          <div class="label" style="margin-bottom:8px;">① 실증 요건 게이트 (B-2)</div>
+          <div class="gate">${ev.items.map(i => `<div class="g ${i.ok ? 'ok' : 'no'}">${i.ok ? I.check : I.x}<div>${esc(i.label)}<small>${esc(i.rule)}</small></div></div>`).join('')}</div>
+          ${!ev.pass ? `<div class="row" style="margin-top:8px;"><button class="btn sec sm" id="ev-fix">데모: 요건 보정 (감독자 교체 · 유해사례 기재)</button></div>` : ''}
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:8px;">② 공개 항목 화이트리스트 (A-2) — 체크 해제 시 공개 화면에서 즉시 사라짐</div>
+          <div class="pf">${Object.keys(PF_LABELS).map(k => `<label><input type="checkbox" data-pf="${k}" ${r.publicFields[k] ? 'checked' : ''}> ${esc(PF_LABELS[k])}</label>`).join('')}
+            <label class="lockd">${I.lock} 원문 PDF — 공개 불가(고정)</label><label class="lockd">${I.lock} 피험자 개별 정보 — 공개 불가(고정)</label><label class="lockd">${I.lock} 처방·원료 — 공개 불가(고정)</label></div>
+          <div class="label" style="margin:14px 0 8px;">③ 공개 전 개인정보 점검 (B-4)</div>
+          ${pp ? `<div class="note ok">${I.check} 4항목 확인 완료 — 공개본 전환 가능</div>` : `<div class="note warn">미확인 ${Object.keys(PRIV).filter(k => !r.privacy[k]).length}항목 — 확인 전까지 QR 발급이 잠깁니다</div><button class="btn sec sm" id="priv-open" style="margin-top:8px;">점검 체크리스트 열기</button>`}
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:8px;">④ 고객사 공개 동의 (B-5)</div>
+          ${r.consent ? `<div class="note ok">${I.check} ${esc(r.consent.by)} · ${esc(r.consent.at)} · ${esc(r.consent.scope)}</div>` : `<div class="note warn">대기 중 — 고객사 포털에서 RA/관리자가 동의해야 발급 가능 ${r.orgId === 'o1' ? '(<a href="client.html?role=RA" target="_blank">고객사 포털에서 동의해 보기</a>)' : ''}</div>`}
+          <div class="label" style="margin:14px 0 8px;">⑤ QR 발급 ${I.lock}</div>
+          ${can.ok ? `<button class="btn" id="issue">QR 발급 (불변 토큰 생성)</button>` : `<button class="btn" disabled>QR 발급</button><div class="micro" style="color:var(--bad);margin-top:6px;">잠김 — ${can.reasons.map(esc).join(' · ')}</div>`}
+          <div class="label" style="margin:14px 0 8px;">⑥ 상태 변경</div>
+          <div class="row">${r.status === 'active' ? `<button class="btn sec sm" data-st="expired">만료</button><button class="btn sec sm" data-st="suspended">정지</button><button class="btn danger sm" data-st="revoked">폐기</button>` : ['expired', 'suspended'].includes(r.status) ? `<button class="btn sec sm" data-st="active">활성 복귀</button>` : '<span class="small muted">발급 후 가능</span>'}</div>
+        </div>
+      </div>
+      <hr class="sep">
+      <div class="grid g2">
+        <div>
+          <div class="label" style="margin-bottom:8px;">버전 이력 · 무결성 (C-7) — 개정해도 QR은 그대로 (A-1)</div>
+          <div class="tl">${r.versions.slice().reverse().map((vv, i) => `<div class="ev ${i === 0 ? 'cur' : ''}"><b>v${vv.v}</b> · ${esc(vv.date)} — ${esc(vv.reason)}<div class="meta">${esc(vv.by)}${i === 0 ? ' · 현재 게시본' : ''}</div><div class="hash">${esc(vv.hash)}</div></div>`).join('')}</div>
+          ${r.status === 'active' ? `<div class="row"><input class="inp" id="rev-reason" style="flex:1;" placeholder="개정 사유 (예: 통계표 오탈자 정정)" value="통계표 오탈자 정정 (판정 변동 없음)"><button class="btn sm" id="rev-go">v${v.v + 1} 게시</button></div><div class="micro muted" style="margin-top:6px;">게시 시 SHA-256 재계산 · 고객사 자동 통지 · <b>인쇄된 QR ${qs.length}건은 그대로 최신본을 가리킵니다</b></div>` : ''}
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:8px;">연결 QR ${qs.length}건 (보고서 1 : N)</div>
+          ${qs.map(q => `<div class="qr-mini" style="margin-bottom:8px;"><canvas data-token="${q.token}"></canvas><div><div class="mono" style="font-weight:600">${esc(q.token)} <span class="chip ${q.status}" style="height:20px;font-size:11px;">${esc(qrStatusLabel(q.status))}</span></div><div class="small muted">${esc(q.label)} · ${q.lang.toUpperCase()} · 발급 ${esc(q.issuedAt)} · ${esc(q.by)}</div><div class="micro muted mono" style="word-break:break-all">${esc(PUBLIC_BASE + q.token)}</div></div></div>`).join('') || '<div class="note">발급된 QR 없음</div>'}
+        </div>
+      </div>
+    </div>`;
+  $$('#rep-detail canvas[data-token]').forEach(c => QR.toCanvas(c, PUBLIC_BASE + c.dataset.token, { ec: 'M', px: 96, margin: 2 }));
+  $$('#rep-detail [data-pf]').forEach(cb => cb.addEventListener('change', () => { r.publicFields[cb.dataset.pf] = cb.checked; Store.save(); audit('공개 항목 변경', `${r.no} · ${PF_LABELS[cb.dataset.pf]} ${cb.checked ? '공개' : '비공개'}`); toast(`「${PF_LABELS[cb.dataset.pf]}」 ${cb.checked ? '공개' : '비공개'} — 공개 화면에 즉시 반영`); }));
+  const fix = $('#ev-fix'); if (fix) fix.addEventListener('click', () => { r.supervisor = { name: '한지연', years: 14 }; r.adverse = true; if (!r.adverseNote) r.adverseNote = '유해사례 없음'; if (r.subjects < 20) r.subjects = 20; Store.save(); audit('실증 요건 보정', r.no); toast('요건 충족 — 게이트가 열렸습니다'); rReports(); });
+  const po = $('#priv-open'); if (po) po.addEventListener('click', () => {
+    modal(`<h3>공개 전 개인정보 점검 — ${esc(r.no)}</h3><p class="small muted">피험자 정보는 건강정보=민감정보(개보법 §23). 4항목을 모두 확인해야 공개본으로 전환됩니다.</p>
+      <div style="margin-top:12px;">${Object.keys(PRIV).map(k => `<label class="chk ${r.privacy[k] ? 'done' : ''}"><input type="checkbox" data-pv="${k}" ${r.privacy[k] ? 'checked' : ''}> ${esc(PRIV[k])}</label>`).join('')}</div>
+      <div class="acts"><button class="btn sec" id="pv-close">닫기</button><button class="btn" id="pv-save">저장</button></div>`);
+    $('#pv-close').addEventListener('click', closeModal);
+    $('#pv-save').addEventListener('click', () => { $$('#modal [data-pv]').forEach(cb => { r.privacy[cb.dataset.pv] = cb.checked; }); Store.save(); audit('개인정보 점검', `${r.no} · ${Object.values(r.privacy).filter(Boolean).length}/4`); closeModal(); toast(privacyPass(r) ? '4항목 확인 — 공개 가능' : '미확인 항목이 남아 있어 발급이 잠겨 있습니다'); rReports(); });
+  });
+  const iss = $('#issue'); if (iss) iss.addEventListener('click', () => {
+    modal(`<h3>QR 발급 — ${esc(r.no)}</h3><p class="small muted">토큰은 발급 건에 붙는 불변 값입니다. 보고서가 개정돼도 바뀌지 않습니다.</p>
+      <div class="frm" style="margin-top:12px;"><div class="field"><label>라벨 (SKU·용도)</label><input class="inp" id="q-label" value="국내 SKU"></div><div class="field"><label>언어</label><select class="sel" id="q-lang"><option value="ko">한국어</option><option value="en">English</option></select></div></div>
+      <div class="acts"><button class="btn sec" id="q-cancel">취소</button><button class="btn" id="q-ok">발급</button></div>`);
+    $('#q-cancel').addEventListener('click', closeModal);
+    $('#q-ok').addEventListener('click', () => { const t = newToken(); D.qrs.unshift({ token: t, reportId: r.id, label: $('#q-label').value || 'SKU', lang: $('#q-lang').value, status: 'active', issuedAt: nowStr(), by: '한지연', ec: 'M' }); if (r.status === 'consented') r.status = 'active'; audit('QR 발급', `${t} → ${r.no}`); Store.save(); closeModal(); toast(`QR ${t} 발급 — 공개 URL이 즉시 활성화됩니다`); rReports(); counts(); });
+  });
+  $$('#rep-detail [data-st]').forEach(b => b.addEventListener('click', () => {
+    const st = b.dataset.st; const label = statusLabel(st);
+    modal(`<h3>${esc(r.no)} → ${esc(label)}</h3><p class="small muted">${st === 'revoked' ? '폐기해도 인쇄된 QR은 404가 아니라 「발급 취소」 안내 랜딩을 보여줍니다.' : st === 'active' ? '활성으로 복귀하면 공개 화면이 다시 요약을 표시합니다.' : '전환 후에도 QR은 살아 있고 상태별 안내 랜딩이 표시됩니다 (C-1).'}</p>
+      ${st !== 'active' ? `<div class="field" style="margin-top:12px;"><label>사유</label><input class="inp" id="st-reason" value="${st === 'revoked' ? '오등록 — 재발급 예정' : st === 'expired' ? '계약 종료' : '구독 미납'}"></div>` : ''}
+      <div class="acts"><button class="btn sec" id="st-cancel">취소</button><button class="btn ${st === 'revoked' ? 'danger' : ''}" id="st-ok">${esc(label)} 처리</button></div>`);
+    $('#st-cancel').addEventListener('click', closeModal);
+    $('#st-ok').addEventListener('click', () => { r.status = st; if (st === 'revoked') r.revokeReason = ($('#st-reason') || {}).value || ''; D.qrs.filter(q => q.reportId === r.id).forEach(q => { q.status = st; if (st === 'expired') q.expiredAt = TODAY; if (st === 'revoked') q.revokedAt = TODAY; if (st === 'suspended') q.suspendedAt = TODAY; }); audit(`보고서 ${label}`, `${r.no}${$('#st-reason') ? ' · ' + $('#st-reason').value : ''}`); Store.save(); closeModal(); toast(`${label} 처리 — 공개 화면에서 상태 랜딩 확인`); rReports(); });
+  }));
+  const rg = $('#rev-go'); if (rg) rg.addEventListener('click', () => {
+    const nv = v.v + 1, reason = $('#rev-reason').value.trim() || '개정';
+    r.versions.push({ v: nv, date: TODAY, reason, hash: fakeSha(r.no + nv + reason + Date.now()), by: '한지연' });
+    r.files.original.name = `${r.no}_보고서_v${nv}.pdf`;
+    audit(`보고서 개정 게시 v${nv}`, r.no); audit('개정 통지 발송', `${org.name} (${org.users.length}명)`); Store.save();
+    toast(`v${nv} 게시 — QR ${qs.length}건은 그대로 최신본을 가리킵니다. 공개 화면에서 v${nv} 배지 확인`); rReports();
+  });
+}
+
+/* ═══ 보고서 등록 ═══ */
+function rRegister() {
+  $('#s-register').innerHTML = `
+    <div class="card">
+      <div class="card-h"><h3>보고서 등록 — 실증 요건을 등록 단계에서 확인합니다</h3><span class="small muted">프리필 — 그대로 「등록」을 눌러도 됩니다</span></div>
+      <div class="frm">
+        <div class="field"><label>보고서 번호</label><input class="inp mono" id="n-no" value="SP-2026-0471"></div>
+        <div class="field"><label>고객사</label><select class="sel" id="n-org">${D.orgs.filter(o => o.contract.status === 'active').map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join('')}</select></div>
+        <div class="field"><label>제품명</label><input class="inp" id="n-prod" value="루미네 배리어 미스트 100ml"></div>
+        <div class="field"><label>브랜드</label><input class="inp" id="n-brand" value="루미네"></div>
+        <div class="field"><label>시험 유형</label><select class="sel" id="n-type">${Object.entries(D.testTypes).map(([k, t]) => `<option value="${k}">${esc(t.ko)}</option>`).join('')}</select></div>
+        <div class="field"><label>피험자 수</label><input class="inp" id="n-sub" type="number" value="31"></div>
+        <div class="field"><label>시험 기간 시작</label><input class="inp" id="n-ps" type="date" value="2026-07-20"></div>
+        <div class="field"><label>시험 기간 종료</label><input class="inp" id="n-pe" type="date" value="2026-08-17"></div>
+        <div class="field"><label>시험책임자</label><input class="inp" id="n-sup" value="한지연"></div>
+        <div class="field"><label>시험책임자 경력(년) — 5년 이상</label><input class="inp" id="n-yrs" type="number" value="14"></div>
+        <div class="field"><label>IRB 승인번호</label><input class="inp mono" id="n-irb" value="SSCRC-IRB-2026-058"></div>
+        <div class="field"><label>발급일 — 기존 자료(과거 발급분) 등록 시 실제 발급일로</label><input class="inp" id="n-issued" type="date" value="2026-09-02"></div>
+        <div class="field"><label>통계 분석 방법</label><input class="inp" id="n-stats" value="Frequency analysis"></div>
+        <div class="field full"><label>판정·결론 (공개 화면에 표시될 문장)</label><textarea class="inp" id="n-verdict">48시간 폐쇄 첩포 후 피부 반응 평가 결과, 시험 대상 31명 전원에서 자극 반응이 관찰되지 않았습니다.</textarea><div class="hint" id="n-verdict-hint"></div></div>
+        <div class="field"><label>유해사례·조치내역 기재</label><select class="sel" id="n-adv"><option value="1">기재함 — 유해사례 없음</option><option value="0">미기재</option></select></div>
+        <div class="field"><label>영업비밀 해당 여부</label><select class="sel" id="n-sec"><option value="1">해당 (처방·원료 비공개)</option><option value="0">해당 없음</option></select></div>
+        <div class="field full"><label>파일 — 원본 / 공개본 2트랙 (B-4)</label><div class="row"><span class="chip">원본 SP-2026-0471_보고서_v1.pdf · 17.2MB (업로드 시뮬)</span><span class="chip warn">공개본 미첨부 — 등록 후 개인정보 점검을 거쳐 생성</span></div></div>
+      </div>
+      <div id="n-gate" style="margin-top:16px;"></div>
+      <div class="row" style="margin-top:14px;"><button class="btn" id="n-save">등록</button><span class="small muted">등록 → 고객사 열람 → 공개 동의 → QR 발급 순서로 진행됩니다</span></div>
+    </div>`;
+  const draft = () => ({ no: $('#n-no').value.trim(), supervisor: { name: $('#n-sup').value, years: +$('#n-yrs').value }, irb: $('#n-irb').value.trim(), subjects: +$('#n-sub').value, stats: $('#n-stats').value.trim(), adverse: $('#n-adv').value === '1', tradeSecret: $('#n-sec').value === '1' });
+  const gate = () => { const ev = evidenceCheck(draft()); $('#n-gate').innerHTML = `<div class="label" style="margin-bottom:8px;">실증 요건 미리 판정 — ${ev.pass ? '<span class="up">충족</span>' : `<span class="down">미충족 ${ev.fails.length}건 (등록은 되지만 QR 발급이 잠깁니다)</span>`}</div><div class="gate">${ev.items.map(i => `<div class="g ${i.ok ? 'ok' : 'no'}">${i.ok ? I.check : I.x}<div>${esc(i.label)}<small>${esc(i.rule)}</small></div></div>`).join('')}</div>`;
+    const res = checkClaim($('#n-verdict').value); $('#n-verdict-hint').className = 'hint ' + (res.level === 'ok' ? '' : 'bad'); $('#n-verdict-hint').textContent = res.level === 'ok' ? '금지 표현 없음 — 공개 문장으로 적합' : '⚠ 공개 문장에 위험 표현: ' + res.hits.map(h => h.matches.join(', ')).join(' · '); };
+  ['n-yrs', 'n-sub', 'n-irb', 'n-stats', 'n-adv', 'n-sec', 'n-verdict'].forEach(id => $('#' + id).addEventListener('input', gate)); gate();
+  $('#n-save').addEventListener('click', () => {
+    const d = draft(); if (!d.no || !$('#n-prod').value.trim()) { toast('보고서 번호와 제품명은 필수입니다'); return; }
+    if (D.reports.some(r => r.no === d.no)) { toast('이미 등록된 보고서 번호입니다 — 내부 ID와 표시 번호를 분리해 중복을 막습니다'); return; }
+    const id = 'r' + Date.now().toString(36);
+    D.reports.unshift({ id, no: d.no, orgId: $('#n-org').value, brand: $('#n-brand').value, product: $('#n-prod').value.trim(), img: 'prod-toner.webp', type: $('#n-type').value, period: { start: $('#n-ps').value, end: $('#n-pe').value }, subjects: d.subjects, supervisor: d.supervisor, irb: d.irb, stats: d.stats, adverse: d.adverse, adverseNote: d.adverse ? '유해사례 없음' : '', tradeSecret: d.tradeSecret,
+      verdict: { ko: $('#n-verdict').value, en: '' }, status: 'registered', versions: [{ v: 1, date: $('#n-issued').value || TODAY, reason: $('#n-issued').value && $('#n-issued').value < TODAY ? '기존 자료 등록 (과거 발급분)' : '최초 발행', hash: fakeSha(d.no + Date.now()), by: '한지연' }],
+      publicFields: { product: true, type: true, period: true, subjects: true, verdict: true, adverse: true, institution: true, supervisor: false, method: false, irb: false }, privacy: { photo: false, initials: false, history: false, signature: false }, consent: null,
+      files: { original: { name: `${d.no}_보고서_v1.pdf`, size: 17.2 }, public: null } });
+    audit('보고서 등록', d.no); Store.save(); cur = id; toast(`${d.no} 등록 — 보고서 목록에서 게이트 상태를 확인하세요`); go('reports');
+  });
+}
+
+/* ═══ QR 발급·이력 ═══ */
+function rQRs() {
+  const url = PUBLIC_BASE + '7K9F2Q', st = 'https://drive.google.com/file/d/1xQm9Kz_aBcDeFgHiJkLmNoPqRsTuVwXyZ01234/view?usp=sharing';
+  const e1 = QR.encode(url, 'M'), e2 = QR.encode(st, 'M');
+  $('#s-qrs').innerHTML = `
+    <div class="card">
+      <div class="card-h"><h3>QR 발급 이력 ${D.qrs.length}건 — 어떤 보고서에 어떤 QR이 발급됐는지</h3><span class="small muted">상태 4종 어디서도 404 없음 (C-1)</span></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>토큰</th><th>보고서</th><th>고객사</th><th>라벨 · 언어</th><th>발급</th><th>30일 스캔(유효)</th><th>상태</th><th>공개 화면</th></tr></thead><tbody>
+        ${D.qrs.map(q => { const r = reportOf(D, q.reportId), s = scanStats(D.scans, { tokens: [q.token], excludeBots: true }); return `<tr><td class="mono">${esc(q.token)}</td><td class="mono">${esc(r.no)}</td><td>${esc(orgOf(D, r.orgId).name)}</td><td>${esc(q.label)} · ${q.lang.toUpperCase()}</td><td>${esc(q.issuedAt)}</td><td class="num">${s.total}</td><td><span class="chip ${q.status}">${esc(qrStatusLabel(q.status))}</span>${q.successor ? ` <span class="micro muted">→ ${esc(q.successor)}</span>` : ''}</td><td><a class="btn ghost sm" href="r.html?t=${q.token}" target="_blank">열기 ${I.ext}</a></td></tr>`; }).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card"><div class="card-h"><h3>정적 QR이었다면 (의뢰자가 겪은 방식) — 실계산 비교</h3></div>
+        <table class="tbl"><thead><tr><th></th><th>동적 · 토큰 URL</th><th>정적 · 드라이브 파일 URL</th></tr></thead><tbody>
+          <tr><td class="muted">인코딩 문자 수</td><td class="num">${url.length}</td><td class="num down">${st.length}</td></tr>
+          <tr><td class="muted">QR 버전 · 모듈</td><td>v${e1.version} · ${e1.size}×${e1.size}</td><td class="down">v${e2.version} · ${e2.size}×${e2.size}</td></tr>
+          <tr><td class="muted">20mm 인쇄 시 모듈 크기</td><td>${qrPhysics(e1.size, 20).moduleMm.toFixed(3)}mm</td><td class="down">${qrPhysics(e2.size, 20).moduleMm.toFixed(3)}mm (임계 0.12 근접)</td></tr>
+          <tr><td class="muted">보고서 개정</td><td class="up">같은 QR 유지</td><td class="down">전량 재인쇄</td></tr>
+          <tr><td class="muted">도메인·파일 이동</td><td class="up">토큰 리다이렉트로 흡수</td><td class="down">QR 사망 (Heinz 2015 사례)</td></tr>
+          <tr><td class="muted">계약 종료·미납</td><td class="up">상태별 안내 랜딩</td><td class="down">404 / 권한 없음</td></tr>
+        </tbody></table>
+        <div class="micro muted" style="margin-top:8px;">두 URL을 실제로 인코딩해 비교한 값입니다 (qr.js · 자체 구현 인코더).</div>
+      </div>
+      <div class="card"><div class="card-h"><h3>인쇄 사양 기본값 (C-3)</h3></div>
+        <table class="tbl"><tbody>
+          <tr><td class="muted" style="width:160px">오류보정</td><td>M (15%) — 소형 패키지 기본 · 로고 삽입 시 Q</td></tr>
+          <tr><td class="muted">최소 인쇄 크기</td><td>15mm (권장 20mm 이상)</td></tr>
+          <tr><td class="muted">Quiet zone</td><td>모듈 폭 × 4 사방</td></tr>
+          <tr><td class="muted">모듈 최소</td><td>0.12mm (양호 조건 0.15mm)</td></tr>
+          <tr><td class="muted">제공 포맷</td><td>SVG(원본) · PNG 1024 · 사양서 · 승인 문구 카드</td></tr>
+          <tr><td class="muted">QR 유지 정책</td><td>계약 종료 후 ${D.settings.qrRetentionYears}년 안내 랜딩 유지 · 기본 진위확인은 구독 무관 영구 무료 (제안)</td></tr>
+        </tbody></table>
+      </div>
+    </div>`;
+}
+
+/* ═══ 고객사·사용자 ═══ */
+function rOrgs() {
+  $('#s-orgs').innerHTML = `
+    <div class="card"><div class="card-h"><h3>고객사 ${D.orgs.length}곳 — 조직 · 브랜드 · 사용자 3계층 (C-5)</h3><span class="small muted">역할: 관리자 / RA(원문 다운로드) / 마케터(QR·요약만)</span></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>고객사</th><th>브랜드</th><th>사용자 · 역할</th><th>보고서</th><th>계약</th><th>상태</th></tr></thead><tbody>
+        ${D.orgs.map(o => `<tr><td><b>${esc(o.name)}</b><br><span class="micro muted">${esc(o.en)}</span></td><td>${o.brands.map(b => `<span class="chip">${esc(b)}</span>`).join(' ')}</td><td>${o.users.map(u => `<span class="chip ${u.role === 'RA' ? 'info' : u.role === 'ADMIN' ? 'ok' : ''}" style="margin:2px 2px 2px 0">${esc(u.name)} · ${u.role}</span>`).join('')}</td><td class="num">${D.reports.filter(r => r.orgId === o.id).length}</td><td class="mono small">${esc(o.contract.start)} ~ ${esc(o.contract.end)}</td><td><span class="chip ${o.contract.status === 'active' ? (dday(o.contract.end) <= 30 ? 'warn' : 'ok') : o.contract.status}">${o.contract.status === 'active' ? (dday(o.contract.end) <= 30 ? `D-${dday(o.contract.end)}` : '활성') : o.contract.status === 'expired' ? '종료' : '정지(미납)'}</span></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="grid g2" style="margin-top:16px;">
+      <div class="card"><div class="card-h"><h3>역할별 권한 매트릭스</h3></div>
+        <table class="tbl"><thead><tr><th></th><th>관리자</th><th>RA</th><th>마케터</th></tr></thead><tbody>
+          <tr><td>원문 PDF 다운로드</td><td>●</td><td>●</td><td class="muted">✕</td></tr><tr><td>공개 동의</td><td>●</td><td>●</td><td class="muted">✕</td></tr><tr><td>실증자료 패키지</td><td>●</td><td>●</td><td class="muted">✕</td></tr><tr><td>QR 인쇄 패키지</td><td>●</td><td>●</td><td>●</td></tr><tr><td>문구 검사기</td><td>●</td><td>●</td><td>●</td></tr><tr><td>사용자 초대·회수</td><td>●</td><td class="muted">✕</td><td class="muted">✕</td></tr>
+        </tbody></table></div>
+      <div class="card"><div class="card-h"><h3>운영 정책</h3></div>
+        <div class="note warn" style="margin-bottom:8px;"><b>기관 관리자 2인 이상 필수</b> — 담당자 1명(SPOF) 부재 시 등록·발급 정지. 데모 시드는 1명(한지연) → 착수 시 부관리자 계정 추가 권고</div>
+        <div class="note">계정 공유 금지 — 퇴사 시 개별 회수 · 원문 다운로드는 사용자 단위 감사로그 · 초대 링크 72시간 만료</div></div>
+    </div>`;
+}
+
+/* ═══ 스캔 통계 ═══ */
+function rStats() {
+  const raw = scanStats(D.scans), val = scanStats(D.scans, { excludeBots: true }), s = bots ? val : raw;
+  const bar = (obj, order) => { const tot = Object.values(obj).reduce((a, b) => a + b, 0) || 1; return (order || Object.keys(obj)).filter(k => obj[k]).map(k => `<div style="margin-bottom:6px;"><div class="row small" style="justify-content:space-between"><span>${esc(k)}</span><span class="mono">${obj[k]} · ${Math.round(obj[k] / tot * 100)}%</span></div><div style="height:6px;border-radius:3px;background:var(--surface);overflow:hidden"><div style="height:100%;width:${Math.round(obj[k] / tot * 100)}%;background:var(--primary);transition:width .5s var(--e-expo)"></div></div></div>`).join(''); };
+  $('#s-stats').innerHTML = `
+    <div class="grid g4" style="margin-bottom:16px;">
+      <div class="kpi"><div class="k">30일 ${bots ? '유효' : '원시'} 스캔</div><div class="v">${s.total.toLocaleString()}<small>회</small></div><div class="d">봇 ${raw.bots}회 (${Math.round(raw.bots / (raw.total || 1) * 100)}%) ${bots ? '제외됨' : '포함'}</div></div>
+      <div class="kpi"><div class="k">모바일</div><div class="v">${Math.round((s.byDevice.mobile || 0) / (s.total || 1) * 100)}<small>%</small></div><div class="d">제품 QR 특성 — 매장·집에서 폰 스캔</div></div>
+      <div class="kpi"><div class="k">영문 화면</div><div class="v">${Math.round((s.byLang.en || 0) / (s.total || 1) * 100)}<small>%</small></div><div class="d">수출용 QR · 해외 바이어</div></div>
+      <div class="kpi"><div class="k">실시간 스캔(이 브라우저)</div><div class="v">${D.scans.filter(x => x.live).length}<small>회</small></div><div class="d">공개 화면을 열 때마다 실제로 적재</div></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>일별 추이 · 전체 QR</h3><div class="row"><span class="small muted">봇 제외</span><span class="tgl ${bots ? 'on' : ''}" id="st-bot"></span></div></div><canvas class="cv" id="st-cv"></canvas></div>
+    <div class="grid g3" style="margin-top:16px;">
+      <div class="card"><div class="card-h"><h3>기기</h3></div>${bar(s.byDevice, ['mobile', 'pc', 'bot'])}</div>
+      <div class="card"><div class="card-h"><h3>지역(시도)</h3></div>${bar(s.byRegion)}</div>
+      <div class="card"><div class="card-h"><h3>봇 판정 사유</h3></div>${bar(D.scans.filter(x => x.bot).reduce((a, x) => { a[x.botReason] = (a[x.botReason] || 0) + 1; return a; }, {}))}<div class="micro muted" style="margin-top:8px;">${esc(D.settings.scanIpPolicy)}</div></div>
+    </div>`;
+  $('#st-bot').addEventListener('click', () => { bots = !bots; rStats(); });
+  drawDaily($('#st-cv'), s.byDay);
+}
+
+/* ═══ 감사로그 ═══ */
+let auditQ = '';
+function rAudit() {
+  const list = D.auditLogs.filter(a => !auditQ || [a.who, a.action, a.target].join(' ').toLowerCase().includes(auditQ.toLowerCase()));
+  $('#s-audit').innerHTML = `
+    <div class="card"><div class="toolbar"><div class="tb-search">${I.search}<input id="au-q" value="${esc(auditQ)}" placeholder="누가 · 무엇을 · 대상"></div><span class="sp"></span><span class="small muted">${list.length}건 · 보존 3년</span><button class="btn sec sm" id="au-csv">${I.dl} CSV (UTF-8 BOM)</button></div>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>시각</th><th>누가</th><th>무엇을</th><th>대상</th><th>어디서</th></tr></thead><tbody>${list.map(a => `<tr><td class="mono">${esc(a.at)}</td><td>${esc(a.who)}</td><td>${esc(a.action)}</td><td class="mono">${esc(a.target)}</td><td>${esc(a.where)}</td></tr>`).join('')}</tbody></table></div></div>`;
+  $('#au-q').addEventListener('input', e => { auditQ = e.target.value; rAudit(); const el = $('#au-q'); el.focus(); el.setSelectionRange(auditQ.length, auditQ.length); });
+  $('#au-csv').addEventListener('click', () => {
+    const rows = [['시각', '누가', '무엇을', '대상', '어디서'], ...list.map(a => [a.at, a.who, a.action, a.target, a.where])];
+    const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+    downloadBlob(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }), `attest_감사로그_${TODAY}.csv`); toast('CSV 저장 — 엑셀에서 한글 정상 표시(BOM)');
+  });
+}
+
+/* ═══ 보안·인프라 ═══ */
+function rInfra() {
+  const c = D.settings.monthlyCost, total = Object.values(c).reduce((a, b) => a + b, 0);
+  $('#s-infra').innerHTML = `
+    <div class="grid g3">
+      <div class="card"><div class="card-h"><h3>호스팅 · 리전 (B-6)</h3><span class="chip ok">${I.check} 국외 이전 없음</span></div>
+        <table class="tbl"><tbody><tr><td class="muted" style="width:120px">리전</td><td>${esc(D.settings.region)}</td></tr><tr><td class="muted">구성</td><td>2vCPU/4GB 앱 서버 + 관리형 DB + 오브젝트 스토리지(보고서 PDF, 비공개 버킷·서명 URL 10분) + CDN</td></tr><tr><td class="muted">계정 명의</td><td><b>발주사</b> (개발사는 위임 권한만)</td></tr><tr><td class="muted">도메인 · 인증서</td><td>attest.kr(가상) 발주사 명의 · Let's Encrypt 자동 갱신 · QR 전용 도메인 영구 보유 정책</td></tr></tbody></table></div>
+      <div class="card"><div class="card-h"><h3>데이터 보호</h3></div>
+        <table class="tbl"><tbody><tr><td class="muted" style="width:120px">전송 암호화</td><td>${esc(D.settings.encryptTransit)}</td></tr><tr><td class="muted">저장 암호화</td><td>${esc(D.settings.encryptRest)}</td></tr><tr><td class="muted">백업</td><td>${esc(D.settings.backup)}</td></tr><tr><td class="muted">로그 보존</td><td>${esc(D.settings.logRetention)}</td></tr><tr><td class="muted">접근 통제</td><td>역할 3종 · 원문 다운로드 사용자 단위 로그 · 공개 표면 화이트리스트 렌더</td></tr><tr><td class="muted">무결성</td><td>버전별 SHA-256 · 공개 화면 대조 · 타임스탬프</td></tr></tbody></table></div>
+      <div class="card"><div class="card-h"><h3>월 유지비용 (공고 Q2)</h3></div>
+        <table class="tbl cost"><tbody><tr><td>앱 서버 · 관리형 DB</td><td>${fmtKRW(c.server)}</td></tr><tr><td>오브젝트 스토리지(50GB)</td><td>${fmtKRW(c.storage)}</td></tr><tr><td>CDN · 트래픽</td><td>${fmtKRW(c.cdn)}</td></tr><tr><td>도메인(연 2만 → 월 환산)</td><td>${fmtKRW(c.domain)}</td></tr><tr><td>메일 발송(종량)</td><td>${fmtKRW(c.mail)}</td></tr><tr><td><b>합계 (VAT 별도 · 발주사 직접 결제)</b></td><td><b>${fmtKRW(total)}</b></td></tr></tbody></table>
+        <div class="micro muted" style="margin-top:8px;">국내 리전 공개가 기준 추정 · 신제품 런칭 등 트래픽 급증 시 스케일업 조건 별도 · 개발 유지보수(월정액)는 별도 항목</div></div>
+    </div>
+    <div class="card" style="margin-top:16px;"><div class="card-h"><h3>확장 로드맵 — 지금 구조가 그대로 확장되는 것</h3></div>
+      <div class="stack-why"><div><b>구독 전환 (공고 명시)</b>조직·플랜·사용량·QR 수명 필드가 이미 스키마에 있음 → 결제만 붙이면 됨. 미납 시 QR은 「정지 랜딩」, 기본 진위확인은 영구 무료</div><div><b>EU 디지털제품여권(DPP) 대비</b>QR + 고유식별자 + 3단계 접근권한(소비자/사업자/당국) — 이 데모의 표면 3분리와 동일 구조 (ESPR 2024/1781)</div><div><b>다국어 공개 화면</b>KO/EN 구현 · JA/ZH는 사전 추가만</div><div><b>기관 다중화</b>institution 테이블 분리 — 타 기관 SaaS 제공 가능</div></div></div>`;
+}
+
+/* ═══ 인수인계 현황 ═══ */
+function rHandover() {
+  const done = D.handover.filter(h => h.status === 'done').length;
+  const checks = D.handoverChecks || {};
+  $('#s-handover').innerHTML = `
+    <div class="grid g2">
+      <div class="card"><div class="card-h"><h3>인수인계 항목 ${done}/${D.handover.length} 완료</h3><button class="btn" id="ho-zip">${I.dl} 인수인계 패키지 (ZIP)</button></div>
+        <div class="tbl-wrap"><table class="tbl ho-tbl"><thead><tr><th>항목</th><th>상태</th><th>소유자</th><th>일자</th></tr></thead><tbody>
+          ${D.handover.map(h => `<tr><td>${esc(h.item)}</td><td>${h.status === 'done' ? `<span class="chip ok">${I.check} 완료</span>` : '<span class="chip warn">대기</span>'}</td><td>${h.owner.includes('발주사') ? `<b style="color:var(--primary)">${esc(h.owner)}</b>` : esc(h.owner)}</td><td class="mono small">${esc(h.date || '—')}</td></tr>`).join('')}
+        </tbody></table></div>
+        <div class="micro muted" style="margin-top:8px;">패키지 구성: README · ERD · runbook(배포·롤백) · 계정 목록(소유자 표) · 복구 절차 · 환경변수 목록(값 제외) — 발주사 저장소 /docs와 동일본</div>
+      </div>
+      <div class="card"><div class="card-h"><h3>30분 인수인계 테스트 — 새 개발자가 이 순서로 첫 배포까지</h3><span class="small muted" id="ho-prog"></span></div>
+        <div id="ho-checks">${D.handoverTest.map((t, i) => `<label class="chk ${checks[i] ? 'done' : ''}"><input type="checkbox" data-i="${i}" ${checks[i] ? 'checked' : ''}> <span>${esc(t)}</span></label>`).join('')}</div>
+        <div class="label" style="margin:16px 0 8px;">왜 이 스택인가 — 비개발자용 설명 (공고 제안 필수 ①)</div>
+        <div class="stack-why">
+          <div><b>프론트: React + TypeScript</b>국내 구인 시장에서 개발자를 가장 쉽게 구할 수 있는 조합. 다음 업체가 바로 붙습니다</div>
+          <div><b>백엔드: Node.js(NestJS) + PostgreSQL</b>표준 관계형 DB — ERD 한 장으로 구조가 설명됩니다. 어떤 개발사도 읽을 수 있습니다</div>
+          <div><b>배포: Docker Compose + 국내 클라우드</b>서버를 새로 받아도 <span class="mono">docker compose up</span> 한 줄로 같은 환경이 뜹니다</div>
+          <div><b>QR: 자체 인코더 + 고정 도메인 리다이렉트</b>외부 QR 서비스에 의존하지 않아 그 서비스가 폐업해도 QR이 죽지 않습니다</div>
+        </div>
+      </div>
+    </div>`;
+  const prog = () => { const n = Object.values(D.handoverChecks || {}).filter(Boolean).length; $('#ho-prog').textContent = `${n}/${D.handoverTest.length} 완료 · 예상 30분`; };
+  $$('#ho-checks input').forEach(cb => cb.addEventListener('change', () => { D.handoverChecks = D.handoverChecks || {}; D.handoverChecks[cb.dataset.i] = cb.checked; cb.closest('.chk').classList.toggle('done', cb.checked); Store.save(); prog(); if (Object.values(D.handoverChecks).filter(Boolean).length === D.handoverTest.length) { const h = D.handover.find(x => x.item.startsWith('30분')); if (h && h.status !== 'done') { h.status = 'done'; h.date = TODAY; Store.save(); toast('30분 인수인계 테스트 완료 — 항목 상태가 갱신되었습니다'); rHandover(); } } })); prog();
+  $('#ho-zip').addEventListener('click', () => {
+    const files = [
+      { name: 'ATTEST_인수인계/README.md', data: `# ATTEST 인수인계 패키지 (데모)\n\n생성 ${nowStr()} · 발주사 소유 저장소 /docs 와 동일본\n\n## 구조\n- apps/web (React+TS) · apps/api (NestJS) · infra (docker-compose, 국내 리전)\n## 계정 소유\n${D.handover.map(h => `- ${h.item}: ${h.owner} (${h.status})`).join('\n')}\n## 30분 테스트\n${D.handoverTest.map((t, i) => `${i + 1}. ${t}`).join('\n')}` },
+      { name: 'ATTEST_인수인계/ERD.md', data: `# ERD (요약)\n\ninstitution 1—N organization 1—N brand 1—N user(role: ADMIN|RA|MKT)\norganization 1—N report 1—N report_version(hash, reason, by, at)\nreport 1—N qr(token PK, label, lang, status: active|expired|suspended|revoked, issued_at)\nqr 1—N scan(at, region, device, lang, is_bot, bot_reason) · ip_hash 24h TTL\nreport 1—1 public_fields(whitelist) · privacy_check(4 flags) · consent(at, by, scope)\naudit_log(at, actor, action, target, region)\nplan/subscription(org, plan, period, status) — 구독 전환용 예약 필드` },
+      { name: 'ATTEST_인수인계/runbook.md', data: `# 배포 · 롤백 runbook\n\n1. git pull → docker compose build\n2. 마이그레이션: npm run migrate (트랜잭션, 실패 시 자동 롤백)\n3. compose up -d → /health 200 확인\n4. 롤백: 이전 이미지 태그로 compose up · DB는 마이그레이션 down\n5. 백업: 일 1회 스냅샷 · 월 1회 복구 리허설(별도 서버에 복원 → 공개 화면 200 확인)` },
+      { name: 'ATTEST_인수인계/accounts.md', data: `# 계정 · 자산 소유 목록\n\n${D.handover.map(h => `| ${h.item} | ${h.status} | ${h.owner} | ${h.date} |`).join('\n')}\n\n비밀키·환경변수 값은 이 문서에 없음 — 발주사 비밀 관리자에 보관 (.env.example 참조)` },
+      { name: 'ATTEST_인수인계/.env.example', data: `DATABASE_URL=\nOBJECT_STORAGE_BUCKET=\nOBJECT_STORAGE_KEY=\nOBJECT_STORAGE_SECRET=\nPUBLIC_BASE_URL=https://attest.kr/r/\nMAIL_API_KEY=\nSESSION_SECRET=` },
+    ];
+    const size = ZIP.download(files, `ATTEST_인수인계패키지_${TODAY}.zip`); audit('인수인계 패키지 생성', `${files.length}개 파일`); Store.save(); toast(`인수인계 패키지 ZIP 생성 (${files.length}개 파일 · ${Math.round(size / 1024)}KB)`);
+  });
+}
+
+window.addEventListener('storage', e => { if (e.key !== ATTEST_KEY) return; Store._d = null; const nd = Store.load(); Object.keys(D).forEach(k => delete D[k]); Object.assign(D, nd); RENDER[sect](); counts(); });
+go('dash');
+</script>
+</body>
+</html>

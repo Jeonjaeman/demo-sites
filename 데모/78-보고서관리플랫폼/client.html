@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATTEST — 고객사 포털 (데모)</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .detail { margin-top: 16px; }
+  .qr-box { display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start; }
+  .qr-canvas { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; place-items: center; }
+  .qr-canvas canvas { width: 256px !important; height: 256px !important; }
+  .sim { margin-top: 12px; }
+  .sim input[type=range] { width: 100%; accent-color: var(--primary); }
+  .sim .vals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+  .sim .vals div { padding: 10px 12px; border-radius: var(--r); background: var(--surface); font-size: 13px; }
+  .sim .vals b { display: block; font-size: 16px; font-variant-numeric: tabular-nums; }
+  .sim-preview { display: flex; align-items: flex-end; gap: 14px; margin-top: 12px; }
+  .sim-preview .real { border: 1px dashed var(--line2); background: #fff; display: grid; place-items: center; }
+  .sim-preview canvas { image-rendering: pixelated; }
+  .dday { display: flex; align-items: center; gap: 18px; padding: 18px 20px; border-radius: var(--r); background: var(--primary-tint); }
+  .dday .num { font-family: var(--mono); font-size: 40px; font-weight: 600; line-height: 1; color: var(--primary); }
+  .dday.hot { background: var(--bad-tint); } .dday.hot .num { color: var(--bad); }
+  .twocol { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .twocol ul { list-style: none; }
+  .twocol li { padding: 8px 10px; border-radius: var(--r); font-size: 13.5px; margin-bottom: 6px; display: flex; gap: 8px; }
+  .twocol .ok li { background: var(--primary-tint); color: var(--primary-deep); }
+  .twocol .bad li { background: var(--bad-tint); color: var(--bad); }
+  .examples { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 12px; }
+  .lockbox { padding: 12px 14px; border-radius: var(--r); background: var(--surface); font-size: 13.5px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+  canvas.cv { width: 100%; height: 180px; display: block; }
+  @media (max-width: 860px) { .qr-box, .twocol { grid-template-columns: 1fr; } .sim .vals { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><div class="mk">A</div><div><b>ATTEST</b><small>Client Portal · Demo</small></div></div>
+    <nav class="snav" id="snav">
+      <div class="grp">보고서</div>
+      <button data-s="reports" class="on">내 보고서 <span class="n" id="n-rep"></span></button>
+      <button data-s="qr">QR 다운로드</button>
+      <div class="grp">규제 대응</div>
+      <button data-s="evidence">실증자료 · D-15</button>
+      <button data-s="claim">표시 문구 검사기</button>
+      <div class="grp">데이터</div>
+      <button data-s="stats">스캔 통계 (자사분)</button>
+    </nav>
+    <div class="side-foot"><div class="who"><div class="av" id="av">RA</div><div><b id="who-name"></b><br><span id="who-role" class="muted"></span></div></div>
+      <div style="margin-top:10px;"><a href="index.html">← 진입 화면</a> · <a href="admin.html">기관 관리자</a></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div><h1 id="t-title">내 보고서</h1><div class="sub" id="t-sub"></div></div>
+      <div class="row">
+        <span class="small muted">역할 전환</span>
+        <select class="sel" id="role-sel"><option value="ADMIN">이수정 · 관리자</option><option value="RA">김하은 · RA (품질)</option><option value="MKT">박지훈 · 마케터</option></select>
+      </div>
+    </header>
+    <div class="content">
+      <div class="demo-bar"><span><b>루미네 코스메틱</b> 계정 — 자사에 발급된 보고서만 보입니다 · 원문 PDF는 <b>RA·관리자</b>만, 마케터는 QR·요약만 (역할 전환으로 확인)</span><span class="micro">모든 데이터 가상</span></div>
+      <section class="sect on" id="s-reports"></section>
+      <section class="sect" id="s-qr"></section>
+      <section class="sect" id="s-evidence"></section>
+      <section class="sect" id="s-claim"></section>
+      <section class="sect" id="s-stats"></section>
+    </div>
+  </main>
+</div>
+<div class="ov" id="modal"><div class="modal" id="modal-box"></div></div>
+<div id="toast" role="status"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/qr.js"></script>
+<script src="assets/js/rules.js"></script>
+<script src="assets/js/zip.js"></script>
+<script>
+'use strict';
+const D = Store.load();
+const $ = (s, el) => (el || document).querySelector(s);
+const $$ = (s, el) => Array.from((el || document).querySelectorAll(s));
+const ORG = orgOf(D, 'o1');
+let role = (new URLSearchParams(location.search).get('role') || 'RA').toUpperCase();
+if (!['ADMIN', 'RA', 'MKT'].includes(role)) role = 'RA';
+let cur = 'r1', sect = 'reports', bots = false;
+const USERS = { ADMIN: ORG.users[0], RA: ORG.users[1], MKT: ORG.users[2] };
+const canOriginal = () => role === 'RA' || role === 'ADMIN';
+const I = {
+  check: '<svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg>', x: '<svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+  lock: '<svg class="i" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>',
+  dl: '<svg class="i" viewBox="0 0 16 16"><path d="M8 2v8M4.5 7.5L8 11l3.5-3.5M3 13h10"/></svg>',
+  search: '<svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>',
+};
+let toastTimer;
+function toast(m) { const el = $('#toast'); el.textContent = m; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2800); }
+function modal(html) { $('#modal-box').innerHTML = html; $('#modal').classList.add('show'); }
+function closeModal() { $('#modal').classList.remove('show'); }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+function audit(action, target) { D.auditLogs.unshift({ at: nowStr(), who: `${USERS[role].name} (${ORG.name} ${role})`, action, target, where: '서울' }); Store.save(); }
+const myReports = () => D.reports.filter(r => r.orgId === ORG.id);
+const myTokens = () => D.qrs.filter(q => myReports().some(r => r.id === q.reportId)).map(q => q.token);
+
+const TITLES = { reports: ['내 보고서', '보고서 번호로 검색 · 상세에서 공개 동의·원문·버전 확인'], qr: ['QR 다운로드', '인쇄 패키지(SVG·PNG·사양서) · 인쇄 크기 시뮬레이터'], evidence: ['실증자료 · D-15', '식약처 실증자료 요청 대응 — 15일 이내 제출 (화장품법 §14)'], claim: ['표시 문구 검사기', 'QR 옆에 인쇄될 문구를 §13·관리지침 규칙으로 검사'], stats: ['스캔 통계', '자사 QR만 · 봇 제외 실계산'] };
+const RENDER = { reports: rReports, qr: rQR, evidence: rEvidence, claim: rClaim, stats: rStats };
+$$('#snav button').forEach(b => b.addEventListener('click', () => go(b.dataset.s)));
+function go(s) {
+  sect = s; $$('#snav button').forEach(x => x.classList.toggle('on', x.dataset.s === s)); $$('.sect').forEach(x => x.classList.toggle('on', x.id === 's-' + s));
+  $('#t-title').textContent = TITLES[s][0]; $('#t-sub').textContent = TITLES[s][1]; RENDER[s]();
+}
+$('#role-sel').value = role;
+$('#role-sel').addEventListener('change', e => { role = e.target.value; history.replaceState(null, '', 'client.html?role=' + role); who(); RENDER[sect](); toast(role === 'MKT' ? '마케터 전환 — 원문 다운로드 버튼이 사라집니다' : '원문 PDF 다운로드 가능 역할'); });
+function who() { $('#who-name').textContent = USERS[role].name; $('#who-role').textContent = ORG.name + ' · ' + ({ ADMIN: '관리자', RA: '품질(RA)', MKT: '마케터' })[role]; $('#av').textContent = role; }
+
+/* ═══ 내 보고서 ═══ */
+function rReports() {
+  const list = myReports();
+  $('#n-rep').textContent = list.length;
+  const q = ($('#rep-q') || {}).value || 'SP-2026-0417';
+  $('#s-reports').innerHTML = `
+    <div class="card">
+      <div class="toolbar">
+        <div class="tb-search">${I.search}<input id="rep-q" value="${esc(q)}" placeholder="보고서 번호 · 제품명"></div>
+        <button class="btn sec sm" id="rep-ex1">예시로 조회 · SP-2026-0417</button>
+        <button class="btn sec sm" id="rep-ex2">SP-2026-0402 (동의 대기)</button>
+        <span class="sp"></span><span class="small muted">${list.length}건 · 자사 발급분만</span>
+      </div>
+      <div class="tbl-wrap"><table class="tbl click"><thead><tr><th>보고서 번호</th><th>제품</th><th>시험</th><th>상태</th><th>QR</th><th>최종 발급</th></tr></thead><tbody>
+        ${list.filter(r => !q || r.no.toLowerCase().includes(q.toLowerCase()) || r.product.includes(q)).map(r => {
+          const qs = D.qrs.filter(x => x.reportId === r.id); const v = latestVersion(r);
+          return `<tr data-id="${r.id}" class="${cur === r.id ? 'sel' : ''}"><td class="mono">${esc(r.no)}</td><td>${esc(r.product)}</td><td>${esc(typeOf(D, r.type).ko)}</td><td><span class="chip ${r.status}">${esc(statusLabel(r.status))}</span></td><td>${qs.length ? qs.length + '건' : '<span class="muted">—</span>'}</td><td>${esc(v.date)} · v${v.v}</td></tr>`;
+        }).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="detail" id="rep-detail"></div>`;
+  $('#rep-q').addEventListener('input', () => { const v = $('#rep-q').value; rReports(); $('#rep-q').value = v; $('#rep-q').focus(); $('#rep-q').setSelectionRange(v.length, v.length); });
+  $('#rep-ex1').addEventListener('click', () => { cur = 'r1'; $('#rep-q').value = 'SP-2026-0417'; rReports(); });
+  $('#rep-ex2').addEventListener('click', () => { cur = 'r3'; $('#rep-q').value = 'SP-2026-0402'; rReports(); });
+  $$('#s-reports tbody tr').forEach(tr => tr.addEventListener('click', () => { cur = tr.dataset.id; rReports(); }));
+  rDetail();
+}
+function flowHTML(r) {
+  const steps = ['registered', 'viewed', 'consented', 'active'];
+  const idx = r.status === 'revised' ? 3 : steps.indexOf(r.status);
+  const term = ['expired', 'suspended', 'revoked'].includes(r.status);
+  return `<div class="flow">${steps.map((s, i) => `<div class="st ${term ? 'done' : i < idx ? 'done' : i === idx ? 'cur' : ''}"><i></i>${statusLabel(s)}</div>${i < 3 ? '<div class="ln"></div>' : ''}`).join('')}${term ? `<div class="ln"></div><div class="st bad"><i></i>${statusLabel(r.status)}</div>` : ''}</div>`;
+}
+function rDetail() {
+  const r = reportOf(D, cur); if (!r || r.orgId !== ORG.id) { $('#rep-detail').innerHTML = ''; return; }
+  const v = latestVersion(r), tt = typeOf(D, r.type), qs = D.qrs.filter(x => x.reportId === r.id);
+  const ct = claimTable(r, tt.ko);
+  $('#rep-detail').innerHTML = `
+    <div class="card">
+      <div class="card-h"><div><span class="label">${esc(r.no)}</span><h2 style="margin-top:4px;">${esc(r.product)}</h2></div><span class="chip ${r.status}">${esc(statusLabel(r.status))}</span></div>
+      ${flowHTML(r)}
+      <div class="grid g2" style="margin-top:16px;">
+        <div>
+          <div class="label" style="margin-bottom:6px;">시험 정보</div>
+          <table class="tbl"><tbody>
+            <tr><td class="muted" style="width:120px">시험 종류</td><td>${esc(tt.ko)}</td></tr>
+            <tr><td class="muted">기간 · 피험자</td><td>${esc(r.period.start)} ~ ${esc(r.period.end)} · ${r.subjects}명</td></tr>
+            <tr><td class="muted">시험책임자</td><td>${esc(r.supervisor.name)} (경력 ${r.supervisor.years}년) · IRB ${esc(r.irb)}</td></tr>
+            <tr><td class="muted">판정</td><td>${esc(r.verdict.ko)}</td></tr>
+            <tr><td class="muted">유해사례</td><td>${esc(r.adverseNote || '기재 없음')}</td></tr>
+          </tbody></table>
+          <div class="label" style="margin:16px 0 8px;">공개 동의 (B-5)</div>
+          ${r.consent ? `<div class="note ok">${I.check} <b>${esc(r.consent.by)}</b> · ${esc(r.consent.at)} · 범위: ${esc(r.consent.scope)} — 이 동의 후에만 기관이 QR을 발급할 수 있습니다</div>`
+            : `<div class="note warn"><b>공개 동의 대기</b> — 기관은 귀사가 동의하기 전까지 QR을 발급할 수 없습니다. ${canOriginal() ? '' : '(동의 권한: RA·관리자)'}</div>
+               ${canOriginal() ? `<div class="row" style="margin-top:10px;"><select class="sel" id="c-scope" style="height:36px;"><option>요약 공개</option><option>요약 + 결과 그래프</option></select><button class="btn sm" id="c-agree">공개에 동의합니다</button></div>` : ''}`}
+        </div>
+        <div>
+          <div class="label" style="margin-bottom:6px;">원문 · 버전 · 무결성</div>
+          ${canOriginal() ? `<button class="btn" id="dl-orig">${I.dl} 원문 PDF 다운로드 · ${esc(r.files.original.name)} (${r.files.original.size}MB)</button><div class="micro muted" style="margin-top:6px;">다운로드는 감사로그에 기록됩니다 (누가·언제·어디서)</div>`
+            : `<div class="lockbox">${I.lock} 원문 PDF는 RA·관리자 역할에서만 내려받을 수 있습니다 — 마케터 계정에는 요약과 QR만 제공됩니다 (C-5)</div>`}
+          <div class="tl" style="margin-top:16px;">${r.versions.slice().reverse().map((vv, i) => `<div class="ev ${i === 0 ? 'cur' : ''}"><b>v${vv.v}</b> · ${esc(vv.date)} — ${esc(vv.reason)}<div class="meta">${esc(vv.by)}${i === 0 ? ' · 현재 게시본 — 인쇄된 QR이 이 버전을 가리킵니다' : ''}</div><div class="hash">SHA-256 ${esc(vv.hash)}</div></div>`).join('')}</div>
+          <div class="label" style="margin:8px 0 6px;">연결된 QR ${qs.length}건</div>
+          <div class="chips">${qs.map(q => `<span class="chip ${q.status} mono">${esc(q.token)} · ${esc(q.label)}</span>`).join('') || '<span class="muted small">발급 전</span>'}</div>
+        </div>
+      </div>
+      <hr class="sep">
+      <div class="label" style="margin-bottom:8px;">이 자료로 실증 가능한 표현 / 불가능한 표현 (B-1·B-3)</div>
+      <div class="twocol"><ul class="ok">${ct.ok.map(x => `<li>${I.check}<span>${esc(x)}</span></li>`).join('')}</ul><ul class="bad">${ct.bad.map(x => `<li>${I.x}<span>${esc(x)}</span></li>`).join('')}</ul></div>
+    </div>`;
+  const ag = $('#c-agree'); if (ag) ag.addEventListener('click', () => {
+    r.consent = { at: nowStr(), by: `${USERS[role].name} (${role})`, scope: $('#c-scope').value };
+    if (['registered', 'viewed'].includes(r.status)) r.status = 'consented';
+    audit('공개 동의', `${r.no} · ${r.consent.scope}`); Store.save();
+    toast('공개 동의 기록 — 기관 관리자 화면에서 QR 발급이 가능해집니다'); rReports();
+  });
+  const dl = $('#dl-orig'); if (dl) dl.addEventListener('click', () => {
+    const pdf = miniPdf([`Report No: ${r.no}   Version: v${v.v}   Issued: ${v.date}`, `Client: ${ORG.en}   Product: ${r.product.replace(/[^\x20-\x7E]/g, '?')}`, `Test: ${tt.en}   Subjects: ${r.subjects}   Period: ${r.period.start} ~ ${r.period.end}`, `SHA-256: ${v.hash}`, '', 'DEMO FILE - fictional data. Original report body omitted.', `Downloaded by ${USERS[role].name} (${role}) at ${nowStr()} - logged in audit trail.`], 'ATTEST - Human Application Test Report (DEMO)');
+    downloadBlob(new Blob([pdf], { type: 'application/pdf' }), r.files.original.name);
+    audit('원문 PDF 다운로드', `${r.no} v${v.v}`);
+    toast('원문 PDF 다운로드 — 감사로그에 기록되었습니다');
+  });
+}
+
+/* ═══ QR 다운로드 ═══ */
+let qrSel = '7K9F2Q', simMm = 20;
+function rQR() {
+  const qs = D.qrs.filter(q => myTokens().includes(q.token) && q.status === 'active');
+  if (!qs.some(q => q.token === qrSel)) qrSel = qs[0] ? qs[0].token : null;
+  const q = qrOf(D, qrSel), r = q ? reportOf(D, q.reportId) : null;
+  const url = PUBLIC_BASE + (q ? q.token : '');
+  const enc = q ? QR.encode(url, 'M') : null;
+  const staticUrl = 'https://drive.google.com/file/d/1xQm9Kz_aBcDeFgHiJkLmNoPqRsTuVwXyZ01234/view?usp=sharing';
+  const encStatic = QR.encode(staticUrl, 'M');
+  $('#s-qr').innerHTML = `
+    <div class="card">
+      <div class="toolbar"><span class="small muted">활성 QR</span><select class="sel" id="qr-pick">${qs.map(x => `<option value="${x.token}" ${x.token === qrSel ? 'selected' : ''}>${esc(reportOf(D, x.reportId).no)} · ${esc(x.label)} (${x.lang.toUpperCase()})</option>`).join('')}</select>
+        <button class="btn sec sm" id="qr-new">+ 추가 QR 발급 (SKU·언어별)</button>
+        <span class="sp"></span>${q ? `<span class="chip mono">${esc(q.token)}</span><span class="chip">v${enc.version} · ${enc.size}×${enc.size} 모듈 · EC-M</span>` : ''}</div>
+      ${q ? `
+      <div class="qr-box">
+        <div>
+          <div class="qr-canvas"><canvas id="qr-cv"></canvas></div>
+          <div class="micro muted" style="margin-top:8px;word-break:break-all;">인코딩 URL <span class="mono">${esc(url)}</span> (${url.length}자) — 파일 주소가 아니라 <b>불변 토큰</b>. 보고서가 개정돼도 이 QR은 그대로 최신본을 가리킵니다 (A-1)</div>
+          <div class="row" style="margin-top:12px;"><button class="btn" id="dl-pack">${I.dl} 인쇄 패키지 (ZIP)</button><button class="btn sec sm" id="dl-svg">SVG만</button><button class="btn sec sm" id="dl-png">PNG만</button></div>
+          <div class="micro muted" style="margin-top:6px;">패키지: SVG(벡터) · PNG 1024px · 인쇄 사양서 · 승인 문구 카드 — 다운로드는 발급 이력에 기록</div>
+        </div>
+        <div>
+          <div class="label">인쇄 크기 시뮬레이터 (C-3) — 실계산</div>
+          <div class="sim">
+            <input type="range" id="sim" min="10" max="40" step="1" value="${simMm}">
+            <div class="vals" id="sim-vals"></div>
+            <div class="sim-preview"><div class="real" id="sim-real"><canvas id="sim-cv"></canvas></div><div class="small muted">← 화면 96dpi 기준 실제 크기 근사 (<span id="sim-mm"></span>mm)<br>모듈 크기 = 인쇄 폭 ÷ (모듈 수 + quiet zone 8)<br>임계: 모듈 ≥ 0.12mm · 코드 ≥ 15mm · 권장 20mm↑</div></div>
+            <div id="sim-warn" style="margin-top:10px;"></div>
+          </div>
+          <hr class="sep">
+          <div class="label" style="margin-bottom:8px;">정적 QR(구글 드라이브 링크)과 비교</div>
+          <table class="tbl"><thead><tr><th></th><th>동적 (이 QR)</th><th>정적 (파일 URL)</th></tr></thead><tbody>
+            <tr><td class="muted">문자 수</td><td class="num">${url.length}</td><td class="num">${staticUrl.length}</td></tr>
+            <tr><td class="muted">QR 버전 · 모듈</td><td>v${enc.version} · ${enc.size}×${enc.size}</td><td>v${encStatic.version} · ${encStatic.size}×${encStatic.size}</td></tr>
+            <tr><td class="muted">20mm 인쇄 시 모듈</td><td>${qrPhysics(enc.size, 20).moduleMm.toFixed(3)}mm</td><td class="down">${qrPhysics(encStatic.size, 20).moduleMm.toFixed(3)}mm</td></tr>
+            <tr><td class="muted">보고서 개정 시</td><td class="up">같은 QR 유지</td><td class="down">전량 재인쇄</td></tr>
+          </tbody></table>
+          <div class="label" style="margin:16px 0 8px;">이 QR과 함께 쓸 수 있는 승인 문구</div>
+          <div class="note ok">${esc(typeOf(D, r.type).claim.ko)} · 시험번호 ${esc(r.no)} · 피험자 ${r.subjects}명 · ${esc(D.institution.name)}</div>
+        </div>
+      </div>` : '<div class="note">활성 QR이 없습니다</div>'}
+    </div>`;
+  $('#qr-new').addEventListener('click', () => {
+    const acts = myReports().filter(r => r.status === 'active');
+    modal(`<h3>추가 QR 발급 — 보고서 1 : QR N</h3><p class="small muted">같은 보고서에 SKU·언어·유통 채널별로 QR을 따로 발급하면 스캔 통계가 갈라지고 개정 반영은 한 번에 됩니다 (D-9). 발급 이력은 기관·고객사 양쪽에 남습니다.</p>
+      <div class="frm" style="margin-top:12px;"><div class="field full"><label>보고서 (활성)</label><select class="sel" id="nq-rep">${acts.map(r => `<option value="${r.id}">${esc(r.no)} · ${esc(r.product)}</option>`).join('')}</select></div>
+      <div class="field"><label>라벨 (SKU · 채널)</label><input class="inp" id="nq-label" value="면세점 세트"></div><div class="field"><label>언어</label><select class="sel" id="nq-lang"><option value="ko">한국어</option><option value="en">English</option></select></div></div>
+      <div class="acts"><button class="btn sec" id="nq-cancel">취소</button><button class="btn" id="nq-ok">발급</button></div>`);
+    $('#nq-cancel').addEventListener('click', closeModal);
+    $('#nq-ok').addEventListener('click', () => {
+      const A = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let t; do { t = ''; for (let i = 0; i < 6; i++) t += A[Math.floor(Math.random() * A.length)]; } while (qrOf(D, t));
+      D.qrs.unshift({ token: t, reportId: $('#nq-rep').value, label: $('#nq-label').value || 'SKU', lang: $('#nq-lang').value, status: 'active', issuedAt: nowStr(), by: `${USERS[role].name} (고객사)`, ec: 'M' });
+      audit('QR 추가 발급', `${t} → ${reportOf(D, $('#nq-rep').value).no}`); closeModal(); qrSel = t; toast(`QR ${t} 발급 — 즉시 공개 URL 활성`); rQR();
+    });
+  });
+  if (!q) return;
+  QR.toCanvas($('#qr-cv'), url, { ec: 'M', px: 256, margin: 4 });
+  $('#qr-pick').addEventListener('change', e => { qrSel = e.target.value; rQR(); });
+  const sim = () => {
+    const ph = qrPhysics(enc.size, simMm, 4);
+    $('#sim-mm').textContent = simMm;
+    $('#sim-vals').innerHTML = `<div>인쇄 폭<b>${simMm} mm</b></div><div>모듈 크기<b class="${ph.level === 'bad' ? 'down' : ''}">${ph.moduleMm.toFixed(3)} mm</b></div><div>최대 스캔 거리<b>${Math.round(ph.scanCm)} cm</b></div>`;
+    const px = Math.round(simMm / 25.4 * 96);
+    const cv = $('#sim-cv'); QR.toCanvas(cv, url, { ec: 'M', px, margin: 4 }); $('#sim-real').style.width = $('#sim-real').style.height = px + 12 + 'px';
+    $('#sim-warn').innerHTML = ph.level === 'good' ? `<div class="verdict ok">${I.check} 권장 범위 — 일반 스마트폰 카메라에서 안정적으로 인식</div>` : ph.level === 'warn' ? `<div class="verdict warn">최소 조건 충족 — 무광 용지·양호한 조명에서만 권장. 20mm 이상으로 키우세요</div>` : `<div class="verdict danger">${I.x} 임계 미달 — 이 크기로 인쇄하면 스캔 실패가 발생합니다. 인쇄업체에 전달하지 마세요</div>`;
+  };
+  $('#sim').addEventListener('input', e => { simMm = +e.target.value; sim(); }); sim();
+  const spec = () => [`ATTEST QR 인쇄 사양서 — ${r.no} · ${q.label} · 토큰 ${q.token}`, `인코딩 URL: ${url}`, `QR 버전 v${enc.version} · ${enc.size}x${enc.size} 모듈 · 오류보정 M(15%)`, '', '최소 인쇄 크기: 15mm (권장 20mm 이상) · quiet zone(여백): 모듈 폭 x 4 사방', `20mm 인쇄 시 모듈 ${qrPhysics(enc.size, 20).moduleMm.toFixed(3)}mm · 스캔 거리 최대 약 20cm`, '색: 단색 K100 권장 · 배경 대비 70% 이상 · 그라디언트/저대비/로고 과다 삽입 금지', '벡터(SVG)를 원본으로 사용, PNG 확대 인쇄 금지', '', `승인 문구: ${typeOf(D, r.type).claim.ko} · 시험번호 ${r.no} · 피험자 ${r.subjects}명`, '금지 문구 예: 무자극 입증 · 임상 완료 · 피부과 전문의 추천 · 100% (화장품법 §13)', '', '※ 데모 문서 — 가상 데이터'].join('\n');
+  const svg = QR.toSVG(url, { ec: 'M', margin: 4, size: 1024 });
+  const pngBlob = () => new Promise(res => { const c = document.createElement('canvas'); QR.toCanvas(c, url, { ec: 'M', px: 1024, margin: 4 }); c.toBlob(res, 'image/png'); });
+  $('#dl-svg').addEventListener('click', () => { downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), `ATTEST_${q.token}.svg`); audit('QR SVG 다운로드', q.token); toast('SVG 다운로드 — 발급 이력 기록'); });
+  $('#dl-png').addEventListener('click', async () => { downloadBlob(await pngBlob(), `ATTEST_${q.token}_1024.png`); audit('QR PNG 다운로드', q.token); toast('PNG 다운로드 — 발급 이력 기록'); });
+  $('#dl-pack').addEventListener('click', async () => {
+    const png = new Uint8Array(await (await pngBlob()).arrayBuffer());
+    const size = ZIP.download([{ name: `ATTEST_${q.token}/${q.token}.svg`, data: svg }, { name: `ATTEST_${q.token}/${q.token}_1024.png`, data: png }, { name: `ATTEST_${q.token}/인쇄사양서.txt`, data: spec() }, { name: `ATTEST_${q.token}/승인문구카드.txt`, data: `${typeOf(D, r.type).claim.ko}\n시험번호 ${r.no} · 피험자 ${r.subjects}명 · ${D.institution.name}\n\n이 카드의 문구만 QR 옆에 사용하세요. (데모)` }], `ATTEST_인쇄패키지_${q.token}.zip`);
+    audit('QR 인쇄 패키지 다운로드', `${q.token} · ${Math.round(size / 1024)}KB`); toast(`인쇄 패키지 ZIP 생성 (${Math.round(size / 1024)}KB) — 발급 이력에 기록`);
+  });
+}
+
+/* ═══ 실증자료 · D-15 ═══ */
+function rEvidence() {
+  const active = myReports().filter(r => ['active', 'consented', 'viewed'].includes(r.status));
+  const ev = D.evidenceReq || null;
+  const dd = ev ? 15 - dday(TODAY, ev.receivedAt) : null;
+  $('#s-evidence').innerHTML = `
+    <div class="grid g2">
+      <div class="card">
+        <div class="label" style="margin-bottom:10px;">식약처 실증자료 요청 대응 (화장품법 §14)</div>
+        ${ev ? `<div class="dday ${dd <= 5 ? 'hot' : ''}"><div class="num">D-${dd}</div><div><b>제출 기한 ${addDays(ev.receivedAt, 15)}</b><div class="small muted">요청 접수 ${ev.receivedAt} · 15일 이내 미제출 시 표시·광고 중지명령 → 위반 시 1년 이하 징역/1천만원</div></div></div>
+          <div class="row" style="margin-top:10px;"><button class="btn sec sm" id="ev-sim">접수일을 10일 전으로 시뮬 (D-5)</button><button class="btn ghost sm" id="ev-clear">초기화</button></div>`
+          : `<div class="note">아직 요청이 접수되지 않았습니다. 식약처(또는 지방청) 실증자료 제출 요청을 받으면 아래 버튼으로 접수 시각을 기록하세요 — <b>15일 시계</b>가 실제로 계산됩니다.</div><div class="row" style="margin-top:10px;"><button class="btn" id="ev-start">실증자료 요청 접수 (오늘)</button></div>`}
+        <hr class="sep">
+        <div class="label" style="margin-bottom:8px;">실증자료 패키지 원클릭 (ZIP)</div>
+        <select class="sel" id="ev-rep" style="width:100%;">${active.map(r => `<option value="${r.id}">${esc(r.no)} · ${esc(r.product)}</option>`).join('')}</select>
+        <div class="small muted" style="margin:8px 0 10px;">구성: ① 원본 보고서 PDF ② 시험기관 요건 확인서(기관·시험책임자 경력·IRB) ③ 발급 증명(발급일·해시·QR 토큰) ④ 표시·광고 문구 대조표 ⑤ 영업비밀 해당 여부</div>
+        <button class="btn" id="ev-zip" ${canOriginal() ? '' : 'disabled'}>${I.dl} 실증자료 패키지 생성</button>
+        ${canOriginal() ? '' : `<div class="micro muted" style="margin-top:6px;">원문이 포함되므로 RA·관리자 역할에서만 생성할 수 있습니다</div>`}
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:10px;">왜 이 기능이 있나</div>
+        <p class="small" style="color:var(--text2)">실증 책임은 <b>화장품책임판매업자(귀사)</b>에 있지만, 원본과 시험기관 요건 증빙은 <b>임상기관</b>이 갖고 있습니다. 요청이 오면 15일 안에 두 쪽 자료를 맞춰 내야 하므로, 이 플랫폼은 파일 보관함이 아니라 <b>귀사의 15일 시계를 대신 지켜주는 도구</b>로 설계했습니다.</p>
+        <div class="label" style="margin:16px 0 8px;">패키지가 충족하는 규정 요건</div>
+        <div class="gate">
+          <div class="g ok">${I.check}<div>인정 기관 수행 + 5년 이상 시험경력자 지도·감독<small>「화장품 표시·광고 실증에 관한 규정」</small></div></div>
+          <div class="g ok">${I.check}<div>유해사례 및 조치내역 기재<small>규정 개정 — 부작용 발생사례 포함 의무</small></div></div>
+          <div class="g ok">${I.check}<div>시험기관 정보(명칭·대표자·주소·연락처) 동봉<small>제출 시 기재사항</small></div></div>
+          <div class="g ok">${I.check}<div>영업비밀 해당 여부 및 사유<small>제출 시 기재사항</small></div></div>
+        </div>
+      </div>
+    </div>`;
+  const st = $('#ev-start'); if (st) st.addEventListener('click', () => { D.evidenceReq = { receivedAt: TODAY }; Store.save(); audit('실증자료 요청 접수', TODAY); rEvidence(); toast('접수 기록 — 제출 기한 D-15 카운트다운 시작'); });
+  const sm = $('#ev-sim'); if (sm) sm.addEventListener('click', () => { D.evidenceReq = { receivedAt: addDays(TODAY, -10) }; Store.save(); rEvidence(); });
+  const cl = $('#ev-clear'); if (cl) cl.addEventListener('click', () => { delete D.evidenceReq; Store.save(); rEvidence(); });
+  const z = $('#ev-zip'); if (z) z.addEventListener('click', () => {
+    const r = reportOf(D, $('#ev-rep').value), v = latestVersion(r), tt = typeOf(D, r.type), qs = D.qrs.filter(x => x.reportId === r.id), ct = claimTable(r, tt.ko);
+    const pdf = miniPdf([`Report No: ${r.no}  v${v.v}  ${v.date}`, `Client: ${ORG.en}`, `Test: ${tt.en}  Subjects: ${r.subjects}`, `SHA-256: ${v.hash}`, '', 'DEMO - original body omitted'], 'ATTEST - Report (DEMO)');
+    const files = [
+      { name: `실증자료_${r.no}/01_원본보고서_${r.no}_v${v.v}.pdf`, data: pdf },
+      { name: `실증자료_${r.no}/02_시험기관요건확인서.txt`, data: `시험기관: ${D.institution.name} (${D.institution.en})\n주소: ${D.institution.address}\n연락처: ${D.institution.contact}\n기관 유형: 화장품 인체적용시험 전문 연구기관 (인체적용시험기관협의회 회원 · 가상)\n시험책임자: ${r.supervisor.name} · 해당 분야 경력 ${r.supervisor.years}년 (규정 요건 5년 이상 충족)\nIRB 승인번호: ${r.irb}\n통계 분석: ${r.stats}\n유해사례 기재: ${r.adverse ? '기재됨 — ' + r.adverseNote : '미기재'}\n\n※ 데모 문서` },
+      { name: `실증자료_${r.no}/03_발급증명.txt`, data: `보고서 번호: ${r.no}\n현재 게시본: v${v.v} (${v.date})\nSHA-256: ${v.hash}\n연결 QR: ${qs.map(x => x.token + ' (' + x.label + ', ' + qrStatusLabel(x.status) + ')').join(', ') || '없음'}\n공개 URL: ${qs[0] ? PUBLIC_BASE + qs[0].token : '-'}\n공개 동의: ${r.consent ? r.consent.by + ' · ' + r.consent.at + ' · ' + r.consent.scope : '없음'}\n버전 이력:\n${r.versions.map(x => `  v${x.v} ${x.date} ${x.reason} (${x.by}) ${x.hash}`).join('\n')}\n생성: ${nowStr()} · ${USERS[role].name}` },
+      { name: `실증자료_${r.no}/04_표시광고_문구대조표.txt`, data: `[실증 가능한 표현]\n${ct.ok.map(x => '  ○ ' + x).join('\n')}\n\n[실증 불가·금지 표현]\n${ct.bad.map(x => '  ✕ ' + x).join('\n')}\n\n근거: 화장품법 §13·§14 · 표시·광고 관리 지침(2025.8)` },
+      { name: `실증자료_${r.no}/05_영업비밀_해당여부.txt`, data: `영업비밀 해당: ${r.tradeSecret ? '예 — 제품 처방·원료 배합 정보 포함, 공개 시 비공개 처리 요청' : '아니오'}\n근거: 실증 규정 — 제출 시 영업비밀 해당 여부 및 사유 기재` },
+    ];
+    const size = ZIP.download(files, `실증자료패키지_${r.no}.zip`);
+    audit('실증자료 패키지 생성', `${r.no} · ${Math.round(size / 1024)}KB`); toast(`실증자료 패키지 ZIP 생성 (${files.length}개 파일 · ${Math.round(size / 1024)}KB)`);
+  });
+}
+
+/* ═══ 표시 문구 검사기 ═══ */
+const EXAMPLES = ['임상 완료로 자극 없음 입증! 피부과 전문의가 추천하는 100% 안전한 세럼', '피부 자극 시험 완료 (피험자 32명, 시험번호 SP-2026-0417) — 시험 기간 중 유해사례가 보고되지 않았습니다', '바르는 순간 즉시 재생, 아토피 개선 효과를 임상적으로 검증한 크림'];
+function rClaim() {
+  const r = reportOf(D, 'r1'), tt = typeOf(D, r.type);
+  $('#s-claim').innerHTML = `
+    <div class="grid g2">
+      <div class="card">
+        <div class="label" style="margin-bottom:8px;">패키지에 인쇄할 문구</div>
+        <div class="examples">${EXAMPLES.map((e, i) => `<button class="btn sec sm" data-ex="${i}">예시 ${i + 1}</button>`).join('')}</div>
+        <textarea class="inp" id="cl-in" style="width:100%;min-height:110px;">${esc(EXAMPLES[0])}</textarea>
+        <div class="row" style="margin-top:10px;"><span class="small muted">입력 즉시 규칙 ${CLAIM_RULES.length}종으로 검사 — 하드코딩 판정 없음</span><span class="sp"></span><button class="btn sm" id="cl-copy">대체 문구 복사</button></div>
+        <div id="cl-res" style="margin-top:14px;"></div>
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:8px;">규칙 사전 (근거 조문)</div>
+        ${CLAIM_RULES.map(rule => `<div class="rule"><b>${esc(rule.title)} <span class="chip ${rule.level === 'danger' ? 'bad' : 'warn'}" style="height:20px;font-size:11px;">${rule.level === 'danger' ? '위험' : '주의'}</span></b><div class="law">${esc(rule.law)}</div><div class="small" style="margin-top:4px;color:var(--text2)">${esc(rule.why)}</div></div>`).join('')}
+        <div class="micro muted" style="margin-top:10px;">※ 데모용 참고 규칙이며 법적 자문이 아닙니다. 최종 문구는 광고 자율심의를 권장합니다.</div>
+      </div>
+    </div>`;
+  const run = () => {
+    const res = checkClaim($('#cl-in').value, { no: r.no, n: r.subjects, typeClaim: tt.claim.ko, inst: D.institution.name });
+    $('#cl-res').innerHTML = `
+      <div class="verdict ${res.level}">${res.level === 'ok' ? I.check + ' 위험 표현이 검출되지 않았습니다' : (res.level === 'danger' ? I.x + ' 위반 소지 표현 ' : '주의 표현 ') + res.hits.length + '건 검출'}</div>
+      <p style="margin-top:10px;line-height:1.8;">${res.html}</p>
+      ${res.hits.map(h => `<div class="rule"><b>${esc(h.rule.title)} — <span class="mono" style="font-weight:500">${h.matches.map(esc).join(', ')}</span></b><div class="law">${esc(h.rule.law)}</div><div class="fix">→ ${esc(h.rule.fix)}</div></div>`).join('')}
+      <div class="label" style="margin:14px 0 6px;">대체 문구 (자동 생성)</div><div class="note ok" id="cl-alt">${esc(res.alt)}</div>`;
+  };
+  $('#cl-in').addEventListener('input', run); run();
+  $$('#s-claim [data-ex]').forEach(b => b.addEventListener('click', () => { $('#cl-in').value = EXAMPLES[+b.dataset.ex]; run(); }));
+  $('#cl-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('#cl-alt').textContent); toast('대체 문구를 복사했습니다'); } catch (e) { toast('복사 권한이 없어 선택해 복사해 주세요'); } });
+}
+
+/* ═══ 스캔 통계 (자사분) ═══ */
+function rStats() {
+  const toks = myTokens();
+  const raw = scanStats(D.scans, { tokens: toks, excludeBots: false }), val = scanStats(D.scans, { tokens: toks, excludeBots: true });
+  const s = bots ? val : raw;
+  $('#s-stats').innerHTML = `
+    <div class="grid g4" style="margin-bottom:16px;">
+      <div class="kpi"><div class="k">30일 스캔 (${bots ? '유효' : '원시'})</div><div class="v">${s.total.toLocaleString()}<small>회</small></div><div class="d">봇 추정 ${raw.bots}회 · 유효 ${val.total}회</div></div>
+      <div class="kpi"><div class="k">모바일 비율</div><div class="v">${Math.round((s.byDevice.mobile || 0) / (s.total || 1) * 100)}<small>%</small></div><div class="d">PC ${s.byDevice.pc || 0} · 봇 ${s.byDevice.bot || 0}</div></div>
+      <div class="kpi"><div class="k">활성 QR</div><div class="v">${D.qrs.filter(q => toks.includes(q.token) && q.status === 'active').length}<small>건</small></div><div class="d">자사 QR ${toks.length}건</div></div>
+      <div class="kpi"><div class="k">영문 화면 비율</div><div class="v">${Math.round((s.byLang.en || 0) / (s.total || 1) * 100)}<small>%</small></div><div class="d">수출용 QR 포함</div></div>
+    </div>
+    <div class="card"><div class="card-h"><h3>일별 스캔 추이 (30일) — 자사 QR ${toks.length}건</h3><div class="row"><span class="small muted">봇 제외</span><span class="tgl ${bots ? 'on' : ''}" id="st-bot"></span></div></div>
+      <canvas class="cv" id="st-cv"></canvas>
+      <div class="micro muted" style="margin-top:8px;">봇 판정: 메신저 링크 프리뷰 · 검색엔진 크롤러 · 보안 스캐너 · 동일 IP 연속 — 토글하면 그래프가 실제로 재계산됩니다 (C-4) · 수집 항목: ${esc(D.settings.scanIpPolicy)}</div></div>`;
+  $('#st-bot').addEventListener('click', () => { bots = !bots; rStats(); });
+  drawDaily($('#st-cv'), s.byDay);
+}
+function drawDaily(cv, byDay) {
+  const paint = () => {
+    const dpr = devicePixelRatio || 1, w = cv.clientWidth || 600, h = cv.clientHeight || 180;
+    cv.width = w * dpr; cv.height = h * dpr; const c = cv.getContext('2d'); c.scale(dpr, dpr);
+    const days = []; for (let i = 29; i >= 0; i--) days.push(addDays(TODAY, -i));
+    const vals = days.map(d => byDay[d] || 0), max = Math.max(...vals, 1);
+    const bw = (w - 30) / days.length;
+    c.font = '11px Geist Mono, monospace'; c.fillStyle = '#9f9fa9'; c.textAlign = 'left';
+    days.forEach((d, i) => { const x = 30 + i * bw, bh = (h - 28) * vals[i] / max; c.fillStyle = i === days.length - 1 ? '#005850' : '#d1ddd3'; c.fillRect(x + 2, h - 22 - bh, bw - 4, bh); if (i % 7 === 0) { c.fillStyle = '#9f9fa9'; c.fillText(d.slice(5), x, h - 6); } });
+    c.fillStyle = '#71717b'; c.fillText(String(max), 0, 12);
+  };
+  // 레이아웃 확정 전 측정(backing 수십 px) 방지 — 크기가 잡힐 때마다 다시 그림
+  if (cv._ro) cv._ro.disconnect();
+  cv._ro = new ResizeObserver(() => { if (cv.clientWidth > 60) paint(); });
+  cv._ro.observe(cv);
+  if (cv.clientWidth > 60) paint();
+}
+
+/* 다른 탭 동기화 */
+window.addEventListener('storage', e => { if (e.key !== ATTEST_KEY) return; Store._d = null; const nd = Store.load(); Object.keys(D).forEach(k => delete D[k]); Object.assign(D, nd); RENDER[sect](); });
+
+who(); go('reports');
+</script>
+</body>
+</html>

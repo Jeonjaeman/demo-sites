@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATTEST — 인체적용시험 자료 확인 (데모)</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#005850">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  body { background: var(--surface); }
+  .pub { max-width: 560px; margin: 0 auto; min-height: 100svh; background: var(--card); display: flex; flex-direction: column; }
+  @media (min-width: 640px) { .pub { margin: 24px auto 48px; border-radius: 14px; box-shadow: var(--sh); min-height: 0; overflow: hidden; } }
+  .p-hd { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .p-hd .mk { width: 32px; height: 32px; border-radius: 8px; background: var(--primary); color: #fff; display: grid; place-items: center; font-family: var(--mono); font-weight: 700; font-size: 14px; }
+  .p-hd .nm { font-size: 14px; font-weight: 600; line-height: 1.3; }
+  .p-hd .vf { display: flex; align-items: center; gap: 5px; font-family: var(--sans); font-size: 10.5px; letter-spacing: .02em; color: var(--primary); font-weight: 600; text-transform: uppercase; }
+  .p-hd .lang { margin-left: auto; display: flex; border: 1px solid var(--line2); border-radius: 999px; overflow: hidden; }
+  .p-hd .lang button { height: 44px; min-width: 48px; padding: 0 10px; font-size: 12px; font-weight: 600; color: var(--muted); }
+  .p-hd .lang button.on { background: var(--ink); color: #fff; }
+  .p-body { padding: 22px 20px 28px; flex: 1; }
+  .hero-chip { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .hero-chip .i { width: 16px; height: 16px; }
+  .hero-chip.active { background: var(--primary-tint); color: var(--primary); }
+  .hero-chip.expired, .hero-chip.suspended { background: var(--warn-tint); color: var(--warn); }
+  .hero-chip.revoked, .hero-chip.unknown { background: var(--bad-tint); color: var(--bad); }
+  .ver-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface); font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--text2); margin-left: 6px; }
+  .p-title { font-size: 30px; line-height: 1.2; letter-spacing: -0.03em; font-weight: 600; margin: 16px 0 6px; }
+  .p-sub { font-size: 15px; color: var(--text2); }
+  .kv { display: grid; grid-template-columns: 112px 1fr; gap: 8px 14px; font-size: 14.5px; margin-top: 8px; }
+  .kv dt { font-family: var(--sans); font-size: 11px; letter-spacing: .03em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding-top: 3px; }
+  .kv dd { color: var(--ink); }
+  .kv dd.mono { font-family: var(--mono); font-weight: 600; font-size: 15px; letter-spacing: 0; }
+  .blk { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .blk h3 { font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .prod { display: flex; gap: 14px; align-items: center; padding: 12px; border-radius: var(--r); background: var(--surface); }
+  .prod img { width: 72px; height: 72px; border-radius: var(--r); object-fit: cover; flex: 0 0 72px; background: #fff; }
+  .prod .pn { font-weight: 600; font-size: 15px; }
+  .prod .pb { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .prod .pk { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: .02em; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quote { font-size: 15px; line-height: 1.65; padding: 14px 16px; border-left: 3px solid var(--primary); background: var(--primary-tint); border-radius: 0 var(--r) var(--r) 0; color: var(--primary-deep); }
+  .hidden-list { font-size: 13px; color: var(--muted); }
+  .hidden-list li { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; }
+  .hidden-list .i { width: 14px; height: 14px; margin-top: 3px; flex: 0 0 14px; }
+  .p-foot { padding: 18px 20px 22px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted); line-height: 1.6; background: var(--page); }
+  .p-foot a { color: var(--text2); text-decoration: underline; text-underline-offset: 3px; display: inline-block; padding: 12px 0; }
+  .link-btn { color: var(--primary); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; }
+  .verify-res { margin-top: 12px; }
+  .fail-screen { text-align: center; padding: 30px 0 10px; }
+  .fail-screen .big { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; }
+  .fail-screen .big.bad { background: var(--bad-tint); color: var(--bad); }
+  .fail-screen .big.warn { background: var(--warn-tint); color: var(--warn); }
+  .fail-screen .big .i { width: 28px; height: 28px; stroke-width: 1.5; }
+  .fail-screen h2 { font-size: 22px; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .fail-screen p { color: var(--text2); font-size: 15px; }
+  /* 정적 QR 비교 */
+  .cmp { margin-top: 22px; border: 1px dashed var(--line2); border-radius: var(--r); padding: 14px; background: var(--page); }
+  .cmp .h { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text2); }
+  .cmp .dead { margin-top: 10px; border-radius: var(--r); background: #fff; border: 1px solid var(--line); overflow: hidden; }
+  .cmp .dead .bar { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: var(--surface); font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .cmp .dead .bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--line2); display: inline-block; }
+  .cmp .dead .b { padding: 22px 16px; text-align: center; }
+  .cmp .dead .b b { font-size: 34px; color: var(--muted2); font-family: var(--mono); display: block; }
+  .cmp .dead .b span { font-size: 13px; color: var(--muted); display: block; margin-top: 4px; }
+  /* 데모 컨트롤 */
+  .demo-dock { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 60; display: flex; gap: 6px; align-items: center; padding: 6px 8px; border-radius: 999px; background: var(--ink); color: #fff; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: calc(100vw - 20px); overflow-x: auto; scrollbar-width: none; }
+  .demo-dock::-webkit-scrollbar { display: none; }
+  .demo-dock span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; padding: 0 6px 0 8px; color: rgba(255,255,255,.6); white-space: nowrap; }
+  .demo-dock button { height: 44px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,.8); white-space: nowrap; transition: background-color .1s var(--e-quad), color .1s var(--e-quad); }
+  .demo-dock button:hover { background: rgba(255,255,255,.12); }
+  .demo-dock button.on { background: #fff; color: var(--ink); }
+  .pub { padding-bottom: 72px; }
+  .pub .btn.sm { height: 44px; padding: 0 14px; }
+  .kv dt.mono { font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+<main class="pub" id="pub"></main>
+
+<div class="demo-dock" id="dock" aria-label="데모 상태 셀렉터"></div>
+<div id="toast" role="status"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/qr.js"></script>
+<script>
+'use strict';
+const D = Store.load();
+const $ = s => document.querySelector(s);
+const params = new URLSearchParams(location.search);
+let token = params.get('t') || '7K9F2Q';
+let demoState = params.get('demo') || null;      // active | expired | suspended | revoked | unknown
+let lang = params.get('lang') || 'ko';
+let showStatic = params.get('static') === '1';
+let tab = 'summary';
+
+const L = {
+  ko: { verified: '발급기관 검증됨', domain: 'attest.kr', st: { active: '인체적용시험 완료 · 유효', expired: '게시 기간 만료', suspended: '일시 표시 제한', revoked: '발급 취소된 코드', unknown: '미등록 코드 — 위조 의심' },
+    client: '의뢰사', reportNo: 'Report No.', issued: '발급', revised: '개정', valid: '게시 유효', product: '이 자료가 적용되는 제품', wrong: '손에 든 제품과 다른가요?', report: '신고', tests: '이 보고서에 포함된 시험', summary: '시험 요약',
+    period: '시험 기간', subjects: '피험자', subjectsUnit: '명 (개별 정보 비공개)', verdict: '판정', adverse: '유해사례', inst: '시험기관', supervisor: '시험책임자', method: '분석 방법',
+    quote: (p, i) => `본 제품 「${p}」은(는) ${i}에서 인체적용시험을 거쳐 아래 요약과 같은 결과를 확인했습니다. 이 화면의 항목은 의뢰사가 공개에 동의한 범위입니다.`,
+    notShown: '이 화면에 표시되지 않는 항목', ns1: '보고서 원문 PDF — 의뢰사·기관 계정에서만 열람', ns2: '피험자 개인정보(연령·성별·사진) — 수치(인원)만 공개', ns3: '제품 처방·원료 배합 — 의뢰사 영업비밀',
+    tabS: '요약', tabV: '진위확인', tabR: '신고', vTitle: '보고서 번호 + 의뢰사명으로 확인', vNo: '보고서 번호', vOrg: '의뢰사명', vBtn: '확인', vOk: '발급 기록이 확인되었습니다', vNo2: '일치하는 발급 기록이 없습니다', vState: '상태', vIssued: '발급일',
+    hTitle: '문서 원본 대조 (SHA-256)', hHint: '받으신 PDF의 해시값을 붙여 넣으면 현재 게시본과 대조합니다', hMatch: '일치 — 게시본과 동일한 원본입니다', hMis: '불일치 — 개정 전 버전이거나 변조된 파일일 수 있습니다', hEx1: '예시(일치) 붙여넣기', hEx2: '예시(불일치) 붙여넣기', hBtn: '대조',
+    rTitle: 'QR 도용·위조 신고', rHint: '이 코드가 다른 제품에 붙어 있거나 위조로 의심되면 알려 주세요. 접수번호가 발급됩니다.', rReason: '신고 사유', rBtn: '신고 접수', rDone: '접수되었습니다 · 접수번호',
+    reasons: ['다른 제품에 붙어 있음', '스티커로 덧붙여진 QR', '제품 정보가 다름', '기타'],
+    exp: (d) => `이 시험자료는 ${d}까지 게시되었습니다. 자료의 존재와 발급 사실은 계속 확인할 수 있습니다.`, expWhy: '게시 기간이 끝난 자료입니다. 제품에 인쇄된 코드는 회수되지 않으므로, 링크를 끊지 않고 안내를 유지합니다.',
+    sus: '일시적으로 상세 표시가 제한되었습니다. 자료가 없다는 뜻이 아니며, 기본 진위확인은 계속 제공됩니다.', susWhy: '의뢰사 계약 상태에 따라 상세 공개가 보류된 상태입니다. 진위확인 탭에서 발급 사실은 확인됩니다.',
+    rev: (d, r) => `이 코드는 ${d} 발급이 취소되었습니다 (${r}). 정확한 자료는 아래에서 확인하세요.`, revGo: '정확한 자료 보기',
+    unk: '이 코드는 서울피부임상연구센터가 발급한 기록이 없습니다.', unkWhy: '위조 또는 오인쇄 가능성이 있습니다. 제품·구매처 정보와 함께 신고해 주시면 확인해 드립니다.',
+    footer: '이 화면은 시험기관이 직접 운영하는 고정 도메인에서 제공됩니다. 접속 시 수집 항목: 시각 · 대략적 지역(시도) · 기기 유형 · 언어 (IP는 해시 후 24시간 보관). 모든 기관·제품·보고서는 데모용 가상 데이터입니다.',
+    staticT: '정적 QR이었다면 (의뢰자가 겪은 방식)', staticD: '파일 URL을 그대로 인코딩한 QR은 파일 이동·개정·도메인 변경 시 이미 인쇄된 코드가 전부 죽습니다. 이 화면은 같은 코드가 항상 최신 승인본을 가리킵니다.',
+    detailBtn: '시험 항목 상세', detailHide: '상세 닫기', prev: '이전 버전 안내', prevNote: (v, d) => `v${v} (${d}) 이 존재하며 내용은 비공개입니다. 인쇄된 코드는 항상 최신본을 표시합니다.` },
+  en: { verified: 'Verified issuer', domain: 'attest.kr', st: { active: 'Human application test completed · Valid', expired: 'Publication period ended', suspended: 'Display temporarily limited', revoked: 'Code withdrawn', unknown: 'Unregistered code — possible counterfeit' },
+    client: 'Client', reportNo: 'Report No.', issued: 'Issued', revised: 'Revised', valid: 'Valid until', product: 'Product this record applies to', wrong: 'Different from the product in your hand?', report: 'Report', tests: 'Tests included in this report', summary: 'Summary',
+    period: 'Test period', subjects: 'Subjects', subjectsUnit: ' (no individual data disclosed)', verdict: 'Result', adverse: 'Adverse events', inst: 'Test institution', supervisor: 'Principal investigator', method: 'Analysis',
+    quote: (p, i) => `The product "${p}" underwent a human application test at ${i} with the summarised results below. Items shown are limited to what the client consented to disclose.`,
+    notShown: 'Not shown on this screen', ns1: 'Full report PDF — client & institution accounts only', ns2: 'Subject personal data — only the count is public', ns3: 'Product formulation — client trade secret',
+    tabS: 'Summary', tabV: 'Verify', tabR: 'Report', vTitle: 'Verify by report number + client name', vNo: 'Report number', vOrg: 'Client name', vBtn: 'Verify', vOk: 'Issuance record confirmed', vNo2: 'No matching issuance record', vState: 'Status', vIssued: 'Issued',
+    hTitle: 'Document integrity check (SHA-256)', hHint: 'Paste the hash of your PDF to compare with the published version', hMatch: 'Match — identical to the published original', hMis: 'Mismatch — may be a superseded version or an altered file', hEx1: 'Paste example (match)', hEx2: 'Paste example (mismatch)', hBtn: 'Compare',
+    rTitle: 'Report misuse or counterfeit', rHint: 'If this code is on a different product or looks forged, let us know. You will receive a case number.', rReason: 'Reason', rBtn: 'Submit', rDone: 'Received · case no.',
+    reasons: ['Attached to a different product', 'Sticker placed over original', 'Product info differs', 'Other'],
+    exp: (d) => `This record was published until ${d}. Its existence and issuance remain verifiable.`, expWhy: 'Printed codes cannot be recalled, so the link stays alive with this notice instead of a dead page.',
+    sus: 'Detailed display is temporarily limited. This does not mean the record does not exist; basic verification remains available.', susWhy: 'Detailed disclosure is on hold per the client contract status. The Verify tab still confirms issuance.',
+    rev: (d, r) => `This code was withdrawn on ${d} (${r}). Find the correct record below.`, revGo: 'View the correct record',
+    unk: 'There is no record of this code being issued by Seoul Skin Clinical Research Center.', unkWhy: 'It may be counterfeit or misprinted. Please report it with product and retailer details.',
+    footer: 'This page is served from a fixed domain operated by the test institution. Collected on access: time · approximate region · device type · language (IP hashed, kept 24h). All institutions, products and reports are fictional demo data.',
+    staticT: 'If this were a static QR (the client\'s previous approach)', staticD: 'A QR encoding a file URL dies for every printed unit once the file moves, is revised, or the domain changes. This page keeps the same code pointing at the latest approved version.',
+    detailBtn: 'Test details', detailHide: 'Hide details', prev: 'Previous version', prevNote: (v, d) => `v${v} (${d}) exists; its content is not public. Printed codes always show the latest version.` },
+};
+const T = k => L[lang][k];
+const I = {
+  check: '<svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg>',
+  shield: '<svg class="i" viewBox="0 0 16 16"><path d="M8 1.5l5 2v4c0 3.2-2.2 5.6-5 7-2.8-1.4-5-3.8-5-7v-4l5-2z"/><path d="M5.5 8l1.8 1.8L10.5 6.5"/></svg>',
+  x: '<svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg>',
+  clock: '<svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.5V8l2.5 1.5"/></svg>',
+  pause: '<svg class="i" viewBox="0 0 16 16"><path d="M5.5 3.5v9M10.5 3.5v9"/></svg>',
+  lock: '<svg class="i" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>',
+  flag: '<svg class="i" viewBox="0 0 16 16"><path d="M3.5 14V2.5h8l-1.5 3 1.5 3h-8"/></svg>',
+  ext: '<svg class="i" viewBox="0 0 16 16"><path d="M6 3H3.5v9.5H13V10M9 3h4v4M13 3L7.5 8.5"/></svg>',
+};
+
+let toastTimer;
+function toast(m) { const el = $('#toast'); el.textContent = m; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600); }
+
+function resolve() {
+  const q = qrOf(D, token);
+  if (!q) return { state: 'unknown', q: null, r: null, org: null };
+  const r = reportOf(D, q.reportId), org = orgOf(D, r.orgId);
+  let state = q.status;
+  if (r.status === 'suspended' || (org && org.contract.status === 'suspended')) state = 'suspended';
+  if (demoState) state = demoState;
+  return { state, q, r, org };
+}
+
+/* 스캔 로그 적재 (C-4) — 실제로 통계에 반영 */
+function logScan(q) {
+  if (!q || sessionStorage.getItem('attest-scanned-' + token)) return;
+  const mobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || innerWidth < 700;
+  D.scans.unshift({ token: q.token, at: nowStr(), region: '서울', device: mobile ? 'mobile' : 'pc', lang, bot: false, botReason: '', live: true });
+  Store.save();
+  try { sessionStorage.setItem('attest-scanned-' + token, '1'); } catch (e) {}
+}
+
+function render() {
+  const { state, q, r, org } = resolve();
+  if (q && !demoState) logScan(q);
+  const inst = D.institution;
+  const head = `
+    <header class="p-hd">
+      <div class="mk">A</div>
+      <div><div class="nm">${esc(lang === 'ko' ? inst.name : inst.en)}</div><div class="vf">${I.shield} ${esc(T('verified'))} · ${esc(T('domain'))}</div></div>
+      <div class="lang"><button class="${lang === 'ko' ? 'on' : ''}" data-l="ko">KO</button><button class="${lang === 'en' ? 'on' : ''}" data-l="en">EN</button></div>
+    </header>`;
+  let body = '';
+  if (state === 'unknown') body = failScreen('bad', I.x, T('st').unknown, T('unk'), T('unkWhy')) + verifyBlock(null, null, null) + reportBlock();
+  else if (state === 'revoked') {
+    const succ = q.successor ? qrOf(D, q.successor) : null;
+    body = failScreen('bad', I.x, T('st').revoked, T('rev')(q.revokedAt || '—', r.revokeReason ? r.revokeReason.split(' — ')[0] : '오발급'), '') +
+      (succ ? `<div style="text-align:center;margin-top:8px;"><a class="btn" href="r.html?t=${succ.token}&lang=${lang}">${T('revGo')} · ${esc(reportOf(D, succ.reportId).no)}</a></div>` : '') + verifyBlock(r, org, q) + reportBlock();
+  }
+  else if (state === 'expired') body = failScreen('warn', I.clock, T('st').expired, T('exp')(q.expiredAt || org.contract.end), T('expWhy')) + existenceBlock(r, org, q) + verifyBlock(r, org, q) + reportBlock();
+  else if (state === 'suspended') body = failScreen('warn', I.pause, T('st').suspended, T('sus'), T('susWhy')) + existenceBlock(r, org, q) + verifyBlock(r, org, q) + reportBlock();
+  else body = activeScreen(r, org, q);
+
+  $('#pub').innerHTML = head + `<div class="p-body">${body}${showStatic && q ? staticCompare(q, r) : ''}</div>
+    <footer class="p-foot">${esc(T('footer'))}<br><br>${esc(inst.name)} · ${esc(inst.contact)} · <a href="index.html">데모 진입 화면</a></footer>`;
+  bind(state, q, r, org);
+  renderDock(state);
+}
+
+function failScreen(kind, icon, title, msg, why) {
+  return `<div class="fail-screen rv"><div class="big ${kind}">${icon}</div><h2>${esc(title)}</h2><p>${esc(msg)}</p>${why ? `<p class="small muted" style="margin-top:10px;">${esc(why)}</p>` : ''}</div>`;
+}
+function existenceBlock(r, org, q) {
+  const v = latestVersion(r);
+  return `<div class="blk"><h3>${I.lock} ${esc(lang === 'ko' ? '확인 가능한 사실' : 'Verifiable facts')}</h3>
+    <dl class="kv"><dt>${esc(T('reportNo'))}</dt><dd class="mono">${esc(r.no)}</dd><dt>${esc(T('client'))}</dt><dd>${esc(lang === 'ko' ? org.name : org.en)}</dd><dt>${esc(T('issued'))}</dt><dd>${esc(v.date)} · v${v.v}</dd><dt>${esc(T('inst'))}</dt><dd>${esc(lang === 'ko' ? D.institution.name : D.institution.en)}</dd></dl></div>`;
+}
+function activeScreen(r, org, q) {
+  const v = latestVersion(r), tt = typeOf(D, r.type), pf = r.publicFields;
+  const validUntil = addDays(org.contract.end, 365 * D.settings.qrRetentionYears);
+  return `
+    <div class="rv"><span class="hero-chip active">${I.check} ${esc(T('st').active)}</span>${r.versions.length > 1 ? `<span class="ver-badge">v${v.v} · ${esc(T('revised'))} ${esc(v.date)}</span>` : ''}</div>
+    <h1 class="p-title rv" style="animation-delay:.06s">${esc(pf.product ? r.product : '—')}</h1>
+    <div class="p-sub rv" style="animation-delay:.1s">${esc(T('client'))} · ${esc(lang === 'ko' ? org.name : org.en)}</div>
+    <dl class="kv rv" style="animation-delay:.14s">
+      <dt class="mono">${esc(T('reportNo'))}</dt><dd class="mono">${esc(r.no)}</dd>
+      <dt>${esc(T('issued'))}</dt><dd>${esc(r.versions[0].date)}${r.versions.length > 1 ? ` · ${esc(T('revised'))} ${esc(v.date)} (v${v.v})` : ''}</dd>
+      <dt>${esc(T('valid'))}</dt><dd>${esc(validUntil)}</dd>
+    </dl>
+
+    <div class="blk rv" style="animation-delay:.18s"><h3>${esc(T('product'))}</h3>
+      <div class="prod"><img src="assets/img/${esc(r.img)}" alt=""><div><div class="pn">${esc(r.product)}</div><div class="pb">${esc(r.brand)} · ${esc(lang === 'ko' ? org.name : org.en)}</div><div class="pk">QR ${esc(q.token)} · ${esc(q.label)}</div></div></div>
+      <div style="margin-top:8px;"><button class="link-btn" id="go-report">${I.flag} ${esc(T('wrong'))} ${esc(T('report'))}</button></div>
+    </div>
+
+    <div class="blk rv" style="animation-delay:.22s"><h3>${esc(T('tests'))}</h3>
+      <div class="chips">${pf.type ? `<span class="chip ok">${I.check} ${esc(lang === 'ko' ? tt.ko : tt.en)}</span>` : ''}${pf.adverse ? `<span class="chip">${esc(lang === 'ko' ? '유해사례 기록' : 'Adverse events recorded')}</span>` : ''}${pf.subjects ? `<span class="chip">${r.subjects}${esc(lang === 'ko' ? '명' : ' subjects')}</span>` : ''}</div>
+    </div>
+
+    <div class="blk rv" style="animation-delay:.26s"><h3>${esc(T('summary'))}</h3>
+      <p class="quote">${esc(T('quote')(r.product, lang === 'ko' ? D.institution.name : D.institution.en))}</p>
+      <dl class="kv" style="margin-top:14px;">
+        ${pf.period ? `<dt>${esc(T('period'))}</dt><dd>${esc(r.period.start)} ~ ${esc(r.period.end)}</dd>` : ''}
+        ${pf.subjects ? `<dt>${esc(T('subjects'))}</dt><dd>${r.subjects}${esc(T('subjectsUnit'))}</dd>` : ''}
+        ${pf.verdict ? `<dt>${esc(T('verdict'))}</dt><dd>${esc(lang === 'ko' ? r.verdict.ko : r.verdict.en)}</dd>` : ''}
+        ${pf.adverse ? `<dt>${esc(T('adverse'))}</dt><dd>${esc(lang === 'ko' ? r.adverseNote : (r.adverseNote.includes('없음') ? 'None reported during the test period' : 'One transient mild event, resolved within 24h'))}</dd>` : ''}
+        ${pf.institution ? `<dt>${esc(T('inst'))}</dt><dd>${esc(lang === 'ko' ? D.institution.name : D.institution.en)} · IRB</dd>` : ''}
+        ${pf.supervisor ? `<dt>${esc(T('supervisor'))}</dt><dd>${esc(r.supervisor.name)} (${r.supervisor.years}y)</dd>` : ''}
+        ${pf.method ? `<dt>${esc(T('method'))}</dt><dd>${esc(r.stats)}</dd>` : ''}
+      </dl>
+      ${r.versions.length > 1 ? `<div class="note" style="margin-top:12px;"><b>${esc(T('prev'))}</b> — ${esc(T('prevNote')(r.versions[0].v, r.versions[0].date))}</div>` : ''}
+    </div>
+
+    <div class="blk rv" style="animation-delay:.3s"><h3>${I.lock} ${esc(T('notShown'))}</h3>
+      <ul class="hidden-list"><li>${I.x}<span>${esc(T('ns1'))}</span></li><li>${I.x}<span>${esc(T('ns2'))}</span></li><li>${I.x}<span>${esc(T('ns3'))}</span></li></ul>
+    </div>
+    ${verifyBlock(r, org, q)}
+    ${reportBlock()}`;
+}
+function verifyBlock(r, org, q) {
+  const v = r ? latestVersion(r) : null;
+  return `<div class="blk" id="verify"><h3>${I.shield} ${esc(T('tabV'))}</h3>
+    <div class="small muted" style="margin-bottom:8px;">${esc(T('vTitle'))}</div>
+    <div class="row" style="align-items:stretch;">
+      <input class="inp mono" id="v-no" style="flex:1;min-width:140px;height:44px;" placeholder="${esc(T('vNo'))}" value="${r ? esc(r.no) : ''}">
+      <input class="inp" id="v-org" style="flex:1;min-width:120px;height:44px;" placeholder="${esc(T('vOrg'))}" value="${org ? esc(org.name) : ''}">
+      <button class="btn" id="v-go" style="height:44px;">${esc(T('vBtn'))}</button>
+    </div>
+    <div class="verify-res" id="v-res"></div>
+    <hr class="sep">
+    <div class="small muted" style="margin-bottom:8px;"><b style="color:var(--ink)">${esc(T('hTitle'))}</b> — ${esc(T('hHint'))}</div>
+    <textarea class="inp mono" id="h-in" style="width:100%;min-height:64px;font-size:12px;" placeholder="sha256…"></textarea>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn sec sm" id="h-ex1">${esc(T('hEx1'))}</button><button class="btn sec sm" id="h-ex2">${esc(T('hEx2'))}</button><span class="sp"></span><button class="btn sm" id="h-go">${esc(T('hBtn'))}</button>
+    </div>
+    <div class="verify-res" id="h-res"></div>
+    ${v ? `<div class="micro muted" style="margin-top:8px;">${esc(lang === 'ko' ? '현재 게시본' : 'Published version')} v${v.v} · <span class="mono">${esc(v.hash.slice(0, 24))}…</span></div>` : ''}
+  </div>`;
+}
+function reportBlock() {
+  return `<div class="blk" id="report"><h3>${I.flag} ${esc(T('rTitle'))}</h3>
+    <div class="small muted" style="margin-bottom:10px;">${esc(T('rHint'))}</div>
+    <div class="row" style="align-items:stretch;">
+      <select class="sel" id="rp-reason" style="flex:1;height:44px;">${T('reasons').map(x => `<option>${esc(x)}</option>`).join('')}</select>
+      <button class="btn sec" id="rp-go" style="height:44px;">${esc(T('rBtn'))}</button>
+    </div>
+    <div class="verify-res" id="rp-res"></div>
+  </div>`;
+}
+function staticCompare(q, r) {
+  return `<div class="cmp"><div class="h"><span>${esc(T('staticT'))}</span><span class="chip bad">404</span></div>
+    <div class="dead"><div class="bar"><i></i><i></i><i></i> drive.google.com/file/d/1xQ…/view</div><div class="b"><b>404</b><span>${esc(lang === 'ko' ? '요청한 파일을 찾을 수 없습니다 — 보고서 v2 개정 시 파일이 교체됨' : 'File not found — replaced when report v2 was published')}</span></div></div>
+    <p class="small muted" style="margin-top:10px;">${esc(T('staticD'))} <span class="mono">…/r/?t=${esc(q.token)}</span> → v${latestVersion(r).v}</p></div>`;
+}
+
+function bind(state, q, r, org) {
+  document.querySelectorAll('.p-hd .lang button').forEach(b => b.addEventListener('click', () => { lang = b.dataset.l; render(); }));
+  const go = $('#go-report'); if (go) go.addEventListener('click', () => $('#report').scrollIntoView({ behavior: 'smooth' }));
+  if ($('#v-go')) $('#v-go').addEventListener('click', () => {
+    const no = $('#v-no').value.trim().toUpperCase(), on = $('#v-org').value.trim();
+    const hit = D.reports.find(x => x.no.toUpperCase() === no);
+    const orgHit = hit && orgOf(D, hit.orgId);
+    const ok = hit && orgHit && (orgHit.name.includes(on) || orgHit.en.toLowerCase().includes(on.toLowerCase()) || on === '');
+    const qq = hit && D.qrs.find(x => x.reportId === hit.id);
+    $('#v-res').innerHTML = ok
+      ? `<div class="verdict ok">${I.check} ${esc(T('vOk'))}</div><dl class="kv" style="margin-top:8px;"><dt>${esc(T('vState'))}</dt><dd><span class="chip ${hit.status}">${esc(statusLabel(hit.status))}</span>${qq ? ` <span class="chip ${qq.status}">QR ${esc(qrStatusLabel(qq.status))}</span>` : ''}</dd><dt>${esc(T('vIssued'))}</dt><dd>${esc(latestVersion(hit).date)} · v${latestVersion(hit).v}</dd></dl>`
+      : `<div class="verdict danger">${I.x} ${esc(T('vNo2'))}</div>`;
+  });
+  const setHash = h => { $('#h-in').value = h; };
+  if ($('#h-ex1')) $('#h-ex1').addEventListener('click', () => setHash(r ? latestVersion(r).hash : 'no-record'));
+  if ($('#h-ex2')) $('#h-ex2').addEventListener('click', () => setHash(r && r.versions.length > 1 ? r.versions[0].hash : fakeSha('tampered')));
+  if ($('#h-go')) $('#h-go').addEventListener('click', () => {
+    const val = $('#h-in').value.trim().toLowerCase();
+    if (!val) return;
+    const match = r && val === latestVersion(r).hash;
+    const old = r && r.versions.some((vv, i) => i < r.versions.length - 1 && vv.hash === val);
+    $('#h-res').innerHTML = match ? `<div class="verdict ok">${I.check} ${esc(T('hMatch'))}</div>` : `<div class="verdict ${old ? 'warn' : 'danger'}">${I.x} ${esc(T('hMis'))}${old ? ` (v${r.versions.find(vv => vv.hash === val).v})` : ''}</div>`;
+  });
+  if ($('#rp-go')) $('#rp-go').addEventListener('click', () => {
+    const no = 'RP-2026-' + String(1000 + D.demoReports.length + 1).padStart(4, '0');
+    D.demoReports.push({ id: no, at: nowStr(), token, reason: $('#rp-reason').value, status: '접수' });
+    Store.save();
+    $('#rp-res').innerHTML = `<div class="verdict ok">${I.check} ${esc(T('rDone'))} <span class="mono">${no}</span></div>`;
+    toast(lang === 'ko' ? '신고가 접수되었습니다 — 관리자 화면에서 확인됩니다' : 'Report received');
+  });
+}
+
+function renderDock(state) {
+  const items = [['active', '활성'], ['expired', '만료'], ['suspended', '정지'], ['revoked', '폐기'], ['unknown', '미등록']];
+  const tokenFor = { active: '7K9F2Q', expired: 'P3GT5K', suspended: 'Y9SB2N', revoked: 'D1QF6R', unknown: 'ZZZZZZ' };
+  $('#dock').innerHTML = `<span>demo · state</span>` + items.map(([k, l]) => `<button data-s="${k}" class="${state === k ? 'on' : ''}">${l}</button>`).join('') +
+    `<span>·</span><button id="dk-static" class="${showStatic ? 'on' : ''}">정적 QR 비교</button>`;
+  document.querySelectorAll('#dock [data-s]').forEach(b => b.addEventListener('click', () => {
+    token = tokenFor[b.dataset.s]; demoState = null;
+    history.replaceState(null, '', `r.html?t=${token}${showStatic ? '&static=1' : ''}&lang=${lang}`);
+    render(); window.scrollTo(0, 0);
+  }));
+  $('#dk-static').addEventListener('click', () => { showStatic = !showStatic; render(); });
+}
+
+render();
+</script>
+</body>
+</html>

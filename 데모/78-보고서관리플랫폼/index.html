@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATTEST 어테스트 — 인체적용시험 보고서 QR 검증 플랫폼 (데모)</title>
+<meta name="description" content="화장품 인체적용시험 보고서 등록 → 불변 토큰 QR 발급 → 고객사 포털 → 소비자 진위확인. 실증 15일 대응·표면 3분리·만료 랜딩·인수인계 현황까지. 데모 데이터는 전부 가상입니다.">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .login { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; }
+  .l-left { background: var(--ink); color: #fff; padding: 48px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+  .l-left img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .28; }
+  .l-left > * { position: relative; }
+  .l-left .brand { border: 0; padding: 0; height: auto; }
+  .l-left .brand b { color: #fff; font-size: 17px; }
+  .l-left .brand small { color: rgba(255,255,255,.55); }
+  .l-left h2 { font-size: 34px; line-height: 1.2; letter-spacing: -0.03em; font-weight: 600; max-width: 520px; }
+  .l-left p { color: rgba(255,255,255,.72); max-width: 480px; margin-top: 14px; font-size: 15px; }
+  .l-left .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 28px; max-width: 560px; }
+  .l-left .steps div { padding: 12px; border-radius: var(--r); background: rgba(255,255,255,.08); font-size: 13px; }
+  .l-left .steps .n { font-family: var(--mono); font-size: 11px; color: var(--d4); letter-spacing: .06em; margin-bottom: 4px; }
+  .l-left .fict { font-size: 12px; color: rgba(255,255,255,.45); }
+  .l-right { display: flex; align-items: center; justify-content: center; padding: 48px 32px; }
+  .l-box { width: 100%; max-width: 420px; }
+  .l-box h1 { font-size: 22px; margin-bottom: 6px; }
+  .l-box .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+  .acct { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: var(--r-lg); border: 1px solid var(--line2); background: var(--card); text-align: left; transition: border-color .1s var(--e-quad), background-color .1s var(--e-quad), transform .1s var(--e-quad); text-decoration: none; color: inherit; }
+  .acct:hover { border-color: var(--primary); background: var(--primary-tint); }
+  .acct:active { transform: scale(.99); }
+  .acct + .acct { margin-top: 10px; }
+  .acct .av { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 13px; flex: 0 0 40px; }
+  .acct .av.a { background: var(--primary); color: #fff; } .acct .av.b { background: var(--info-tint); color: var(--info); } .acct .av.c { background: var(--warn-tint); color: var(--warn); }
+  .acct b { display: block; font-size: 15px; }
+  .acct small { display: block; color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+  .acct .go { margin-left: auto; color: var(--muted); }
+  .or { display: flex; align-items: center; gap: 12px; margin: 22px 0 14px; color: var(--muted); font-size: 12px; }
+  .or::before, .or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .sight { margin-top: 26px; }
+  .sight table { width: 100%; font-size: 12.5px; }
+  .sight th { text-align: left; font-family: var(--mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line2); }
+  .sight td { padding: 7px 8px; border-bottom: 1px solid var(--line); }
+  .sight td.y { color: var(--primary); font-weight: 600; } .sight td.p { color: var(--warn); } .sight td.n { color: var(--muted2); }
+  @media (max-width: 900px) { .login { grid-template-columns: 1fr; } .l-left { padding: 32px 24px; min-height: 0; } .l-left h2 { font-size: 26px; } .l-left .steps { grid-template-columns: 1fr 1fr; } .l-right { padding: 28px 20px 48px; } }
+</style>
+</head>
+<body>
+<div class="login">
+  <section class="l-left">
+    <img src="assets/img/lab-test.webp" alt="">
+    <div class="brand"><div class="mk">A</div><div><b>ATTEST 어테스트</b><small>Clinical Report · QR Verification</small></div></div>
+    <div>
+      <h2>보고서 하나에 QR 하나.<br>인쇄된 뒤에도 항상 최신본을 가리킵니다.</h2>
+      <p>인체적용시험 보고서를 등록하면 불변 토큰 QR이 발급되고, 고객사는 자기 계정에서 조회·다운로드하고, 소비자는 제품의 QR로 진위를 확인합니다. 개정·만료·폐기 어떤 상태에서도 404는 없습니다.</p>
+      <div class="steps">
+        <div><div class="n">01 · 기관</div>보고서 등록 · 실증 요건 게이트 · QR 발급</div>
+        <div><div class="n">02 · 고객사</div>공개 동의 · 원문 · 인쇄 패키지 · 실증자료 ZIP</div>
+        <div><div class="n">03 · 소비자</div>스캔 → 진위확인 · 요약만 공개</div>
+        <div><div class="n">04 · 인수인계</div>계정·저장소·문서 전부 발주사 소유</div>
+      </div>
+    </div>
+    <div class="fict">서울피부임상연구센터·고객사·제품·보고서는 전부 데모용 가상 데이터입니다. 실존 기관·브랜드와 무관합니다.</div>
+  </section>
+  <section class="l-right">
+    <div class="l-box">
+      <h1>로그인</h1>
+      <div class="sub">화면은 하나, 계정에 따라 보이는 범위가 달라집니다. 데모 계정을 선택하세요.</div>
+      <a class="acct" href="admin.html"><span class="av a">기관</span><span><b>한지연 · 서울피부임상연구센터</b><small>기관 관리자 — 등록·QR 발급·이력·인수인계 현황</small></span><span class="go">→</span></a>
+      <a class="acct" href="client.html?role=RA"><span class="av b">RA</span><span><b>김하은 · 루미네 코스메틱 (RA)</b><small>고객사 품질담당 — 원문 PDF · 실증자료 패키지 · 공개 동의</small></span><span class="go">→</span></a>
+      <a class="acct" href="client.html?role=MKT"><span class="av c">MKT</span><span><b>박지훈 · 루미네 코스메틱 (마케터)</b><small>고객사 마케터 — QR 인쇄 패키지 · 문구 검사기 (원문 다운로드 불가)</small></span><span class="go">→</span></a>
+      <div class="or">소비자는 로그인하지 않습니다</div>
+      <a class="acct" href="r.html?t=7K9F2Q"><span class="av" style="background:var(--surface);color:var(--ink);">QR</span><span><b>제품 QR을 찍었을 때 열리는 화면</b><small>무인증 공개 조회 — 화이트리스트 항목만 · 진위확인 · 신고</small></span><span class="go">→</span></a>
+
+      <div class="sight">
+        <table>
+          <thead><tr><th>같은 보고서 1건</th><th>기관</th><th>고객사</th><th>소비자</th></tr></thead>
+          <tbody>
+            <tr><td>원문 PDF</td><td class="y">전체</td><td class="p">RA만</td><td class="n">비공개</td></tr>
+            <tr><td>판정 · 피험자 수</td><td class="y">●</td><td class="y">●</td><td class="y">요약만</td></tr>
+            <tr><td>피험자 개인정보</td><td class="y">●</td><td class="p">가명</td><td class="n">비공개</td></tr>
+            <tr><td>처방 · 원료</td><td class="y">●</td><td class="y">●</td><td class="n">비공개</td></tr>
+            <tr><td>스캔 통계</td><td class="y">전체</td><td class="p">자사분</td><td class="n">—</td></tr>
+          </tbody>
+        </table>
+        <div class="micro muted" style="margin-top:8px;">공개 표면은 권한 플래그가 아니라 <b>물리적으로 분리된 화이트리스트</b>로 렌더됩니다 (리서치 A-2).</div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>
