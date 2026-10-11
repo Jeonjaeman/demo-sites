@@ -30,7 +30,7 @@
     return `<a class="pcard${big ? ' pcard-big' : ''}" href="post.html?id=${p.id}"><div class="pcard-img">${hero}</div><div class="pcard-body"><div class="pcard-meta"><span class="pcat">${L('postCat', p.cat)}</span><time>${fmtDate(p.date)}</time></div><h3>${esc(tr(p, 'title'))}</h3><p>${esc(tr(p, 'summary'))}</p></div></a>`;
   }
   function privateNotice(kind) {
-    return `<section class="private"><div class="shell private-in rv in"><span class="eyebrow">${en ? 'Not available' : '비공개'}</span>
+    return `<section class="private fur-b" style="--fur-b:var(--ink)"><div class="shell private-in rv in"><span class="eyebrow">${en ? 'Not available' : '비공개'}</span>
       <h1>${en ? 'This page is not public.' : '이 페이지는 공개되지 않았어요.'}</h1>
       <p>${en ? 'The content you requested is hidden, saved as a draft, or no longer listed. Even with a direct link, the server does not respond with it.' : (kind === 'post' ? '요청하신 글은 숨김·임시저장 상태이거나 더 이상 게시되지 않아요.' : '요청하신 개체 페이지는 숨김·임시저장 상태이거나 더 이상 게시되지 않아요.') + ' 링크를 알고 있어도 서버가 내용을 응답하지 않습니다.'}</p>
       <p class="small">${en ? 'Why: rescue records can be evidence in investigations. We decide when they become public.' : '왜 그럴까요 — 학대 구조 기록은 수사 증거가 될 수 있어요. 공개 시점은 단체가 정합니다. (카페24 시절엔 링크만 알면 열렸던 지점)'}</p>
@@ -91,7 +91,11 @@
     $('#adopt-foster').addEventListener('change', e => { F.foster = e.target.checked; renderList(); });
     $('#adopt-sort').addEventListener('change', e => { F.sort = e.target.value; renderList(); });
     $('#adopt-reset').addEventListener('click', () => { Object.assign(F, { q: '', species: 'all', sex: 'all', age: 'all', weight: 'all', status: 'all', foster: false, sort: 'new' }); $('#adopt-q').value = ''; $('#adopt-foster').checked = false; $('#adopt-sort').value = 'new'; renderFilters(); renderList(); });
-    $('#filter-toggle').addEventListener('click', () => { const w = $('#adopt-filters'); const open = w.classList.toggle('open'); $('#filter-toggle').setAttribute('aria-expanded', String(open)); });
+    let openedAt = 0;
+    const setOpen = (open) => { $('#adopt-filters').classList.toggle('open', open); $('#filter-toggle').setAttribute('aria-expanded', String(open)); if (open) openedAt = window.scrollY; };
+    $('#filter-toggle').addEventListener('click', () => setOpen(!$('#adopt-filters').classList.contains('open')));
+    // 고정 바 안의 필터 패널은 결과를 내려 보기 시작하면 자동으로 접힌다(화면을 가리지 않게). 필터 버튼에 적용 개수가 남는다
+    addEventListener('scroll', () => { if ($('#adopt-filters').classList.contains('open') && window.scrollY - openedAt > 220) setOpen(false); }, { passive: true });
   }
   function renderFilters() {
     const counts = {};
@@ -360,5 +364,6 @@
     // 모바일에서 플로팅 버튼은 푸터 근처에서 숨김
     const fab = $('.fab'), foot = $('.footer');
     if (fab && foot && 'IntersectionObserver' in window) new IntersectionObserver(es => es.forEach(e => fab.classList.toggle('hide', e.isIntersecting)), { threshold: 0.05 }).observe(foot);
+    if (fab) { const onFab = () => fab.classList.toggle('show', window.scrollY > Math.min(480, window.innerHeight * .6)); onFab(); addEventListener('scroll', onFab, { passive: true }); }
   });
 })();

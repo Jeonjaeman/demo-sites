@@ -161,6 +161,9 @@
       if (b.dataset.act === 'gl') { document.body.classList.toggle('show-gl'); toast(document.body.classList.contains('show-gl') ? 'Glossary terms highlighted — these are never machine-translated.' : 'Glossary highlight off'); }
     });
     initDrawer();
+    // 고정 헤더 높이(EN 안내 바 포함)를 CSS 변수로 — 입양 목록의 고정 필터 바가 바로 아래에 붙도록
+    const setSticky = () => { if (h) document.documentElement.style.setProperty('--sticky-h', h.offsetHeight + 'px'); };
+    setSticky(); addEventListener('resize', setSticky);
     $$('form[data-form="newsletter"]').forEach(f => f.addEventListener('submit', e => { e.preventDefault(); toast(isEn() ? 'Subscribed (demo)' : '뉴스레터 구독 신청이 접수됐어요 (데모)'); }));
   }
 

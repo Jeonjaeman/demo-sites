@@ -27,9 +27,10 @@
     <button type="button" class="btn btn-ghost ftoggle" id="filter-toggle" aria-expanded="false" aria-controls="adopt-filters"><span id="filter-active">필터</span> ▾</button>
     <select class="sort" id="adopt-sort" aria-label="정렬"><option value="new" data-en="Newest listed">최근 공개순</option><option value="old" data-en="Waiting longest">오래 기다린 순</option><option value="young" data-en="Youngest">어린 순</option><option value="senior" data-en="Oldest">나이 많은 순</option><option value="name" data-en="Name">이름순</option></select>
     <label class="check"><input type="checkbox" id="adopt-foster"> <span data-en="Foster home wanted only">임보 가정 모집만</span></label>
-    <span class="adopt-count" id="adopt-count"></span>
+    <button type="button" class="btn btn-sm btn-ghost" id="adopt-reset" data-en="Clear">지우기</button>
+    <span class="adopt-count" id="adopt-count" aria-live="polite"></span>
   </div>
-  <div class="shell"><div class="filters" id="adopt-filters"></div><div style="display:flex;justify-content:flex-end;padding-bottom:12px"><button type="button" class="btn btn-sm btn-ghost" id="adopt-reset" data-en="Clear filters">필터 지우기</button></div></div>
+  <div class="shell"><div class="filters" id="adopt-filters"></div></div>
 </div>
 
 <section class="sec" style="padding-top:40px"><div class="shell"><div class="acard-grid" id="adopt-grid" aria-live="polite"></div></div></section>

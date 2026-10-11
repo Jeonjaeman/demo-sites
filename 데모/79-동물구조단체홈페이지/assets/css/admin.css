@@ -150,11 +150,12 @@ body.role-staff [data-super] { display: none !important; }
 .chip .n { font-weight: 800; opacity: .7; }
 .badge { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 9px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.badge-open { background: var(--a-ok-soft); color: var(--a-ok); }
-.badge-review { background: var(--a-warn-soft); color: var(--a-warn); }
-.badge-done { background: var(--a-info-soft); color: var(--a-info); }
-.badge-foster { background: #efe6ff; color: #5b2fb3; }
-.badge-gray { background: #ececea; color: var(--a-ink-3); }
+/* 개체 상태 4종은 공개 사이트와 같은 솔리드 토큰(1:1 대응) */
+.badge-open { background: #196b41; color: #fff; }
+.badge-review { background: #8a6a00; color: #fff; }
+.badge-done { background: #3b3b3b; color: #fff; }
+.badge-foster { background: #2f4a81; color: #fff; }
+.badge-gray { background: #a5a5a5; color: #fff; }
 .badge-pub { background: var(--a-ok-soft); color: var(--a-ok); }
 .badge-hidden { background: #ececea; color: var(--a-ink-3); }
 .badge-draft { background: var(--a-warn-soft); color: var(--a-warn); }
@@ -294,6 +295,13 @@ body.role-staff [data-super] { display: none !important; }
 .toast { position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 16px); background: var(--a-ink); color: #fff; padding: 12px 20px; border-radius: 999px; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity .2s, transform .25s var(--a-ease); z-index: 600; pointer-events: none; max-width: 90vw; text-align: center; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
+/* ── 줄바꿈 방지: 버튼·칩·라벨은 글자 단위로 쪼개지지 않는다(한글은 기본적으로 글자마다 줄바꿈 가능) ── */
+.abtn, .chip, .seg button, .anav button, .wiz-steps button, .gl-chip, .badge, .radio-row label, .switch, .tbl .row-actions, .kpi .k-label { white-space: nowrap; }
+.radio-row label, .chips > *, .row-actions > * { flex-shrink: 0; }
+.grid > *, .wiz > *, .alayout > *, .stack > *, .frow > *, .ph > * { min-width: 0; }
+.tsel { min-height: 36px; border: 1.5px solid var(--a-line-2); border-radius: 8px; padding: 4px 8px; background: #fff; font-size: 13px; }
+.check { align-items: flex-start; } .check input { margin-top: 2px; flex-shrink: 0; }
+
 /* ── 반응형 ── */
 @media (max-width: 1100px) { .g4 { grid-template-columns: repeat(2, 1fr); } .g3 { grid-template-columns: repeat(2, 1fr); } .wiz { grid-template-columns: 1fr; } .side { position: static; } }
 @media (max-width: 860px) {
@@ -310,5 +318,10 @@ body.role-staff [data-super] { display: none !important; }
   .ph h1 { font-size: 22px; }
   .redir-test { grid-template-columns: 1fr; }
   .dl { grid-template-columns: 1fr; }
+  .seg button, .chip, .abtn-sm, .tbl select, .tsel { min-height: 44px; }
+  .gl-chip { min-height: 44px; }
+  .gl-chip button { width: 40px; height: 40px; }
+  .redir-result { word-break: break-all; }
+  .chips { gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition-duration: 0s !important; animation: none !important; } }
