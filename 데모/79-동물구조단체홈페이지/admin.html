@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>관리자 — 홈워드 HOMEWARD (CMS 데모)</title>
+<meta name="description" content="동물구조단체용 자체 CMS 데모 — 개체 3단계 등록(사진 끌어놓기·자동 최적화·공개 버튼), 상태 변경일 자동 기록, 접수함, 이미지·트래픽, 데이터 이전·301, 용어집, 권한.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23141414%27/%3E%3Cpath d=%27M16 7 6 15h2.8v9h5.4v-5.4h3.6V24h5.4v-9H26z%27 fill=%27%23ffd200%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin-body">
+<a class="skip-nav" href="#admin-main">본문 바로가기</a>
+
+<!-- 로그인(데모): 비밀번호 없이 역할만 고른다. 실제 구축에서는 이메일+비밀번호+2단계 인증 -->
+<div id="admin-login" class="login" hidden>
+  <div class="login-card">
+    <div class="login-logo" translate="no"><span class="mark"></span>홈워드 <small>ADMIN</small></div>
+    <h1>관리자 데모에 들어가기</h1>
+    <p>비밀번호 없이 역할만 골라 체험합니다. 모든 데이터는 가상이며 이 브라우저에만 저장됩니다.</p>
+    <div class="login-roles">
+      <button type="button" class="role-card" data-role="staff">
+        <strong>운영진으로 들어가기</strong>
+        <span>개체 · 소식 · 접수함 · 용어집만 보입니다. 사망 처리·계정·보안은 숨겨져요.</span>
+      </button>
+      <button type="button" class="role-card" data-role="super">
+        <strong>최고관리자로 들어가기</strong>
+        <span>모든 메뉴. 데이터 이전·권한·보안·설정까지.</span>
+      </button>
+    </div>
+    <a class="login-back" href="index.html">← 공개 사이트로</a>
+  </div>
+</div>
+
+<header class="ahead">
+  <div class="ahead-in">
+    <a class="alogo" href="admin.html" translate="no"><span class="mark"></span>홈워드 <small>ADMIN</small></a>
+    <div class="ahead-tools">
+      <label class="switch" title="초등학생도 쓸 수 있는 큰 글씨·큰 버튼 모드"><input type="checkbox" id="simple-toggle"><span class="switch-ui"></span><span class="switch-txt">쉬운 모드</span></label>
+      <div class="seg" role="group" aria-label="역할 전환 (데모)">
+        <button type="button" data-set-role="staff">운영진</button>
+        <button type="button" data-set-role="super">최고관리자</button>
+      </div>
+      <a class="abtn abtn-ghost" href="index.html" target="_blank" rel="noopener">사이트 보기 ↗</a>
+      <button type="button" class="abtn abtn-ghost" id="logout">나가기</button>
+    </div>
+  </div>
+</header>
+
+<div class="alayout">
+  <nav class="anav" aria-label="관리자 메뉴" id="anav">
+    <button data-view="dash" aria-current="true"><i class="ic ic-dash"></i>대시보드</button>
+    <div class="anav-sep">콘텐츠</div>
+    <button data-view="animals"><i class="ic ic-paw"></i>개체 관리</button>
+    <button data-view="posts"><i class="ic ic-post"></i>소식·공지</button>
+    <button data-view="inbox"><i class="ic ic-inbox"></i>접수함<span class="anav-count" id="inbox-count"></span></button>
+    <button data-view="glossary"><i class="ic ic-lang"></i>영문 변환·용어집</button>
+    <div class="anav-sep">운영</div>
+    <button data-view="media"><i class="ic ic-img"></i>이미지·트래픽</button>
+    <button data-view="migration" data-super><i class="ic ic-move"></i>데이터 이전·301</button>
+    <div class="anav-sep" data-super>관리</div>
+    <button data-view="users" data-super><i class="ic ic-user"></i>권한·계정</button>
+    <button data-view="security" data-super><i class="ic ic-lock"></i>보안·비공개</button>
+    <button data-view="settings" data-super><i class="ic ic-cog"></i>설정</button>
+    <div class="anav-foot">데모 · 모든 데이터는 가상<br>저장: 이 브라우저(localStorage)</div>
+  </nav>
+  <main class="amain" id="admin-main" tabindex="-1"></main>
+</div>
+
+<div id="modal-root"></div>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

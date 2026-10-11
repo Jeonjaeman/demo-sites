@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>입양 &amp; 임시보호 — 홈워드 HOMEWARD</title>
+<meta name="description" content="가족을 기다리는 친구들. 이름·동물 구분·성별·연령·체중·입양 상태로 찾아보세요.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ffc800%27/%3E%3Cpath d=%27M16 7 6 15h2.8v9h5.4v-5.4h3.6V24h5.4v-9H26z%27 fill=%27%23141414%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="adopt">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<div id="site-header"></div>
+<main id="main">
+
+<section class="page-head"><div class="shell">
+  <nav class="crumb" aria-label="현재 위치"><a href="index.html" data-en="Home">홈</a><span>›</span><span data-en="Adopt &amp; foster">입양 &amp; 임시보호</span></nav>
+  <h1 class="title" data-en="Friends waiting for a family">가족을 기다리는 친구들</h1>
+  <p class="lead" data-en="Dogs, cats, rabbits, goats. Filter by who you are looking for — and if adoption isn't possible right now, fostering for 1–3 months helps just as much.">개, 고양이, 토끼, 염소. 찾는 조건으로 좁혀 보세요. 지금 입양이 어렵다면 1~3개월 임시보호도 큰 힘이 돼요.</p>
+  <div class="btn-row"><a class="btn btn-dark" href="adopt-guide.html" data-en="How adoption works">입양 절차 보기</a><a class="btn btn-cream" href="adopt-guide.html#foster" data-en="About fostering">임시보호 안내</a></div>
+</div></section>
+
+<div class="adopt-bar">
+  <div class="adopt-bar-in">
+    <label class="search"><span aria-hidden="true">⌕</span><input type="search" id="adopt-q" placeholder="이름·품종으로 찾기" data-en-ph="Search by name or breed" aria-label="이름·품종 검색"></label>
+    <button type="button" class="btn btn-ghost ftoggle" id="filter-toggle" aria-expanded="false" aria-controls="adopt-filters"><span id="filter-active">필터</span> ▾</button>
+    <select class="sort" id="adopt-sort" aria-label="정렬"><option value="new" data-en="Newest listed">최근 공개순</option><option value="old" data-en="Waiting longest">오래 기다린 순</option><option value="young" data-en="Youngest">어린 순</option><option value="senior" data-en="Oldest">나이 많은 순</option><option value="name" data-en="Name">이름순</option></select>
+    <label class="check"><input type="checkbox" id="adopt-foster"> <span data-en="Foster home wanted only">임보 가정 모집만</span></label>
+    <span class="adopt-count" id="adopt-count"></span>
+  </div>
+  <div class="shell"><div class="filters" id="adopt-filters"></div><div style="display:flex;justify-content:flex-end;padding-bottom:12px"><button type="button" class="btn btn-sm btn-ghost" id="adopt-reset" data-en="Clear filters">필터 지우기</button></div></div>
+</div>
+
+<section class="sec" style="padding-top:40px"><div class="shell"><div class="acard-grid" id="adopt-grid" aria-live="polite"></div></div></section>
+
+<section class="sec sec-alt"><div class="shell two-col" style="align-items:center">
+  <div class="rv"><span class="eyebrow" data-en="First time?">입양이 처음이라면</span><h2 class="sec-title" data-en="You won't be doing it alone.">혼자 하지 않아도 돼요.</h2><p style="margin-top:14px;color:var(--ink-2)" data-en="A staff member talks you through the match, visits are quiet and unhurried, and after adoption we check in at 1, 3 and 6 months. Treatment that started with us is covered until it ends.">담당자가 상담으로 함께 맞춰 보고, 만남은 조용하고 서두르지 않아요. 입양 후 1·3·6개월에 안부를 묻고, 우리와 시작한 치료는 끝날 때까지 지원합니다.</p><div class="btn-row"><a class="btn btn-dark" href="adopt-guide.html" data-en="Steps, fees &amp; FAQ">절차·책임비·FAQ</a></div></div>
+  <div class="rv"><img src="assets/img/family-1.webp" alt="" loading="lazy" style="border-radius:var(--r-xl);aspect-ratio:3/2;object-fit:cover;width:100%"></div>
+</div></section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/data.js"></script><script src="assets/js/data-en.js"></script><script src="assets/js/core.js"></script><script src="assets/js/site.js"></script>
+</body>
+</html>

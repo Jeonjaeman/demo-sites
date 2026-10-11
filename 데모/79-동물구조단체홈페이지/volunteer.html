@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>봉사 — 홈워드 HOMEWARD</title>
+<meta name="description" content="센터 봉사, 해외 이동봉사, 재능기부, 액터. 신청은 사이트에서 바로.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ffc800%27/%3E%3Cpath d=%27M16 7 6 15h2.8v9h5.4v-5.4h3.6V24h5.4v-9H26z%27 fill=%27%23141414%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="volunteer">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<div id="site-header"></div>
+<main id="main">
+
+<section class="page-head"><div class="shell">
+  <nav class="crumb" aria-label="현재 위치"><a href="index.html" data-en="Home">홈</a><span>›</span><span data-en="Volunteer">봉사</span></nav>
+  <h1 class="title" data-en="Your Saturday morning, their whole week.">당신의 토요일 아침이 아이들의 일주일입니다.</h1>
+  <p class="lead" data-en="Four ways to give time: at the shelter, on a flight, with your skills, or with your voice. Apply here — a staff member confirms by phone or text.">센터에서, 비행기에서, 재능으로, 목소리로. 신청은 여기서 바로. 담당자가 전화나 문자로 확정해 드려요.</p>
+</div></section>
+
+<section class="sec"><div class="shell"><div class="prog-grid" id="programs"></div></div></section>
+
+<section class="sec sec-alt"><div class="shell two-col">
+  <div>
+    <div class="sec-head rv"><div><span class="eyebrow" data-en="Apply">봉사 신청</span><h2 class="sec-title" data-en="Takes two minutes">2분이면 돼요</h2></div></div>
+    <form class="form rv" id="v-form" novalidate>
+      <div class="frow"><div class="fld"><label for="v-program" data-en="Program">프로그램</label><select id="v-program" name="program"></select></div><div class="fld"><label for="v-date" data-en="Preferred date">희망일</label><input type="date" id="v-date" name="date" required></div></div>
+      <div class="frow"><div class="fld"><label for="v-name" data-en="Name">이름 *</label><input id="v-name" name="name" required value="김홈워드 (데모)"></div><div class="fld"><label for="v-phone" data-en="Phone">연락처 *</label><input id="v-phone" name="phone" required value="010-0000-0000"></div></div>
+      <div class="frow"><div class="fld"><label for="v-email" data-en="Email">이메일</label><input id="v-email" name="email" type="email" value="demo@example.com"></div><div class="fld"><label for="v-count" data-en="People">인원</label><select id="v-count" name="count"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div><div class="fld"><label for="v-birth" data-en="Year of birth">출생 연도 <small data-en="(under 14: guardian consent)">(만 14세 미만은 보호자 동의)</small></label><select id="v-birth" name="birth"></select></div></div>
+      <div id="v-guardian" hidden class="form" style="padding:18px;background:var(--brand-pale);box-shadow:none;gap:12px"><strong data-en="Guardian consent (required under 14)">보호자 동의 (만 14세 미만)</strong><p class="small" data-en="A parent or guardian must agree before we process a child's personal information.">만 14세 미만 아동의 개인정보는 보호자 동의가 있어야 처리할 수 있어요.</p><div class="frow"><div class="fld"><label data-en="Guardian name">보호자 이름 *</label><input name="gname"></div><div class="fld"><label data-en="Guardian phone">보호자 연락처 *</label><input name="gphone"></div></div><label class="check"><input type="checkbox" name="gconsent"> <span data-en="I am the guardian and I agree.">보호자로서 동의합니다.</span></label></div>
+      <label class="check"><input type="checkbox" name="first" checked> <span data-en="This is my first time (30-min orientation)">처음 참여해요 (30분 오리엔테이션 함께)</span></label>
+      <div class="fld"><label for="v-note" data-en="Anything to tell us?">남기고 싶은 말</label><textarea id="v-note" name="note" placeholder="예: 대형견 산책 경험 있어요">대형견 산책 경험 있어요 (데모)</textarea></div>
+      <label class="check"><input type="checkbox" name="consent" required checked> <span data-en="I agree to the collection of my name and contact for volunteer coordination. Stored only in HOMEWARD's own system for 12 months, then deleted.">봉사 일정 안내 목적의 이름·연락처 수집에 동의합니다. 홈워드 자체 시스템에만 저장되며 12개월 후 파기됩니다.</span></label>
+      <div class="btn-row"><button type="submit" class="btn btn-primary btn-lg" data-en="Send application">신청하기</button></div>
+      <p class="small muted" data-en="Demo: your entry goes straight to the admin inbox of this demo — no spreadsheet, no email relay.">데모 — 신청은 이 데모의 관리자 접수함으로 바로 들어가요. 스프레드시트도, 메일 중계도 없이.</p>
+    </form>
+  </div>
+  <aside class="side-col">
+    <div class="side-card rv"><h3 data-en="Before you come">오시기 전에</h3><ol class="steps"><li data-en="Long trousers, sneakers, water bottle">긴 바지 · 운동화 · 개인 물병</li><li data-en="Arrive 10 minutes early for orientation">오리엔테이션은 10분 일찍</li><li data-en="No treats from outside (allergies)">외부 간식은 가져오지 마세요 (알레르기)</li></ol></div>
+    <div class="side-card rv"><h3 data-en="Flight volunteering">해외 이동봉사</h3><p data-en="Flying to Toronto, New York or Vancouver? A staff member meets you at check-in and the family meets you at arrivals. You pay your own ticket; nothing else.">토론토·뉴욕·밴쿠버행이라면 체크인에서 담당자가, 도착에서 입양 가족이 만나요. 항공권만 본인 부담.</p></div>
+  </aside>
+</div></section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/data.js"></script><script src="assets/js/data-en.js"></script><script src="assets/js/core.js"></script><script src="assets/js/site.js"></script>
+</body>
+</html>

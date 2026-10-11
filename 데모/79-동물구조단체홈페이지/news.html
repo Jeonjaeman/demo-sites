@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소식 · 문의 — 홈워드 HOMEWARD</title>
+<meta name="description" content="공지·언론·뉴스레터·후원내역, 자주 묻는 질문, 문의와 제보.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ffc800%27/%3E%3Cpath d=%27M16 7 6 15h2.8v9h5.4v-5.4h3.6V24h5.4v-9H26z%27 fill=%27%23141414%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="news">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<div id="site-header"></div>
+<main id="main">
+
+<section class="page-head"><div class="shell">
+  <nav class="crumb" aria-label="현재 위치"><a href="index.html" data-en="Home">홈</a><span>›</span><span data-en="News &amp; contact">소식 · 문의</span></nav>
+  <h1 class="title" data-en="News, questions, and a way to reach us">소식과 질문, 그리고 연락</h1>
+  <p class="lead" data-en="Notices, press, newsletters and financial reports. Below: the questions people ask most, and a form that goes straight to our team.">공지·언론·뉴스레터·후원내역. 아래에는 자주 묻는 질문과, 운영진에게 바로 닿는 문의·제보 폼이 있어요.</p>
+</div></section>
+
+<section class="sec" id="notice"><div class="shell">
+  <div class="tabs rv" id="news-tabs" role="tablist"></div>
+  <div id="news-list"></div>
+</div></section>
+
+<section class="sec sec-alt" id="faq"><div class="shell">
+  <div class="sec-head rv"><div><span class="eyebrow">FAQ</span><h2 class="sec-title" data-en="Questions people ask">자주 묻는 질문</h2></div></div>
+  <div id="faq-all" style="max-width:860px"></div>
+</div></section>
+
+<section class="sec" id="contact"><div class="shell two-col">
+  <div>
+    <div class="sec-head rv"><div><span class="eyebrow" data-en="Contact &amp; report">문의 · 제보</span><h2 class="sec-title" data-en="Write to us">운영진에게 보내기</h2><p data-en="Reports of abuse or neglect are read first. Reporter details are shared only with investigators.">학대·방치 제보는 가장 먼저 읽어요. 제보자 정보는 수사기관 외에 공개하지 않습니다.</p></div></div>
+    <form class="form rv" id="c-form" novalidate>
+      <div class="fld"><label data-en="What is it about?">무엇에 대한 연락인가요?</label><div class="radio-row"><label><input type="radio" name="kind" value="inquiry" checked> <span data-en="Question">문의</span></label><label><input type="radio" name="kind" value="report"> <span data-en="Report abuse / neglect">학대·방치 제보</span></label></div></div>
+      <div class="frow"><div class="fld"><label for="c-name" data-en="Name (optional for reports)">이름 <small data-en="(optional for reports)">(제보는 익명 가능)</small></label><input id="c-name" name="name" value="박홈워드 (데모)"></div><div class="fld"><label for="c-email" data-en="Email">이메일 *</label><input id="c-email" name="email" type="email" required value="demo@example.com"></div></div>
+      <div class="fld"><label for="c-phone" data-en="Phone">연락처</label><input id="c-phone" name="phone" value="010-0000-0000"></div>
+      <div class="fld only-report"><label for="c-place" data-en="Location">위치 *</label><input id="c-place" name="place" placeholder="예: 용인 처인구 ○○리, 파란 지붕 집 마당"></div>
+      <div class="fld"><label for="c-content" data-en="Message">내용 *</label><textarea id="c-content" name="content" required>작년 정기후원분 기부금 영수증을 다시 받을 수 있을까요? (데모)</textarea></div>
+      <label class="check only-report"><input type="checkbox" name="file"> <span data-en="I will attach photos (demo)">사진을 첨부할게요 (데모)</span></label>
+      <label class="check"><input type="checkbox" name="consent" required checked> <span data-en="I agree to the collection of my contact details to answer this message. Stored only in HOMEWARD's own system for 12 months.">답변을 위한 연락처 수집에 동의합니다. 홈워드 자체 시스템에만 12개월 보관됩니다.</span></label>
+      <div class="btn-row"><button type="submit" class="btn btn-primary btn-lg" data-en="Send">보내기</button></div>
+    </form>
+  </div>
+  <aside class="side-col">
+    <div class="side-card rv"><h3 data-en="Emergency?">긴급한가요?</h3><p data-en="If an animal is in immediate danger, call 112 first, then tell us.">동물이 지금 위험하다면 112에 먼저 신고하고, 그다음 알려 주세요.</p></div>
+    <div class="side-card rv"><h3 data-en="Other ways">다른 연락처</h3><p>hello@homeward.example<br><span data-en="Weekdays 10–18">평일 10~18시</span></p></div>
+    <div class="side-card rv" style="background:var(--brand)"><h3 data-en="Newsletter">뉴스레터</h3><p data-en="Monthly: who found a home, who just arrived, where the money went.">매달 가족을 만난 아이, 새로 온 아이, 후원금 사용 소식.</p><form class="nl-form" data-form="newsletter" style="margin-top:12px"><input type="email" value="demo@example.com" aria-label="이메일"><button class="btn btn-dark" type="submit" data-en="Subscribe">구독</button></form></div>
+  </aside>
+</div></section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/data.js"></script><script src="assets/js/data-en.js"></script><script src="assets/js/core.js"></script><script src="assets/js/site.js"></script>
+</body>
+</html>

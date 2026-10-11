@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>후원 — 홈워드 HOMEWARD</title>
+<meta name="description" content="정기·일시·물품 후원, 기업·팬클럽 모금. 후원금 사용 내역을 공개합니다. 결제는 외부 안전 결제 페이지에서.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ffc800%27/%3E%3Cpath d=%27M16 7 6 15h2.8v9h5.4v-5.4h3.6V24h5.4v-9H26z%27 fill=%27%23141414%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="donate">
+<a class="skip-nav" href="#main">본문 바로가기</a>
+<div id="site-header"></div>
+<main id="main">
+
+<section class="page-head"><div class="shell">
+  <nav class="crumb" aria-label="현재 위치"><a href="index.html" data-en="Home">홈</a><span>›</span><span data-en="Donate">후원</span></nav>
+  <h1 class="title" data-en="A small gift becomes one animal's treatment.">작은 후원이 한 아이의 치료가 됩니다.</h1>
+  <p class="lead" data-en="Monthly, one-off, supplies, or as a company or fan club. Payments happen on our partner's secure page — we never handle card details on this site.">정기, 일시, 물품, 기업·팬클럽. 결제는 외부 안전 결제 페이지에서 진행돼요. 이 사이트는 카드 정보를 다루지 않습니다.</p>
+</div></section>
+
+<section class="sec"><div class="shell donate-grid">
+  <div class="dcard rv"><span class="eyebrow" data-en="Monthly">정기 후원</span><h3 data-en="Pick an amount">금액을 골라 주세요</h3><p data-en="Change or cancel any time. Donation receipts are issued automatically.">언제든 변경·해지할 수 있고, 기부금 영수증은 자동 발급돼요.</p>
+    <div class="amounts" id="amounts"></div>
+    <div class="btn-row" style="margin-top:8px"><button type="button" class="btn btn-primary btn-lg" id="btn-regular" data-en="Start monthly giving">정기 후원 시작하기</button></div>
+    <p class="small muted" style="margin-top:14px" data-en="Opens our external payment partner (demo link).">외부 결제 사이트로 연결됩니다 (데모 링크).</p></div>
+  <div style="display:grid;gap:24px">
+    <div class="dcard rv"><span class="eyebrow" data-en="One-off">일시 후원</span><h3 data-en="Today, any amount">오늘, 원하는 만큼</h3><p data-en="Emergency rescues often need help right now.">긴급 구조는 지금 당장의 도움이 필요할 때가 많아요.</p><div class="btn-row"><button type="button" class="btn btn-dark" id="btn-once" data-en="Give once">일시 후원하기</button></div></div>
+    <div class="dcard rv" style="background:var(--brand)"><span class="eyebrow" data-en="Receipts">기부금 영수증</span><h3 data-en="Year-end tax settlement">연말정산</h3><p data-en="HOMEWARD is a registered donee organization. Receipts are registered with the tax service automatically.">홈워드는 지정기부금 단체입니다. 영수증은 국세청 간소화 서비스에 자동 등록돼요.</p></div>
+  </div>
+</div></section>
+
+<section class="sec sec-alt"><div class="shell two-col">
+  <div><div class="sec-head rv"><div><span class="eyebrow" data-en="Where it goes">사용 내역</span><h2 class="sec-title" data-en="First half of 2026">2026년 상반기</h2><p data-en="KRW 124 million. Treatment comes first, always.">총 1억 2,400만 원. 언제나 치료가 먼저입니다.</p></div></div><div id="usage-bars"></div><div class="btn-row"><a class="btn btn-ghost" href="news.html#report" data-en="Full report">상세 내역 보기</a></div></div>
+  <div class="rv"><img src="assets/img/care-1.webp" alt="" loading="lazy" style="border-radius:var(--r-xl);aspect-ratio:3/2;object-fit:cover;width:100%"></div>
+</div></section>
+
+<section class="sec"><div class="shell two-col">
+  <div><span class="eyebrow rv" data-en="Supplies">물품 후원</span><h2 class="sec-title rv" data-en="Always needed">늘 필요한 것들</h2><ul class="goods" id="goods"></ul><p class="rv" style="color:var(--ink-2)" data-en="Ship to: HOMEWARD Yongin Shelter, 00 ○○-ro, ○○-myeon, Yongin (fictional). We post a thank-you in the news when it arrives.">보내실 곳: 경기도 용인시 ○○면 ○○로 00 홈워드 보호센터 (가상 주소). 도착하면 소식 페이지에 감사 인사를 올려요.</p></div>
+  <div class="rv"><img src="assets/img/donate-goods.webp" alt="" loading="lazy" style="border-radius:var(--r-xl);aspect-ratio:3/2;object-fit:cover;width:100%"></div>
+</div></section>
+
+<section class="sec sec-alt"><div class="shell">
+  <div class="sec-head rv"><div><span class="eyebrow" data-en="Together">기업 · 팬클럽 · 모금</span><h2 class="sec-title" data-en="Give as a group">함께 모아서</h2></div></div>
+  <div class="ways">
+    <div class="way rv"><div class="ic">B</div><h3 data-en="Companies">기업 후원</h3><p data-en="Treatment sponsorship, supplies, employee volunteering days. We provide impact reports.">치료비 지정 후원, 물품, 임직원 봉사의 날. 활동 보고서를 드려요.</p></div>
+    <div class="way rv"><div class="ic">F</div><h3 data-en="Fan clubs">팬클럽 후원</h3><p data-en="Donate in your artist's name — we post a certificate and a thank-you story with photos.">아티스트 이름으로 후원하면 인증서와 사진이 담긴 감사 소식을 올려 드려요.</p></div>
+    <div class="way rv"><div class="ic">M</div><h3 data-en="Fundraising">모금 캠페인</h3><p data-en="Birthday fundraisers, running challenges, school projects. We help you set it up.">생일 모금, 러닝 챌린지, 학교 프로젝트. 준비를 함께 도와요.</p></div>
+  </div>
+  <div class="btn-row rv"><a class="btn btn-dark" href="news.html#contact" data-en="Talk to us">문의하기</a></div>
+</div></section>
+
+<section class="sec"><div class="shell two-col">
+  <div><span class="eyebrow rv" data-en="Campaign sample">모금 캠페인 · 법정 게시 사항</span><h2 class="sec-title rv" data-en="Every campaign page carries what the law requires">모금 글마다 법이 요구하는 표시가 자동으로 붙어요</h2><p class="rv" style="margin-top:14px;color:var(--ink-2)" data-en="Under the fundraising law, registered campaigns must display the registering authority, registration number, purpose, period, target, cost ratio and how results are disclosed. The CMS campaign template makes these fields required and renders the box below.">기부금품법상 등록된 모금은 등록청·등록번호·목적·기간·목표액·모집비용 비율·결과 공개 방법을 표시해야 합니다. CMS의 모금 글 템플릿은 이 칸을 필수로 받고, 아래 박스를 자동으로 만들어요.</p></div>
+  <div class="dcard rv" style="background:var(--surface)"><span class="eyebrow" data-en="Legal notice (sample)">법정 게시 박스 (데모 샘플)</span><h3 data-en="Heart treatment fund for Gureum">구름이 심장 치료비 모금</h3>
+    <dl class="meta-grid" style="margin-top:14px"><div><dt data-en="Registering authority">등록청</dt><dd data-en="Gyeonggi Province (fictional)">경기도 (가상)</dd></div><div><dt data-en="Registration no.">등록번호</dt><dd>2026-00-000 (가상)</dd></div><div><dt data-en="Purpose">모집 목적</dt><dd data-en="Treatment for rescued animals">구조 동물 치료비</dd></div><div><dt data-en="Period">모집 기간</dt><dd>2026.10.01 ~ 2026.12.31</dd></div><div><dt data-en="Target">목표액</dt><dd>6,000,000원</dd></div><div><dt data-en="Cost ratio">모집 비용 비율</dt><dd data-en="Under 5% of total">총액의 5% 이내</dd></div><div class="span2"><dt data-en="Results">결과 공개</dt><dd data-en="Posted on the News page within 30 days of closing">종료 후 30일 내 소식 페이지 공개 · 기부금 영수증 발급</dd></div></dl></div>
+</div></section>
+
+</main>
+<div id="site-footer"></div>
+<script src="assets/js/data.js"></script><script src="assets/js/data-en.js"></script><script src="assets/js/core.js"></script><script src="assets/js/site.js"></script>
+</body>
+</html>
