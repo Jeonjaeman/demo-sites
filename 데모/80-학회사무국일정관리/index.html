@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BUREAU 뷰로 · 학회 사무국 일정·미팅 (데모)</title>
+<meta name="description" content="학회 사무국 직원 10명이 매일 쓰는 일정·내부 미팅 관리 데모. 좌측 내비 · 중앙 콘텐츠 · 우측 작업 패널 — 중앙의 무엇을 눌러도 화면 이동 없이 우측에서 바로 입력하고 저장합니다.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='7' fill='%230f1419'/%3E%3Crect x='8' y='9' width='16' height='3.4' rx='1.7' fill='%23fff'/%3E%3Crect x='8' y='14.3' width='11' height='3.4' rx='1.7' fill='%231d9bf0'/%3E%3Crect x='8' y='19.6' width='13.5' height='3.4' rx='1.7' fill='%23fff' opacity='.55'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>
+  /* 로그인 세션 확인 — 없으면 체험 계정(사무국장)으로 자동 진입 (데모) */
+  (function () { try { if (!localStorage.getItem('bureau:session')) localStorage.setItem('bureau:session', JSON.stringify({ uid: 'u1', at: Date.now(), auto: true })); } catch (e) {} })();
+</script>
+</head>
+<body>
+<a class="sr" href="#main">본문으로 건너뛰기</a>
+<div class="app">
+  <header class="col-nav"><nav class="nav" id="nav" aria-label="주 메뉴"></nav></header>
+  <main class="col-main" id="main" tabindex="-1"></main>
+  <aside class="col-panel" id="panel" aria-label="작업 패널"></aside>
+</div>
+<div class="panel-scrim" id="scrim"></div>
+<button class="fab" type="button" data-act="new" aria-label="일정 등록"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/review.js"></script>
+<script src="assets/js/app.js"></script>
+<script src="assets/js/panel.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>

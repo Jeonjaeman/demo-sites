@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>로그인 · BUREAU 뷰로 (데모)</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='7' fill='%230f1419'/%3E%3Crect x='8' y='9' width='16' height='3.4' rx='1.7' fill='%23fff'/%3E%3Crect x='8' y='14.3' width='11' height='3.4' rx='1.7' fill='%231d9bf0'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  body { overflow: auto; }
+  .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 0 0 8px; }
+  .otp input { height: 56px; text-align: center; font-size: 24px; font-weight: 700; border: 1px solid var(--line-2); border-radius: 4px; outline: 0; font-variant-numeric: tabular-nums; transition: border-color .15s, box-shadow .15s; min-width: 0; }
+  .otp input:focus { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+  .step { display: none; }
+  .step.on { display: block; animation: pv-in .32s var(--ease-out); }
+  .lock-bar { height: 4px; border-radius: 2px; background: var(--bg-3); overflow: hidden; margin: 8px 0 0; }
+  .lock-bar i { display: block; height: 100%; background: var(--red); width: 0; transition: width .3s; }
+  .login-foot { text-align: center; color: var(--ink-2); font-size: 13px; margin-top: 24px; line-height: 19px; }
+</style>
+</head>
+<body class="login-page">
+<main class="login-card" aria-labelledby="h">
+  <div class="login-top"><a href="index.html" aria-label="BUREAU">
+    <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="26" height="26" rx="7" fill="#0f1419"/><rect x="8" y="9" width="16" height="3.4" rx="1.7" fill="#fff"/><rect x="8" y="14.3" width="11" height="3.4" rx="1.7" fill="#1d9bf0"/><rect x="8" y="19.6" width="13.5" height="3.4" rx="1.7" fill="#fff" opacity=".55"/></svg></a></div>
+  <div class="login-in">
+    <div id="reason"></div>
+
+    <!-- 1단계: 아이디·비밀번호 -->
+    <section class="step on" id="s1">
+      <h1 id="h">BUREAU에 로그인</h1>
+      <p>대한가온의학회 사무국 직원 전용 (가상의 학회입니다)</p>
+      <div class="fgroup"><div class="field"><label for="id">아이디</label><input id="id" value="hyewon@gaon-demo.kr" autocomplete="username"></div></div>
+      <div class="fgroup"><div class="field" id="pw-w"><label for="pw">비밀번호</label><input id="pw" type="password" value="demo-password" autocomplete="current-password"></div><div id="pw-msg"></div></div>
+      <button class="btn btn-dark btn-lg btn-block" id="next" type="button">다음</button>
+      <div class="divider">또는 체험 계정으로</div>
+      <button class="demo-acc" data-u="u1" type="button"><span class="av s32"><img src="assets/img/staff/u1.webp" alt=""></span><span class="t"><b>정혜원 · 사무국장</b><small>관리자 — 계정·접속기록·전체 일정</small></span></button>
+      <button class="demo-acc" data-u="u3" type="button"><span class="av s32"><img src="assets/img/staff/u3.webp" alt=""></span><span class="t"><b>박서연 · 학술팀 주임</b><small>직원 — 비공개 회의는 “비공개”로만 보임</small></span></button>
+      <button class="demo-acc" data-u="u5" type="button"><span class="av s32"><img src="assets/img/staff/u5.webp" alt=""></span><span class="t"><b>김다인 · 위원회 담당</b><small>직원 — 이사회·위원회 운영</small></span></button>
+      <button class="btn btn-ghost btn-block" id="fail" type="button" style="margin-top:6px;color:var(--ink-2);font-weight:500">로그인 5회 실패 잠금 재현</button>
+    </section>
+
+    <!-- 2단계: 인증 앱 6자리 -->
+    <section class="step" id="s2">
+      <h1>인증 앱의 6자리 코드</h1>
+      <p>사무실 밖에서도 접속하는 클라우드 웹이라 2단계 인증을 기본으로 씁니다. 휴대폰 인증 앱(Google Authenticator 등)에 보이는 숫자를 입력하세요.</p>
+      <div class="otp" id="otp" aria-label="6자리 인증 코드">
+        <input inputmode="numeric" maxlength="1" aria-label="1번째"><input inputmode="numeric" maxlength="1" aria-label="2번째"><input inputmode="numeric" maxlength="1" aria-label="3번째"><input inputmode="numeric" maxlength="1" aria-label="4번째"><input inputmode="numeric" maxlength="1" aria-label="5번째"><input inputmode="numeric" maxlength="1" aria-label="6번째">
+      </div>
+      <p class="field-hint" id="otp-hint">코드는 30초마다 바뀝니다.</p>
+      <button class="btn btn-blue btn-lg btn-block" id="fill" type="button" style="margin-top:16px">데모 코드 자동 입력</button>
+      <button class="btn btn-ghost btn-block" id="back1" type="button" style="margin-top:8px">← 다른 계정</button>
+    </section>
+  </div>
+  <p class="login-foot">30분 동안 사용이 없으면 자동으로 로그아웃됩니다 · 비밀번호는 일방향 암호화 저장<br>접속 일시·접속지·수행 업무가 1년 보관됩니다 (개인정보 안전성 확보조치 기준)</p>
+</main>
+<div class="toasts" id="toasts"></div>
+<script>
+(function () {
+  const $ = s => document.querySelector(s);
+  const q = new URLSearchParams(location.search);
+  let uid = 'u1', fails = 0;
+  const ips = '10.0.4.' + (20 + Math.floor(Math.random() * 10));
+  function toast(m, tone) { const t = document.createElement('div'); t.className = 'toast ' + (tone || ''); t.textContent = m; $('#toasts').appendChild(t); setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 220); }, 3000); }
+  if (q.get('reason') === 'idle') $('#reason').innerHTML = '<div class="note yellow" style="margin-top:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><p><b>30분 동안 사용이 없어 자동 로그아웃했어요.</b> 공용 PC에서 일정이 노출되지 않도록 하기 위해서입니다.</p></div>';
+  function log(act) {
+    try {
+      const db = JSON.parse(localStorage.getItem('bureau:db') || 'null');
+      if (db) { db.access.unshift({ uid: act.uid || 'x', at: Date.now(), ip: act.ip || ips, act: act.act }); localStorage.setItem('bureau:db', JSON.stringify(db)); }
+    } catch (e) {}
+  }
+  function go(step) { document.querySelectorAll('.step').forEach(s => s.classList.remove('on')); $(step).classList.add('on'); if (step === '#s2') setTimeout(() => $('#otp input').focus(), 80); }
+  $('#next').onclick = () => { uid = 'u1'; go('#s2'); };
+  document.querySelectorAll('.demo-acc').forEach(b => b.onclick = () => { uid = b.dataset.u; go('#s2'); });
+  $('#back1').onclick = () => go('#s1');
+  const boxes = Array.from(document.querySelectorAll('#otp input'));
+  boxes.forEach((b, i) => {
+    b.addEventListener('input', () => { b.value = b.value.replace(/\D/g, '').slice(0, 1); if (b.value && boxes[i + 1]) boxes[i + 1].focus(); check(); });
+    b.addEventListener('keydown', e => { if (e.key === 'Backspace' && !b.value && boxes[i - 1]) boxes[i - 1].focus(); });
+    b.addEventListener('paste', e => { const t = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6); if (t.length) { e.preventDefault(); t.split('').forEach((c, k) => { if (boxes[k]) boxes[k].value = c; }); check(); } });
+  });
+  function check() {
+    const v = boxes.map(b => b.value).join('');
+    if (v.length < 6) return;
+    $('#otp-hint').textContent = '확인 중…';
+    setTimeout(() => {
+      localStorage.setItem('bureau:session', JSON.stringify({ uid, at: Date.now() }));
+      log({ uid, act: '로그인 (비밀번호 + 2단계 인증)' });
+      location.href = 'index.html';
+    }, 500);
+  }
+  $('#fill').onclick = () => { '482917'.split('').forEach((c, k) => setTimeout(() => { boxes[k].value = c; if (k === 5) check(); }, k * 90)); };
+  $('#fail').onclick = () => {
+    fails++;
+    const w = $('#pw-w'); w.classList.add('invalid');
+    if (fails < 5) {
+      $('#pw-msg').innerHTML = '<p class="field-err">비밀번호가 맞지 않아요 (' + fails + '/5회). 5회 틀리면 10분 동안 잠깁니다.</p><div class="lock-bar"><i style="width:' + fails * 20 + '%"></i></div>';
+      log({ uid: 'x', ip: '203.0.113.48', act: '로그인 실패 (' + fails + '/5)' });
+      if (fails < 5) setTimeout(() => $('#fail').click(), 260);
+    } else {
+      $('#pw-msg').innerHTML = '<div class="note red" style="margin-top:8px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg><p><b>10분 동안 로그인이 잠겼어요.</b> 관리자에게 알림이 갔고, 접속기록에 남았습니다. (데모: 새로고침하면 풀려요)</p></div>';
+      $('#next').disabled = true;
+      log({ uid: 'x', ip: '203.0.113.48', act: '로그인 실패 5회 → 10분 잠금' });
+      toast('5회 실패 — 10분 잠금', 'red');
+    }
+  };
+  if (q.get('demo')) toast('「다음」 또는 체험 계정 → 「데모 코드 자동 입력」');
+})();
+</script>
+</body>
+</html>
