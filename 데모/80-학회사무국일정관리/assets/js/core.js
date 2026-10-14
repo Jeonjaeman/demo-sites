@@ -151,6 +151,7 @@
     const r = ev.rule, until = r.until || '9999-12-31', ex = ev.exdates || [], ov = ev.overrides || {};
     const push = d => {
       if (d < ev.date || d > until || ex.includes(d)) return;
+      if (r.skipHol !== false && HOLIDAYS[d] && !ov[d]) return; // 공휴일 회차 자동 제외 (임시공휴일 추가분 포함)
       const end = addDays(d, span);
       if (end < from || d > to) return;
       const o = Object.assign({}, ev, { date: d, endDate: span ? end : null, occ: d }, ov[d] || {});

@@ -1376,3 +1376,15 @@ div.row[role="button"] { cursor: pointer; }
   .p-foot .hint { display: none; }
   .seg button { height: 34px; }
 }
+
+/* 모바일 터치 영역 44px (QA 실측 지적 반영) */
+@media (max-width: 699px) {
+  .ibtn, .ibtn.sm { width: 44px; height: 44px; }
+  .seg button { height: 40px; padding: 0 16px; }
+  .chip, .chip.sm { min-height: 44px; }
+  .pp { height: 44px; }
+  .btn-sm { height: 40px; }
+  .md-n { width: 30px; height: 30px; }
+  .ex-btn { min-height: 44px; }
+  .tab { min-height: 48px; }
+}

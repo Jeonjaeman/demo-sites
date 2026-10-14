@@ -151,11 +151,11 @@
     else if (a === 'h-add') {
       const d = $('#h-date').value, n = $('#h-name').value.trim() || '임시공휴일';
       if (!d) return;
-      DB().customHol[d] = n; B.HOLIDAYS[d] = n; APP.save();
       const hit = B.dayItems(DB().events.filter(x => !x.deleted), d).filter(o => o.cat !== 'away');
+      DB().customHol[d] = n; B.HOLIDAYS[d] = n; APP.save();
       const who = Array.from(new Set(hit.flatMap(o => o.people || [])));
       $('#h-res').innerHTML = '<div class="note ' + (hit.length ? 'red' : 'green') + '" style="margin-top:10px">' + ic(hit.length ? 'alert' : 'checkC') + '<div><p><b>' + B.fmtMD(d) + ' ' + esc(n) + '</b> 추가 — ' + (hit.length ? '이 날 잡힌 일정 <b>' + hit.length + '건</b>이 있어요.' : '겹치는 일정이 없어요.') + '</p>' +
-        (hit.length ? '<ul>' + hit.map(o => '<li>' + esc(APP.dispTitle(o)) + ' · ' + (o.allDay ? '종일' : B.fmtShortT(o.start)) + '</li>').join('') + '</ul><div class="acts"><button class="btn btn-sm btn-dark" data-a="h-notify" data-n="' + who.length + '">담당자 ' + who.length + '명에게 알림</button></div>' : '') + '</div></div>';
+        (hit.length ? '<ul>' + hit.map(o => '<li>' + esc(APP.dispTitle(o)) + ' · ' + (o.allDay ? '종일' : B.fmtShortT(o.start)) + (o.occ ? ' — <b>반복 회차라 자동으로 빠졌어요</b>' : ' — 담당자 확인 필요') + '</li>').join('') + '</ul><div class="acts"><button class="btn btn-sm btn-dark" data-a="h-notify" data-n="' + who.length + '">담당자 ' + who.length + '명에게 알림</button></div>' : '') + '</div></div>';
       APP.render();
     }
     else if (a === 'h-notify') { APP.toast('담당자 ' + b.dataset.n + '명에게 “공휴일과 겹침” 알림을 보냈어요'); b.disabled = true; }

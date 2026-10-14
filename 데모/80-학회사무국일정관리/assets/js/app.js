@@ -227,7 +227,7 @@
     const [path, qs] = h.split('?');
     const parts = (path || 'home').split('/');
     S.view = NAV.find(n => n.id === parts[0]) ? parts[0] : 'home';
-    if (S.view === 'admin' && !isAdmin()) S.view = 'home';
+    if (S.view === 'admin' && !isAdmin()) { S.view = 'home'; history.replaceState(null, '', '#/home'); }
     S.sub = parts[1] || null;
     if (S.view === 'cal' && S.sub && /^(month|week|list)$/.test(S.sub)) { S.calMode = S.sub; B.store.set('calMode', S.calMode); }
     render();

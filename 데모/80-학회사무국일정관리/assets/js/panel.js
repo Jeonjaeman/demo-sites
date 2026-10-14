@@ -16,6 +16,8 @@
   ];
 
   let host, stack = [], F = null, dirty = false, pendingNav = null, saveDraftT = null;
+  /* 새 일정의 분류 기본값 = 소속팀 업무 (제목 단어가 맞으면 자동으로 바뀜) */
+  const DEF_CAT = { u1: 'admin', u2: 'conf', u3: 'conf', u4: 'edu', u5: 'comm', u6: 'grant', u7: 'intl', u8: 'admin', u9: 'admin' };
 
   /* ==================================================================
      패널 내비게이션 (스택 · ← 뒤로 · 작성 중 이탈 방지)
@@ -206,6 +208,8 @@
         people: p.people || [APP.S.me], room: p.room || null, loc: p.loc || '', vis: p.vis || 'all', rule: p.rule || null, note: p.note || '',
         agenda: p.agenda || [], ext: p.ext || [], city: p.city || '', notify: true, tab: 'info', catTouched: !!p.cat, dues: null, race: !!p.race
       };
+      if (!F.cat) { F.cat = DEF_CAT[APP.S.me] || 'admin'; F.autoCat = 'dept'; }
+      if (!p.cat && F.title) { const g = B.parseQuick(F.title, { today: TODAY, users: [], rooms: [] }); if (g.cat) { F.cat = g.cat; F.autoCat = true; } }
       if (!F.end) F.end = B.toHM(Math.min(B.toMin(F.start) + 60, 23 * 60 + 30));
       if (F.type === 'meeting' && !F.room) F.room = null;
       const draft = B.store.get('draft:new');
@@ -366,7 +370,7 @@
       if (B.HOLIDAYS[F.date]) n = '<div class="note yellow" style="margin:10px 0 0">' + ic('cal') + '<p><b>' + B.fmtMD(F.date) + '은 ' + esc(B.HOLIDAYS[F.date]) + '</b>이에요. 정말 이 날로 할까요? <button class="btn btn-ghost-blue btn-sm" data-p="qd" data-d="' + B.nextBiz(F.date) + '">다음 영업일 ' + B.fmtMD(B.nextBiz(F.date)) + '로</button></p></div>';
       else if (B.isOff(F.date) && F.cat !== 'conf' && F.cat !== 'edu') n = '<div class="note" style="margin:10px 0 0">' + ic('info') + '<p>' + B.fmtMD(F.date) + '은 주말이에요.</p></div>';
       if (F.rule) {
-        const occ = B.occurrences({ id: '_', date: F.date, rule: F.rule }, F.date, B.addDays(F.date, 180)).filter(o => B.HOLIDAYS[o.date]);
+        const occ = B.occurrences({ id: '_', date: F.date, rule: Object.assign({}, F.rule, { skipHol: false }) }, F.date, B.addDays(F.date, 180)).filter(o => B.HOLIDAYS[o.date]);
         if (occ.length) n += '<div class="note blue" style="margin:10px 0 0">' + ic('repeat') + '<p>앞으로 6개월 중 <b>' + occ.map(o => B.fmtMD(o.date) + ' ' + B.HOLIDAYS[o.date]).join(', ') + '</b> 회차가 공휴일과 겹쳐요. 저장하면 그 회차는 자동으로 빠지고(EXDATE), 원하면 회차만 옮길 수 있어요.</p></div>';
       }
       hol.innerHTML = n;
@@ -376,7 +380,7 @@
     if (hg) hg.innerHTML = HEALTH.test(F.title) && !(F.cat === 'away' && F.vis === 'busy') && !ro ? '<div class="note yellow" style="margin:10px 0 0">' + ic('lock') + '<div><p><b>건강 관련 내용은 민감정보예요.</b> “부재(개인)”로 바꾸면 다른 직원에겐 “부재”와 시간만 보입니다.</p><div class="acts"><button class="btn btn-sm btn-dark" data-p="to-private">부재(개인)로 바꾸기</button></div></div></div>' : '';
     // 분류 자동 추천
     const ca = $('#f-cat-auto');
-    if (ca) ca.textContent = F.autoCat ? '제목에서 자동 선택' : '';
+    if (ca) ca.textContent = F.autoCat === 'dept' ? '소속팀 기본값 · 제목에 맞춰 바뀜' : F.autoCat ? '제목에서 자동 선택' : '';
     // 충돌
     const cf = $('#f-conf');
     if (cf) {
@@ -571,6 +575,7 @@
     if (!F.cat) { ok = false; const ce = $('#f-cat-err'); if (ce) ce.innerHTML = '<p class="field-err">' + ic('alert') + '분류를 골라 주세요 — 나중에 찾을 때 필요해요</p>'; }
     if (!F.allDay && B.toMin(F.end) <= B.toMin(F.start)) { ok = false; APP.toast('종료 시각이 시작보다 늦어야 해요', { tone: 'red' }); }
     if (!F.people.length) { ok = false; APP.toast((F.type === 'meeting' ? '참석자' : '담당자') + '를 한 명 이상 골라 주세요', { tone: 'red' }); }
+    if (!ok && (!(F.title || '').trim() || !F.cat)) APP.toast(!(F.title || '').trim() ? '제목을 입력해 주세요' : '분류를 골라 주세요', { tone: 'red' });
     if (!ok) { const first = host.querySelector('.invalid input, .field-err'); if (first && first.scrollIntoView) first.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
     return ok;
   }
