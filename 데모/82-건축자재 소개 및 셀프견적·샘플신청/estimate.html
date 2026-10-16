@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>셀프견적 — 자재와 치수로 수량 계산 · ARGILO</title>
+<meta name="description" content="자재·판형·시공 위치·치수·개구부·패턴을 넣으면 장수·박스·부자재가 계산됩니다.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#19170e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2319170e'/%3E%3Cpath d='M8 8h16v16H8z' fill='none' stroke='%23b1a781' stroke-width='2'/%3E%3Cpath d='M14 14h10v10' fill='none' stroke='%23b1a781' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body data-page="estimate" class="grid-bg">
+<header id="site-header" data-theme="light"></header>
+<main id="main">
+
+<section class="page-hero" style="padding-bottom:var(--s6)"><div class="shell"><div class="crumbs"><a href="index.html">홈</a><span>셀프견적</span></div><div class="sec-head" style="margin:0"><div><h1 class="d-l" data-lines>몇 장이 필요한지,<br>지금 계산해 보세요.</h1><p class="lead-p">자재와 벽 치수를 넣으면 장수·박스·남는 장수·접착제까지 나옵니다. 입력하기 번거로우시면 예시를 눌러 보세요.</p></div><div class="presets" style="align-self:end"><button class="chip" data-preset="living">예시 · 거실 아트월</button><button class="chip" data-preset="facade">예시 · 주택 외벽 덧방</button><button class="chip" data-preset="brick">예시 · 벽돌형 포인트월</button><button class="chip" data-preset="column">예시 · 로비 기둥 감싸기</button></div></div></div></section>
+<section class="sec--info" style="padding-top:0" id="est"><div class="shell est">
+  <div class="est__steps">
+    <div class="step is-done"><div class="step__n">1</div><div><h3>자재와 판형</h3><p class="help">색상마다 판형이 다릅니다. 벽 높이에 맞는 길이를 추천합니다.</p><div class="tiles" id="st-prods"></div><div class="mt3" id="st-vars"></div></div></div>
+    <div class="step is-done"><div class="step__n">2</div><div><h3>시공 위치</h3><p class="help">위치에 따라 줄눈 기본값이 바뀌고, 외벽은 방화 성능 확인 여부를 묻습니다.</p><div class="seg" id="st-loc"></div><div class="fire-q" id="st-fire" hidden></div></div></div>
+    <div class="step"><div class="step__n">3</div><div><h3>벽 치수와 개구부</h3><p class="help">벽은 여러 면을 더할 수 있고, 창·문은 공제됩니다. 단위는 m입니다.</p><div class="walls" id="st-walls"></div><h4 class="mt3 mb2" style="font-size:14px;font-weight:600">개구부 공제</h4><div class="walls" id="st-opens"></div></div></div>
+    <div class="step"><div class="step__n">4</div><div><h3>붙이는 패턴</h3><p class="help">패턴에 따라 재단 손실(로스율)이 달라집니다. 값은 제품마다 관리자가 입력합니다.</p><div class="tiles" id="st-pats"></div></div></div>
+  </div>
+  <aside class="result" id="result" aria-live="polite"></aside>
+</div></section>
+<section class="sec sec--light"><div class="shell split"><div data-reveal><p class="eyebrow eyebrow--serif muted">How it works</p><h2 class="h2 mt3">계산식은 하나,<br>값은 제품마다.</h2></div><div data-reveal class="b-l muted"><p>순 면적에서 개구부를 빼고, 줄눈을 포함한 판 한 장의 모듈 면적으로 나눈 뒤, 패턴별 로스율을 곱해 올림합니다. 박스 단위로 다시 올림하고 남는 장수를 보여 드립니다. 벽돌형처럼 작은 판은 줄눈을 무시하면 20% 넘게 과다 발주되고, 대형 판은 개구부를 빼지 않으면 한 박스가 더 나옵니다. 그래서 둘 다 계산에 넣었습니다.</p><p class="mt3">판형·박스당 장수·로스율·줄눈·접착제 소요량은 전부 관리자 제품 데이터입니다. <a href="admin.html#/products" style="text-decoration:underline">관리자</a>에서 값을 바꾸면 이 계산기가 그 자리에서 따라옵니다.</p></div></div></section>
+
+</main>
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/calc.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/pages.js"></script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARGILO 아르길로 — 점토로 빚은 3mm의 돌 · 건축 내외장재</title>
+<meta name="description" content="휘고, 가볍고, 타지 않는 점토계 외장재 아르길로. 제품·시공사례·셀프견적·샘플신청.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#19170e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2319170e'/%3E%3Cpath d='M8 8h16v16H8z' fill='none' stroke='%23b1a781' stroke-width='2'/%3E%3Cpath d='M14 14h10v10' fill='none' stroke='%23b1a781' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+
+</head>
+<body data-page="home" class="">
+<header id="site-header" data-theme="dark"></header>
+<main id="main">
+
+<div class="intro" id="intro" aria-hidden="true"><div class="intro__word"></div><button class="intro__skip">건너뛰기</button></div>
+
+<section class="hero">
+  <div class="hero__media"><img src="assets/img/hero-facade.webp" alt="아르길로 라지 포맷 판으로 마감한 저층 건물 외벽, 석양빛" data-parallax="0.16" fetchpriority="high"></div>
+  <div class="hero__in">
+    <div>
+      <div class="hero__meta"><span>Clay-based flexible cladding</span><span>경기 안양 · 쇼룸</span></div>
+      <h1 class="d-xl hero__title" data-lines>점토로 빚은<br>3mm의 돌.</h1>
+    </div>
+    <div class="hero__side"><p>휘어지고, 타일의 4분의 1 무게이고, 불에 타지 않습니다. 벽 한 면의 치수만 넣으면 몇 박스가 필요한지 지금 바로 계산됩니다.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn--clay btn--arrow btn--mag" href="estimate.html">셀프견적 시작</a><a class="btn btn--light" href="products.html">제품 보기</a></div></div>
+  </div>
+  <div class="hero__scroll">Scroll</div>
+</section>
+
+<section class="sec">
+  <div class="shell">
+    <p class="eyebrow eyebrow--serif muted" data-reveal>What it is</p>
+    <p class="lead leadcol mt3" data-scrub>석회암의 결, 쪼갠 돌의 요철, 노출 콘크리트의 흙손 자국. 아르길로는 그 표정을 점토와 광물 분말로 다시 빚어 3밀리미터 안에 담습니다. 칼로 재단되고 기둥을 감싸며, 기존 벽 위에 그대로 붙습니다.</p>
+    <div class="stats mt5" id="home-stats"></div>
+  </div>
+</section>
+
+<section class="sec sec--light">
+  <div class="shell">
+    <div class="sec-head" data-reveal><h2 class="h2">네 가지 라인업</h2><p class="muted">스톤은 지금 주문할 수 있는 라인, 디스플레이와 쏠라는 국내 인증 상태를 함께 표기하는 소개·상담 라인입니다.</p></div>
+    <div class="tilt-grid" id="lineup" data-stagger="90"></div>
+  </div>
+</section>
+
+<section class="sec" style="padding-bottom:0">
+  <div class="shell"><div class="sec-head" data-reveal><h2 class="h2">자재는 현장에서 증명됩니다</h2><a class="link" href="cases.html">시공사례 전체</a></div></div>
+  <div class="bleed car" id="case-car" data-carousel data-auto="5000" aria-roledescription="carousel" aria-label="시공사례">
+    <div class="car__track" id="case-track"></div>
+    <div class="car__ctrl"><div class="car__dots"></div><div class="car__arrows"><button class="car__prev" aria-label="이전"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="car__next" aria-label="다음"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell mini">
+    <div data-reveal>
+      <p class="eyebrow eyebrow--serif muted">Self-estimate</p>
+      <h2 class="h2 mt3">숫자가 아니라<br>데이터로 계산합니다.</h2>
+      <p class="xl muted mt4">같은 아르길로라도 판은 1200×600부터 1200×3000까지, 박스에는 2장부터 60장까지 들어갑니다. 계산식을 코드에 박지 않고 제품마다 판형·박스·로스율을 데이터로 두었기 때문에, 관리자에서 로스율을 바꾸면 이 결과도 그 자리에서 바뀝니다.</p>
+      <a class="link mt4" href="estimate.html?preset=facade">외벽 예시로 전체 계산기 열기</a>
+    </div>
+    <div class="mini__panel" data-reveal>
+      <div class="field"><label for="mini-p">자재</label><select class="in" id="mini-p"></select></div>
+      <div class="frow"><div class="field"><label for="mini-w">벽 가로</label><div class="in-wrap"><input id="mini-w" type="number" step="0.1" min="0.1" value="4.2"><span class="unit">m</span></div></div><div class="field"><label for="mini-h">벽 세로</label><div class="in-wrap"><input id="mini-h" type="number" step="0.1" min="0.1" value="2.4"><span class="unit">m</span></div></div></div>
+      <div class="mini__out"><div><b class="num" id="mini-area">—</b><span>순 면적 ㎡</span></div><div><b class="num" id="mini-sheets">—</b><span>필요 장수</span></div><div><b class="num" id="mini-boxes">—</b><span>박스</span></div></div>
+      <p class="mini__note" id="mini-note"></p>
+      <a class="btn btn--ink btn--arrow" id="mini-go" href="estimate.html">개구부·패턴까지 넣어 정확히</a>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="band__media"><img src="assets/img/hero-courtyard.webp" alt="트라버틴 질감 아르길로 판으로 마감한 중정 벽" data-parallax="0.12"></div>
+  <div class="band__in">
+    <p class="eyebrow">Fire performance</p>
+    <h2 class="h2" data-reveal>외벽은 성적서로 말합니다.</h2>
+    <p class="xl" data-reveal>3층 이상이거나 높이 9미터를 넘는 건물의 외벽 마감재는 방화 성능을 확인해야 합니다. 제품마다 국내 시험성적서와 제조사의 해외 인증을 분리해 표기하고, 셀프견적에서 외벽을 고르면 건물 높이부터 묻습니다.</p>
+    <div class="band__stats" data-reveal><div><b class="num">KS F ISO 1182</b><span>불연 시험 규격</span></div><div><b class="num">9m · 3F</b><span>외벽 방화 확인 기준</span></div><div><b class="num">D-30</b><span>성적서 만료 사전 경고</span></div></div>
+    <div class="mt5" data-reveal><a class="btn btn--light btn--arrow" href="resources.html?cat=cert">시험성적서 내려받기</a></div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="shell split">
+    <div data-reveal>
+      <p class="eyebrow eyebrow--serif muted">Resources & Support</p>
+      <h2 class="h2 mt3">설계자에게는 자료를,<br>건축주에게는 샘플을.</h2>
+      <p class="muted b-l mt4">시험성적서·시방서·시공 가이드는 로그인 없이 내려받고, 샘플은 개인 5개까지 무료로 보내 드립니다. 궁금한 것은 카카오톡으로 바로 물어보세요.</p>
+      <div class="mt4" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn--ink" href="resources.html">자료실</a><a class="btn btn--sand" href="sample.html">샘플 신청</a><a class="btn btn--ghost" href="support.html">고객센터</a></div>
+    </div>
+    <div data-reveal><p class="eyebrow muted mb3">News</p><div class="news-list" id="home-news"></div></div>
+  </div>
+</section>
+
+<section class="sec--night" style="padding:0">
+  <div class="marquee"><div class="marquee__in"><span>Clay · Mineral · 3mm</span><span>휘어지는 돌</span><span>타일의 1/4 무게</span><span>불연 · 준불연 국내 성적서</span><span>기존 벽 위 덧방</span><span>곡면 · 기둥 감싸기</span><span>Clay · Mineral · 3mm</span><span>휘어지는 돌</span><span>타일의 1/4 무게</span><span>불연 · 준불연 국내 성적서</span><span>기존 벽 위 덧방</span><span>곡면 · 기둥 감싸기</span></div></div>
+</section>
+
+</main>
+<footer id="site-footer"></footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/calc.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/pages.js"></script>
+</body>
+</html>
