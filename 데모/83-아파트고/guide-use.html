@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이용 안내 — 아파트고</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+<div data-header></div>
+<main id="main" class="shell page">
+  <div class="page-head"><div><span class="eyebrow">이용 안내</span><h1 class="h1">검색부터 환불까지, 알아 두면 좋은 것</h1></div></div>
+
+  <section class="use-sec" id="how"><h2 class="h2">이용 방법</h2>
+    <ol class="steps" data-reveal-group>
+      <li class="step"><h3 class="h3">단지 검색</h3><p>단지명 일부나 주소(동 이름)로 찾습니다. 이름이 같은 1차·2차 단지는 주소·준공년도·세대수로 구분해 보여 드립니다.</p></li>
+      <li class="step"><h3 class="h3">타입 미리보기</h3><p>구매 전 저해상 미리보기로 방 구성과 발코니 확장 여부를 확인하세요. 치수 일부는 가려지고 확대는 200%로 제한됩니다.</p></li>
+      <li class="step"><h3 class="h3">구매 · 열람 · 다운로드</h3><p>결제 즉시 뷰어에서 치수·실별 면적을 확인하고, 구매한 포맷으로 90일 동안 5회까지 내려받습니다.</p></li>
+    </ol></section>
+
+  <section class="use-sec" id="formats"><h2 class="h2">포맷과 가격 <span class="g-src" style="font-size:12px;color:var(--ink-3)">부가세 포함 총액</span></h2>
+    <div class="table-wrap"><table class="table"><thead><tr><th>포맷</th><th>내용</th><th>용도</th><th class="num">가격</th></tr></thead><tbody id="fmt-rows"></tbody></table></div>
+    <p class="src-caption mt-3">같은 단지에서 3개 타입 이상을 한 번에 사면 10% 묶음 할인이 자동 적용됩니다. 일부 타입은 DWG를 제공하지 않습니다.</p></section>
+
+  <section class="use-sec" id="refund"><h2 class="h2">청약철회 · 환불</h2>
+    <div class="notice notice-info mb-4"><svg class="ico ico-16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span>도면은 디지털 콘텐츠입니다. <strong>뷰어 열람 또는 다운로드를 시작한 도면은 환불되지 않습니다</strong>(전자상거래법 제17조 제2항 제5호). 그래서 구매 전 미리보기를 반드시 제공합니다.</span></div>
+    <div class="faq">
+      <details open><summary>여러 도면을 함께 샀는데 하나만 열었어요. 나머지는 환불되나요?</summary><div class="fa">네. 도면 하나하나가 별개의 콘텐츠라 <strong>열지 않은 도면은 주문일로부터 7일 안에 환불</strong>됩니다. 주문 상세에서 도면별 열람 상태를 보고 환불할 도면만 골라 신청하세요.</div></details>
+      <details><summary>‘열람 시작’은 정확히 언제인가요?</summary><div class="fa">결제 완료 후 「지금 열기」를 눌러 확인 모달에서 「열람 시작」을 누른 시각, 또는 파일을 처음 내려받은 시각입니다. 이 시각은 주문 내역에 기록되고 환불 가능 여부를 판단하는 기준이 됩니다.</div></details>
+      <details><summary>1차·2차 단지를 잘못 골랐어요.</summary><div class="fa">열지 않았다면 환불 신청에서 사유를 「동명이 단지를 잘못 골랐습니다」로 선택해 주세요. 이미 열었다면 고객센터로 문의하시면 같은 단지의 다른 타입과 교환을 도와드립니다(1회).</div></details>
+      <details><summary>환불은 언제 들어오나요?</summary><div class="fa">결제수단으로 영업일 3일 안에 환급됩니다. 카드 결제는 카드사 사정에 따라 다음 달 청구에서 조정될 수 있습니다.</div></details>
+    </div></section>
+
+  <section class="use-sec" id="license"><h2 class="h2">이용 범위</h2>
+    <div class="license-card"><div class="lc-ok"><b>가능</b>사내 설계·견적·상담 자료로 사용, 인쇄, 편집(DWG)</div><div class="lc-no"><b>불가</b>재판매·양도·대여, 웹하드·메신저·커뮤니티 공유, 다른 서비스에 게재</div><div class="lc-ask"><b>약관 확인</b>광고·분양 홍보물 게재, 출판물 수록 — 별도 협의</div></div>
+    <p class="src-caption mt-3">구매본에는 구매자 식별 정보가 희미하게 포함됩니다. 유출 시 추적에 쓰이며 인쇄·편집에는 영향이 없습니다.</p></section>
+
+  <section class="use-sec" id="accuracy"><h2 class="h2">도면의 정확도</h2>
+    <p class="prose" style="max-width:72ch;color:var(--ink-2);line-height:1.65">도면마다 <strong>작성 기준</strong>(분양 도면 / 실측), <strong>발코니 확장 반영 여부</strong>, <strong>갱신일·버전</strong>, <strong>출처 유형</strong>(자체 재작도 / 건설사 제공)을 배지로 표시합니다. 분양 도면 기준 도면은 입주 후 확장·구조 변경이 반영되어 있지 않을 수 있습니다. 자재 발주·시공 전에는 반드시 현장을 실측하세요. 도면은 근사치이며 설계 도서를 대신하지 않습니다.</p></section>
+
+  <section class="use-sec" id="biz"><h2 class="h2">사업자 회원</h2>
+    <div class="trust-items" style="grid-template-columns:repeat(3,1fr)">
+      <div class="trust-item"><div class="ti-ico"><svg class="ico" viewBox="0 0 24 24"><path d="M5 3h14v18l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V3z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></div><div><h4>세금계산서 자동 발행</h4><p>사업자 정보가 주문서에 자동으로 채워지고, 결제 즉시 계산서 수신 이메일로 발행됩니다.</p></div></div>
+      <div class="trust-item"><div class="ti-ico"><svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><div><h4>내 도면함</h4><p>구매한 도면이 단지별로 쌓이고, 이미 산 도면은 장바구니에서 경고해 이중 결제를 막습니다.</p></div></div>
+      <div class="trust-item"><div class="ti-ico"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M16 15.5a5 5 0 0 1 5.5 4.5"/></svg></div><div><h4>개인 ↔ 사업자 전환</h4><p>한 계정으로 회사 구매와 개인 구매를 번갈아 할 수 있습니다. 증빙 기본값만 회원정보에서 정하세요.</p></div></div>
+    </div></section>
+</main>
+<div data-footer></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/ui.js"></script>
+<script>
+UI.init();
+document.getElementById('fmt-rows').innerHTML = [['jpg', '인쇄·상담 자료'], ['pdf', '발주서 첨부·인쇄'], ['dwg', '설계·시공 편집']].map(([k, u]) => { const F = APT.FORMATS[k]; return `<tr><td><b>${F.label}</b> <span class="muted-3">${F.ext}</span></td><td>${F.desc}</td><td>${u}</td><td class="num">${UI.fmt.price(F.price)} <span class="price-sub">공급가 ${UI.fmt.won(APT.calc.supplyOf(F.price))}</span></td></tr>`; }).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아파트고 — 아파트 단지 평면도, 검색부터 열람까지</title>
+<meta name="description" content="전국 아파트 단지의 타입별 평면도를 미리보기로 확인하고 JPG·PDF·CAD로 구매해 뷰어에서 바로 열람합니다. UI/UX 리뉴얼 시안 데모.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+<div data-header></div>
+<main id="main">
+
+  <!-- C-01 히어로 -->
+  <section class="hero">
+    <div class="shell hero-in is-in">
+      <div>
+        <span class="badge badge-live">오늘 도면 36건 신규 등록</span>
+        <h1 class="display-xl line-reveal-group">
+          <span class="line-reveal"><span>단지를 찾고,</span></span>
+          <span class="line-reveal"><span>타입을 고르고,</span></span>
+          <span class="line-reveal"><span>도면을 바로 엽니다.</span></span>
+        </h1>
+        <p class="lead">전국 아파트 단지의 단위세대 평면도를 타입별로 정리했습니다. 구매 전 미리보기로 확인하고, 결제 후 뷰어에서 치수까지 바로 보세요.</p>
+        <form class="search-big" action="search.html" role="search" autocomplete="off">
+          <div class="sb-box">
+            <svg class="ico ico-24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="q" name="q" type="search" placeholder="단지명 또는 주소 (예: 헬리오, 정자동)" aria-label="단지명 또는 주소" aria-expanded="false" aria-controls="sb-drop" value="">
+            <button class="btn btn-primary" type="submit">검색</button>
+          </div>
+          <div class="sb-drop" id="sb-drop" role="listbox" aria-label="단지 제안"></div>
+        </form>
+        <div class="hero-chips">
+          <span class="lbl">바로 가기</span>
+          <a class="chip" href="search.html?region=서울">서울</a>
+          <a class="chip" href="search.html?region=경기">경기</a>
+          <a class="chip" href="search.html?region=인천">인천</a>
+          <a class="chip" href="search.html?region=부산">부산</a>
+          <a class="chip" href="complex.html?id=c01" data-tip="입력 없이 예시 단지로 바로 이동">예시로 보기 →</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><span class="sv" data-count="12480">0</span><span class="sl">등록 단지</span></div>
+          <div class="stat"><span class="sv" data-count="48920">0</span><span class="sl">타입별 도면</span></div>
+          <div class="stat"><span class="sv">7일</span><span class="sl">열지 않은 도면 환불</span></div>
+        </div>
+      </div>
+      <figure class="hero-media">
+        <img src="assets/img/hero-desk.webp" srcset="assets/img/hero-desk-m.webp 720w, assets/img/hero-desk.webp 1800w" sizes="(max-width:1023px) 100vw, 48vw" alt="책상 위에 펼쳐진 아파트 단위세대 평면도와 축척자" width="1800" height="1007" fetchpriority="high">
+        <figcaption class="hm-tag"><span>서강 리버파크 <b>84A</b></span><span>전용 84.97㎡ · 방 3 욕실 2</span><span><b>미리보기 가능</b></span></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 이용 3단계 — 스티키 도면 시퀀스 -->
+  <section class="section seq-sec" id="how">
+    <div class="shell">
+      <div class="sec-head" data-reveal>
+        <div><span class="eyebrow">이용 방법</span><h2 class="display">검색 → 미리보기 → 구매·열람. 세 단계면 끝납니다.</h2></div>
+        <a class="btn btn-secondary" href="guide-use.html">자세한 이용 안내</a>
+      </div>
+      <div class="seq">
+        <figure class="seq-fig" data-stage="1" aria-hidden="true">
+          <div class="seq-card">
+            <div class="seq-layer seq-l1" id="seq-l1"></div>
+            <div class="seq-layer seq-l2" id="seq-l2"></div>
+            <div class="seq-layer seq-l3" id="seq-l3"></div>
+            <div class="seq-cap"><span class="badge badge-brand" data-cap>검색 결과</span><span class="micro muted-3" data-cap2>서강 리버파크 84A · 전용 84.97㎡</span></div>
+          </div>
+        </figure>
+        <ol class="seq-steps">
+          <li class="seq-step" data-step="1"><span class="eyebrow">01</span><h3 class="h2">단지를 찾습니다</h3><p>단지명 일부만 입력해도 주소·준공·세대수로 구분해 보여 드립니다. 이름이 같은 1차·2차 단지를 헷갈리지 않게.</p></li>
+          <li class="seq-step" data-step="2"><span class="eyebrow">02</span><h3 class="h2">미리보기로 확인합니다</h3><p>구매 전에 저해상 미리보기로 방 구성과 확장 여부를 확인하세요. 치수 일부는 가려지고 확대는 200%로 제한됩니다. 미리보기는 청약철회 안내의 법적 요건이기도 합니다.</p></li>
+          <li class="seq-step" data-step="3"><span class="eyebrow">03</span><h3 class="h2">구매 후 바로 엽니다</h3><p>결제 즉시 뷰어에서 치수·실별 면적을 확인하고 JPG·PDF·CAD로 내려받습니다. 열지 않은 도면은 7일 안에 환불됩니다.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 최근 등록 도면 -->
+  <section class="section" style="padding-top:0">
+    <div class="shell">
+      <div class="sec-head" data-reveal>
+        <div><span class="eyebrow">최근 등록</span><h2 class="display">이번 주에 새로 올라온 단지</h2></div>
+        <a class="btn btn-ghost" href="search.html">전체 단지 보기 →</a>
+      </div>
+      <div class="cards-4" id="recent-cards" data-reveal-group></div>
+    </div>
+  </section>
+
+  <!-- ② 풀블리드 이미지 단락 -->
+  <section class="bleed-para bleed" id="why">
+    <div class="bp-bg" data-parallax style="background-image:url(assets/img/blueprint-macro.webp)"></div>
+    <div class="shell bp-in">
+      <div data-reveal>
+        <span class="eyebrow">무료 평면도와 무엇이 다른가</span>
+        <h2 class="display">포털의 평면도는 '모양'을 보여 주고,<br>아파트고의 도면은 '치수'를 줍니다.</h2>
+        <p>인테리어 견적, 가구 배치, 확장 시공은 벽 두께와 실별 치수 없이 시작할 수 없습니다. 타입별로 치수선·실별 면적·레이어가 정리된 도면을 편집 가능한 포맷으로 드립니다.</p>
+      </div>
+      <div class="compare-list" data-reveal>
+        <div class="cl-head"><span>항목</span><span>무료 평면도</span><span>아파트고</span></div>
+        <div class="cl-row"><span>치수선·벽 두께</span><span class="no">없음</span><span class="ok">포함</span></div>
+        <div class="cl-row"><span>실별 면적 (㎡)</span><span class="no">없음</span><span class="ok">포함</span></div>
+        <div class="cl-row"><span>해상도</span><span class="no">~800px</span><span class="ok">4000px</span></div>
+        <div class="cl-row"><span>CAD 레이어 (DWG)</span><span class="no">없음</span><span class="ok">분리 제공</span></div>
+        <div class="cl-row"><span>작성 기준·갱신일 표기</span><span class="no">없음</span><span class="ok">표기</span></div>
+        <div class="cl-row"><span>워터마크</span><span class="no">있음</span><span class="ok">구매본 없음*</span></div>
+        <p class="micro" style="margin-top:12px;color:rgba(255,255,255,.55)">* 구매본에는 구매자 식별 정보가 희미하게 포함됩니다(유출 추적용). 인쇄·편집에는 영향이 없습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ 텍스트 스크럽 -->
+  <section class="section">
+    <div class="shell">
+      <p class="scrub" data-scrub>도면 하나를 잘못 고르면 자재 발주가 틀어집니다. 그래서 아파트고는 단지를 주소와 준공년도로 구분하고, 타입마다 작성 기준과 확장 반영 여부를 함께 적습니다.</p>
+    </div>
+  </section>
+
+  <!-- 포맷 안내 -->
+  <section class="section" style="padding-top:0">
+    <div class="shell">
+      <div class="sec-head" data-reveal>
+        <div><span class="eyebrow">포맷과 가격</span><h2 class="display">쓰임에 맞는 포맷으로. 가격은 부가세 포함 총액입니다.</h2></div>
+      </div>
+      <div class="fmt-cards" id="fmt-cards" data-reveal-group></div>
+      <p class="src-caption mt-4">가격은 타입·단지에 따라 다를 수 있습니다. 같은 단지 3개 타입 이상 구매 시 10% 묶음 할인이 자동 적용됩니다.</p>
+    </div>
+  </section>
+
+  <!-- 출처·정확도 — 주석 달린 실제 도면 -->
+  <section class="section" style="padding-top:0">
+    <div class="shell trust">
+      <figure class="tr-plan" data-reveal>
+        <div class="tr-plan-svg" id="tr-plan"></div>
+        <div class="tr-callout c1"><span class="badge badge-outline">분양 도면 기준</span><i></i></div>
+        <div class="tr-callout c2"><span class="badge badge-info">확장 미반영</span><i></i></div>
+        <div class="tr-callout c3"><span class="badge badge-outline">갱신 2026.10.14 · v3</span><i></i></div>
+        <div class="tr-callout c4"><span class="badge badge-brand">출처 · 자체 재작도</span><i></i></div>
+      </figure>
+      <div data-reveal>
+        <span class="eyebrow">믿고 쓰는 도면</span>
+        <h2 class="display">출처와 작성 기준을 도면마다 적습니다.</h2>
+        <p class="lead" style="margin-top:16px">자체 재작도인지 건설사 제공인지, 분양 도면 기준인지 실측인지, 발코니 확장이 반영됐는지, 언제 갱신됐는지를 배지로 보여 줍니다. 도면은 근사치이며 실제 세대와 다를 수 있으므로 설계·시공 전 실측을 권합니다.</p>
+        <p class="body-sm muted mt-4">이용 범위도 구매 전에 알려 드립니다 — 사내 설계·상담용은 가능하고 재판매·온라인 공유는 불가합니다.</p>
+        <a class="btn btn-secondary mt-6" href="guide-use.html#accuracy">정확도·이용 범위 안내</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 사업자 -->
+  <section class="section" style="padding-top:0">
+    <div class="shell">
+      <div class="biz" data-reveal>
+        <div>
+          <span class="eyebrow">인테리어·중개 사업자</span>
+          <h2 class="display">매번 결제하고 증빙 다시 요청하는 일, 없앴습니다.</h2>
+          <p>사업자 회원은 세금계산서 정보가 주문서에 자동으로 채워지고, 구매한 도면은 내 도면함에 단지별로 쌓입니다. 같은 단지 3개 타입 이상은 묶음 할인.</p>
+          <div class="flex gap-2 mt-6 wrap"><a class="btn btn-brand btn-lg" href="signup.html">사업자 회원가입</a><a class="btn btn-ghost btn-lg" href="my.html">내 도면함 둘러보기 →</a></div>
+        </div>
+        <div class="biz-crop" aria-hidden="true">
+          <div class="biz-crop-in">
+            <div class="micro muted-3">주문서 · 증빙</div>
+            <div class="pay-opts" style="grid-template-columns:1fr;gap:6px;margin-top:8px">
+              <div class="radio-card" style="padding:12px;border-color:transparent;box-shadow:var(--sh-active)"><span class="rc-dot" style="border-color:var(--action)"><span style="width:10px;height:10px;border-radius:50%;background:var(--action);display:block"></span></span><span><b>세금계산서</b><br><span class="body-sm muted">온리빙 인테리어 · 214-88-01923</span></span></div>
+            </div>
+            <div class="co-grid mt-3" style="gap:8px"><div class="field"><label class="micro">상호 · 사업자번호</label><div class="input input-sm" style="display:flex;align-items:center;background:var(--surface-1)">온리빙 인테리어 · 214-88-01923</div></div><div class="field"><label class="micro">계산서 수신 이메일</label><div class="input input-sm" style="display:flex;align-items:center;background:var(--surface-1)">tax@onliving.example.com</div></div></div>
+            <div class="row-between mt-3"><span class="body-sm muted">자동으로 채워짐 · 수정 가능</span><span class="badge badge-pos">묶음 할인 10%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<div data-footer></div>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/pages/home.js"></script>
+</body>
+</html>
