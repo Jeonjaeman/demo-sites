@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATHLEDGER 애슬레저 — 선수 실증 데이터 관리 웹 MVP 데모</title>
+<meta name="description" content="상지 절단·기능 제한 선수의 신체·제품·운동·IMU 센서 데이터를 저장·조회·비교·시각화하는 웹 MVP 제안용 데모. 선수 웹(한 손 모바일) + 관리자 웹. 데모 데이터는 전부 가상입니다.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='7' fill='%2318191b'/%3E%3Cpath d='M11 9h10l2 6-2 9H11l-2-9z' fill='%235090f7'/%3E%3Cpath d='M16 9h5l2 6-2 9h-5z' fill='%23ef5c31'/%3E%3Ccircle cx='16' cy='15' r='2.3' fill='%23ecff3e'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  .hub-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 0; }
+  .hub-top .brand { padding: 0; }
+  .hub-stage .stage { min-height: 520px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, auto); gap: 32px; margin-top: 32px; }
+  .hero-stats .n { font-size: 32px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+  .hero-stats .l { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+  .shot-frame { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: var(--r-md); border: 1px solid var(--line-subtle); background: var(--surface-2); }
+  .shot-frame iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 900px; border: 0; transform-origin: 0 0; pointer-events: none; }
+  .shot-frame.phone-shot iframe { width: 1280px; height: 900px; }
+  .lr-diagram { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-md); overflow: hidden; }
+  .lr-diagram > div { background: var(--surface-1); padding: 24px; }
+  .lr-diagram h4 { font-size: 16px; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+  footer { border-top: 1px solid var(--line); padding-top: 24px; color: var(--ink-3); font-size: 12px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 960px) { .hero-stats { gap: 20px; } .lr-diagram { grid-template-columns: 1fr; } .hub-stage .stage { min-height: 380px; } }
+</style>
+</head>
+<body>
+<main class="hub">
+  <div class="hub-top">
+    <div class="brand"><span class="mark" id="logo"></span><div><b>ATHLEDGER <span class="muted" style="font-weight:500">애슬레저</span></b><small>선수 실증 데이터 관리 웹 MVP · 제안용 데모</small></div></div>
+    <div class="row"><a class="btn sm" href="athlete.html">선수 웹</a><a class="btn sm" href="admin.html">관리자 웹</a><a class="btn sm ghost" href="admin.html#/review?tab=findings">제안 검토</a></div>
+  </div>
+
+  <section class="hub-hero">
+    <div>
+      <div class="eyebrow ko rv">위시켓 · 선수 실증 데이터 관리 웹 시스템 MVP 개발 · 400만원 · 30일</div>
+      <h1 class="display rv" style="margin-top:14px">브라 속 센서 하나의<br><em>"좌우"</em>를<br>먼저 정의했습니다.</h1>
+      <p class="lede rv">상지 절단·기능 제한 선수의 신체·제품·운동·IMU 데이터를 한곳에 저장하고, 조건이 같은 세션끼리만 비교하게 하며, 엑셀이 데이터를 망가뜨리지 않게 내보내는 MVP. 선수 웹은 한 손으로, 관리자 웹은 3D 바디와 시계열로 봅니다.</p>
+      <div class="cta-row rv"><a class="btn primary lg" href="admin.html#/session/SES-005">관리자 · 세션 상세 열기</a><a class="btn lg" href="athlete.html#/home?as=ATH-0001">선수 웹 체험 (ATH-0001)</a></div>
+      <div class="hero-stats rv"><div><div class="n"><span data-n="17">0</span></div><div class="l">리서치 발견 → 전부 화면으로</div></div><div><div class="n"><span data-n="8">0</span></div><div class="l">불량 CSV 픽스처 · 실제 판정</div></div><div><div class="n"><span data-n="21">0</span></div><div class="l">공고 조항 체크리스트</div></div></div>
+    </div>
+    <div class="hub-stage rv"><div class="stage" id="heroStage"><canvas id="heroCv"></canvas><div class="hud"><div class="seg" id="heroMode"><button data-m="symmetry" aria-pressed="true">좌 / 우</button><button data-m="heat">부하</button><button data-m="fit">압박</button></div></div><div class="hud-b"><div class="legend"><span><i style="background:#5090f7"></i>왼쪽</span><span><i style="background:#ef5c31"></i>오른쪽 (건측)</span><span><i style="background:#9fb0bb;opacity:.5"></i>절단 부위</span></div><span class="angle" id="heroAngle">ATH-0001 · 왼쪽 전완 절단 · 드래그로 회전</span></div></div></div>
+  </section>
+
+  <section class="role-cards rv">
+    <a class="role-card" href="athlete.html">
+      <div class="row between"><div class="heading" style="display:flex;gap:8px;align-items:center;white-space:nowrap" id="icPhone"><span>선수 웹</span></div><span class="badge accent">모바일 · 한 손</span></div>
+      <div class="shot-frame phone-shot"><iframe src="athlete.html#/home?as=ATH-0001" loading="lazy" tabindex="-1" title="선수 웹 미리보기"></iframe></div>
+      <p class="dim body-s">익명 ID로 들어가 본인 기록만 봅니다. 세션 기록 → CSV 올리기(탭 한 번, 단위·방향·시간 자동 검사) → 3D 바디·좌우 분포 → 착용 평가(1~5 탭). 드래그·핀치 없음, 터치 44px 이상.</p>
+      <div class="row"><span class="chip">ATH-0001 동의 완료</span><span class="chip" style="border-color:var(--warn);color:var(--warn)">ATH-0009 업로드 차단</span><span class="chip">C-02 대리 입력</span></div>
+    </a>
+    <a class="role-card" href="admin.html">
+      <div class="row between"><div class="heading" style="display:flex;gap:8px;align-items:center;white-space:nowrap" id="icMon"><span>관리자 웹</span></div><span class="badge accent">데스크톱 · 1~3인</span></div>
+      <div class="shot-frame"><iframe src="admin.html#/session/SES-005" loading="lazy" tabindex="-1" title="관리자 웹 미리보기"></iframe></div>
+      <p class="dim body-s">선수·제품·세션·동의를 관리하고, 세션 상세에서 3D 바디 히트맵 + IMU 스크럽 + 좌우 분포 + 측정 조건 지문을 봅니다. 비교 화면은 조건이 다르면 먼저 경고하고, 추출은 엑셀이 망가뜨리지 않는 3종으로 나갑니다.</p>
+      <div class="row"><span class="chip">관리자</span><span class="chip">매핑 담당</span><span class="chip">수탁사</span><span class="chip">규격 검증기</span></div>
+    </a>
+  </section>
+
+  <section class="stack rv" style="gap:16px">
+    <div><div class="eyebrow ko">공고가 "좌우 움직임 비교"라고 쓴 것의 실체</div><h2 class="title" style="margin-top:8px">센서 1개로 나오는 좌우는 팔이 아니라 몸통입니다</h2></div>
+    <div class="lr-diagram">
+      <div><h4 id="icS1">IMU 1개 (브라 앞중심)</h4><p class="dim body-s">상부 몸통 센서 1개는 왼팔·오른팔의 차이를 구분하지 못합니다(Wylde 2022). 나오는 것은 <b>몸통이 좌우로 기운 시간·최대각(roll)</b>과 <b>좌우로 돈 각(yaw)</b>의 부호 분포 — 그중 회전은 자기센서 의존이라 실내에서 신뢰도가 낮습니다. 이 데모의 좌우 분포는 그 정의대로 계산되고, 축을 「절단측 · 건측」으로 바꿔 왼쪽 절단 선수와 오른쪽 절단 선수를 같은 축에서 읽습니다.</p></div>
+      <div><h4 id="icS2">IMU 2개 이상 (양 견갑)</h4><p class="dim body-s">"왼팔 vs 오른팔"을 원하면 센서가 양팔 또는 양 견갑에 최소 2개 필요합니다 — 센서 업체의 하드웨어 범위라 미팅에서 확인할 항목입니다. 데이터 구조는 세션:센서 = 1:N으로 열어 두어, 센서가 늘어나면 지표만 추가됩니다.</p></div>
+    </div>
+  </section>
+
+  <section class="stack rv" style="gap:8px">
+    <div class="row between"><div><div class="eyebrow ko">리서치 발견 17건 중 공고와 가장 크게 충돌하는 5건</div><h2 class="title" style="margin-top:8px">발견을 설명이 아니라 동작하는 기능으로</h2></div><a class="btn" href="admin.html#/review?tab=findings">발견 17건 전체 · 근거</a></div>
+    <div id="findings"></div>
+  </section>
+
+  <section class="hair c4 rv">
+    <div class="kpi"><div class="lab">기술 스택</div><div class="val" style="font-size:22px"><b>Supabase 서울 + React/TS</b></div><div class="sub">RLS로 "본인 데이터만"을 DB가 강제 · PostgREST OpenAPI 자동 · 국내 보관</div></div>
+    <div class="kpi"><div class="lab">일정</div><div class="val" style="font-size:22px"><b>11/20 동결 · 11/28 검수조서</b></div><div class="sub">11/30 = 검수 완료일 (창업지원 외주 규정)</div></div>
+    <div class="kpi"><div class="lab">미정 범위 3</div><div class="val" style="font-size:22px"><b>전부 포함 권고</b></div><div class="sub">좌우(몸통 분포로 한정) · 추이 · 형식 자동 확인</div></div>
+    <div class="kpi"><div class="lab">인수인계</div><div class="val" style="font-size:22px"><b>계정은 의뢰사 명의</b></div><div class="sub">README 1시간 리허설 · 마이그레이션 · 시드 · 규격 검증기</div></div>
+  </section>
+
+  <footer><span>ATHLEDGER 애슬레저 · 제안용 데모 · 데이터는 전부 가상이며 실존 인물·단체·제품과 무관합니다 · 운동 기록 기술 통계이며 의학적 판단이 아닙니다</span><span>디자인 실측: mesh3d · SSTR · Nick Ho (Awwwards SOTD) × Fitogether · Catapult · Bevel · Superpower</span></footer>
+</main>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/body3d.js"></script>
+<script>
+(function () {
+  const { icon, LOGO, $, $$, countUp, reveal } = CORE;
+  $('#logo').innerHTML = LOGO; $('#icPhone').insertAdjacentHTML('afterbegin', icon('phone')); $('#icMon').insertAdjacentHTML('afterbegin', icon('monitor')); $('#icS1').insertAdjacentHTML('afterbegin', icon('sensor')); $('#icS2').insertAdjacentHTML('afterbegin', icon('sensor'));
+  const a = DATA.athletes()[0]; const s = DATA.sessions().find(x => x.athlete === a.id && x.csv);
+  const B = Body3D.mount($('#heroCv'), { mode: 'symmetry', amputation: a.amp, dark: true, regionNames: Body3D.REGION_NAMES, colors: { base: '#d9e0e6', heat: '#1f8fb0', heat2: '#7ccbd2', left: '#5090f7', right: '#ef5c31', fit: '#069d7a', ghost: '#9fb0bb' }, sensors: [{ id: 'imu', label: 'IMU · 앞중심', pos: [0, 1.27, .135], normal: [0, 0, 1], color: '#ecff3e', pulse: true }, { id: 'magL', label: '자기 L', pos: [.175, 1.23, .03], normal: [1, 0, 0], color: '#5090f7' }, { id: 'magR', label: '자기 R', pos: [-.175, 1.23, .03], normal: [-1, 0, 0], color: '#ef5c31' }], autoRotate: true, zoom: 1.08, onPick: (r, v) => CORE.toast('<b>' + Body3D.REGION_NAMES[r] + '</b> 부하 ' + Math.round((v || 0) * 100) + '%', 'info') });
+  if (s) { const m = DATA.metrics(DATA.imu(s, a), a); B.setHeat(m.heat, true); }
+  $$('#heroMode button').forEach(b => b.onclick = () => { $$('#heroMode button').forEach(x => x.setAttribute('aria-pressed', x === b)); B.setMode(b.dataset.m); });
+  // 발견 5
+  const F = [
+    ['센서 1개의 "좌우"는 몸통의 기울기·회전이다 — 회전은 실내에서 믿기 어렵다', '세션 상세 「좌/우」: roll 부호별 시간·최대각 미러 막대, 절단측/건측 축 토글, 자기장 불안정 구간 음영.', 'admin.html#/session/SES-005'],
+    ['센서를 뒤집어 달면 좌우 결론이 통째로 반대 — 절단자는 선 자세부터 비대칭', '업로드 물리 검사가 보정 동작 구간(5~8초 왼쪽 기울이기)의 부호를 계산해 반전을 제안하고, 선 자세 기본 기울기를 0으로 지우지 않고 별도 보관.', 'admin.html#/validator'],
+    ['CSV를 맞는 세션에 붙여도, 측정 조건이 다르면 v1↔v2 비교는 허상', '세션마다 센서·펌웨어·Hz·위치·방향·의수·보정 조건 → 지문. 비교 화면이 다른 항목을 빨간 칩으로 나열 + 경고. 버전 비교 프리셋은 같은 조건 쌍만 매칭.', 'admin.html#/compare'],
+    ['컬럼 이름이 같아도 단위가 바뀌면 매핑 검사는 통과한다', '정지 구간 |a|=1g · 최대 각속도 · 실제 Hz · UTC 9시간 · 지수 표기 · 중복 지문을 값으로 판정 — 불량 8종 픽스처로 실제 동작.', 'admin.html#/upload'],
+    ['"익명 ID"는 법적으로 가명 — 장애·신체 정보는 민감정보', '민감정보 별도 동의가 없으면 상지 기능 특성이 잠기고 업로드가 실제로 차단. 매핑 보관함 사유 기록, 접속기록 2년, 준식별자 제외 내보내기 + k<3 경고.', 'admin.html#/consent']
+  ];
+  $('#findings').innerHTML = F.map((f, i) => '<div class="finding"><div class="no">F0' + (i + 1) + '</div><div><h3>' + f[0] + '</h3><p>' + f[1] + '</p><a class="how" href="' + f[2] + '">' + icon('arrowR') + '<span>화면에서 보기</span></a></div></div>').join('');
+  reveal(document);
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { countUp(e.target, Number(e.target.dataset.n)); io.unobserve(e.target); } })); $$('[data-n]').forEach(n => io.observe(n));
+  // 미리보기 iframe 스케일
+  const fit = () => $$('.shot-frame').forEach(f => { const w = f.clientWidth; const fr = f.querySelector('iframe'); const base = f.classList.contains('phone-shot') ? 1280 : 1440; fr.style.transform = 'scale(' + (w / base) + ')'; }); fit(); addEventListener('resize', fit);
+})();
+</script>
+</body>
+</html>

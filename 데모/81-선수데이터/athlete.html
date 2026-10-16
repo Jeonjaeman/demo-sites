@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ATHLEDGER 선수 — 내 운동 기록</title>
+<meta name="description" content="상지 절단·기능 제한 선수가 한 손으로 쓰는 운동 기록·센서 CSV 업로드·착용 평가 웹 (선수 웹 데모). 데모 데이터는 전부 가상입니다.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='7' fill='%2318191b'/%3E%3Cpath d='M11 9h10l2 6-2 9H11l-2-9z' fill='%235090f7'/%3E%3Cpath d='M16 9h5l2 6-2 9h-5z' fill='%23ef5c31'/%3E%3Ccircle cx='16' cy='15' r='2.3' fill='%23ecff3e'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="phone-wrap">
+  <div class="phone-side l">
+    <div class="eyebrow ko" style="margin-bottom:10px">선수 웹 · 모바일 한 손 기준</div>
+    <h1 class="heading" style="font-size:24px;letter-spacing:-.02em">입력하는 사람이<br>상지 장애인입니다.</h1>
+    <p class="dim" style="margin-top:12px">드래그·핀치·두 손이 필요한 화면은 그 자체로 결함입니다. 업로드는 탭 한 번, 그래프 확대는 구간 버튼, 평가는 1~5 탭, 3D는 버튼으로 돌립니다. 터치 대상은 44px 이상.</p>
+    <p class="muted body-s" style="margin-top:12px">WCAG 2.2 — 2.5.7 Dragging Movements · 2.5.1 Pointer Gestures</p>
+  </div>
+  <div class="phone"><div class="notch"></div><div class="screen" id="screen"></div></div>
+  <div class="phone-side r">
+    <div class="eyebrow ko" style="margin-bottom:10px">체험 포인트</div>
+    <ol class="stack body-s dim" style="gap:10px;list-style:decimal;padding-left:18px">
+      <li>체험 계정으로 들어가면 <b>본인 기록만</b> 보입니다. 타 선수 평균은 의도적으로 없습니다.</li>
+      <li>「오늘 세션 기록」→「CSV 올리기」→ 샘플 선택 → 단위·방향·시간 검사 → 연결.</li>
+      <li>세션 화면의 3D 바디는 절단 측을 반영하고, 좌우 분포는 <b>절단측 · 건측</b>으로 읽힙니다.</li>
+      <li>ATH-0009 계정은 민감정보 동의가 없어 업로드가 <b>실제로 차단</b>됩니다.</li>
+      <li>주소창에 남의 세션 주소를 직접 쳐 보세요 — 0건 + 접속기록.</li>
+    </ol>
+    <a class="btn" href="admin.html" style="margin-top:16px">관리자 웹 열기</a>
+  </div>
+</div>
+<script src="assets/js/core.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/io.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/body3d.js"></script>
+<script src="assets/js/athlete.js"></script>
+</body>
+</html>
