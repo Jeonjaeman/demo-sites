@@ -4,8 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>관리자 — 더알림 운영 시스템</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%231B2A4E%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2717%27 font-family=%27serif%27 font-weight=%27700%27 fill=%27%23E4C766%27 text-anchor=%27middle%27%3E알%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/app.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%23000%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2716%27 font-family=%27sans-serif%27 font-weight=%27700%27 fill=%27%23fff%27 text-anchor=%27middle%27%3E알%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
 <div class="app">
@@ -202,12 +201,12 @@
     const ctx = c1.getContext("2d"), W = c1.clientWidth, H = 220, pad = 28, bw = (W-pad*2)/months.length;
     let t0 = null; const anim = ts => { if (!t0) t0 = ts; const p = Math.min(1,(ts-t0)/900), e = 1-Math.pow(1-p,3); ctx.clearRect(0,0,W,H);
       ctx.font = "11px Pretendard, sans-serif"; ctx.textAlign = "center";
-      months.forEach((m,i)=>{ const x = pad + i*bw + bw/2, h = (cnt[i]/15)*(H-60)*e; ctx.fillStyle = i===9 ? "#1B2A4E" : "#C6CCDC"; ctx.fillRect(x-bw*0.28, H-30-h, bw*0.56, h); ctx.fillStyle = "#6E7482"; ctx.fillText(m+"월", x, H-12); });
-      ctx.strokeStyle = "#B8962E"; ctx.lineWidth = 2; ctx.beginPath(); rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
-      rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; ctx.fillStyle="#B8962E"; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); });
+      months.forEach((m,i)=>{ const x = pad + i*bw + bw/2, h = (cnt[i]/15)*(H-60)*e; ctx.fillStyle = i===9 ? "#000000" : "#D9D9D9"; ctx.fillRect(x-bw*0.28, H-30-h, bw*0.56, h); ctx.fillStyle = "#6E7482"; ctx.fillText(m+"월", x, H-12); });
+      ctx.strokeStyle = "#2189FF"; ctx.lineWidth = 2; ctx.beginPath(); rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+      rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; ctx.fillStyle="#2189FF"; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); });
       if (p<1) requestAnimationFrame(anim); else { ctx.fillStyle="#6E7482"; ctx.textAlign="left"; ctx.fillText("막대 = 교육 건수 · 선 = 매출(만원)", pad, 14); } }; requestAnimationFrame(anim);
-    const ctx2 = c2.getContext("2d"), W2 = c2.clientWidth; const parts = [["병원",34,"#1B2A4E"],["기업",28,"#3F6E75"],["공공",22,"#B8962E"],["학교",16,"#8590AC"]]; let a0 = -Math.PI/2, t1 = null;
-    const anim2 = ts => { if (!t1) t1 = ts; const p = Math.min(1,(ts-t1)/900), e = 1-Math.pow(1-p,3); ctx2.clearRect(0,0,W2,220); let a = a0; parts.forEach(pt=>{ const ang = pt[1]/100*2*Math.PI*e; ctx2.beginPath(); ctx2.moveTo(W2/2,110); ctx2.arc(W2/2,110,88,a,a+ang); ctx2.closePath(); ctx2.fillStyle = pt[2]; ctx2.fill(); a += ang; }); ctx2.fillStyle="#F7F5F0"; ctx2.beginPath(); ctx2.arc(W2/2,110,54,0,7); ctx2.fill(); ctx2.fillStyle="#15181D"; ctx2.font="700 22px Pretendard"; ctx2.textAlign="center"; ctx2.fillText(Math.round(INQ.length*e)+"건", W2/2, 118); if (p<1) requestAnimationFrame(anim2); }; requestAnimationFrame(anim2);
+    const ctx2 = c2.getContext("2d"), W2 = c2.clientWidth; const parts = [["병원",34,"#000000"],["기업",28,"#555555"],["공공",22,"#2189FF"],["학교",16,"#AAAAAA"]]; let a0 = -Math.PI/2, t1 = null;
+    const anim2 = ts => { if (!t1) t1 = ts; const p = Math.min(1,(ts-t1)/900), e = 1-Math.pow(1-p,3); ctx2.clearRect(0,0,W2,220); let a = a0; parts.forEach(pt=>{ const ang = pt[1]/100*2*Math.PI*e; ctx2.beginPath(); ctx2.moveTo(W2/2,110); ctx2.arc(W2/2,110,88,a,a+ang); ctx2.closePath(); ctx2.fillStyle = pt[2]; ctx2.fill(); a += ang; }); ctx2.fillStyle="#F5F5F5"; ctx2.beginPath(); ctx2.arc(W2/2,110,54,0,7); ctx2.fill(); ctx2.fillStyle="#000000"; ctx2.font="700 22px Pretendard"; ctx2.textAlign="center"; ctx2.fillText(Math.round(INQ.length*e)+"건", W2/2, 118); if (p<1) requestAnimationFrame(anim2); }; requestAnimationFrame(anim2);
     $("#legend2").innerHTML = parts.map(p=>`<span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p[2]};margin-right:6px"></i>${p[0]} ${p[1]}%</span>`).join("");
   }
 

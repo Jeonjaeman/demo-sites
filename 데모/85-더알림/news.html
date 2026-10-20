@@ -2,38 +2,49 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>언론보도·수상 — 더알림</title>
+<title>언론보도·수상·공지 — 더알림</title>
+<meta name="description" content="수상은 주최·연도·부문을 함께 적습니다. 보도는 매체명과 날짜로.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+.awards{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4rem}
+.award{padding:3.2rem;background:var(--g);border-radius:var(--r);display:flex;flex-direction:column;gap:1rem;min-height:22rem;transition:background-color var(--t3) ease,color var(--t3) ease}
+.award:hover{background:var(--k);color:var(--w)}
+.award .y{font-size:1.4rem;font-weight:700;color:var(--link)}.award:hover .y{color:rgba(255,255,255,.7)}
+.award b{font-size:2.2rem;line-height:1.3}.award span{margin-top:auto;font-size:1.4rem;color:var(--s)}.award:hover span{color:rgba(255,255,255,.7)}
+@media (max-width:1023px){.awards{grid-template-columns:1fr 1fr}}@media (max-width:767px){.awards{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div id="hd"></div>
-<main>
-<section class="phero phero-plain"><div class="shell">
-  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>언론보도·수상</span></div>
-  <h1 data-words>언론보도 · 수상</h1>
-  <p class="lead">수상은 주최·연도·부문을 함께 적습니다. "1위"나 "대상"은 그 범위 안에서만 사실이기 때문입니다. 보도는 매체명과 날짜로 둡니다.</p>
+<main class="inner">
+<section class="kv sub2 kv-grad black-1"><img src="assets/img/about-office.webp" alt=""><div class="kv-text"><h1 class="kv-t">언론보도 · 수상 · 공지</h1><p class="kv-d">수상은 주최·연도·부문을 함께 적습니다. "1위"나 "대상"은 그 범위 안에서만 사실이기 때문입니다. 보도는 매체명과 날짜로 둡니다.</p></div></section>
+
+<section class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">수상 · 인정</h2><p class="d">주최와 범위를 뺀 "대상 수상"은 표시광고법상 실증 대상이 됩니다. 아래는 범위를 붙여 적은 네 건입니다.</p></div>
+  <div class="awards lay-lg" id="awards" data-aos="fade-up"></div>
+</section>
+
+<section class="gray"><div class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">보도 · 협약 <span class="sub" style="font-size:2rem;font-weight:400" id="pn"></span></h2></div>
+  <div class="tabs lay-lg" role="tablist" id="ftype"><button role="tab" data-v="" aria-selected="true">전체</button><button role="tab" data-v="MOU">협약</button><button role="tab" data-v="수상">수상</button><button role="tab" data-v="인터뷰">인터뷰</button></div>
+  <div class="rows lay-lg" id="list" style="border-top-color:var(--d)"></div>
 </div></section>
-<section class="sec-tight"><div class="shell">
-  <h2 class="sub-h" style="margin-top:0"><small>Awards</small>수상·인정</h2>
-  <div class="grid g4" data-reveal="stagger" id="awards"></div>
-  <h2 class="sub-h"><small>Press</small>보도·협약 <span class="muted small" id="pn"></span></h2>
-  <div class="chips mb3" id="ftype"><button class="chip" data-v="" aria-pressed="true">전체</button><button class="chip" data-v="MOU">협약</button><button class="chip" data-v="수상">수상</button><button class="chip" data-v="인터뷰">인터뷰</button></div>
-  <div class="press-list" id="list"></div>
-  <h2 class="sub-h"><small>Notice</small>공지사항 <span class="muted small">관리자에서 등록 · 비어 있으면 섹션이 숨겨집니다</span></h2>
-  <div class="press-list" id="notice"></div>
-</div></section>
+
+<section class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">공지사항</h2><p class="d">관리자에서 등록합니다. 비어 있으면 이 섹션은 숨겨집니다.</p></div>
+  <div class="rows lay-lg" id="notice"></div>
+</section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
   $("#awards").innerHTML = AWARDS.map(a=>`<div class="award"><span class="y">${a.year}</span><b>${a.title}</b><span>${a.by}</span></div>`).join("");
-  let t = ""; const render = () => { const L = NEWS.filter(n=>!t||n.type===t); $("#pn").textContent = `${L.length}건`; let y = ""; $("#list").innerHTML = L.map(n => { const yy = n.date.slice(0,4), show = yy!==y; y = yy; return `<a href="#" onclick="return false"><span class="y">${show?yy:""}</span><span class="m">${n.media}</span><span>${n.title}</span><span class="small muted">${n.date.slice(5).replace("-",".")}</span></a>`; }).join(""); };
-  $("#ftype").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; t = b.dataset.v; $$("#ftype .chip").forEach(c=>c.setAttribute("aria-pressed", c===b)); render(); });
+  let t = ""; const render = () => { const L = NEWS.filter(n=>!t||n.type===t); $("#pn").textContent = `${L.length}건`; let y = ""; $("#list").innerHTML = L.map(n => { const yy = n.date.slice(0,4), show = yy!==y; y = yy; return `<div class="row" style="background:transparent"><span class="y">${show?yy:""}</span><div><span class="m">${n.media} · ${n.type}</span><div class="ct mt1">${n.title}</div></div><span class="dt">${n.date.slice(5).replace("-",".")}</span></div>`; }).join(""); };
+  $("#ftype").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (!b) return; t = b.dataset.v; $$("#ftype [role=tab]").forEach(c=>c.setAttribute("aria-selected", c===b)); render(); });
   const NOTICE = [["2026-10-18","11월 아카데미 명사초청강연 2회 일정 공개 — 잔여석은 아카데미 페이지에서 실시간 확인"],["2026-10-02","환자경험평가 6차 대상 확대에 따른 병원 메디컬센터 과정 16종 강의계획서 공개"],["2026-09-15","강사전용 공용 입장 암호 폐지 · 개인 계정 전환 안내 (구 사이트 종료 예정)"]];
-  $("#notice").innerHTML = NOTICE.map(n=>`<a href="#" onclick="return false"><span class="y">${n[0].slice(0,4)}</span><span class="m">공지</span><span>${n[1]}</span><span class="small muted">${n[0].slice(5).replace("-",".")}</span></a>`).join("");
+  $("#notice").innerHTML = NOTICE.map(n=>`<div class="row"><span class="y">${n[0].slice(0,4)}</span><div><span class="m">공지</span><div class="ct mt1">${n[1]}</div></div><span class="dt">${n[0].slice(5).replace("-",".")}</span></div>`).join("");
   render();
 })();
 </script>

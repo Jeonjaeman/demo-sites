@@ -5,79 +5,69 @@
 <title>강사진 — 더알림 강사 디렉토리</title>
 <meta name="description" content="분야·권역·대상으로 찾는 더알림 공개 강사 프로필. 공개에 동의한 강사만 보입니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>.card.lec .th{aspect-ratio:1}.card.match{background:var(--g);border-radius:var(--r);padding:3.2rem;justify-content:center;gap:1.2rem}.card.match b{font-size:2.4rem;line-height:1.3}.card.match p{font-size:1.5rem;line-height:1.5}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main>
-<section class="phero phero-plain">
-  <div class="shell">
-    <div class="crumb"><a href="index.html">홈</a><span>/</span><span>강사진</span></div>
-    <h1 data-words>강사 디렉토리</h1>
-    <p class="lead">등록 강사 <b id="nAll">0</b>명 · 승인 <b id="nOk">0</b>명 · <b>공개 <span id="nPub">0</span>명</b>. 공개 범위는 강사가 직접 정합니다. 기관 담당자로 로그인하면 「담당자에게만 공개」를 택한 강사까지 보입니다.</p>
-    <div class="row mt3">
-      <label class="toggle"><input type="checkbox" id="asOrg"> 기관 담당자로 로그인한 상태로 보기</label>
-      <button class="btn btn-ghost btn-sm" type="button" id="sample">예시로 보기 — 병원·의료 · 영남 · 의료진</button>
-    </div>
+<main class="inner">
+<section class="kv sub2 kv-grad gray-2"><img src="assets/img/hero-main.webp" alt=""><div class="kv-text"><h1 class="kv-t">강사 디렉토리</h1><p class="kv-d">등록 <b id="nAll">0</b>명 · 승인 <b id="nOk">0</b>명 · 공개 <b id="nPub">0</b>명. 공개 범위는 강사가 직접 정합니다.</p></div></section>
+
+<section class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">숫자가 아니라 얼굴로 증명합니다</h2><p class="d">공개에 동의한 강사만 보입니다. 기관 담당자로 로그인하면 「담당자에게만 공개」를 택한 강사까지 보이고, 비공개 강사는 매니저가 매칭합니다.</p>
+    <div class="cta-row c"><label class="tgl"><input type="checkbox" id="asOrg"> 기관 담당자로 로그인한 상태로 보기</label></div></div>
+  <div class="search lay-lg"><input type="search" id="q" placeholder="이름 · 분야 · 주제로 검색"><button class="go" type="button" aria-label="검색"></button></div>
+  <div class="kw" id="kw"></div>
+  <div class="fbar">
+    <div class="l"><button class="ftog" type="button" data-ftoggle="#flayer" aria-expanded="false">필터</button><span class="fcount"><span id="rCount">0</span> Results · 비공개 제외</span></div>
+    <div class="r"><div class="sel" id="selSort"><button type="button"><span>평점순</span></button><div class="sel-layer"><button data-v="rating" aria-selected="true">평점순</button><button data-v="runs">출강 많은 순</button><button data-v="exp">경력순</button></div></div></div>
   </div>
+  <div class="flayer" id="flayer"><div><div class="fgroups">
+    <div class="fgroup"><b>분야</b><div class="fopts" id="fField"><label><input type="radio" name="field" value="" checked> 전체</label></div></div>
+    <div class="fgroup"><b>권역</b><div class="fopts" id="fRegion"><label><input type="radio" name="region" value="" checked> 전국</label></div></div>
+    <div class="fgroup"><b>대상 · 조건</b><div class="fopts" id="fTarget"><label><input type="radio" name="target" value="" checked> 대상 전체</label></div><div class="fopts mt2"><label><input type="radio" name="exp" value="" checked> 경력 전체</label><label><input type="radio" name="exp" value="5"> 5년 이상</label><label><input type="radio" name="exp" value="10"> 10년 이상</label><label><input type="radio" name="exp" value="15"> 15년 이상</label><label><input type="checkbox" id="fOnline"> 온라인 가능</label><label><input type="checkbox" id="fLegal"> 법정의무 인정자격</label></div></div>
+  </div></div></div>
+  <div class="cta-row lay-sm" id="samples"><button class="cta cta-o cta-dense" type="button" id="sample">예시 — 병원·의료 · 영남 · 의료진</button><button class="cta cta-dense" type="button" id="reset" style="border-color:var(--d)">초기화</button></div>
+  <div class="cards lay-lg" id="grid"></div>
+  <div class="empty" id="empty" hidden><b>조건에 맞는 공개 강사가 없습니다</b><p>권역을 넓히거나 온라인 가능 조건을 켜 보세요. 매니저가 비공개 강사 풀에서 찾아 드릴 수도 있습니다.</p><div class="cta-row c mt3"><a class="cta cta-k" href="request.html">제안서 요청으로 매칭 의뢰</a></div></div>
+  <div class="cta-row c lay-lg" id="moreRow"><button class="vm" type="button" id="more">View more</button></div>
 </section>
-<section class="sec-tight">
-  <div class="filters"><div class="shell">
-    <div class="chips" id="fField"><span class="chip-lbl">분야</span></div>
-    <div class="chips mt2" id="fRegion"><span class="chip-lbl">권역</span></div>
-    <div class="row mt2" style="gap:10px 20px">
-      <div class="fgroup"><span class="chip-lbl">대상</span><select class="sel" id="fTarget"><option value="">전체</option></select></div>
-      <div class="fgroup"><span class="chip-lbl">경력</span><select class="sel" id="fExp"><option value="">전체</option><option value="5">5년 이상</option><option value="10">10년 이상</option><option value="15">15년 이상</option></select></div>
-      <label class="toggle"><input type="checkbox" id="fOnline"> 온라인 가능</label>
-      <label class="toggle"><input type="checkbox" id="fLegal"> 법정의무 인정자격</label>
-      <button class="btn btn-xs btn-ghost" type="button" id="reset">초기화</button>
-    </div>
-  </div></div>
-  <div class="shell">
-    <div class="result-bar"><div><b id="rCount">0</b>명 · 비공개 제외</div><div class="row"><select class="sel" id="sort"><option value="rating">평점순</option><option value="runs">출강 많은 순</option><option value="exp">경력순</option></select></div></div>
-    <div class="grid g4" id="grid"></div>
-    <div class="center mt4"><button class="btn btn-ghost" type="button" id="more">더 보기</button></div>
-    <div class="empty mt3" id="empty" hidden><b>조건에 맞는 공개 강사가 없습니다</b>권역을 넓히거나 온라인 가능 조건을 켜 보세요. 매니저가 비공개 강사 풀에서 찾아 드릴 수도 있습니다.<div class="mt3"><a class="btn btn-primary btn-sm" href="request.html">제안서 요청으로 매칭 의뢰</a></div></div>
-  </div>
-</section>
-<section class="sec-tight sec-paper2"><div class="shell">
-  <div class="sec-head"><div><span class="eyebrow">Regions</span><h2>권역별 공개 강사 분포</h2></div><p class="lead">강남본사·경기화성·경북구미 3개 거점 외 권역은 원거리 출강비 기준이 따로 있습니다. 숫자는 현재 공개 프로필 기준 실시간 집계입니다.</p></div>
-  <div class="tbl-wrap"><table class="tbl" id="regionTbl"><thead><tr><th>권역</th><th>공개 강사</th><th>분포</th><th>온라인 가능</th><th>법정의무 인정</th></tr></thead><tbody></tbody></table></div>
+
+<section class="gray"><div class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">권역별 공개 강사</h2><p class="d">강남본사·경기화성·경북구미 3개 거점 외 권역은 원거리 출강비 기준이 따로 있습니다. 숫자는 현재 공개 프로필 기준 실시간 집계입니다.</p></div>
+  <div class="tbl-wrap lay-lg" style="background:#fff"><table class="tbl" id="regionTbl"><thead><tr><th>권역</th><th>공개 강사</th><th>분포</th><th>온라인 가능</th><th>법정의무 인정</th></tr></thead><tbody></tbody></table></div>
 </div></section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const st = { field:"", region:"", target:"", exp:"", online:false, legal:false, sort:"rating", org:false, limit:24 };
-  // 공개 범위: pub=true 전체 공개, 그 외 중 일부는 '담당자에게만 공개'(시드 기준 id 끝자리로 결정해 일관되게)
+  const st = { field:"", region:"", target:"", exp:"", online:false, legal:false, sort:"rating", org:false, limit:12, q:"" };
   const orgOnly = l => !l.pub && (parseInt(l.id.slice(1)) % 5 === 0);
   const visible = l => l.pub || (st.org && orgOnly(l));
   $("#nAll").textContent = LECTURERS.length.toLocaleString(); $("#nOk").textContent = (LECTURERS.length - 118).toLocaleString(); $("#nPub").textContent = LECTURERS.filter(l=>l.pub).length.toLocaleString();
-  const chip = (wrap, items, key) => { wrap.insertAdjacentHTML("beforeend", items.map(v => `<button class="chip" type="button" data-v="${v}" aria-pressed="false">${v}</button>`).join("")); wrap.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; st[key] = st[key]===b.dataset.v ? "" : b.dataset.v; st.limit = 24; sync(); render(); }); };
-  chip($("#fField"), FIELDS, "field"); chip($("#fRegion"), REGIONS, "region");
-  $("#fTarget").insertAdjacentHTML("beforeend", Object.entries(TARGET_LABEL).map(([v,l])=>`<option value="${v}">${l}</option>`).join(""));
-  $("#fTarget").addEventListener("change", e => { st.target = e.target.value; render(); }); $("#fExp").addEventListener("change", e => { st.exp = e.target.value; render(); });
-  $("#fOnline").addEventListener("change", e => { st.online = e.target.checked; render(); }); $("#fLegal").addEventListener("change", e => { st.legal = e.target.checked; render(); });
-  $("#sort").addEventListener("change", e => { st.sort = e.target.value; render(); });
+  $("#fField").insertAdjacentHTML("beforeend", FIELDS.map(f=>`<label><input type="radio" name="field" value="${f}"> ${f}</label>`).join(""));
+  $("#fRegion").insertAdjacentHTML("beforeend", REGIONS.map(r=>`<label><input type="radio" name="region" value="${r}"> ${r}</label>`).join(""));
+  $("#fTarget").insertAdjacentHTML("beforeend", Object.entries(TARGET_LABEL).map(([v,l])=>`<label><input type="radio" name="target" value="${v}"> ${l}</label>`).join(""));
+  $("#kw").innerHTML = ["환자경험평가","법정의무","모의면접","ChatGPT","소방안전"].map(k=>`<button class="tag lg" type="button" data-kw="${k}">${k}</button>`).join("");
+  $("#kw").addEventListener("click", e => { const b = e.target.closest("[data-kw]"); if (!b) return; st.q = b.dataset.kw; $("#q").value = st.q; render(); });
+  $("#q").addEventListener("input", e => { st.q = e.target.value.trim(); render(); });
+  $("#flayer").addEventListener("change", e => { const t = e.target; if (t.name) st[t.name] = t.value; if (t.id==="fOnline") st.online = t.checked; if (t.id==="fLegal") st.legal = t.checked; st.limit = 12; render(); });
+  $("#selSort").addEventListener("change", e => { st.sort = e.detail; render(); });
   $("#asOrg").addEventListener("change", e => { st.org = e.target.checked; render(); toast(st.org ? "담당자 전용 공개 프로필이 추가로 보입니다" : "전체 공개 프로필만 보입니다", "ok"); });
-  $("#reset").addEventListener("click", () => { Object.assign(st, { field:"", region:"", target:"", exp:"", online:false, legal:false, limit:24 }); sync(); render(); });
-  $("#sample").addEventListener("click", () => { Object.assign(st, { field:"병원·의료", region:"영남", target:"의료진", exp:"", online:false, legal:false, limit:24 }); sync(); render(); toast("예시 조건을 적용했습니다", "ok"); });
-  $("#more").addEventListener("click", () => { st.limit += 24; render(); });
-  function sync(){ $$("#fField .chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.v===st.field)); $$("#fRegion .chip").forEach(c=>c.setAttribute("aria-pressed", c.dataset.v===st.region)); $("#fTarget").value=st.target; $("#fExp").value=st.exp; $("#fOnline").checked=st.online; $("#fLegal").checked=st.legal; }
-  function list(){ return LECTURERS.filter(l => visible(l) && (!st.field || l.field===st.field || l.field2===st.field) && (!st.region || l.region===st.region) && (!st.target || l.targets.includes(st.target)) && (!st.exp || l.exp>=+st.exp) && (!st.online || l.online) && (!st.legal || l.legal)); }
+  const sync = () => { ["field","region","target","exp"].forEach(k => { const el = document.querySelector(`[name=${k}][value="${st[k]}"]`); if (el) el.checked = true; }); $("#fOnline").checked = st.online; $("#fLegal").checked = st.legal; };
+  $("#reset").addEventListener("click", () => { Object.assign(st, { field:"", region:"", target:"", exp:"", online:false, legal:false, q:"", limit:12 }); $("#q").value=""; sync(); render(); });
+  $("#sample").addEventListener("click", () => { Object.assign(st, { field:"병원·의료", region:"영남", target:"의료진", exp:"", online:false, legal:false, q:"", limit:12 }); sync(); render(); toast("예시 조건을 적용했습니다", "ok"); });
+  $("#more").addEventListener("click", () => { st.limit += 12; render(); });
+  function list(){ return LECTURERS.filter(l => visible(l) && (!st.field || l.field===st.field || l.field2===st.field) && (!st.region || l.region===st.region) && (!st.target || l.targets.includes(st.target)) && (!st.exp || l.exp>=+st.exp) && (!st.online || l.online) && (!st.legal || l.legal) && (!st.q || (l.name+l.field+(l.field2||"")+(l.topics||[]).join(" ")+(l.title||"")).includes(st.q))); }
   function render(){
-    let L = list(); L.sort((a,b)=> st.sort==="rating" ? (b.rating-a.rating || b.runs-a.runs) : st.sort==="runs" ? b.runs-a.runs : b.exp-a.exp);
-    // 대표(사진 있는) 강사를 앞으로
-    L.sort((a,b)=> (b.featured?1:0)-(a.featured?1:0));
+    let L = list(); L.sort((a,b)=> st.sort==="rating" ? (b.rating-a.rating || b.runs-a.runs) : st.sort==="runs" ? b.runs-a.runs : b.exp-a.exp); L.sort((a,b)=> (b.featured?1:0)-(a.featured?1:0));
     $("#rCount").textContent = L.length.toLocaleString();
-    $("#grid").innerHTML = L.slice(0, st.limit).map(l => H.lecCard(l).replace('<div class="lcard-img">', `<div class="lcard-img">${orgOnly(l)?'<span class="tag navy" style="position:absolute;left:10px;top:10px;z-index:1">담당자 공개</span>':""}`)).join("");
-    $("#more").hidden = L.length <= st.limit; $("#empty").hidden = L.length > 0;
-    $$("#grid .lcard").forEach((c,i)=>{ if(i>=st.limit-24){ c.style.opacity=0; c.style.transform="translateY(14px)"; c.style.transition=`opacity .4s var(--ease-out) ${Math.min((i%24)*30,360)}ms, transform .4s var(--ease-out) ${Math.min((i%24)*30,360)}ms`; requestAnimationFrame(()=>requestAnimationFrame(()=>{ c.style.opacity=1; c.style.transform="none"; })); } });
-    // 권역 표
+    const matchCard = `<article class="card match"><b>직접 찾기 어려우신가요?</b><p>조건을 알려 주시면 매니저가 비공개 강사 풀까지 포함해 후보 3명을 제안합니다. 평균 회신 1~2일.</p><a class="cta cta-k" href="request.html" style="align-self:flex-start">매칭 의뢰하기</a></article>`;
+    $("#grid").innerHTML = matchCard + L.slice(0, st.limit).map(l => H.lecCard(l).replace('<div class="cat">', `<div class="cat">${orgOnly(l)?'<span class="tag blue" style="margin-right:.6rem">담당자 공개</span>':""}`)).join("");
+    $("#moreRow").hidden = L.length <= st.limit; $("#empty").hidden = L.length > 0;
     const pubL = LECTURERS.filter(visible), max = Math.max(...REGIONS.map(r=>pubL.filter(l=>l.region===r).length));
-    $("#regionTbl tbody").innerHTML = REGIONS.map(r => { const rs = pubL.filter(l=>l.region===r); return `<tr><td>${r}</td><td class="num">${rs.length}</td><td><div class="bar"><i style="width:${rs.length/max*100}%"></i></div></td><td class="num">${rs.filter(l=>l.online).length}</td><td class="num">${rs.filter(l=>l.legal).length}</td></tr>`; }).join("");
+    $("#regionTbl tbody").innerHTML = REGIONS.map(r => { const rs = pubL.filter(l=>l.region===r); return `<tr><td><b>${r}</b></td><td>${rs.length}</td><td><div class="bar"><i style="width:${rs.length/max*100}%"></i></div></td><td>${rs.filter(l=>l.online).length}</td><td>${rs.filter(l=>l.legal).length}</td></tr>`; }).join("");
   }
   const q = new URLSearchParams(location.search); if (q.get("field")) st.field = q.get("field"); if (q.get("region")) st.region = q.get("region"); sync(); render();
 })();

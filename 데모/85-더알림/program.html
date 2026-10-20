@@ -4,12 +4,12 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>프로그램 상세 — 더알림</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>.checks{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}.checks li{display:flex;gap:1rem;padding:1.6rem 2rem;background:var(--g);border-radius:var(--r1);font-size:1.6rem;line-height:1.5}.checks li::before{content:"✓";font-weight:700}@media (max-width:767px){.checks{grid-template-columns:1fr}}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main id="main"></main>
+<main class="inner max" id="main"></main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
@@ -21,45 +21,39 @@
   const recs = LECTURERS.filter(l => l.pub && l.featured && (l.field===field || l.field2===field || (p.legal && l.legal))).slice(0,3);
   const availN = DATA.countLecturers({ field, legal:p.legal });
   const hoursTotal = p.sessions ? p.sessions.reduce((a,s)=>a+s.min,0) : p.hours*60;
-  const refund = p.legal ? "법정의무교육은 환급 대상이 아닙니다" : (p.hours>=4 ? "사업주 훈련 환급 요건 검토 가능 (기관 조건에 따라 다름)" : "2시간 이하 과정은 환급 대상 요건 미충족");
-  const sessions = p.sessions && p.sessions.length ? `<h2 class="sub-h"><small>Curriculum</small>차시별 강의계획 <span class="muted small">${p.sessions.length}차시 · ${hoursTotal}분</span></h2>
-    <div class="acc-group">${p.sessions.map((s,i)=>`<div class="acc ${i===0?"open":""}"><button class="acc-h" aria-expanded="${i===0}"><span class="n">0${s.n}</span><span>${H.esc(s.title)}${s.activity?' <span class="tag soft">활동</span>':""}</span><span class="min">${s.min}분</span><span class="chev"></span></button><div class="acc-b"><div><ul>${s.items.map(it=>`<li class="${/^\[실전사례\]/.test(it)?"act":""}">${H.esc(it)}</li>`).join("")}</ul></div></div></div>`).join("")}</div>` : "";
-  const blocks = p.blocks && p.blocks.length ? p.blocks.map(b => `<h2 class="sub-h"><small>${H.esc(b.head)}</small>${H.esc(b.title)}</h2>
-      ${b.groups.some(g=>g.name) ? `<div class="acc-group">${b.groups.filter(g=>g.name).map((g,i)=>`<div class="acc ${i===0?"open":""}"><button class="acc-h" aria-expanded="${i===0}"><span class="n">0${g.n||i+1}</span><span>${H.esc(g.name)}</span><span class="min">${g.items.length}항목</span><span class="chev"></span></button><div class="acc-b"><div><ul>${g.items.map(it=>`<li>${H.esc(it)}</li>`).join("")}</ul></div></div></div>`).join("")}</div>` : `<ul class="checks">${b.groups.flatMap(g=>g.items).map(it=>`<li>${H.esc(it)}</li>`).join("")}</ul>`}`).join("") : "";
+  const refund = p.legal ? ["warn","법정의무교육은 고용보험 환급 대상이 아닙니다"] : (p.hours>=4 ? ["blue","사업주훈련 환급 요건 검토 가능 — 과정 인정·고용보험 가입이 전제"] : ["warn","2시간 이하 과정은 환급 대상 요건 미충족"]);
+  const sessions = p.sessions && p.sessions.length ? `<div class="acc-group lay-sm" data-single>${p.sessions.map((s,i)=>`<div class="acc ${i===0?"open":""}"><button class="acc-t" aria-expanded="${i===0}"><span class="n">0${s.n}</span><span>${H.esc(s.title)}${s.activity?' <span class="tag" style="margin-left:.6rem">활동</span>':""}</span><span class="mn">${s.min}분</span></button><div class="acc-b"><div><ul>${s.items.map(it=>`<li class="${/^\[실전사례\]/.test(it)?"act":""}">${H.esc(it)}</li>`).join("")}</ul></div></div></div>`).join("")}</div>` : "";
+  const blocks = p.blocks && p.blocks.length ? p.blocks.map(b => `<h2 class="t" style="font-size:2.6rem;margin-top:5rem">${H.esc(b.title||b.head)}</h2>
+      ${b.groups.some(g=>g.name) ? `<div class="acc-group lay-sm">${b.groups.filter(g=>g.name).map((g,i)=>`<div class="acc ${i===0?"open":""}"><button class="acc-t" aria-expanded="${i===0}"><span class="n">0${g.n||i+1}</span><span>${H.esc(g.name)}</span><span class="mn">${g.items.length}항목</span></button><div class="acc-b"><div><ul>${g.items.map(it=>`<li>${H.esc(it)}</li>`).join("")}</ul></div></div></div>`).join("")}</div>` : `<ul class="checks lay-sm">${b.groups.flatMap(g=>g.items).map(it=>`<li>${H.esc(it)}</li>`).join("")}</ul>`}`).join("") : "";
   $("#main").innerHTML = `
-  <section class="phero"><div class="hero-media"><img src="assets/img/${center.img}.webp" alt="" data-parallax=".1"></div><div class="shell">
-    <div class="crumb"><a href="index.html">홈</a><span>/</span><a href="programs.html?center=${p.center}">${center.name}</a><span>/</span><span>프로그램</span></div>
-    <span class="eyebrow" style="color:rgba(255,255,255,.7)">${center.en}${p.legal?" · 법정의무":""}</span>
-    <h1 class="mt2" data-words>${H.esc(p.name)}</h1>
-    <p class="lead">${H.esc(p.summary)}</p>
-  </div></section>
-  <section class="sec"><div class="shell detail">
-    <div>
-      ${p.goals && p.goals.length ? `<h2 class="sub-h" style="margin-top:0"><small>Goals</small>교육 목표</h2><ul class="checks" data-reveal="stagger">${p.goals.map(g=>`<li>${H.esc(g)}</li>`).join("")}</ul>` : ""}
-      ${p.target ? `<h2 class="sub-h"><small>Who</small>교육 대상</h2><p class="lead">${H.esc(p.target)}</p>` : ""}
-      ${sessions}${blocks}
-      ${p.effects && p.effects.length ? `<h2 class="sub-h"><small>Outcomes</small>기대효과</h2><ul class="checks" data-reveal="stagger">${p.effects.map(g=>`<li>${H.esc(g)}</li>`).join("")}</ul>` : ""}
-      <h2 class="sub-h"><small>Lecturers</small>이 과정을 맡는 강사 <span class="muted small">공개 ${availN}명 중 대표 ${recs.length}명</span></h2>
-      <div class="grid g3" data-reveal="stagger">${recs.map(H.lecCard).join("")}</div>
-      <p class="small muted mt2">강사 배정은 기관 일정·권역·담당자 피드백 이력을 함께 보고 매니저가 확정합니다. 특정 강사를 지명하려면 제안서 요청 시 이름을 적어 주세요.</p>
+  <div class="view-top" style="padding-top:6rem"><div class="sub">${center.name}${p.legal?" · 법정의무교육":""}</div><h1 class="t">${H.esc(p.name)}</h1>
+    <div class="mt"><div class="share"><button type="button" aria-label="공유 — 링크 복사" id="share"><i>🔗</i></button><button type="button" aria-label="인쇄" onclick="print()"><i>⎙</i></button></div><div class="info"><span>${p.hours}시간${p.sessions?` · ${p.sessions.length}차시`:""}</span><span>${p.targets.map(t=>TARGET_LABEL[t]||t).join(" · ")}</span><span>${p.format.join(" / ")}</span></div></div></div>
+  <div class="view" style="margin-top:6rem">
+    <div class="view-body">
+      <p class="lead">${H.esc(p.summary||"")}</p>
+      ${p.goals && p.goals.length ? `<div><h2 class="t" style="font-size:2.6rem">교육 목표</h2><ul class="checks lay-sm">${p.goals.map(g=>`<li>${H.esc(g)}</li>`).join("")}</ul></div>` : ""}
+      ${p.target ? `<div><h2 class="t" style="font-size:2.6rem">교육 대상</h2><p class="lay-sm">${H.esc(p.target)}</p></div>` : ""}
+      ${sessions ? `<div><h2 class="t" style="font-size:2.6rem">차시별 강의계획 <span class="sub" style="font-size:1.4rem;font-weight:400">${p.sessions.length}차시 · ${hoursTotal}분</span></h2>${sessions}</div>` : ""}
+      ${blocks ? `<div>${blocks}</div>` : ""}
+      ${p.effects && p.effects.length ? `<div><h2 class="t" style="font-size:2.6rem">기대효과</h2><ul class="checks lay-sm">${p.effects.map(g=>`<li>${H.esc(g)}</li>`).join("")}</ul></div>` : ""}
+      <figure><img src="assets/img/${H.progImg(p)}.webp" alt="" loading="lazy"><figcaption>${center.name} 현장 — 사진은 데모용 생성 이미지입니다.</figcaption></figure>
+      <div class="tags">${p.tags.map(t=>`<a class="tag" href="programs.html?q=${encodeURIComponent(t)}">#${H.esc(t)}</a>`).join("")}</div>
     </div>
-    <aside class="sticky"><div class="meta-card">
-      <div class="eyebrow">Program</div>
-      <dl><dt>총 시간</dt><dd>${p.hours}시간${p.sessions?` (${hoursTotal}분)`:""}</dd><dt>차시</dt><dd>${p.sessions?p.sessions.length+"차시":"협의"}</dd><dt>대상</dt><dd>${p.targets.map(t=>TARGET_LABEL[t]||t).join(", ")}</dd><dt>형태</dt><dd>${p.format.join(" · ")}</dd><dt>권장 인원</dt><dd>${p.center==="medical"?"20~40명 (활동형)":p.hours>=8?"15~30명":"제한 없음"}</dd><dt>가용 강사</dt><dd>${availN}명</dd></dl>
-      <div class="notice ${p.legal?"warn":"ok"} small">${refund}</div>
-      <button class="btn btn-primary cart-btn-lg" type="button" data-cart="${p.id}" data-name="${H.esc(p.name)}">${cart.has(p.id)?"담김 — 제안서에서 보기":"제안서에 담기"}</button>
-      <button class="btn btn-ghost" type="button" id="pdf">샘플 강의계획서 내려받기</button>
-      <a class="btn btn-ghost" href="request.html">바로 제안서 요청</a>
-    </div></aside>
-  </div></section>
-  <section class="sec-tight sec-paper2"><div class="shell"><div class="sec-head"><div><span class="eyebrow">Related</span><h2>같은 센터의 다른 과정</h2></div><a class="link" href="programs.html?center=${p.center}">전체 보기</a></div><div class="grid g3" data-reveal="stagger">${PROGRAMS.filter(x=>x.center===p.center && x.id!==p.id).slice(0,3).map(H.progCard).join("")}</div></div></section>`;
-
-  document.querySelector(".cart-btn-lg").addEventListener("click", function(){ setTimeout(()=>{ this.textContent = cart.has(p.id) ? "담김 — 제안서에서 보기" : "제안서에 담기"; this.classList.toggle("on", false); }, 0); });
-  // 샘플 강의계획서: 실제 텍스트 파일 생성 (Blob)
+    <aside class="view-rail">
+      <div class="rail-card"><b>프로그램 정보</b>
+        <dl style="display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.6rem;margin:1.6rem 0 0;font-size:1.5rem"><dt class="sub">총 시간</dt><dd style="margin:0;font-weight:700">${p.hours}시간${p.sessions?` (${hoursTotal}분)`:""}</dd><dt class="sub">권장 인원</dt><dd style="margin:0;font-weight:700">${p.center==="medical"?"20~40명 (활동형)":p.hours>=8?"15~30명":"제한 없음"}</dd><dt class="sub">형태</dt><dd style="margin:0;font-weight:700">${p.format.join(" · ")}</dd><dt class="sub">가용 강사</dt><dd style="margin:0;font-weight:700">${availN}명</dd></dl>
+        <div class="notice ${refund[0]} mt3 small">${refund[1]}</div>
+        <div class="cta-row mt3"><button class="cta cta-k" type="button" data-cart="${p.id}" data-name="${H.esc(p.name)}">${cart.has(p.id)?"담김":"제안서에 담기"}</button><button class="cta cta-o" type="button" id="pdf">강의계획서 내려받기</button></div>
+        <a class="u mt2" href="request.html">바로 제안서 요청</a></div>
+      <div class="rail"><h4>이 과정을 맡는 강사 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 ${availN}명 중 ${recs.length}명</span></h4>${recs.map(l=>`<a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.region} · 경력 ${l.exp}년 · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a>`).join("")}</div>
+      <div class="rail"><h4>같은 센터의 다른 과정</h4>${PROGRAMS.filter(x=>x.center===p.center && x.id!==p.id).slice(0,3).map(x=>`<a href="program.html?id=${x.id}"><div class="th"><img src="assets/img/${H.progImg(x)}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.name)}</div><div class="dt">${x.hours}시간 · ${x.targets.map(t=>TARGET_LABEL[t]).slice(0,2).join(", ")}</div></div></a>`).join("")}</div>
+    </aside>
+  </div>`;
   $("#pdf").addEventListener("click", () => {
     const lines = [`더알림 강의계획서 (샘플)`, `프로그램: ${p.name}`, `센터: ${center.name} · 총 ${p.hours}시간`, `대상: ${p.target||p.targets.map(t=>TARGET_LABEL[t]).join(", ")}`, ``, `[교육 목표]`, ...(p.goals||[]).map(g=>`- ${g}`), ``, `[차시별 계획]`, ...(p.sessions||[]).flatMap(s=>[`${s.n}차시 · ${s.title} (${s.min}분)`, ...s.items.map(i=>`   · ${i}`)]), ``, `[기대효과]`, ...(p.effects||[]).map(g=>`- ${g}`), ``, `※ 본 문서는 리뉴얼 제안 데모가 생성한 샘플입니다.`];
-    const blob = new Blob(["﻿"+lines.join("\r\n")], { type:"text/plain;charset=utf-8" }); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `더알림_강의계획서_${p.name}.txt`; a.click(); toast("강의계획서 샘플을 내려받았습니다", "ok");
-  });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+lines.join("\r\n")], { type:"text/plain;charset=utf-8" })); a.download = `더알림_강의계획서_${p.name}.txt`; a.click(); toast("강의계획서 샘플을 내려받았습니다", "ok"); });
+  $("#share").addEventListener("click", () => { navigator.clipboard && navigator.clipboard.writeText(location.href).catch(()=>{}); toast("링크를 복사했습니다 — 품의서에 붙여 쓰세요", "ok"); });
+  UI.accordion();
 })();
 </script>
 </body></html>

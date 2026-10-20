@@ -3,26 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>함께한 곳 — 더알림</title>
+<meta name="description" content="노출 동의를 받은 출강 기관. 로고는 출강 이력 기록에 연결됩니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>.pgrp+.pgrp{margin-top:6rem}.pgrp h2{font-size:2.6rem;display:flex;align-items:baseline;gap:1.2rem;margin-bottom:2.4rem}.pgrp h2 span{font-size:1.4rem;font-weight:400;color:var(--s)}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main>
-<section class="phero phero-plain"><div class="shell">
-  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>함께한 곳</span></div>
-  <h1 data-words>함께한 곳</h1>
-  <p class="lead">로고는 출강 이력 기록에 연결되어 있고, 노출 동의를 받은 기관만 표시합니다. 초·중·고등학교는 출강 수가 많아 전국 단위로만 적습니다. 누적 <b id="n">0</b>개 기관.</p>
-</div></section>
-<section class="sec-tight"><div class="shell" id="wall"></div></section>
+<main class="inner">
+<section class="kv sub2 kv-grad gray-1"><img src="assets/img/case-corp.webp" alt=""><div class="kv-text"><h1 class="kv-t">함께한 곳</h1><p class="kv-d">로고는 출강 이력 기록에 연결되어 있고, 노출 동의를 받은 기관만 표시합니다. 초·중·고등학교는 출강 수가 많아 전국 단위로만 적습니다.</p></div></section>
+
+<section class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">누적 <span id="n">0</span>개 기관</h2><p class="d">기관명은 관리자의 「파트너 로고 노출 동의」 체크와 출강 이력 연결이 모두 있어야 보입니다. 체크를 풀면 이 페이지에서 즉시 빠집니다.</p></div>
+  <div class="lay-lg" id="wall"></div>
+</section>
+
+<section class="gray"><div class="max"><div class="qb-static" data-aos="fade-up"><img src="assets/img/case-public2.webp" alt="" loading="lazy"><div class="qi"><div><h3>다음 이름은 귀 기관일 수 있습니다</h3><p>제안서 요청 3~5분. 담당 매니저가 1~2일 안에 강의계획서·견적서·강사 약력을 보냅니다.</p><div class="cta-row c mt3"><a class="cta cta-w" href="request.html">제안서 요청</a></div></div></div></div></div></section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const all = Object.values(PARTNERS).flat(); $("#n").textContent = all.length;
-  $("#wall").innerHTML = Object.entries(PARTNERS).map(([k,v])=>`<h2 class="sub-h"><small>${k}</small>${v.length}곳</h2><div class="logo-wall" data-reveal="stagger">${v.map(n=>`<span>${n}</span>`).join("")}</div>`).join("");
+  const all = Object.values(PARTNERS).flat(); UI.countUp && ($("#n").dataset.count = all.length); $("#n").textContent = all.length;
+  $("#wall").innerHTML = Object.entries(PARTNERS).map(([k,v],i)=>`<div class="pgrp" data-aos="fade-up"><h2>${k} <span>${v.length}곳</span></h2><div class="logos">${v.map(n=>`<span>${n}</span>`).join("")}</div></div>`).join("");
 })();
 </script>
 </body></html>

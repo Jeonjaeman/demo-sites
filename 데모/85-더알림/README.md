@@ -31,13 +31,14 @@
 ## ⚠️ 착수 전 확인 (미팅)
 3개 사이트 처리·DB · 강사 데이터 형태와 공개 동의 인원 · 계약 구조(용역/대행) · 강사료·정산 · 자격 총비용·환불 · 와인소믈리에 운영 여부 · 법정의무 인정자격 보유 강사 · 사업주훈련 인정 과정 · 숫자 산출 근거 — 전체 19건 `분석/시나리오_사용자여정.md`
 
-## 디자인 실측 명세
-- 디자인 레퍼런스: **Odyssée**(Awwwards SOTD 2026-10-08 · 7.38) 네이비 #1E305E+페이퍼 · radius 0 · 그림자 0 · 단어 리빌 .8s `cubic-bezier(.16,1,.3,1)` 45ms · 듀오톤 · 자동 스텝 5s / **Seasats**(SOTD 2026-09-08) / **무신사 기업웹사이트**(GDWEB WINNER 2026-10-12) Pretendard 64/800/1.25 · 알약 56h
-- 도메인 레퍼런스: MasterClass at Work(얼굴 스트립·각주) · Dovetail Customers(산업 칩·사례 카드) · KMA(카드 메타·PDF) · Miro Find a Partner(필터 열·매칭 카드)
-- 토큰: `assets/css/style.css` 상단 · 상세 `분석/기획_설계.md` 3장 · 원자료 `분석/_레퍼런스_실측_초안.md`
+## 디자인 실측 명세 (v2 · 2026-10-20 전면 리뉴얼)
+- ★ 디자인 레퍼런스(사용자 지정): **Samsung Electronics CSR** csr.samsung.com/en — `레퍼런스/` 라이브러리 `samsungcsr`(3축 문서·캡처 99장·명세 25개) 기준으로 **디자인 시스템 전체 이식**. rem 10px/0.672vw/2.5645vw 3구간 · 흑백 + #F5F5F5 밴드 + #1428A0/#2189FF · 라운드 2rem 1단 · 그림자 0 · 섹션 gap 12rem · 타이포 4.8/2.6/2.4rem 700 · KV 페이드 5s 진행 막대 · 메가메뉴 3겹 시차 · 검정 pill 반전 .2s `cubic-bezier(.33,0,.3,1)` · 이미지 줌 1.05/1s · 리빌은 원본 죽은 코드 값(y55·1s)을 IO로 복원
+- 보조(v1 실측 기록 · 리빌 기준선): **Odyssée**(Awwwards SOTD 2026-10-08 · 7.38) / **Seasats**(SOTD 2026-09-08) / **무신사 기업웹사이트**(GDWEB WINNER 2026-10-12)
+- 도메인 레퍼런스: MasterClass at Work(얼굴·각주) · Dovetail Customers(산업 칩·사례 카드) · KMA(카드 메타·PDF) · Miro Find a Partner(필터·매칭 카드)
+- 토큰: `assets/css/style.css` 상단 · 대시보드 `assets/css/app.css` · 상세 `분석/기획_설계.md` 3장
 
 ## 기술 구성
 - `assets/js/programs.js` 프로그램 47 (현행 사이트 공개 콘텐츠 구조화) · `data.js` 강사 2,000(시드 난수)·자격 32·파트너·사례·언론·접수·제안 · `ui.js` 리빌/스크럽/카운트업/패럴랙스/틸트/캐러셀/탭/아코디언/자동 스텝/담기 · `shell.js` 공통 헤더·푸터(aria-current·실시간 상담 표시)
 - 상태: localStorage(제안서 담기·접수·검토 체크) · 파일 생성: Blob(강의계획서·접수증·견적서·CSV UTF-8 BOM)
 - 이미지: ComfyUI Z-Image Turbo 생성 50장(초상 24·장면 26) · webp ≤240KB(히어로)/≤100KB
-- 검증: `C:/temp/pptr/alrim-func.js`(기능 36) · `alrim-qa.js`(23페이지×1440/375 콘솔·오버플로·터치 44px)
+- 검증: `C:/temp/pptr/alrim-func2.js`(v2 기능 QA 49건 통과) · `alrim-shot.js`/`alrim-ovf2.js`(21페이지×1440/375 콘솔·가로 오버플로 실측)

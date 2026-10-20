@@ -3,106 +3,107 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>맞춤 제안서 요청 — 더알림</title>
+<meta name="description" content="네 단계로 조건을 고르면 추천 프로그램·가용 강사·예상 견적 범위가 그 자리에서 계산됩니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-.wiz{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:var(--s6);align-items:start} .wiz>*{min-width:0}
-.wiz-step{display:none} .wiz-step.on{display:block;animation:fin .4s var(--ease-out)} @keyframes fin{from{opacity:0;transform:translateY(10px)}}
-.wiz h2{font-size:28px;font-family:var(--serif);letter-spacing:-.02em;margin-bottom:6px} .wiz .desc{color:var(--muted);margin-bottom:var(--s3)}
-.wiz-nav{display:flex;justify-content:space-between;gap:12px;margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--line-2)}
-.range{display:grid;gap:8px} .range input[type=range]{width:100%;accent-color:var(--ink)} .range output{font-weight:700;font-size:20px;font-family:var(--serif)}
-.pick{display:grid;gap:8px} .pick label{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:var(--r-sm);background:#fff;cursor:pointer;font-size:14.5px} .pick label:has(input:checked){border-color:var(--ink);background:var(--paper)} .pick input{accent-color:var(--ink);width:18px;height:18px} .pick small{color:var(--muted)}
-.summary dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:14px;margin:0} .summary dt{color:var(--muted)} .summary dd{margin:0;font-weight:600}
-.rec{display:grid;gap:10px} .rec>div{padding:14px 16px;background:#fff;border:1px solid var(--line-2);border-radius:var(--r-sm)} .rec b{display:block;font-size:15px} .rec span{font-size:12.5px;color:var(--muted)}
-.est{display:grid;gap:6px;font-size:14px} .est>div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line-2)} .est .tot{font-size:18px;font-weight:700;border:0;padding-top:10px}
-@media (max-width:980px){.wiz{grid-template-columns:1fr}.sticky{position:static}}
+.wiz{display:flex;gap:6rem;align-items:flex-start} .wiz>form{flex:1;min-width:0}
+.wiz-step{display:none} .wiz-step.on{display:block;animation:fin .4s var(--ease)} @keyframes fin{from{opacity:0;transform:translateY(10px)}}
+.wiz h2{font-size:3.2rem;letter-spacing:-.08rem;line-height:1.2;margin-bottom:.8rem} .wiz .desc{font-size:1.6rem;color:var(--s);margin-bottom:3rem;line-height:1.5}
+.wiz-nav{display:flex;justify-content:space-between;gap:1.2rem;margin-top:4rem;padding-top:2.4rem;border-top:1px solid var(--d2)}
+.range{display:grid;gap:.8rem} .range input[type=range]{width:100%;accent-color:var(--k);height:4.4rem} .range output{font-weight:700;font-size:2.2rem}
+.pick{display:grid;gap:.8rem} .pick label{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:1.2rem;align-items:center;padding:1.4rem 1.6rem;border:1px solid var(--d);border-radius:var(--r1);background:#fff;cursor:pointer;font-size:1.5rem;line-height:1.4;transition:border-color var(--t2)} .pick label:has(input:checked){border-color:var(--k);background:var(--g)} .pick input{accent-color:var(--k);width:1.8rem;height:1.8rem} .pick small{color:var(--s)}
+.summary dl{display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.4rem;font-size:1.4rem;margin:0} .summary dt{color:var(--s)} .summary dd{margin:0;font-weight:700}
+.rec{display:grid;gap:.8rem} .rec>div{padding:1.2rem 1.4rem;background:#fff;border-radius:var(--r1)} .rec b{display:block;font-size:1.5rem} .rec span{font-size:1.3rem;color:var(--s)}
+.est{display:grid;gap:.4rem;font-size:1.4rem} .est>div{display:flex;justify-content:space-between;padding:.6rem 0;border-bottom:1px dashed var(--d)} .est .tot{font-size:1.8rem;font-weight:700;border:0;padding-top:1rem}
+.err{font-size:1.3rem;color:var(--bad)} .hint{font-weight:400;color:var(--s)}
+.receipt{max-width:80rem;margin:0 auto;padding:6rem;background:var(--g);border-radius:var(--r);display:grid;gap:2rem;text-align:center}
+.receipt .big{font-size:4.8rem;font-weight:700;letter-spacing:-.08rem} .receipt p{font-size:1.8rem;line-height:1.5} .receipt dl{text-align:left;display:grid;grid-template-columns:auto 1fr;gap:.8rem 1.6rem;font-size:1.5rem;margin:0;padding:2.4rem;background:#fff;border-radius:var(--r1)} .receipt dt{color:var(--s)} .receipt dd{margin:0;font-weight:700}
+@media (max-width:1023px){.wiz{flex-direction:column;align-items:stretch}.wiz>form{width:100%}.wiz .view-rail{width:100%;position:static}.receipt{padding:3rem}.receipt .big{font-size:3.2rem}.fgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="hd"></div>
-<main>
-<section class="phero phero-plain"><div class="shell">
-  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>제안서 요청</span></div>
-  <h1 data-words>맞춤 제안서 요청</h1>
-  <p class="lead">네 단계로 조건을 고르면 추천 프로그램·가용 강사·예상 견적 범위가 그 자리에서 계산됩니다. 담당 매니저가 1~2일 안에 강의계획서와 견적서를 보냅니다.</p>
-  <div class="row mt3"><button class="btn btn-primary btn-sm" type="button" id="fill">예시로 채우기 — 병원 · 160명 · 11월</button><span class="small muted">타이핑 없이 흐름을 끝까지 볼 수 있습니다</span></div>
-</div></section>
+<main class="inner">
+<section class="kv sub2 kv-grad blue-2"><img src="assets/img/book-print.webp" alt=""><div class="kv-text"><h1 class="kv-t">맞춤 제안서 요청</h1><p class="kv-d">네 단계로 조건을 고르면 추천 프로그램·가용 강사·예상 견적 범위가 그 자리에서 계산됩니다. 담당 매니저가 1~2일 안에 강의계획서와 견적서를 보냅니다.</p></div></section>
 
-<section class="sec-tight"><div class="shell wiz">
+<section class="max" id="wizSec">
+  <div class="tw" data-aos="fade-up"><h2 class="t">3~5분이면 됩니다</h2><p class="d">타이핑 없이 흐름을 끝까지 보려면 예시를 채워 보세요.</p><div class="cta-row c"><button class="cta cta-k" type="button" id="fill">예시로 채우기 — 병원 · 160명 · 11월</button></div></div>
+  <div class="wiz lay-lg">
   <form id="wiz" novalidate>
-    <div class="progress"><i id="prog"></i></div>
+    <div class="prog"><i id="prog"></i></div>
     <div class="steps" id="steps"><span class="on"><b>1</b>기관</span><i></i><span><b>2</b>대상·인원</span><i></i><span><b>3</b>주제</span><i></i><span><b>4</b>일정·예산</span><i></i><span><b>5</b>담당자</span></div>
 
-    <div class="wiz-step on" data-step="1">
+    <div class="wiz-step on mt4" data-step="1">
       <h2>어떤 기관이신가요?</h2><p class="desc">기관 유형에 따라 견적 규칙(강사수당 등급·학교장터)과 필요한 서류가 달라집니다.</p>
-      <div class="opt-grid" id="orgType"></div>
-      <div id="pubGrade" class="mt3" hidden><div class="field"><label>강사수당 지급기준 등급 <span class="hint">공공기관 품의 상한에 맞춰 견적을 산출합니다</span></label><select class="sel" name="grade" style="width:100%"><option value="">기관 기준 등급 선택</option><option value="400000">특별강사 (최초 1시간 40만원)</option><option value="250000">일반강사 1급 (25만원)</option><option value="150000">일반강사 2급 (15만원)</option></select></div></div>
-      <div id="schoolNote" class="notice mt3 small" hidden><span>ⓘ</span><div>학교는 학교장터(S2B) 견적으로 진행합니다. 접수 후 견적서·사업자등록증·통장사본·강사 이력서 패키지를 보내 드립니다. 청소년 대상 강사는 경력조회 동의서를 사전 제출한 강사만 배정됩니다.</div></div>
+      <div class="opts" id="orgType"></div>
+      <div id="pubGrade" class="mt3" hidden><div class="field"><label>강사수당 지급기준 등급 <span class="hint">공공기관 품의 상한에 맞춰 견적을 산출합니다</span></label><select class="inp" name="grade"><option value="">기관 기준 등급 선택</option><option value="400000">특별강사 (최초 1시간 40만원)</option><option value="250000">일반강사 1급 (25만원)</option><option value="150000">일반강사 2급 (15만원)</option></select></div></div>
+      <div id="schoolNote" class="notice blue mt3 small" hidden>학교는 학교장터(S2B) 견적으로 진행합니다. 접수 후 견적서·사업자등록증·통장사본·강사 이력서 패키지를 보내 드립니다. 청소년 대상 강사는 경력조회 동의서를 사전 제출한 강사만 배정됩니다.</div>
     </div>
 
-    <div class="wiz-step" data-step="2">
+    <div class="wiz-step mt4" data-step="2">
       <h2>누가, 몇 명이 듣나요?</h2><p class="desc">대상과 인원은 분반·활동형 여부와 강사 수를 정합니다.</p>
-      <div class="opt-grid" id="target"></div>
-      <div class="form-grid mt3">
+      <div class="opts" id="target"></div>
+      <div class="fgrid mt3">
         <div class="field"><label>인원</label><div class="range"><input type="range" name="people" min="10" max="400" step="10" value="40"><output id="peopleOut">40명</output></div></div>
-        <div class="field"><label>권역</label><select class="sel" name="region" style="width:100%"><option value="">선택</option></select></div>
+        <div class="field"><label>권역</label><select class="inp" name="region"><option value="">선택</option></select></div>
       </div>
-      <label class="check mt3"><input type="checkbox" name="refund"> 고용보험(사업주훈련) 환급이 필요합니다</label>
-      <div id="refundNote" class="notice warn small mt2" hidden><span>!</span><div>선택한 프로그램 중 환급 대상 요건을 갖추지 않은 과정이 있으면 3단계에서 표시됩니다. 환급 과정 개설 가능 여부는 상담에서 안내합니다.</div></div>
+      <label class="chk mt3"><input type="checkbox" name="refund"> 고용보험(사업주훈련) 환급이 필요합니다</label>
+      <div id="refundNote" class="notice warn small mt2" hidden>선택한 프로그램 중 환급 대상 요건을 갖추지 않은 과정이 있으면 3단계에서 표시됩니다. 환급 과정 개설 가능 여부는 상담에서 안내합니다.</div>
     </div>
 
-    <div class="wiz-step" data-step="3">
+    <div class="wiz-step mt4" data-step="3">
       <h2>어떤 주제인가요?</h2><p class="desc">카탈로그에서 담은 프로그램이 자동으로 들어옵니다. 최대 6개.</p>
       <div class="pick" id="picks"></div>
-      <div class="row mt3"><a class="btn btn-ghost btn-sm" href="programs.html">카탈로그에서 더 담기</a><button class="btn btn-ghost btn-sm" type="button" id="suggest">조건으로 추천받기</button></div>
+      <div class="cta-row mt3"><a class="cta cta-o cta-dense" href="programs.html">카탈로그에서 더 담기</a><button class="cta cta-o cta-dense" type="button" id="suggest">조건으로 추천받기</button></div>
     </div>
 
-    <div class="wiz-step" data-step="4">
+    <div class="wiz-step mt4" data-step="4">
       <h2>언제, 어떤 예산으로?</h2><p class="desc">예산은 범위로 받습니다. 견적서는 강사료·교재·이동을 항목별로 씁니다.</p>
-      <div class="form-grid">
-        <div class="field"><label>희망 일정</label><input class="input" type="date" name="date" min="2026-10-27"></div>
-        <div class="field"><label>형태</label><select class="sel" name="format" style="width:100%"><option>집체</option><option>온라인</option><option>혼합</option></select></div>
+      <div class="fgrid">
+        <div class="field"><label>희망 일정</label><input class="inp" type="date" name="date" min="2026-10-27"></div>
+        <div class="field"><label>형태</label><select class="inp" name="format"><option>집체</option><option>온라인</option><option>혼합</option></select></div>
         <div class="field"><label>예산 범위</label><div class="range"><input type="range" name="budget" min="500000" max="10000000" step="100000" value="2000000"><output id="budgetOut">200만원</output></div></div>
-        <div class="field"><label>분반</label><select class="sel" name="split" style="width:100%"><option value="1">1회</option><option value="2">2회차 분반</option><option value="3">3회차 분반</option></select></div>
+        <div class="field"><label>분반</label><select class="inp" name="split"><option value="1">1회</option><option value="2">2회차 분반</option><option value="3">3회차 분반</option></select></div>
       </div>
-      <div class="field mt3"><label>요청 사항 <span class="hint">선택</span></label><textarea class="textarea" name="memo" placeholder="예) 교대 근무라 오후반 추가 희망, 사례는 병동 중심으로"></textarea></div>
+      <div class="field mt3"><label>요청 사항 <span class="hint">선택</span></label><textarea class="inp" name="memo" placeholder="예) 교대 근무라 오후반 추가 희망, 사례는 병동 중심으로"></textarea></div>
     </div>
 
-    <div class="wiz-step" data-step="5">
+    <div class="wiz-step mt4" data-step="5">
       <h2>담당자 연락처</h2><p class="desc">개인정보는 상담·제안 목적으로만 쓰고 3년 뒤 파기합니다. 거부해도 전화 상담은 가능합니다.</p>
-      <div class="form-grid">
-        <div class="field"><label>기관명 <i>*</i></label><input class="input" name="org" required placeholder="기관명"><span class="err" hidden>기관명을 입력해 주세요</span></div>
-        <div class="field"><label>담당자 <i>*</i></label><input class="input" name="name" required placeholder="이름 · 부서"><span class="err" hidden>담당자 이름을 입력해 주세요</span></div>
-        <div class="field"><label>연락처 <i>*</i></label><input class="input" name="phone" required inputmode="tel" placeholder="010-0000-0000"><span class="err" hidden>연락처 형식을 확인해 주세요</span></div>
-        <div class="field"><label>이메일</label><input class="input" name="email" type="email" placeholder="제안서 수신"></div>
+      <div class="fgrid">
+        <div class="field"><label>기관명 <i>*</i></label><input class="inp" name="org" required placeholder="기관명"><span class="err" hidden>기관명을 입력해 주세요</span></div>
+        <div class="field"><label>담당자 <i>*</i></label><input class="inp" name="name" required placeholder="이름 · 부서"><span class="err" hidden>담당자 이름을 입력해 주세요</span></div>
+        <div class="field"><label>연락처 <i>*</i></label><input class="inp" name="phone" required inputmode="tel" placeholder="010-0000-0000"><span class="err" hidden>연락처 형식을 확인해 주세요</span></div>
+        <div class="field"><label>이메일</label><input class="inp" name="email" type="email" placeholder="제안서 수신"></div>
       </div>
       <div class="tbl-wrap mt3"><table class="tbl" style="min-width:0"><thead><tr><th>수집 항목</th><th>목적</th><th>보유 기간</th><th>거부 시</th></tr></thead><tbody><tr><td>기관명·담당자·연락처·이메일</td><td>교육 상담·제안서 발송</td><td>3년 (상담 종료 후)</td><td>전화 상담만 가능</td></tr></tbody></table></div>
-      <label class="check mt3"><input type="checkbox" name="agree"> 위 내용을 확인했고 개인정보 수집·이용에 동의합니다 <i style="color:var(--bad);font-style:normal">*</i></label>
+      <label class="chk mt3"><input type="checkbox" name="agree"> 위 내용을 확인했고 개인정보 수집·이용에 동의합니다 <i style="color:var(--bad);font-style:normal">*</i></label>
       <span class="err" id="agreeErr" hidden>동의가 있어야 접수됩니다</span>
     </div>
 
-    <div class="wiz-nav"><button class="btn btn-ghost" type="button" id="prev">이전</button><button class="btn btn-primary" type="button" id="next">다음 <span class="arr">→</span></button></div>
+    <div class="wiz-nav"><button class="cta cta-o" type="button" id="prev">이전</button><button class="cta cta-k" type="button" id="next">다음</button></div>
   </form>
 
-  <aside class="sticky"><div class="meta-card summary" id="side">
-    <div class="eyebrow">실시간 계산</div>
+  <aside class="view-rail"><div class="rail-card summary" id="side">
+    <span class="ey">실시간 계산</span>
     <dl id="sumDl"></dl>
-    <div><b class="small">추천 프로그램</b><div class="rec mt1" id="recs"><span class="muted small">조건을 고르면 추천이 바뀝니다</span></div></div>
-    <div><b class="small">예상 견적 범위</b><div class="est mt1" id="est"></div></div>
+    <div class="mt3"><b style="font-size:1.6rem">추천 프로그램</b><div class="rec mt1" id="recs"><span class="sub small">조건을 고르면 추천이 바뀝니다</span></div></div>
+    <div class="mt3"><b style="font-size:1.6rem">예상 견적 범위</b><div class="est mt1" id="est"></div></div>
   </div></aside>
-</div></section>
+  </div>
+</section>
 
-<section class="sec-tight" id="done" hidden><div class="shell-n">
-  <div class="receipt burst" data-reveal>
-    <span class="eyebrow">접수 완료</span>
+<section class="max" id="done" hidden>
+  <div class="receipt" data-aos="fade-up">
+    <span class="ey">접수 완료</span>
     <div class="big" id="rqNo">RQ-2610-042</div>
     <p>제안서 요청이 접수되었습니다. 담당 매니저 <b id="rqMgr">박매니저</b>가 <b>1~2일 내</b>(영업일 기준) 연락드리고, 강의계획서·견적서·강사 약력을 이메일로 보냅니다.</p>
-    <dl id="rqDl" style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0"></dl>
-    <div class="row"><button class="btn btn-primary" type="button" id="dl">접수증 내려받기</button><a class="btn btn-ghost" href="admin.html">관리자 접수함에서 보기</a><a class="btn btn-ghost" href="index.html">홈으로</a></div>
-    <p class="small muted">접수 내용은 관리자 접수함의 「접수」 단계에 추가됩니다(데모: 이 브라우저에만 저장).</p>
+    <dl id="rqDl"></dl>
+    <div class="cta-row c"><button class="cta cta-k" type="button" id="dl">접수증 내려받기</button><a class="cta cta-o" href="admin.html#inbox">관리자 접수함에서 보기</a><a class="cta cta-o" href="index.html">홈으로</a></div>
+    <p class="small sub">접수 내용은 관리자 접수함의 「접수」 단계에 추가됩니다(데모: 이 브라우저에만 저장).</p>
   </div>
-</div></section>
+</section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
@@ -124,8 +125,8 @@
   const fieldOf = t => ({"학교":"진로·취업","기업":"리더십","병원":"병원·의료","공공기관":"소통·CS"})[t];
   function renderPicks(){
     const ids = S.picks.length ? S.picks : [];
-    $("#picks").innerHTML = ids.length ? ids.map(id => { const p = DATA.program(id); const bad = form.refund.checked && (p.legal || p.hours < 4); return `<label><input type="checkbox" name="pick" value="${id}" checked><span><b>${p.name}</b><br><small>${DATA.centerName(p.center)} · ${p.hours}시간${p.sessions?` · ${p.sessions.length}차시`:""}</small>${bad?`<br><small style="color:var(--warn)">⚠ 환급 대상 요건 미충족 — 상담에서 대안 안내</small>`:""}</span><span class="tag ${p.legal?"gold":"soft"}">${p.legal?"법정의무":DATA.centerName(p.center)}</span></label>`; }).join("")
-      : `<div class="empty"><b>담긴 프로그램이 없습니다</b>「조건으로 추천받기」를 누르거나 카탈로그에서 담아 오세요.</div>`;
+    $("#picks").innerHTML = ids.length ? ids.map(id => { const p = DATA.program(id); const bad = form.refund.checked && (p.legal || p.hours < 4); return `<label><input type="checkbox" name="pick" value="${id}" checked><span><b>${p.name}</b><br><small>${DATA.centerName(p.center)} · ${p.hours}시간${p.sessions?` · ${p.sessions.length}차시`:""}</small>${bad?`<br><small style="color:#8A5A12">⚠ 환급 대상 요건 미충족 — 상담에서 대안 안내</small>`:""}</span><span class="tag ${p.legal?"on":""}">${p.legal?"법정의무":DATA.centerName(p.center)}</span></label>`; }).join("")
+      : `<div class="empty" style="background:var(--g);border-radius:var(--r1)"><b>담긴 프로그램이 없습니다</b><p>「조건으로 추천받기」를 누르거나 카탈로그에서 담아 오세요.</p></div>`;
     $$("#picks input").forEach(i => i.addEventListener("change", calc));
   }
   $("#suggest").addEventListener("click", () => { const c = centerOf(S.type) || "corp"; const list = PROGRAMS.filter(p => p.center===c && (!S.target || p.targets.includes(S.target))).slice(0,3); S.picks = list.map(p=>p.id); renderPicks(); calc(); toast(`${DATA.centerName(c)} · 조건에 맞는 ${list.length}개를 추천했습니다`, "ok"); });
@@ -134,7 +135,6 @@
     const ps = picked(), people = +form.people.value, split = +form.split.value, region = form.region.value;
     const hours = ps.reduce((a,p)=>a+p.hours,0) * split;
     const lecN = DATA.countLecturers({ field: fieldOf(S.type), region, target: S.target });
-    // 견적: 시간당 강사료(권역·시간 가중) + 교재 + 이동. 공공은 등급 상한 적용
     let rate = 180000; if (S.type==="공공기관" && form.grade.value) rate = Math.min(rate, +form.grade.value);
     const far = region && !["서울","경기·인천"].includes(region) ? 1 : 0;
     const lecFee = ps.reduce((a,p)=> a + (rate * Math.min(p.hours,1) + rate*0.6*Math.max(p.hours-1,0)) * split, 0);
@@ -142,15 +142,15 @@
     const low = Math.round((lecFee+book+travel)*0.9/10000)*10000, high = Math.round((lecFee+book+travel)*1.15/10000)*10000;
     const over = +form.budget.value < low;
     $("#sumDl").innerHTML = `<dt>기관</dt><dd>${S.type||"—"}</dd><dt>대상·인원</dt><dd>${S.target?TARGET_LABEL[S.target]:"—"} · ${people}명${split>1?` · ${split}회차`:""}</dd><dt>권역</dt><dd>${region||"—"}</dd><dt>가용 강사</dt><dd>${lecN}명</dd><dt>총 교육시간</dt><dd>${hours}시간</dd>`;
-    $("#recs").innerHTML = ps.length ? ps.map(p=>`<div><b>${p.name}</b><span>${p.hours}시간 · ${p.targets.map(t=>TARGET_LABEL[t]).slice(0,2).join(", ")}${p.legal?" · 법정의무":""}</span></div>`).join("") : `<span class="muted small">3단계에서 프로그램을 고르면 표시됩니다</span>`;
-    $("#est").innerHTML = ps.length ? `<div><span>강사료 (${ps.length}과정${split>1?`×${split}`:""})</span><b>${DATA.won(Math.round(lecFee))}</b></div><div><span>교재·자료 (${people}명)</span><b>${DATA.won(book)}</b></div><div><span>이동·숙박</span><b>${travel?DATA.won(travel):"해당 없음"}</b></div><div class="tot"><span>예상 범위</span><b>${(low/10000)}~${(high/10000)}만원</b></div>${over?`<div class="notice warn small"><span>!</span><div>예산 범위(${form.budget.value/10000}만원)가 예상 하한보다 낮습니다. 차시 압축·분반 축소안을 함께 제안합니다.</div></div>`:""}${S.type==="공공기관"&&form.grade.value?`<div class="small muted">강사수당 등급 상한 ${DATA.won(+form.grade.value)}/최초 1시간 적용</div>`:""}` : `<span class="muted small">프로그램 선택 후 계산됩니다</span>`;
+    $("#recs").innerHTML = ps.length ? ps.map(p=>`<div><b>${p.name}</b><span>${p.hours}시간 · ${p.targets.map(t=>TARGET_LABEL[t]).slice(0,2).join(", ")}${p.legal?" · 법정의무":""}</span></div>`).join("") : `<span class="sub small">3단계에서 프로그램을 고르면 표시됩니다</span>`;
+    $("#est").innerHTML = ps.length ? `<div><span>강사료 (${ps.length}과정${split>1?`×${split}`:""})</span><b>${DATA.won(Math.round(lecFee))}</b></div><div><span>교재·자료 (${people}명)</span><b>${DATA.won(book)}</b></div><div><span>이동·숙박</span><b>${travel?DATA.won(travel):"해당 없음"}</b></div><div class="tot"><span>예상 범위</span><b>${(low/10000)}~${(high/10000)}만원</b></div>${over?`<div class="notice warn small" style="display:block">예산 범위(${form.budget.value/10000}만원)가 예상 하한보다 낮습니다. 차시 압축·분반 축소안을 함께 제안합니다.</div>`:""}${S.type==="공공기관"&&form.grade.value?`<div class="small sub" style="display:block;border:0">강사수당 등급 상한 ${DATA.won(+form.grade.value)}/최초 1시간 적용</div>`:""}` : `<span class="sub small">프로그램 선택 후 계산됩니다</span>`;
     window._est = { low, high, lecN, hours };
   }
   function go(n){
     if (n > step && !validate()) return;
     step = Math.max(1, Math.min(5, n)); $$(".wiz-step").forEach(s => s.classList.toggle("on", +s.dataset.step===step));
     $$("#steps > span").forEach((s,i) => { s.className = i+1<step ? "done" : i+1===step ? "on" : ""; }); $("#prog").style.width = (step/5*100)+"%";
-    if (step>=3 && !$$("#picks input").length) renderPicks(); $("#prev").disabled = step===1; $("#next").innerHTML = step===5 ? "제안서 요청 접수" : '다음 <span class="arr">→</span>'; if (step===3) renderPicks(); calc(); scrollTo({ top: $("#wiz").offsetTop - 90, behavior:"smooth" });
+    if (step>=3 && !$$("#picks input").length) renderPicks(); $("#prev").disabled = step===1; $("#next").textContent = step===5 ? "제안서 요청 접수" : "다음"; if (step===3) renderPicks(); calc(); scrollTo({ top: $("#wiz").getBoundingClientRect().top + scrollY - 100, behavior:"smooth" });
   }
   function validate(){
     if (step===1 && !S.type) { toast("기관 유형을 골라 주세요", "warn"); return false; }
@@ -170,10 +170,9 @@
     cart.clear();
     $("#rqNo").textContent = no; $("#rqMgr").textContent = S.type==="병원"||S.type==="기업" ? "박매니저" : "최매니저";
     $("#rqDl").innerHTML = `<dt>기관</dt><dd>${H.esc(rec.org)} (${S.type})</dd><dt>프로그램</dt><dd>${ps.map(p=>p.name).join(", ")}</dd><dt>대상·인원</dt><dd>${TARGET_LABEL[S.target]} · ${rec.people}명</dd><dt>희망 일정</dt><dd>${rec.date}</dd><dt>예상 견적</dt><dd>${window._est.low/10000}~${window._est.high/10000}만원 (상담 후 확정)</dd>`;
-    $(".wiz").closest("section").hidden = true; $("#done").hidden = false; $("#done .receipt").classList.add("in"); scrollTo({ top: 0, behavior:"smooth" }); toast("접수되었습니다 — 담당 매니저가 연락드립니다", "ok");
+    $("#wizSec").hidden = true; $("#done").hidden = false; $("#done .receipt").classList.add("in"); scrollTo({ top: 0, behavior:"smooth" }); toast("접수되었습니다 — 담당 매니저가 연락드립니다", "ok");
     $("#dl").onclick = () => { const txt = ["더알림 제안서 요청 접수증", `접수번호 ${no}`, `기관 ${rec.org} (${S.type})`, `프로그램 ${ps.map(p=>p.name).join(", ")}`, `대상·인원 ${TARGET_LABEL[S.target]} · ${rec.people}명`, `희망 일정 ${rec.date}`, `예상 견적 ${window._est.low/10000}~${window._est.high/10000}만원`, `담당 ${$("#rqMgr").textContent} · 회신 1~2일`, "", "※ 리뉴얼 제안 데모가 생성한 샘플 접수증입니다."].join("\r\n"); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+txt],{type:"text/plain;charset=utf-8"})); a.download = `${no}_접수증.txt`; a.click(); toast("접수증을 내려받았습니다", "ok"); };
   }
-  // 예시로 채우기
   $("#fill").addEventListener("click", () => {
     S.type = "병원"; $$("#orgType .opt").forEach(o=>o.setAttribute("aria-pressed", o.dataset.v==="병원")); $("#pubGrade").hidden = true; $("#schoolNote").hidden = true;
     S.target = "의료진"; $$("#target .opt").forEach(o=>o.setAttribute("aria-pressed", o.dataset.v==="의료진"));
@@ -181,7 +180,6 @@
     S.picks = ["med-01","med-02"]; form.org.value = "경기 소재 종합병원"; form.name.value = "김담당 · 교육팀"; form.phone.value = "010-1234-5678"; form.email.value = "edu@hospital.example"; form.agree.checked = true;
     renderPicks(); step = 4; go(5); toast("예시 데이터로 채웠습니다 — 「제안서 요청 접수」를 누르면 끝까지 볼 수 있습니다", "ok");
   });
-  // URL 프리필 (센터·병원 평가 매핑에서 넘어온 경우)
   const q = new URLSearchParams(location.search);
   if (q.get("type")) { S.type = q.get("type"); $$("#orgType .opt").forEach(o=>o.setAttribute("aria-pressed", o.dataset.v===S.type)); $("#pubGrade").hidden = S.type!=="공공기관"; $("#schoolNote").hidden = S.type!=="학교"; }
   if (q.get("progs")) S.picks = q.get("progs").split(",").filter(id=>DATA.program(id));
