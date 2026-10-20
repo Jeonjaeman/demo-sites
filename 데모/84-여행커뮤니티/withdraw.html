@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>회원 탈퇴 — 놀판</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app" class="no-tab"><div id="body"></div></main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, D, state, save, me, allPosts, mountShell, toast, countUp } = NP;
+  mountShell({ back: 'my.html', title: '회원 탈퇴' });
+  const body = $('#body');
+  const { acc, user: u } = me();
+  if (!u) { body.innerHTML = '<div class="empty"><strong>로그인 후 이용할 수 있습니다</strong><a class="btn btn-soft" style="margin-top:12px" href="my.html">내 정보</a></div>'; return; }
+  const myPosts = allPosts().filter(p => p.uid === 'me' || p.uid === u.id);
+  const myCmts = D.comments.filter(c => c.uid === u.id).concat(state.comments);
+  let choice = 'keep', step = 1;
+  function render(){
+    if (step === 1) {
+      body.innerHTML = `<section class="sec rv" style="padding-top:20px">
+        <h1 style="margin:0 0 8px;font-size:1.5rem;letter-spacing:-.02em">${esc(u.nick)} 님이 남긴 것</h1>
+        <p class="lead">탈퇴 전에 글과 댓글을 어떻게 할지 먼저 고릅니다. 네이버 카페와 달리 놀판은 <strong>남길지 지울지 본인이 정합니다.</strong></p>
+        <div class="stat3" style="margin:18px 0 16px"><a href="my.html#posts"><b id="n1">0</b>내 글</a><a href="my.html#comments"><b id="n2">0</b>내 댓글</a><a href="#"><b id="n3">0</b>받은 좋아요</a></div>
+        <div class="radio-list">
+          <label class="radio-row"><input type="radio" name="c" value="keep" checked><span><strong>글·댓글 남기기</strong><small>작성자는 「탈퇴한 회원」으로 표시됩니다. 다른 분들의 답글과 대화가 그대로 남습니다.</small></span></label>
+          <label class="radio-row"><input type="radio" name="c" value="delete"><span><strong>글·댓글 모두 삭제</strong><small>내 글 ${myPosts.length}개와 댓글 ${myCmts.length}개가 지워집니다. 다른 분이 단 답글은 「삭제된 댓글입니다」 자리만 남습니다.</small></span></label>
+        </div>
+        <div class="kv" style="margin-top:16px"><dt>즉시 삭제</dt><dd>프로필 · 로그인 연결 · 알림 · 좋아요</dd><dt>1년 보관</dt><dd>재가입 제한용 식별값(암호화) — 강제 탈퇴자 재가입 방지 목적. 처리방침 명시</dd><dt>앱 밖 요청</dt><dd>구글 플레이 요건에 따라 웹에서도 삭제를 요청할 수 있습니다</dd></div>
+        <button class="btn btn-lg btn-danger-ghost btn-block" id="next" style="margin-top:20px">다음</button>
+      </section>`;
+      countUp($('#n1'), myPosts.length); countUp($('#n2'), myCmts.length); countUp($('#n3'), myPosts.reduce((a, p) => a + p.likes, 0));
+      $$('input[name=c]').forEach(r => r.onchange = () => choice = r.value);
+      $('#next').onclick = () => { step = 2; render(); window.scrollTo({ top: 0 }); };
+    } else if (step === 2) {
+      body.innerHTML = `<section class="sec rv" style="padding-top:20px">
+        <h1 style="margin:0 0 8px;font-size:1.5rem;letter-spacing:-.02em">정말 탈퇴하시겠어요?</h1>
+        <p class="lead">선택: <strong>${choice === 'keep' ? '글·댓글 남기기' : '글·댓글 모두 삭제'}</strong>. 탈퇴 후에는 되돌릴 수 없습니다. 같은 카카오·네이버 계정으로 다시 가입할 수 있지만, 강제 탈퇴된 계정은 1년간 가입이 제한됩니다.</p>
+        <div class="notice notice-warn" style="margin-top:16px">글자를 입력해 확인하는 방식 대신 <strong style="display:inline">버튼 두 번</strong>으로 확인합니다. 중장년 사용자가 긴 문구를 타이핑하다 포기하거나 잘못 누르는 일을 줄이기 위해서입니다.</div>
+        <div style="display:grid;gap:8px;margin-top:20px"><button class="btn btn-lg btn-ghost btn-block" id="back">아니요, 계속 쓸래요</button><button class="btn btn-lg btn-danger btn-block" id="go">네, 탈퇴합니다</button></div>
+      </section>`;
+      $('#back').onclick = () => location.href = 'my.html';
+      $('#go').onclick = () => { step = 3; render(); };
+    } else {
+      if (choice === 'delete') { state.posts = []; state.comments = []; save('posts', []); save('comments', []); }
+      state.account = 'guest'; save('account', 'guest'); state.profile = {}; save('profile', {});
+      body.innerHTML = `<div class="done-wrap rv"><div class="done-ico" style="background:#f2f2f2;color:var(--sub)">✓</div><h1>탈퇴가 끝났습니다</h1><p>${choice === 'keep' ? '남긴 글은 「탈퇴한 회원」으로 표시됩니다.' : '글과 댓글을 모두 지웠습니다.'}<br>그동안 고마웠습니다. 좋은 여행 하세요.</p><div style="display:grid;gap:8px;width:100%;margin-top:10px"><a class="btn btn-lg btn-ghost" href="index.html">홈으로</a><a class="btn btn-lg btn-ghost" href="https://example.com/delete-account" style="font-size:.95rem">앱 밖에서 삭제 요청하기 (웹 링크)</a></div></div>`;
+      toast('탈퇴 처리했습니다 (데모 — 체험 계정은 내 정보에서 다시 고를 수 있습니다)');
+    }
+    NP.reveal();
+  }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>검토 항목 — 놀판 제안 데모</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app" class="no-tab">
+  <section class="sec rv" style="padding-top:20px">
+    <p class="eyebrow">제안 데모 · 검토 항목</p>
+    <h1 style="margin:0 0 8px;font-size:1.5rem;letter-spacing:-.02em">공고대로 만들면 막히는 14곳</h1>
+    <p class="lead">공고 요구사항을 시나리오로 다시 그리고 50회 리서치해 찾은 것입니다. 설명으로 끝내지 않고 <strong>데모 화면에서 실제로 동작</strong>하게 만들었습니다. 버튼을 누르면 그 화면으로 갑니다.</p>
+    <div class="chips" style="padding:12px 0 0" id="filt"><button class="chip" data-g="" aria-pressed="true">전체 14</button><button class="chip" data-g="fatal">작동 안 함 4</button><button class="chip" data-g="law">법 위반 3</button><button class="chip" data-g="ops">운영 중 터짐 6</button><button class="chip" data-g="nice">있으면 좋음 1</button></div>
+  </section>
+  <div id="list" style="padding-top:4px"></div>
+  <section class="sec" style="padding-bottom:32px">
+    <div class="sec-h"><h2>데모 범위</h2></div>
+    <div class="kv"><dt>포함</dt><dd>사용자 화면 13페이지 전부 동작 (홈·해외·국내·라운지·상세·글쓰기·검색·알림·가입·내 정보·글자 크기·탈퇴·검토)</dd><dt>제외</dt><dd>관리자 CMS(회원 제재·블라인드·공지·배너) — 그누보드5 기본 제공 + 커스텀으로 지원서 일정에 답함</dd><dt>데이터</dt><dd>전부 가상. 실존 업체·인물·단체와 무관</dd></div>
+  </section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, mountShell, stagger } = NP;
+  mountShell({ back: 'index.html', title: '검토 항목' });
+  const G = { fatal: '작동 안 함', law: '법 위반', ops: '운영 중 터짐', nice: '있으면 좋음' };
+  const R = [
+    { g: 'fatal', t: '「소셜 로그인 + 생년월일 확인」은 카카오 정책상 성인 확인으로 인정되지 않는다', d: '카카오 운영정책 4조는 성인커뮤니티·사행성 서비스를 금지 대상으로 두고, 카카오는 「출생연도는 성인인증에 쓸 수 없다」고 답했습니다. 성인 확인 미구현으로 API가 차단된 사례(KOE101)가 있습니다.', demo: '가입 3단계에 휴대폰·간편 본인확인(권장)과 생년월일(임시) 두 경로. 생년월일 회원은 「자기신고」 배지가 붙고 카지노 지역 게시판 본문이 실제로 잠깁니다.', go: 'signup.html?step=3', go2: 'my.html#account', go2t: '체험 계정 바꿔 보기', src: [['카카오 운영정책 4조', 'https://developers.kakao.com/terms/ko/site-policies'], ['devtalk 답변', 'https://devtalk.kakao.com/t/topic/152059']] },
+    { g: 'fatal', t: '결과물 「APK」로는 구글 플레이에 올릴 수 없고, 계정 요건이 45일과 겹친다', d: '신규 앱은 AAB만 받습니다. 개인 계정은 테스터 12명·14일 비공개 테스트, 조직 계정은 D-U-N-S 발급 최대 30일.', demo: '데모 범위 밖 — 지원서에서 AAB+APK 둘 다 납품, 착수 1일차 콘솔 개설을 일정에 박습니다.', src: [['개인 계정 테스트 요건', 'https://support.google.com/googleplay/android-developer/answer/14151465?hl=en']] },
+    { g: 'fatal', t: '기본 웹뷰로 감싸면 사진 첨부·카카오톡 로그인이 안 되고 「웹뷰 스팸」으로 거절될 수 있다', d: 'onShowFileChooser 미구현 시 파일 선택이 열리지 않고, 카카오톡 intent:// 처리도 앱이 해야 합니다. 구글은 웹사이트를 감싸기만 한 앱을 삭제합니다.', demo: '글쓰기의 다중 사진 첨부가 브라우저에서 실제 동작하고, 알림 화면(앱 고유 기능 근거)을 두었습니다.', go: 'write.html', go2: 'notify.html', go2t: '알림 화면', src: [['카카오 하이브리드 가이드', 'https://developers.kakao.com/docs/ko/javascript/hybrid'], ['Webview spam 정책', 'https://support.google.com/googleplay/android-developer/answer/9899034']] },
+    { g: 'fatal', t: '2026-08-31부터 타깃 API 36 강제 — edge-to-edge를 끌 수 없다', d: '헤더·하단 탭이 상태바·제스처 바 아래로 깔립니다. 중장년은 가려진 버튼을 고장으로 인식합니다.', demo: 'safe-area 인셋 적용 + 데스크톱 안내 패널의 「앱 화면으로 보기」 토글로 시스템 바 영역을 겹쳐 확인합니다.', go: 'index.html', src: [['타깃 API 요건', 'https://support.google.com/googleplay/android-developer/answer/11926878?hl=en-419']] },
+    { g: 'law', t: '강원랜드·마카오·필리핀 게시판은 「도박 정보」로 흐르는 순간 형사·플랫폼 리스크가 함께 터진다', d: '정보통신망법 44조의7 불법정보, 내국인 해외 도박 처벌, 2026-08 강원랜드 사칭 온라인카지노(이용자 4만·780억) 적발. 플레이·카카오 모두 도박 콘텐츠 금지.', demo: '글쓰기 실시간 작성 가드(차단·경고 등급), 외부 링크 경고 시트, 게시판 규칙 상단 고정 + 상담전화 1336.', go: 'write.html', go2: 'domestic.html?region=jeongseon&rules=1', go2t: '게시판 규칙', src: [['강원랜드 사칭 적발', 'https://www.inews24.com/view/1995600'], ['플레이 도박 정책', 'https://support.google.com/googleplay/android-developer/answer/9877032?hl=en']] },
+    { g: 'law', t: '강원랜드 주변 불법 사채(꽁지)와 해외 「밤문화」 후기는 각각 불법 대부·성매매 광고에 걸린다', d: '미등록 대부 광고는 징역 5년·벌금 2억, 성매매 광고는 징역 3년·벌금 3천만. 후기 형식이어도 유인하면 성립할 수 있습니다.', demo: '작성 가드에 불법 대부·유흥 알선 범주와 전화번호·메신저 ID 패턴 경고. 신고 사유에도 같은 범주.', go: 'write.html', src: [['대부업법 개정', 'https://www.lawtalk.co.kr/posts/132055'], ['성매매 광고죄', 'https://www.lawtalk.co.kr/posts/167023']] },
+    { g: 'law', t: '숙소·맛집 후기에 업체 대가가 있으면 광고 표시 의무 — 운영진 제휴 소개도 마찬가지', d: '공정위 추천·보증 심사지침(2025-12 개정): 무료 제공·할인도 경제적 이해관계. 카페 글은 본문 처음·끝에 표시.', demo: '글쓰기 「대가를 받았어요」 체크 → 목록·상세에 「광고·협찬」 라벨. 홈 인기글에서 광고 글 제외 토글. 배너에 「광고」 표기.', go: 'post.html?id=103', go2: 'index.html', go2t: '인기글 토글', src: [['지침 개정', 'https://www.ajunews.com/view/20251202085042877']] },
+    { g: 'ops', t: '회원이 쓰는 「신고·차단」이 공고에 없다 — 플레이 UGC 정책 필수 요건', d: 'UGC 앱은 앱 내 신고·차단이 있어야 하고, 정보통신망법 44조의2 임시조치(30일)도 화면이 필요합니다.', demo: '⋯ → 신고 사유 6종(설명 포함) → 접수 → 차단 제안. 차단하면 그 회원의 글·댓글이 실제로 사라집니다. 검토 중 글의 가림 화면과 이의제기.', go: 'post.html?id=206', go2: 'post.html?id=201', go2t: '신고·차단 해보기', src: [['플레이 UGC 정책', 'https://support.google.com/googleplay/android-developer/answer/9876937?hl=en']] },
+    { g: 'ops', t: '청소년 판정은 「만 나이」가 아니라 「연 나이」 — 흔한 구현은 성인을 잘못 막는다', d: '청소년보호법 2조: 만 19세가 되는 해 1월 1일부터 성인. 오늘 기준 2007년생은 생일 전이어도 성인입니다.', demo: '생년월일 입력 즉시 오늘 기준 판정, 청소년보호법/민법 기준 토글, 경계 사례 3개 「예시로 보기」.', go: 'signup.html?step=3', src: [['청소년보호법 2조', 'https://ko.wikisource.org/wiki/청소년_보호법_(대한민국,_법률_제18550호)']] },
+    { g: 'ops', t: '「큰 글씨」는 앱 단계 조절과 기기 글꼴 상속이 겹치는 이중 구조 — 키우면 버튼 말줄임·레이아웃 붕괴', d: '토스는 글씨를 키우자 버튼 문구가 말줄임되는 문제를 겪었습니다. 웹뷰 앱은 흔히 fontScale 1.0 강제로 기기 설정을 무시합니다.', demo: '헤더 「가」 3단계(17/19/21px) + localStorage 유지. 「더 크게」에서 썸네일이 아래로, 탭이 2줄로 재구성. 말줄임 없음, 터치 48px.', go: 'text.html', src: [['토스 접근성', 'https://toss.im/tossfeed/article/mobile-accessibility'], ['GDWEB 2026 MOBILE 선정작 큰글씨 모드(실측)', 'https://m.insure.kfcc.co.kr/']] },
+    { g: 'ops', t: '사진을 원본 그대로 올리면 용량·HEIC·위치정보 문제가 한꺼번에 터진다', d: 'HEIC는 크롬에서 디코딩 불가. PC 업로드·원본 전송 경로에서는 EXIF GPS가 남아 집 위치가 노출될 수 있습니다.', demo: '사진 선택 시 canvas로 긴 변 1600px 재인코딩(EXIF 전부 제거), 「위치정보 지움 · 4.2MB→380KB」 배지, 남은 장수, 샘플 사진 버튼.', go: 'write.html', src: [['HEIC 브라우저 디코딩', 'https://dev.to/rushikes-dev/how-i-added-browser-based-heic-to-jpg-conversion-no-server-no-upload-28kf']] },
+    { g: 'ops', t: '「탈퇴 = 데이터 삭제」(플레이)와 「강제 탈퇴자 재가입 차단」(공고)은 설계 없이는 둘 중 하나가 깨진다', d: '플레이는 앱 내 계정 삭제 + 웹 삭제 링크를 요구. 재가입 차단은 식별값 보관이 필요 → 처리방침에 「부정이용 방지 1년 보관」 명시로 해소.', demo: '탈퇴 화면에서 내 글·댓글을 실제로 집계, 남기기/삭제 선택, 보관 고지, 버튼 2단계 확인, 완료 후 웹 삭제 링크.', go: 'withdraw.html', src: [['플레이 계정 삭제 요건', 'https://support.google.com/googleplay/android-developer/answer/13327111']] },
+    { g: 'ops', t: '기성 솔루션(그누보드5)은 댓글 XSS 등 CVE 이력 — 패치 조항 없이는 오픈 후가 위험', d: 'CVE-2025-60859(5.6.15 댓글 XSS) 등. 사내 개발자가 없는 의뢰자에게 「설치 후 방치」는 사고입니다.', demo: '데모 범위 밖 — 지원서 유지보수 조항. 데모의 댓글·본문은 전부 텍스트 이스케이프로 렌더합니다.', src: [['CVE-2025-60859', 'https://nvd.nist.gov/vuln/detail/cve-2025-60859'], ['그누보드5 5.6.43', 'https://github.com/gnuboard/gnuboard5/blob/master/version.php']] },
+    { g: 'nice', t: '2026년 정보통신망법 개정·불법촬영물 조치 의무는 규모 기준이 있다', d: '구독자 10만·월 조회 10만, 매출 10억·일평균 10만 명 기준. 오픈 초기엔 비대상이지만 성장 체크포인트.', demo: '데모 범위 밖 — 지원서 「오픈 후 고도화」 한 줄.', src: [['2026 개정 정보통신망법', 'https://www.lawtalk.co.kr/posts/164921']] },
+  ];
+  let g = '';
+  function render(){
+    $('#list').innerHTML = R.map((r, i) => ({ r, i })).filter(x => !g || x.r.g === g).map(({ r, i }) => `<article class="rk rv"><div class="rk-top"><span class="rk-grade g-${r.g}">${G[r.g]}</span><span style="font-size:.78rem;color:var(--mute);font-weight:700">발견 ${i+1}</span></div><h3>${esc(r.t)}</h3><p>${esc(r.d)}</p><p style="color:var(--ink)"><strong style="color:var(--primary-dark)">데모에서는</strong> ${esc(r.demo)}</p><div class="rk-links">${r.go ? `<a class="go" href="${r.go}">데모에서 확인하기 →</a>` : '<a href="#" onclick="return false">지원서로 답함</a>'}${r.go2 ? `<a href="${r.go2}">${esc(r.go2t)}</a>` : ''}${r.src.map(([n, u]) => `<a href="${u}" data-allow="1" target="_blank" rel="noopener">근거: ${esc(n)}</a>`).join('')}</div></article>`).join('');
+    stagger($('#list')); NP.reveal();
+  }
+  $$('[data-g]').forEach(b => b.onclick = () => { g = b.dataset.g; $$('[data-g]').forEach(x => x.setAttribute('aria-pressed', x === b)); render(); });
+  render();
+})();
+</script>
+</body>
+</html>

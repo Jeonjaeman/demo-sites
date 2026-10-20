@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>놀판 NOLPAN — 중장년 여행·여가 커뮤니티 (제안용 데모)</title>
+<meta name="description" content="해외여행·국내여행·여행 라운지 3대 게시판으로 구성된 중장년 여행 커뮤니티 모바일 웹 데모. 글자 크기 3단계, 연령 확인 2경로, 작성 가드, 신고·차단이 실제로 동작합니다. 모든 데이터는 가상입니다.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app">
+  <section class="banner rv" aria-label="프로모션 배너">
+    <div class="banner-ctl"><button id="bn-pause" aria-label="자동 전환 일시정지">❚❚</button></div>
+    <div class="banner-track" id="bn-track"></div>
+    <div class="banner-dots" id="bn-dots" role="tablist" aria-label="배너 선택"></div>
+  </section>
+
+  <nav class="menu3 rv" id="menu3" aria-label="3대 메뉴"></nav>
+
+  <div class="divider" style="margin-top:16px"></div>
+
+  <section class="sec rv" aria-labelledby="hot-h">
+    <div class="sec-h"><h2 id="hot-h">실시간 인기글</h2><button class="toggle" id="hide-sp" aria-pressed="false"><i></i><span>광고·협찬 글 제외</span></button></div>
+    <p class="lead" style="font-size:.85rem">48시간 안에 올라온 글을 좋아요·댓글·조회로 계산해 순서를 매깁니다. 신고로 검토 중인 글은 빠집니다.</p>
+  </section>
+  <div class="list" id="hot-list"></div>
+
+  <div class="divider"></div>
+
+  <section class="sec rv" aria-labelledby="gal-h">
+    <div class="sec-h"><h2 id="gal-h">라운지 새 사진</h2><a href="lounge.html?tab=gallery">전체 보기 →</a></div>
+  </section>
+  <div class="strip" id="gal-strip"></div>
+
+  <div class="divider"></div>
+
+  <section class="sec rv" aria-labelledby="guide-h" style="padding-bottom:24px">
+    <div class="sec-h"><h2 id="guide-h">놀판은 이렇게 다릅니다</h2></div>
+    <ul class="li-list" style="margin:0 calc(var(--gutter) * -1)">
+      <li><a class="li" href="text.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></span><span class="txt">글자 크기 3단계<small>기본·크게·더 크게. 「더 크게」는 화면 구성까지 바뀝니다</small></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="li" href="signup.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></span><span class="txt">성인 전용 · 연령 확인 2경로<small>휴대폰 본인확인 또는 생년월일 — 권한이 실제로 달라집니다</small></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="li" href="write.html"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="M12 6l4 4"/></svg></span><span class="txt">작성 가드<small>카지노·대출·연락처 홍보는 등록 전에 걸립니다</small></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+      <li><a class="li" href="review.html"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></span><span class="txt">검토 항목 14건<small>공고대로 만들면 막히는 지점과 데모의 대안</small></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+    </ul>
+    <p class="side-foot" style="margin-top:20px">놀판 제안용 데모 · 모든 글·회원·사진은 가상입니다.</p>
+  </section>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, D, state, save, img, postCard, galleryCell, hotPosts, posts, mountShell, stagger, reveal, reduce } = NP;
+  mountShell({ tab: 'index.html', fab: true });
+
+  /* 배너 */
+  const track = $('#bn-track'), dots = $('#bn-dots');
+  track.innerHTML = D.banners.map((b, i) => `<a class="banner-slide ${i===0?'active':''}" href="${b.url}" style="--bg:${b.bg}" ${b.url.startsWith('http')?'':'data-allow="1"'} aria-label="${esc(b.title)}">
+    <img src="${img(b.img)}" alt="" ${i?'loading="lazy"':''}><div class="banner-txt"><span class="eyebrow ${b.eyebrow==='광고'?'ad':''}">${esc(b.eyebrow)}</span><h3>${esc(b.title)}</h3><p>${esc(b.sub)}</p></div></a>`).join('');
+  dots.innerHTML = D.banners.map((b, i) => `<button role="tab" aria-label="${i+1}번 배너" aria-current="${i===0}"></button>`).join('');
+  let cur = 0, timer, paused = reduce;
+  const go = (i) => { cur = (i + D.banners.length) % D.banners.length; track.scrollTo({ left: cur * track.clientWidth + cur * 10, behavior: reduce ? 'auto' : 'smooth' }); };
+  const sync = () => { $$('button', dots).forEach((d, i) => d.setAttribute('aria-current', i === cur)); $$('.banner-slide').forEach((s, i) => s.classList.toggle('active', i === cur)); };
+  track.addEventListener('scroll', () => { const i = Math.round(track.scrollLeft / (track.clientWidth + 10)); if (i !== cur) { cur = i; sync(); } }, { passive: true });
+  dots.addEventListener('click', e => { const b = e.target.closest('button'); if (b) go($$('button', dots).indexOf(b)); });
+  const tick = () => { if (!paused) go(cur + 1); sync(); };
+  const start = () => { clearInterval(timer); timer = setInterval(tick, 4500); };
+  $('#bn-pause').onclick = (e) => { paused = !paused; e.currentTarget.textContent = paused ? '▶' : '❚❚'; e.currentTarget.setAttribute('aria-label', paused ? '자동 전환 재생' : '자동 전환 일시정지'); };
+  track.addEventListener('pointerdown', () => { paused = true; $('#bn-pause').textContent = '▶'; }, { once: true });
+  start();
+
+  /* 3대 메뉴 */
+  const todayCount = (b) => posts({ board: b }).filter(p => (NP.NOW - new Date(p.at)) < 864e5).length;
+  const icons = { overseas: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>', domestic: '<path d="M3 20l6-12 4 7 3-4 5 9z"/>', lounge: '<path d="M4 6h16v10H8l-4 4z"/>' };
+  $('#menu3').innerHTML = Object.values(D.boards).map(b => `<a href="${b.page}"><span class="ico"><svg viewBox="0 0 24 24">${icons[b.key]}</svg></span><strong>${b.name}</strong><small>오늘 <b data-cu="${todayCount(b.key)}">0</b>건 · 회원 <b data-cu="${b.members}">0</b></small></a>`).join('');
+  $$('#menu3 [data-cu]').forEach(el => NP.countUp(el, +el.dataset.cu, 900));
+
+  /* 인기글 */
+  const hs = $('#hide-sp'); hs.setAttribute('aria-pressed', state.hideSponsored);
+  function renderHot() { const list = hotPosts(8); $('#hot-list').innerHTML = list.map(p => postCard(p, { crumb: true })).join('') || '<div class="empty"><strong>아직 인기글이 없습니다</strong>첫 글을 올려 보세요</div>'; stagger($('#hot-list')); }
+  hs.onclick = () => { state.hideSponsored = !state.hideSponsored; save('hideSponsored', state.hideSponsored); hs.setAttribute('aria-pressed', state.hideSponsored); renderHot(); NP.toast(state.hideSponsored ? '광고·협찬 글을 인기글에서 뺐습니다' : '광고·협찬 글을 다시 포함합니다'); };
+  renderHot();
+  document.addEventListener('np:refresh', renderHot);
+
+  /* 갤러리 스트립 */
+  $('#gal-strip').innerHTML = posts({ board: 'lounge', cat: 'gallery' }).slice(0, 6).map(galleryCell).join('');
+  stagger($('#gal-strip'));
+  reveal();
+})();
+</script>
+</body>
+</html>

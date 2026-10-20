@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>여행 라운지 — 놀판</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app">
+  <section class="sec" style="padding-bottom:4px"><p class="eyebrow">여행 라운지</p><h2 style="margin:0;font-size:1.5rem;letter-spacing:-.02em">여행 사이, 사람들 이야기</h2><p class="lead" style="margin-top:6px">목적지가 없어도 됩니다. 가방 바퀴 이야기부터 40년 생선구이 사장님 이야기까지.</p></section>
+  <div class="chips" role="tablist" aria-label="라운지 탭" id="tabs" style="margin-top:8px"></div>
+  <div id="body"></div>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, D, q, posts, postCard, galleryCell, mountShell, stagger } = NP;
+  const B = D.boards.lounge;
+  mountShell({ tab: 'lounge.html', fab: true, title: '여행 라운지' });
+  let tab = q.get('tab') || 'free';
+  function render(){
+    $('#tabs').innerHTML = B.cats.map(c => `<button class="chip" role="tab" data-tab="${c.key}" aria-pressed="${c.key===tab}">${esc(c.name)}</button>`).join('');
+    const list = posts({ board: 'lounge', cat: tab });
+    const body = $('#body');
+    if (tab === 'gallery') {
+      body.innerHTML = `<div class="result-count">사진 ${list.length}장 · 최신순 · 탭하면 글로 이동</div><div class="gallery" id="g"></div>`;
+      $('#g').innerHTML = list.map(galleryCell).join('');
+      stagger($('#g'));
+    } else {
+      const intro = { qna: '답변이 달린 질문에는 「답변 완료」가 붙습니다.', people: '사람 이야기가 주인공인 글. 광고·홍보는 등록 전에 걸립니다.', review: '여러 여행지를 묶어 쓰는 후기. 지역 게시판 후기와 다릅니다.', free: '여행과 관계없어도 괜찮습니다.' }[tab] || '';
+      body.innerHTML = `<div class="result-count">${list.length}건 · ${esc(intro)}</div><div class="list" id="l"></div>`;
+      $('#l').innerHTML = list.map(p => postCard(p)).join('') || '<div class="empty"><strong>아직 글이 없습니다</strong>첫 글을 올려 보세요</div>';
+      stagger($('#l'));
+    }
+    $$('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; history.replaceState(null, '', '?tab=' + tab); render(); });
+    $('.fab').href = `write.html?board=lounge&cat=${tab}`;
+  }
+  render();
+  document.addEventListener('np:refresh', render);
+})();
+</script>
+</body>
+</html>

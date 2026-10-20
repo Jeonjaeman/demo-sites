@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>내 정보 — 놀판</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app"><div id="body"></div></main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, D, state, save, me, user, avatar, badge, allPosts, commentsOf, postCard, mountShell, toast, sheet, closeSheet, unblock, stagger, TEXT_STEPS } = NP;
+  mountShell({ tab: 'my.html', title: '내 정보' });
+  const body = $('#body');
+  let tab = location.hash === '#comments' ? 'comments' : 'posts';
+  const ICON = { text: '<path d="M4 7V4h16v3M9 20h6M12 4v16"/>', bell: '<path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21h4"/>', block: '<circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/>', doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>', out: '<path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10"/>', shield: '<path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/>', pen: '<path d="M4 20h4l10-10-4-4L4 16z"/>' };
+  const li = (href, ico, t, s, val) => `<li><a class="li" href="${href}"><span class="ico"><svg viewBox="0 0 24 24">${ICON[ico]}</svg></span><span class="txt">${t}${s ? `<small>${s}</small>` : ''}</span>${val ? `<span class="val">${val}</span>` : ''}<span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>`;
+
+  function render(){
+    const { acc, user: u } = me();
+    if (!u) {
+      body.innerHTML = `<section class="sec rv" style="padding-top:36px"><h1 style="margin:0 0 8px;font-size:1.5rem;letter-spacing:-.02em">아직 로그인 전입니다</h1><p class="lead">비회원은 목록과 제목만 볼 수 있습니다. 성인 확인을 마치면 본문·사진·댓글·글쓰기가 열립니다.</p><a class="btn btn-lg btn-primary btn-block" href="signup.html" style="margin-top:18px">카카오·네이버로 시작하기</a></section><div class="divider"></div>${accountSection()}`;
+      bindAcc(); NP.reveal(); return;
+    }
+    const myPosts = allPosts().filter(p => p.uid === 'me' || p.uid === u.id);
+    const myCmts = D.comments.filter(c => c.uid === u.id).concat(state.comments.map(c => Object.assign({}, c, { mine: true })));
+    const likes = Object.keys(state.likes).length;
+    const verifyText = acc.key === 'verified' ? '휴대폰 본인확인 완료' : acc.key === 'self' ? '생년월일 자기신고 — 일부 게시판 제한' : acc.key === 'biz' ? '업체 회원 · 본인확인 완료' : '';
+    body.innerHTML = `
+      <div class="profile rv">${avatar(u, 64)}<div class="who"><div class="nick">${esc(u.nick)}${badge(u)}</div><div class="sub">${esc(acc.label)} · 가입 ${u.joined.slice(0,7).replace('-','.')}</div></div><button class="btn btn-ghost" id="edit" style="min-height:44px;padding:0 16px;font-size:.88rem">수정</button></div>
+      <div class="stat3 rv"><a href="#posts" data-tab="posts"><b>${myPosts.length}</b>내 글</a><a href="#comments" data-tab="comments"><b>${myCmts.length}</b>내 댓글</a><a href="#likes"><b>${likes}</b>좋아요</a></div>
+      <section class="sec rv" style="padding-top:8px"><div class="kv"><dt>성인 확인</dt><dd>${esc(verifyText)}</dd><dt>저장된 항목</dt><dd>성인 여부 · 확인 수단 · 확인 일시 <small style="color:var(--sub);font-weight:500">(생년월일 원본은 저장하지 않음)</small></dd>${acc.key === 'self' ? `<dt>잠긴 게시판</dt><dd>정선·하이원 · 마카오 · 필리핀 본문 — <a href="signup.html?step=3&verify=1" style="color:var(--primary);font-weight:700">본인확인하고 열기</a></dd>` : ''}</div></section>
+      <div class="seg" role="tablist" style="margin-top:4px"><button role="tab" data-tab="posts" aria-pressed="${tab==='posts'}">내 글 ${myPosts.length}</button><button role="tab" data-tab="comments" aria-pressed="${tab==='comments'}">내 댓글 ${myCmts.length}</button></div>
+      <div id="mine" style="margin-top:8px"></div>
+      <div class="divider"></div>
+      <ul class="li-list rv">
+        ${li('text.html', 'text', '글자 크기', '기본 · 크게 · 더 크게', TEXT_STEPS[state.text].label)}
+        ${li('notify.html', 'bell', '알림 설정', '댓글·답글·좋아요 알림')}
+        <li><a class="li" href="#blocked" id="blocked-li"><span class="ico"><svg viewBox="0 0 24 24">${ICON.block}</svg></span><span class="txt">차단한 회원<small>차단하면 그 회원의 글·댓글이 보이지 않습니다</small></span><span class="val">${state.blocked.length}명</span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+        ${li('signup.html?step=2', 'doc', '약관 · 개인정보 처리방침')}
+        ${li('review.html', 'shield', '검토 항목', '이 데모가 공고와 다르게 만든 이유 14건')}
+      </ul>
+      <div class="divider"></div>
+      ${accountSection()}
+      <div class="divider"></div>
+      <ul class="li-list rv">
+        <li><button class="li" id="logout" style="width:100%;text-align:left"><span class="ico"><svg viewBox="0 0 24 24">${ICON.out}</svg></span><span class="txt">로그아웃</span></button></li>
+        <li><a class="li danger" href="withdraw.html"><span class="ico" style="color:var(--danger)"><svg viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><span class="txt">회원 탈퇴<small style="color:var(--sub)">내 글 ${myPosts.length}개·댓글 ${myCmts.length}개 처리를 먼저 고릅니다</small></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></a></li>
+      </ul>
+      <p class="side-foot" style="padding:16px var(--gutter) 8px">놀판 · 제안용 데모 · 모든 데이터는 가상입니다</p>`;
+    const drawMine = () => {
+      const el = $('#mine');
+      if (tab === 'posts') { el.innerHTML = `<div class="list">${myPosts.map(p => postCard(p, { crumb: true, preview: false })).join('') || '<div class="empty"><strong>아직 쓴 글이 없습니다</strong><a class="btn btn-soft" style="margin-top:12px" href="write.html">첫 글 쓰기</a></div>'}</div>`; }
+      else { el.innerHTML = `<div class="list">${myCmts.sort((a,b)=>new Date(b.at)-new Date(a.at)).map(c => { const p = NP.post(c.post); return `<a class="post-card" href="post.html?id=${c.post}#cmts"><div class="pc-main"><div class="pc-crumb">${p ? esc(p.title) : '삭제된 글'}</div><h3 class="pc-title" style="font-weight:500">${esc(c.body)}</h3><div class="pc-meta"><span>${NP.ago(c.at)}</span>${c.parent ? '<span>답글</span>' : ''}</div></div></a>`; }).join('') || '<div class="empty"><strong>아직 댓글이 없습니다</strong></div>'}</div>`; }
+      stagger(el);
+    };
+    drawMine();
+    $$('[data-tab]').forEach(b => b.onclick = (e) => { e.preventDefault(); tab = b.dataset.tab; $$('.seg [data-tab]').forEach(x => x.setAttribute('aria-pressed', x.dataset.tab === tab)); drawMine(); });
+    $('#edit').onclick = () => {
+      const w = sheet(`<h3 class="sheet-title">프로필 수정</h3><div class="field"><label for="nk">닉네임</label><input class="input" id="nk" value="${esc(u.nick)}" maxlength="12"></div><div class="field"><span class="lbl">프로필 사진</span><div style="display:flex;align-items:center;gap:12px" id="pf-row">${avatar(u, 56)}<label class="btn btn-ghost" style="min-height:44px;padding:0 14px;font-size:.88rem;cursor:pointer">사진 올리기<input type="file" accept="image/*" id="pf" style="display:none"></label><button type="button" class="btn btn-ghost" id="pf-sample" style="min-height:44px;padding:0 14px;font-size:.88rem">샘플 사진</button></div><p class="hint">사진도 이 기기에서 줄이고 위치정보를 지운 뒤 올립니다.</p></div><div class="field"><span class="lbl">아바타 색</span><div class="chips" style="padding:0">${['#1f7a5c','#b25a1f','#6b4fbb','#2b6cb0','#9f2f2f','#0e8a8a'].map(c => `<button type="button" class="chip" data-c="${c}" style="width:44px;padding:0;background:${c};border-color:${c}" aria-label="색"></button>`).join('')}</div></div><div class="sheet-actions"><button class="btn btn-ghost" data-close>취소</button><button class="btn btn-primary" id="sv">저장</button></div>`, { label: '프로필 수정' });
+      let color = u.color, photo = u.photo || null; $$('[data-c]', w).forEach(b => b.onclick = () => color = b.dataset.c);
+      const setPhoto = (src) => { photo = src; $('#pf-row .avatar', w).outerHTML = avatar(Object.assign({}, u, { photo }), 56); };
+      $('#pf', w).onchange = async (e) => { const f = e.target.files[0]; if (!f) return; try { const r = await NP.processImage(f, 320); setPhoto(r.dataUrl); toast(`사진을 줄였습니다 (${NP.kb(r.before)}→${NP.kb(r.after)}) · 위치정보 지움`); } catch { toast('읽을 수 없는 파일입니다'); } };
+      $('#pf-sample', w).onclick = async () => { const blob = await (await fetch(NP.img('gallery-sunset'))).blob(); const r = await NP.processImage(new File([blob], 's.jpg', { type: 'image/jpeg' }), 320); setPhoto(r.dataUrl); };
+      $('#sv', w).onclick = () => { const v = $('#nk', w).value.trim(); if (v.length < 2) return toast('닉네임은 2자 이상'); state.profile = { nick: v, color, photo }; save('profile', state.profile); closeSheet(); toast('프로필을 저장했습니다'); render(); };
+    };
+    $('#blocked-li').onclick = (e) => { e.preventDefault(); blockedSheet(); };
+    $('#logout').onclick = () => { state.account = 'guest'; save('account', 'guest'); toast('로그아웃했습니다'); render(); };
+    bindAcc(); NP.reveal();
+  }
+  function accountSection(){
+    return `<section class="sec rv" id="account" style="padding-bottom:4px"><div class="sec-h"><h2>체험 계정 바꾸기</h2><span class="label label-notice">데모 전용</span></div><p class="lead" style="font-size:.88rem">실제 앱에는 없는 기능입니다. 역할에 따라 어떤 화면이 달라지는지 바로 확인하세요.</p></section>
+      <div class="acc-grid rv">${D.demoAccounts.map(a => `<button class="acc-opt" data-acc="${a.key}" aria-pressed="${a.key===state.account}">${a.uid ? avatar(user(a.uid), 40) : '<span class="avatar" style="--av:#aaa;width:40px;height:40px;font-size:16px">?</span>'}<span><strong>${esc(a.label)}${a.uid ? ` · ${esc(user(a.uid).nick)}` : ''}</strong><small>${esc(a.desc)}</small></span></button>`).join('')}</div>`;
+  }
+  function bindAcc(){ $$('[data-acc]').forEach(b => b.onclick = () => { state.account = b.dataset.acc; save('account', state.account); if (b.dataset.acc !== 'verified') { state.profile = {}; save('profile', {}); } toast(`${D.demoAccounts.find(a => a.key === state.account).label}(으)로 바꿨습니다`); render(); }); }
+  function blockedSheet(){
+    const w = sheet(`<h3 class="sheet-title">차단한 회원</h3><p class="sheet-sub">차단한 회원의 글·댓글은 목록·상세·검색에서 보이지 않습니다. 해제하면 다시 보입니다.</p><div id="bl"></div><div class="sheet-actions"><button class="btn btn-primary" data-close>닫기</button></div>`, { label: '차단한 회원' });
+    const draw = () => { $('#bl', w).innerHTML = state.blocked.length ? state.blocked.map(id => { const u = user(id); return `<div class="li" style="padding:8px 0">${avatar(u, 40)}<span class="txt">${esc(u.nick)}</span><button class="btn btn-ghost" data-un="${id}" style="min-height:40px;padding:0 14px;font-size:.88rem">해제</button></div>`; }).join('') : '<div class="empty" style="padding:20px"><strong>차단한 회원이 없습니다</strong>글 상세의 ⋯ 메뉴에서 차단할 수 있습니다</div>'; $$('[data-un]', w).forEach(b => b.onclick = () => { unblock(b.dataset.un); draw(); render(); }); };
+    draw();
+  }
+  render();
+  document.addEventListener('np:refresh', render);
+})();
+</script>
+</body>
+</html>

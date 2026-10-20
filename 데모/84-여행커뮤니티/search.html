@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko" data-text="0">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>검색 — 놀판</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/style.css">
+<script>try{document.documentElement.dataset.text=JSON.parse(localStorage.getItem('nolpan.text'))??0}catch(e){}</script>
+</head>
+<body>
+<main id="app" class="no-tab">
+  <form class="sec" id="sf" role="search" style="padding-top:12px;padding-bottom:0">
+    <div class="field" style="margin-bottom:10px"><label class="sr" for="q">검색어</label><div style="display:flex;gap:8px"><input class="input" id="q" placeholder="무엇을 찾으세요? 예: 셔틀" autocomplete="off"><button class="btn btn-primary" type="submit" style="padding:0 18px">검색</button></div></div>
+    <div class="chips" style="padding-left:0;padding-right:0;padding-top:0" id="scope"><button type="button" class="chip" data-scope="title" aria-pressed="true">제목</button><button type="button" class="chip" data-scope="body" aria-pressed="true">본문</button><button type="button" class="chip" data-scope="comment" aria-pressed="false">댓글</button></div>
+  </form>
+  <div class="sec" style="padding-top:4px"><p class="lead" style="font-size:.85rem;margin-bottom:8px">자주 찾는 말</p><div class="sample-btns" id="sug"></div></div>
+  <div id="res"></div>
+</main>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function(){
+  const { $, $$, esc, q, posts, commentsOf, user, postCard, crumb, mountShell, stagger, toast, ago } = NP;
+  mountShell({ back: 'index.html', title: '검색' });
+  const scope = { title: true, body: true, comment: false };
+  const SUG = ['셔틀', '다낭 맛집', '풀빌라', '곤돌라', '에그타르트', '환전', '조식'];
+  $('#sug').innerHTML = SUG.map(s => `<button type="button" data-s="${esc(s)}">${esc(s)}</button>`).join('');
+  const input = $('#q');
+  input.value = q.get('q') || '셔틀';
+  const hl = (t, kw) => esc(t).replace(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark style="background:#ffe9b8;border-radius:3px">${m}</mark>`);
+  function run(){
+    const kw = input.value.trim();
+    history.replaceState(null, '', '?q=' + encodeURIComponent(kw));
+    const res = $('#res');
+    if (kw.length < 1) { res.innerHTML = '<div class="empty"><strong>검색어를 입력해 주세요</strong></div>'; return; }
+    const all = posts({ excludeReview: true });
+    const hits = all.filter(p => (scope.title && p.title.includes(kw)) || (scope.body && (p.body || '').includes(kw)));
+    const chits = scope.comment ? all.flatMap(p => commentsOf(p.id).filter(c => !c.deleted && c.body.includes(kw)).map(c => ({ p, c }))) : [];
+    const excluded = NP.allPosts().length - all.length;
+    res.innerHTML = `<div class="result-count">「${esc(kw)}」 글 ${hits.length}건${scope.comment ? ` · 댓글 ${chits.length}건` : ''}${excluded ? ` · 검토 중·차단 회원 글 ${excluded}건 제외` : ''}</div>
+      <div class="list" id="l">${hits.map(p => postCard(p, { crumb: true }).replace(esc(p.title), hl(p.title, kw))).join('')}</div>
+      ${chits.length ? `<div class="sec" style="padding-top:16px"><div class="sec-h"><h2>댓글</h2></div></div><div class="list" id="cl">${chits.map(({ p, c }) => `<a class="post-card" href="post.html?id=${p.id}#cmts"><div class="pc-main"><div class="pc-crumb">${esc(p.title)}</div><h3 class="pc-title" style="font-weight:500">${hl(c.body, kw)}</h3><div class="pc-meta"><span class="pc-nick" style="--av:${user(c.uid).color}">${esc(user(c.uid).nick)}</span><span>${ago(c.at)}</span></div></div></a>`).join('')}</div>` : ''}
+      ${!hits.length && !chits.length ? `<div class="empty"><strong>「${esc(kw)}」로 찾은 글이 없습니다</strong>맞춤법을 확인하거나 더 짧은 말로 찾아 보세요. 또는 <a href="write.html" style="color:var(--primary);font-weight:700">직접 질문을 올려</a> 주세요.</div>` : ''}`;
+    stagger($('#l')); if ($('#cl')) stagger($('#cl'));
+  }
+  $('#sf').onsubmit = (e) => { e.preventDefault(); run(); };
+  $$('[data-scope]').forEach(b => b.onclick = () => { scope[b.dataset.scope] = !scope[b.dataset.scope]; b.setAttribute('aria-pressed', scope[b.dataset.scope]); if (!Object.values(scope).some(Boolean)) { scope.title = true; $('[data-scope=title]').setAttribute('aria-pressed', true); toast('최소 하나는 켜야 합니다'); } run(); });
+  $$('[data-s]').forEach(b => b.onclick = () => { input.value = b.dataset.s; run(); });
+  run();
+  document.addEventListener('np:refresh', run);
+})();
+</script>
+</body>
+</html>
