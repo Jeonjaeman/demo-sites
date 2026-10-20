@@ -27,7 +27,7 @@
   function halfTeaser() {
     $$(".ht").forEach(root => { if (bound(root, "ht")) return;
       const items = $$(".ht-item", root);
-      const fit = () => items.forEach(it => { const t = $(".ht-txt", it); if (innerWidth <= 767) { t.style.height = ""; return; } t.style.height = (it.classList.contains("on") ? t.scrollHeight : 66) + "px"; });
+      const fit = () => items.forEach(it => { const t = $(".ht-txt", it); if (innerWidth <= 767) { t.style.height = ""; return; } const h = $(".ht-h", t); const base = h ? Math.ceil(h.getBoundingClientRect().height + parseFloat(getComputedStyle(t).paddingTop)) : 66; t.style.height = (it.classList.contains("on") ? t.scrollHeight : base) + "px"; });
       items.forEach(it => ["mouseenter", "focusin", "click"].forEach(ev => it.addEventListener(ev, () => { items.forEach(x => x.classList.toggle("on", x === it)); fit(); })));
       addEventListener("resize", fit); fit();
     });

@@ -27,7 +27,7 @@
   $("#main").innerHTML = `
   <div class="view-top" style="padding-top:6rem"><div class="sub">${c.cat} · ${c.org}</div><h1 class="t">${H.esc(c.title)}</h1>
     <div class="mt"><div class="share"><button type="button" aria-label="공유 — 링크 복사" id="share"><i>🔗</i></button><button type="button" aria-label="인쇄" onclick="print()"><i>⎙</i></button></div><div class="info"><span>${DATA.fmtDate(c.date)}</span><span>${c.people}명 · ${c.hours}시간</span><span>담당자 평가 ★ ${c.sat}</span></div></div></div>
-  <div class="view" style="margin-top:6rem">
+  <div class="view">
     <div class="view-body">
       <figure><img src="assets/img/${c.img}.webp" alt=""><figcaption>${c.org} 현장 — 사진은 데모용 생성 이미지이며 실제 기관과 무관합니다.</figcaption></figure>
       <div class="quote">“${H.esc(c.quote)}”<small>— ${c.who} · 교육 후 피드백 폼에서 공개에 동의한 문장</small></div>
