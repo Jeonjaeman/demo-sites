@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>빠른 상담 · 제휴 · 강사 지원 — 더알림</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.contact{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:var(--s6);align-items:start}
+.cform{background:#fff;border:1px solid var(--line-2);border-radius:var(--r-lg);padding:var(--s4)}
+.info{display:grid;gap:14px} .info>div{padding:18px 20px;background:#fff;border:1px solid var(--line-2);border-radius:var(--r)} .info b{display:block;font-size:13px;color:var(--muted);margin-bottom:4px;letter-spacing:.06em} .info .big{font-family:var(--serif);font-size:24px}
+.ok-inline{padding:18px 20px;background:#EFF8F2;border:1px solid #BFE3CC;border-radius:var(--r);display:none;gap:4px} .ok-inline.in{display:grid;animation:fin .4s var(--ease-out)} @keyframes fin{from{opacity:0;transform:translateY(8px)}}
+@media (max-width:900px){.contact{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main>
+<section class="phero phero-plain"><div class="shell">
+  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>문의</span></div>
+  <h1 data-words>문의</h1>
+  <p class="lead">빠른 상담은 15초면 됩니다. 담당 매니저가 먼저 전화드립니다. 제휴와 강사 지원도 여기서 받습니다.</p>
+</div></section>
+<section class="sec-tight"><div class="shell contact">
+  <div>
+    <div class="tabs" role="tablist" data-tabs="0" id="ctabs">
+      <button role="tab" aria-selected="true">빠른 상담 · 15초</button><button role="tab">콘텐츠·광고 제휴</button><button role="tab">강사 지원</button>
+      <div role="tabpanel" style="display:none"></div><div role="tabpanel" style="display:none"></div><div role="tabpanel" style="display:none"></div>
+    </div>
+    <div class="cform mt3" id="panel1">
+      <form id="quick" novalidate>
+        <div class="form-grid">
+          <div class="field"><label>기관 유형 <i>*</i></label><select class="sel" name="type" style="width:100%"><option value="">선택</option><option>학교</option><option>기업</option><option>병원</option><option>공공기관</option><option>개인(자격·컨설팅)</option></select><span class="err" hidden>기관 유형을 골라 주세요</span></div>
+          <div class="field"><label>이름 <i>*</i></label><input class="input" name="name" placeholder="이름"><span class="err" hidden>이름을 입력해 주세요</span></div>
+          <div class="field"><label>연락처 <i>*</i></label><input class="input" name="phone" inputmode="tel" placeholder="010-0000-0000"><span class="err" hidden>연락처 형식을 확인해 주세요</span></div>
+          <div class="field"><label>통화 가능 시간</label><select class="sel" name="when" style="width:100%"><option>아무 때나</option><option>오전 (10–12시)</option><option>오후 (13–18시)</option><option>저녁 (18–20시)</option></select></div>
+        </div>
+        <label class="check mt3"><input type="checkbox" name="agree"> 상담 목적의 개인정보 수집·이용에 동의합니다 (보유 1년) <i style="color:var(--bad);font-style:normal">*</i></label>
+        <div class="row mt3"><button class="btn btn-primary" type="submit">상담 신청</button><button class="btn btn-ghost btn-sm" type="button" id="q-sample">예시로 채우기</button></div>
+      </form>
+      <div class="ok-inline mt3" id="quickOk"><b>접수되었습니다 — 접수번호 <span id="qNo"></span></b><span>담당 매니저가 <span id="qWhen"></span>에 전화드립니다. 바쁘시면 0507-1322-2916으로 먼저 주셔도 됩니다.</span></div>
+    </div>
+    <div class="cform mt3" id="panel2" hidden>
+      <form id="partner" novalidate>
+        <div class="form-grid">
+          <div class="field"><label>제휴 유형</label><select class="sel" name="kind" style="width:100%"><option>교재·VOD 공동 제작</option><option>광고·콘텐츠 제휴</option><option>협회 공동 과정</option><option>기관 MOU</option></select></div>
+          <div class="field"><label>회사·기관명 <i>*</i></label><input class="input" name="org" placeholder="회사명"></div>
+          <div class="field"><label>담당자 <i>*</i></label><input class="input" name="name" placeholder="이름 · 직함"></div>
+          <div class="field"><label>이메일 <i>*</i></label><input class="input" name="email" type="email" placeholder="email@company.com"></div>
+        </div>
+        <div class="field mt3"><label>제안 내용</label><textarea class="textarea" name="memo" placeholder="제휴 목적과 범위를 간단히"></textarea></div>
+        <label class="check mt3"><input type="checkbox" name="agree"> 개인정보 수집·이용 동의 (보유 1년)</label>
+        <div class="row mt3"><button class="btn btn-primary" type="submit">제휴 제안 보내기</button></div>
+      </form>
+      <div class="ok-inline mt3" id="partnerOk"><b>제안이 접수되었습니다</b><span>검토 후 5영업일 내 이메일로 회신합니다.</span></div>
+    </div>
+    <div class="cform mt3" id="panel3" hidden>
+      <div class="notice mb3"><span>ⓘ</span><div>강사 등록은 심사제입니다. 지원서 검토 → 샘플 강의 영상 확인 → 초대코드 발송 → 강사전용 가입 순으로 진행되며, 청소년 출강을 원하면 경력조회 동의서를 함께 받습니다. 자격 과정 수료가 등록을 보장하지는 않습니다.</div></div>
+      <form id="apply" novalidate>
+        <div class="form-grid">
+          <div class="field"><label>이름 <i>*</i></label><input class="input" name="name" placeholder="이름"></div>
+          <div class="field"><label>연락처 <i>*</i></label><input class="input" name="phone" inputmode="tel" placeholder="010-0000-0000"></div>
+          <div class="field"><label>주 분야 <i>*</i></label><select class="sel" name="field" style="width:100%"><option value="">선택</option></select></div>
+          <div class="field"><label>활동 권역</label><select class="sel" name="region" style="width:100%"></select></div>
+          <div class="field"><label>강의 경력 (년)</label><input class="input" name="exp" type="number" min="0" max="40" placeholder="예) 7"></div>
+          <div class="field"><label>샘플 강의 영상 링크</label><input class="input" name="video" placeholder="YouTube · Vimeo 등"></div>
+        </div>
+        <div class="field mt3"><label>보유 인정자격 <span class="hint">법정의무교육 출강에 필요한 수료·자격이 있으면 적어 주세요</span></label><input class="input" name="cert" placeholder="예) 장애인 인식개선 전문강사 수료 (2024)"></div>
+        <label class="check mt3"><input type="checkbox" name="youth"> 청소년·학교 출강을 희망합니다 (경력조회 동의서 제출에 동의)</label>
+        <label class="check mt2"><input type="checkbox" name="agree"> 개인정보 수집·이용 동의 (심사 종료 후 1년 보관)</label>
+        <div class="row mt3"><button class="btn btn-primary" type="submit">지원서 제출</button><button class="btn btn-ghost btn-sm" type="button" id="a-sample">예시로 채우기</button></div>
+      </form>
+      <div class="ok-inline mt3" id="applyOk"><b>지원서가 접수되었습니다</b><span>검토 후 7영업일 내 결과를 문자로 안내합니다. 통과 시 초대코드로 <a class="link" href="lecturer-portal.html">강사전용</a>에 가입할 수 있습니다.</span></div>
+    </div>
+  </div>
+  <aside class="info">
+    <div><b>대표 전화</b><span class="big">0507-1322-2916</span><span class="small muted">월–일 10:00–20:00</span></div>
+    <div><b>이메일</b><span>thealrim7@gmail.com</span></div>
+    <div><b>카카오톡 채널</b><span>더알림 교육 상담</span><span class="small muted">평일 10:00–18:00 응답</span></div>
+    <div><b>거점</b><span>강남본사 · 서울 강남구 도곡로 123 대경빌딩 2층</span><span class="small muted">경기화성 교육장 · 경북구미 사무소</span></div>
+    <div><b>품의가 급하신가요</b><span class="small">제안서 요청(3~5분)을 쓰시면 강의계획서·견적서·강사 약력이 한 번에 갑니다.</span><a class="btn btn-ghost btn-sm mt2" href="request.html">제안서 요청 →</a></div>
+  </aside>
+</div></section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  $("#ctabs").addEventListener("tabchange", e => { [1,2,3].forEach(i => $("#panel"+i).hidden = e.detail !== i-1); });
+  $("#apply").field.insertAdjacentHTML("beforeend", FIELDS.map(f=>`<option>${f}</option>`).join("")); $("#apply").region.insertAdjacentHTML("beforeend", REGIONS.map(r=>`<option>${r}</option>`).join(""));
+  const check = (form, names) => { let ok = true; names.forEach(n => { const el = form[n], err = el.parentElement.querySelector(".err"); const bad = !el.value.trim() || (n==="phone" && !/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(el.value.trim())); el.setAttribute("aria-invalid", bad); if (err) err.hidden = !bad; if (bad) ok = false; }); if (form.agree && !form.agree.checked) { ok = false; toast("개인정보 동의가 필요합니다", "warn"); } return ok; };
+  $("#quick").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["type","name","phone"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } const no = "QC-" + Date.now().toString().slice(-6); $("#qNo").textContent = no; $("#qWhen").textContent = f.when.value==="아무 때나" ? "오늘 중" : f.when.value; $("#quickOk").classList.add("in"); f.querySelector("button[type=submit]").disabled = true; toast("상담 신청이 접수되었습니다", "ok"); try { const arr = JSON.parse(localStorage.getItem("alrim.quick")||"[]"); arr.unshift({ no, type:f.type.value, name:f.name.value, when:f.when.value, at:new Date().toISOString() }); localStorage.setItem("alrim.quick", JSON.stringify(arr)); } catch {} });
+  $("#q-sample").addEventListener("click", () => { const f = $("#quick"); f.type.value = "병원"; f.name.value = "김담당"; f.phone.value = "010-1234-5678"; f.when.value = "오후 (13–18시)"; f.agree.checked = true; toast("예시로 채웠습니다 — 상담 신청을 눌러 보세요", "ok"); });
+  $("#partner").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["org","name","email"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } $("#partnerOk").classList.add("in"); toast("제휴 제안이 접수되었습니다", "ok"); });
+  $("#apply").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["name","phone","field"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } $("#applyOk").classList.add("in"); toast("지원서가 접수되었습니다", "ok"); });
+  $("#a-sample").addEventListener("click", () => { const f = $("#apply"); f.name.value = "이강사"; f.phone.value = "010-9876-5432"; f.field.value = "소통·CS"; f.region.value = "영남"; f.exp.value = 7; f.video.value = "https://youtu.be/sample"; f.cert.value = "장애인 인식개선 전문강사 수료 (2024)"; f.youth.checked = true; f.agree.checked = true; toast("예시로 채웠습니다", "ok"); });
+  if (location.hash === "#apply") { $$("#ctabs [role=tab]")[2].click(); }
+})();
+</script>
+</body></html>

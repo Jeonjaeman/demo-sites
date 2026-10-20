@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>회사소개 — 더알림</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.ceo{display:grid;grid-template-columns:380px minmax(0,1fr);gap:var(--s6);align-items:center}
+.ceo-img{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:4/5} .ceo-img img{width:100%;height:100%;object-fit:cover}
+.ceo blockquote{margin:0;font-family:var(--serif);font-size:clamp(22px,2.4vw,32px);line-height:1.4;letter-spacing:-.02em}
+.ceo .sig{margin-top:var(--s3);color:var(--muted)} .ceo ul{display:grid;gap:6px;margin-top:var(--s3);color:var(--ink-2);font-size:15px} .ceo li::before{content:"— ";color:var(--gold)}
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:16px} .values>div{padding:28px;background:#fff;border:1px solid var(--line-2);border-radius:var(--r)} .values .n{font-family:var(--serif);color:var(--gold);letter-spacing:.14em;font-size:14px} .values h3{font-size:20px;margin:10px 0 8px}
+.asso{display:grid;grid-template-columns:1fr 1fr;gap:16px} .asso>div{padding:28px;background:#fff;border:1px solid var(--line-2);border-radius:var(--r-lg)} .asso h3{font-family:var(--serif);font-size:24px} .asso .tag{margin-top:8px}
+.site{display:grid;grid-template-columns:repeat(3,1fr);gap:16px} .site>div{padding:22px;background:#fff;border:1px solid var(--line-2);border-radius:var(--r)} .site b{display:block;font-size:17px;margin-bottom:4px}
+.mapbox{aspect-ratio:21/9;border-radius:var(--r-lg);overflow:hidden;background:var(--paper-2);position:relative} .mapbox img{width:100%;height:100%;object-fit:cover}
+@media (max-width:900px){.ceo,.asso,.values,.site{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main>
+<section class="phero"><div class="hero-media"><img src="assets/img/about-office.webp" alt="" data-parallax=".1"></div><div class="shell">
+  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>회사소개</span></div>
+  <span class="eyebrow" style="color:rgba(255,255,255,.7)">About</span>
+  <h1 class="mt2" data-words>사람이 사람을 성장시킵니다</h1>
+  <p class="lead">20년, 강의실 앞에서 배운 것은 결국 그 한 문장이었습니다. 더알림은 그 문장을 시스템으로 만든 회사입니다.</p>
+</div></section>
+
+<section class="sec" id="ceo"><div class="shell ceo">
+  <div class="ceo-img" data-reveal><img src="assets/img/ceo-portrait.webp" alt="대표 초상 (데모용 생성 이미지)"></div>
+  <div>
+    <span class="eyebrow">CEO Message</span>
+    <blockquote class="mt3" data-words>최고의 수상자를 배출해 낸 경험을 시스템으로 옮겼습니다. 더 많은 학교와 기업, 병원에 한결같은 교육으로 보답하겠습니다.</blockquote>
+    <div class="sig">(주)더알림 대표 · 한국인재양성협회장 · 한국기업경영협회장</div>
+    <ul data-reveal="stagger"><li>교육 현장 강의 20년 · 약 3,000회</li><li>강사 네트워크 2,000명 구축 주도</li><li>전국 기관 출강 4,000+ 총괄</li><li>K-Startup 창업경진대회 본선 멘토 — 과기부·국방부 장관상 배출</li><li>청주사범대 · 연세대학교 교육대학원 · 정교사 자격</li></ul>
+  </div>
+</div></section>
+
+<section class="sec sec-paper2" id="values"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">Values</span><h2 data-words>강사가 아니라 시스템을 믿게 합니다</h2></div><p class="lead">개인의 재능에 기대지 않습니다. 표준 커리큘럼, 담당자 피드백, 그 피드백으로 다시 고르는 강사. 세 가지가 돌아가야 교육이 한결같습니다.</p></div>
+  <div class="values" data-reveal="stagger">
+    <div><div class="n">01</div><h3>표준화된 커리큘럼</h3><p class="muted">47개 프로그램 전부 목표·대상·차시·기대효과가 문서로 있습니다. 담당자가 품의에 그대로 붙입니다.</p></div>
+    <div><div class="n">02</div><h3>피드백이 배정을 바꿉니다</h3><p class="muted">교육이 끝나면 담당자와 수강생에게 따로 묻습니다. 그 답이 강사 평점이 되고, 다음 배정의 근거가 됩니다.</p></div>
+    <div><div class="n">03</div><h3>전국 3개 거점</h3><p class="muted">강남본사·경기화성·경북구미. 7개 권역에 공개 강사 1,294명. 원거리 권역은 출강비 기준을 미리 밝힙니다.</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="asso"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">Associations</span><h2 data-words>두 협회</h2></div><p class="lead">자격 발급은 협회 명의로 합니다. 어느 협회가 어떤 자격을 등록했는지 투명하게 둡니다.</p></div>
+  <div class="asso" data-reveal="stagger">
+    <div><h3>한국인재양성협회</h3><span class="tag gold">등록 민간자격 <b id="n1">0</b>종</span><p class="mt3 muted">평생교육 시대의 전문가 양성. 인재제일·최고지향·변화선도·실력제일. 직무·HRD·취업·창업 4개 프로그램군.</p><a class="link mt3" href="certificates.html" style="display:inline-block">자격 32종 보기</a></div>
+    <div><h3>한국기업경영협회</h3><span class="tag soft">이 협회 명의로 등록된 민간자격 없음</span><p class="mt3 muted">CEO·임원 교육, 산업 특화(금융·ICT·의료·자동차), ESG·조직문화·DX, 기업 간 교류. 동반성장·혁신경영·고객만족.</p><a class="link mt3" href="academy.html" style="display:inline-block">아카데미 일정 보기</a></div>
+  </div>
+</div></section>
+
+<section class="sec sec-white" id="contents"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">Contents</span><h2 data-words>교재 · VOD 제작</h2></div><p class="lead">교육 프로그램을 책과 영상으로 남깁니다. 기관 맞춤 교재, 자격 과정 교재, 법정의무교육 VOD.</p></div>
+  <div class="grid g2">
+    <div class="tcard" data-tilt style="aspect-ratio:16/10"><img src="assets/img/book-print.webp" alt=""><div class="tcard-body"><h3>도서·교재 출판</h3><p>문의 → 기획팀 미팅 → 원고·편집 → 피드백 반영 → 출판. 평균 8주.</p></div></div>
+    <div class="tcard" data-tilt style="aspect-ratio:16/10"><img src="assets/img/vod-studio.webp" alt=""><div class="tcard-body"><h3>VOD 콘텐츠 제작</h3><p>강사 배정 → 커리큘럼 → 촬영 → 편집. 법정의무교육·자격 과정 온라인화.</p></div></div>
+  </div>
+</div></section>
+
+<section class="sec" id="location"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">Locations</span><h2 data-words>오시는 길</h2></div><p class="lead">강남역·양재역에서 도보 7~8분, 뱅뱅사거리. 방문 상담은 전화로 미리 잡아 주세요.</p></div>
+  <div class="mapbox mb3" data-reveal><img src="assets/img/about-office.webp" alt=""></div>
+  <div class="site" data-reveal="stagger">
+    <div><b>강남본사</b><span class="muted">서울 강남구 도곡로 123 대경빌딩 2층 (아우디빌딩 옆)</span><br><span class="small">0507-1322-2916 · 월–일 10:00–20:00</span></div>
+    <div><b>경기화성 교육장</b><span class="muted">기업·공공 집체교육 · 최대 60명</span></div>
+    <div><b>경북구미 사무소</b><span class="muted">영남권 출강 거점</span></div>
+  </div>
+</div></section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>$("#n1").textContent = CERTS.filter(c=>c.published).length;</script>
+</body></html>

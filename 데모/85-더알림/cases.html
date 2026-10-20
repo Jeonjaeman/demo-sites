@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>현장 사례 — 더알림</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="hd"></div>
+<main>
+<section class="phero phero-plain"><div class="shell">
+  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>현장 사례</span></div>
+  <h1 data-words>현장 사례</h1>
+  <p class="lead">두 종류를 나눠 둡니다. <b>담당자 평가</b>는 교육 후 피드백 폼에서 공개에 동의한 문장만, <b>현장 기록</b>은 더알림이 직접 쓴 블로그 글입니다. 기관명은 유형과 지역까지만 표시합니다.</p>
+</div></section>
+<section class="sec-tight">
+  <div class="filters"><div class="shell"><div class="chips" id="fCat"><span class="chip-lbl">기관 유형</span><button class="chip" data-v="" aria-pressed="true">전체</button><button class="chip" data-v="학교">학교</button><button class="chip" data-v="기업">기업</button><button class="chip" data-v="병원">병원</button><button class="chip" data-v="공공">공공</button></div></div></div>
+  <div class="shell">
+    <div class="result-bar"><div>사례 <b id="n">0</b>건 · 평균 만족도 <b id="avg">0</b> · 재출강률 <b id="rep">0%</b></div></div>
+    <div class="grid g3" id="grid"></div>
+  </div>
+</section>
+<section class="sec sec-paper2"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">Field notes</span><h2 data-words>현장 기록 · 블로그</h2></div><p class="lead">더알림이 직접 쓴 출강 기록입니다. 고객 후기와 구분해 둡니다.</p></div>
+  <div class="press" data-reveal="stagger" id="blog"></div>
+</div></section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  let cat = "";
+  function render(){ const L = CASES.filter(c=>!cat||c.cat===cat); $("#n").textContent = L.length; $("#avg").textContent = (L.reduce((a,c)=>a+c.sat,0)/L.length).toFixed(2); $("#rep").textContent = Math.round(L.filter(c=>c.repeat>1).length/L.length*100)+"%"; $("#grid").innerHTML = L.map(H.caseCard).join(""); $$("#grid .ccard").forEach((c,i)=>{ c.style.opacity=0; c.style.transform="translateY(14px)"; c.style.transition=`opacity .4s var(--ease-out) ${i*50}ms, transform .4s var(--ease-out) ${i*50}ms`; requestAnimationFrame(()=>requestAnimationFrame(()=>{ c.style.opacity=1; c.style.transform="none"; })); }); }
+  $("#fCat").addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; cat = b.dataset.v; $$("#fCat .chip").forEach(c=>c.setAttribute("aria-pressed", c===b)); render(); });
+  const BLOG = [["특성화고 취업교육","대기업·공기업 자기소개서 1:1 첨삭 컨설팅","2026.09.21"],["온라인 AI 마케팅","경기도 공공기관 스마트스토어 개설·상품등록 실습","2026.09.21"],["인스타그램 마케팅","SNS 콘텐츠 제작·AI 이미지 실습","2026.09.21"],["노인복지시설 안전교육","소방안전·대피훈련 현장","2026.09.21"],["학교 교육","서울 특성화고 1학년 전교생 중소기업 이해","2026.03.11"],["공공기관 교육","회복탄력성·마음챙김 소통, 월 정기","2026.03.03"]];
+  $("#blog").innerHTML = BLOG.map(b=>`<a href="https://blog.naver.com/bkh2457" target="_blank" rel="noopener"><span class="m">${b[0]}</span><span class="t">${b[1]}</span><span class="d">${b[2]} · 블로그 원문 ↗</span></a>`).join("");
+  render();
+})();
+</script>
+</body></html>

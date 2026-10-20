@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>민간자격증 — 더알림 · 한국인재양성협회 등록 32종</title>
+<meta name="description" content="등록 민간자격 32종. 등록번호·자격관리기관·총비용·환불 규정을 자격마다 표시합니다. 국가공인 민간자격이 아닙니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.cgrid{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:var(--s5);align-items:start}
+.cfield{margin-bottom:var(--s5)} .cfield h3{font-family:var(--serif);font-size:24px;display:flex;gap:12px;align-items:baseline;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line)} .cfield h3 small{font-size:13px;color:var(--muted);font-family:var(--sans);font-weight:500}
+.clist{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 24px}
+.clist button{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r-sm);text-align:left;transition:background var(--t-fast)}
+.clist button:hover{background:#fff} .clist button[aria-pressed=true]{background:var(--ink);color:#fff}
+.clist button b{font-weight:500} .clist button small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums} .clist button[aria-pressed=true] small{color:rgba(255,255,255,.7)}
+.clist .off{opacity:.5} .clist .off small{color:var(--bad)}
+.disclose{background:#fff;border:1px solid var(--line-2);border-left:3px solid var(--navy);border-radius:var(--r);padding:20px 22px;font-size:14px;display:grid;gap:8px}
+.disclose dl{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin:0} .disclose dt{color:var(--muted)} .disclose dd{margin:0;font-weight:600}
+.disclose .warn-line{padding:10px 12px;background:#FFF8EC;border:1px solid #EAD3AE;border-radius:var(--r-sm);font-weight:600;color:#6B4A0F}
+.cost{display:grid;gap:4px;font-size:14px} .cost>div{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line-2)} .cost .tot{border-bottom:0;font-weight:700;font-size:16px;padding-top:10px}
+@media (max-width:980px){.cgrid{grid-template-columns:1fr}.clist{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main>
+<section class="phero"><div class="hero-media"><img src="assets/img/cert-exam.webp" alt="" data-parallax=".1"></div><div class="shell">
+  <div class="crumb"><a href="index.html">홈</a><span>/</span><span>민간자격증</span></div>
+  <span class="eyebrow" style="color:rgba(255,255,255,.7)">Certificate</span>
+  <h1 class="mt2">등록 민간자격 <span id="nCert">32</span>종</h1>
+  <p class="lead">한국인재양성협회 명의로 민간자격정보서비스에 등록된 자격만 운영합니다. 자격마다 등록번호·관리기관·총비용·환불 규정을 표시하며, <b>국가공인 민간자격이 아닙니다.</b> 등급별 과정은 <span id="nGrade">63</span>개입니다.</p>
+</div></section>
+
+<section class="sec"><div class="shell">
+  <div class="notice warn mb4"><span>ⓘ</span><div>자격 수는 손으로 적지 않습니다. 관리자에서 공개된 자격을 집계해 자동 표기합니다. 지금 <b id="nHidden">4</b>종은 등록번호가 입력되지 않아 공개가 차단되어 있습니다(아래 회색 항목). 관리자 화면에서 등록번호를 넣으면 즉시 공개됩니다.</div></div>
+  <div class="cgrid">
+    <div id="fields"></div>
+    <aside class="sticky" id="panel"><div class="meta-card"><div class="eyebrow">자격 정보 표시</div><p class="muted small">왼쪽에서 자격을 선택하면 자격기본법 제33조 표시 항목이 여기에 나타납니다.</p><button class="btn btn-ghost btn-sm" type="button" id="sample">예시로 보기 — 병원코디네이터</button></div></aside>
+  </div>
+</div></section>
+
+<section class="sec sec-paper2"><div class="shell">
+  <div class="sec-head"><div><span class="eyebrow">How to apply</span><h2 data-words>과정 신청에서 발급까지</h2></div><p class="lead">집체 또는 온라인 교육 → 검정 → 발급. 온라인 과정이 30시간 이상이면 원격평생교육시설 신고 번호를 함께 표시합니다.</p></div>
+  <div class="bignum">
+    <div><div class="n">01</div><div><h3>과정 선택·신청</h3><p>총비용(교육비·응시료·발급비)과 환불 규정을 확인하고 신청합니다. 결제 전 "국가공인 자격이 아님" 고지에 동의합니다.</p></div></div>
+    <div><div class="n">02</div><div><h3>교육 이수</h3><p>집체 16~32시간 또는 온라인. 출석 80% 이상이 검정 응시 조건입니다.</p></div></div>
+    <div><div class="n">03</div><div><h3>검정·발급</h3><p>검정 합격 시 협회 명의 자격증 발급. 등록번호가 인쇄되며 민간자격정보서비스에서 진위를 확인할 수 있습니다.</p></div></div>
+    <div><div class="n">04</div><div><h3>출강 연계 안내</h3><p>수료 후 강사 지원이 가능합니다. 다만 수료가 출강이나 수익을 보장하지는 않으며, 강사 등록은 별도 심사를 거칩니다.</p></div></div>
+  </div>
+</div></section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  const pubCerts = CERTS.filter(c=>c.published);
+  $("#nCert").textContent = pubCerts.length; $("#nGrade").textContent = pubCerts.reduce((a,c)=>a+c.grades.length,0); $("#nHidden").textContent = CERTS.length - pubCerts.length;
+  $("#fields").innerHTML = CERT_FIELDS.map((f,i)=>`<div class="cfield" data-reveal><h3>0${i+1} ${f.name} <small>${CERTS.filter(c=>c.field===f.id&&c.published).length}종 · ${f.issuer}</small></h3><div class="clist">${CERTS.filter(c=>c.field===f.id).map(c=>`<button type="button" class="${c.published?"":"off"}" data-id="${c.id}" aria-pressed="false"><b>${c.name} <span class="muted">${c.grades.join("·")}</span></b><small>${c.published?c.regNo:"등록번호 미입력 · 비공개"}</small></button>`).join("")}</div></div>`).join("");
+  function show(id){
+    const c = CERTS.find(x=>x.id===id); $$("#fields button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.id===id));
+    const f = CERT_FIELDS.find(x=>x.id===c.field);
+    if (!c.published) { $("#panel").innerHTML = `<div class="meta-card"><div class="eyebrow">비공개</div><b>${c.name}</b><div class="notice bad small">자격기본법 제33조 표시 항목(등록번호)이 비어 있어 공개가 차단된 자격입니다. 관리자가 등록번호를 입력하면 이 자리에 표시 블록이 나타납니다.</div><a class="btn btn-ghost btn-sm" href="admin.html#certs">관리자에서 입력하기</a></div>`; return; }
+    const total = c.fee + c.examFee + 30000;
+    $("#panel").innerHTML = `<div class="meta-card"><div class="eyebrow">자격 정보 표시 · 자격기본법 제33조</div><h2 style="font-size:24px;font-family:var(--serif)">${c.name}</h2>
+      <div class="disclose"><dl><dt>자격 종류</dt><dd>등록 민간자격 (비공인)</dd><dt>등록번호</dt><dd>${c.regNo}</dd><dt>등급</dt><dd>${c.grades.join(" · ")}</dd><dt>자격관리기관</dt><dd>${c.issuer}</dd><dt>소재지</dt><dd>서울 금천구 가산디지털2로 (등록 주소)</dd><dt>연락처</dt><dd>0507-1322-2916</dd><dt>교육 시간</dt><dd>${c.hours}시간 · ${c.online?"집체/온라인":"집체"}</dd><dt>다음 과정</dt><dd>${DATA.fmtDate(c.next)} 개강</dd></dl>
+      <div class="warn-line">이 자격은 국가로부터 인정받은 공인자격이 아닙니다.</div>
+      <div class="cost"><div><span>교육비</span><b>${DATA.won(c.fee)}</b></div><div><span>검정 응시료</span><b>${DATA.won(c.examFee)}</b></div><div><span>자격증 발급비</span><b>30,000원</b></div><div class="tot"><span>총비용</span><b>${DATA.won(total)}</b></div></div>
+      <div class="small muted">환불: 개강 전 전액 · 1/3 경과 전 2/3 · 1/2 경과 전 1/2 · 이후 환불 불가 (학원법 시행령 환불 기준 준용). 재발급 10,000원.</div></div>
+      <a class="btn btn-ghost btn-sm" href="https://www.pqi.or.kr" target="_blank" rel="noopener">민간자격정보서비스에서 확인 ↗</a>
+      <button class="btn btn-primary" type="button" id="apply">과정 신청 (${DATA.fmtDate(c.next)})</button></div>`;
+    $("#apply").addEventListener("click", () => toast("신청서로 이동합니다 — 데모에서는 접수함에 기록됩니다", "ok"));
+    if (innerWidth < 980) $("#panel").scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+  $("#fields").addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (b) show(b.dataset.id); });
+  $("#sample").addEventListener("click", () => show(CERTS.find(c=>c.name==="병원코디네이터").id));
+  if (qs("id")) show(qs("id"));
+
+})();
+</script>
+</body></html>
