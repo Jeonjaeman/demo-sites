@@ -130,6 +130,8 @@
   };
   window.H = H; window.qs = k => new URLSearchParams(location.search).get(k);
 
+  // 이미지 로드 실패 시 깨진 아이콘(엑박) 대신 숨김 — 배포 직후·네트워크 불안정 대비
+  document.addEventListener("error", e => { const t = e.target; if (t && t.tagName === "IMG") { t.style.visibility = "hidden"; t.dataset.broken = "1"; } }, true);
   const init = () => { reveal(); countUp(); accordion(); selects(); tabs(); carousel(); awarded(); intro(); history(); badge(); };
   window.UI = { reveal, countUp, accordion, selects, tabs, carousel, awarded, intro, history, roulette, badge };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
