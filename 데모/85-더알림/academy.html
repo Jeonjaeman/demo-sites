@@ -5,49 +5,56 @@
 <title>아카데미 · 명사초청강연 — 더알림</title>
 <meta name="description" content="명사초청강연·전문가 특강 일정. 잔여석 실시간, 마감 강연은 대기 신청.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-.ev .row{grid-template-columns:14rem 1fr 22rem auto}
-.ev .y small{display:block;font-size:1.3rem;font-weight:400;color:var(--s);margin-top:.4rem}
-.ev .seats{font-size:1.4rem}.ev .seats b{font-size:1.8rem}.ev .bar{margin-top:.8rem}
-.fields{display:grid;grid-template-columns:repeat(7,1fr);gap:1.2rem}
-.fields>div{padding:2.4rem 1.6rem;background:var(--w);border-radius:var(--r1);text-align:center;transition:background-color var(--t3) ease,color var(--t3) ease}
-.fields>div:hover{background:var(--k);color:var(--w)} .fields b{display:block;font-size:1.8rem;margin-bottom:.6rem} .fields span{font-size:1.3rem;color:var(--s)} .fields>div:hover span{color:rgba(255,255,255,.7)}
-@media (max-width:1023px){.fields{grid-template-columns:repeat(4,1fr)}.ev .row{grid-template-columns:12rem 1fr}.ev .seats,.ev .cta{grid-column:2}}
-@media (max-width:767px){.fields{grid-template-columns:1fr 1fr}}
+.ev{display:grid;grid-template-columns:7rem 1fr 14rem auto;gap:1.5rem;align-items:center;padding:1.5rem 0;border-bottom:1px solid var(--g300)}.ev .d{font-size:var(--fs-t32);font-weight:600;line-height:1}.ev .d small{display:block;font-family:var(--serif);font-size:.875rem;font-weight:400;color:var(--g700);margin-top:.5rem}
+.ev .tt{font-size:var(--fs-b24);font-weight:500;margin-top:.25rem}.ev .pl{font-family:var(--serif);font-size:.9375rem;color:var(--g700);margin-top:.25rem}.ev .seats{font-size:.9375rem}.ev .seats b{font-size:var(--fs-b20)}
+@media (max-width:1024px){.ev{grid-template-columns:1fr;gap:.5rem}}
+.fields{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--g300);border:1px solid var(--g300)}.fields>div{background:#fff;padding:2rem 1rem;text-align:center;transition:background-color .25s,color .25s}.fields>div:hover{background:var(--primary);color:#fff}.fields b{display:block;font-size:var(--fs-b20);margin-bottom:.5rem}.fields span{font-family:var(--serif);font-size:.875rem;opacity:.8}
+@media (max-width:1024px){.fields{grid-template-columns:repeat(4,1fr)}}@media (max-width:800px){.fields{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub kv-grad blue-1"><img src="assets/img/academy-hall.webp" alt=""><div class="kv-text"><div class="kv-lock">ACADEMY<small>명사초청강연 · 전문가 특강</small></div><h1 class="kv-t">한 시간이<br>조직을 바꿀 때가 있습니다</h1><p class="kv-d">각 분야 최상위 전문가를 초청해 기관의 부족한 역량을 단기간에 채웁니다. 정기 공개 강연은 누구나, 기관 맞춤 초청은 제안서 요청으로.</p></div></section>
-
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">다가오는 일정</h2><p class="d">잔여석은 실시간입니다. 마감된 강연은 대기 신청을 받고, 자리가 나면 순서대로 안내합니다.</p></div>
-  <div class="ev rows lay-lg" id="ev"></div>
+<main class="s-wrap">
+<div id="bc"></div>
+<section class="sub-visual" data-reveal-box>
+  <div class="sub-head"><h1 class="t" data-reveal="mask">한 시간이<br>조직을 바꿀 때가 있습니다</h1><p class="d" data-reveal="mask">"각 분야 최상위 전문가를 초청해 기관의 부족한 역량을 단기간에" — 정기 공개 강연은 누구나, 기관 맞춤 초청은 제안서 요청으로</p></div>
+  <div class="sub-img" data-reveal=""><img src="assets/img/academy-hall.webp" alt=""></div>
 </section>
 
-<section class="gray"><div class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">초청 분야 7</h2><p class="d">동기부여 · 인문학 · 조직문화 · 미래사회 · 리더십 · 조직심리 · 경제. 기관 니즈에 맞춰 섭외합니다.</p></div>
-  <div class="fields lay-lg" data-aos="fade-up">
-    <div><b>동기부여</b><span>자기관리·자기계발</span></div><div><b>인문학</b><span>조직의 교양 단기 강화</span></div><div><b>조직문화</b><span>스타트업 CEO 강연</span></div><div><b>미래사회</b><span>변화와 대응</span></div><div><b>리더십</b><span>조직 성과 리더십</span></div><div><b>조직심리</b><span>스트레스·건강</span></div><div><b>경제</b><span>거시 전망</span></div>
-  </div>
-</div></section>
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:0"><div><h2 class="h40" data-reveal="mask">다가오는 일정</h2><p class="ft-t24s c-sub" data-reveal="">잔여석은 실시간입니다. 마감된 강연은 대기 신청을 받습니다.</p></div><div class="sel-drop" id="selYear" data-reveal=""><button type="button"><span>2026</span></button><div class="list"><button data-v="2026" aria-selected="true">2026</button><button data-v="2027">2027</button><button data-v="">전체</button></div></div></div>
+  <div id="ev" data-reveal=""></div>
+</section>
 
-<section class="max">
-  <div class="split end" data-aos="fade-up">
-    <div class="txt"><span class="ey">For organizations</span><h2 class="t">우리 기관만을 위한<br>초청 강연</h2><p class="d">공개 강연 외에 기관 단독 초청도 받습니다. 주제·연사 후보·일정·강연료 범위를 제안서로 드리고, 연사 섭외는 확정 전까지 비용이 없습니다. 50명 이상이면 공개 강연보다 1인당 비용이 낮아지는 경우가 많습니다.</p><div class="cta-row"><a class="cta cta-k" href="request.html?type=기업">초청 강연 제안서 요청</a><a class="lm" href="contact.html">전화로 먼저 상담</a></div></div>
-    <div class="img"><img src="assets/img/case-corp.webp" alt="" loading="lazy"></div>
-  </div>
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">초청 분야 7</h2><p class="ft-t24s c-sub" data-reveal="">기관 니즈에 맞춰 섭외합니다.</p></div></div>
+  <div class="fields" data-reveal=""><div><b>동기부여</b><span>자기관리·자기계발</span></div><div><b>인문학</b><span>조직의 교양 단기 강화</span></div><div><b>조직문화</b><span>스타트업 CEO 강연</span></div><div><b>미래사회</b><span>변화와 대응</span></div><div><b>리더십</b><span>조직 성과 리더십</span></div><div><b>조직심리</b><span>스트레스·건강</span></div><div><b>경제</b><span>거시 전망</span></div></div>
+</section>
+
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">지난 강연</h2><p class="ft-t24s c-sub" data-reveal="">끌어서 넘기거나 화살표로 이동합니다.</p></div></div>
+  <div class="sw" data-auto="3000" data-reveal=""><div class="sw-track" id="past"></div><div class="sw-bar"><i></i></div><div class="sw-ctl"><button type="button" class="prev" aria-label="이전"></button><button type="button" class="next" aria-label="다음"></button></div></div>
+</section>
+
+<section class="sec sticky2" data-reveal-box>
+  <div class="left" data-reveal=""><h2 class="lb">우리 기관만을 위한<br>초청 강연</h2><div class="ph"><img src="assets/img/case-corp.webp" alt="" loading="lazy"></div></div>
+  <div class="right"><div data-reveal=""><p class="para">공개 강연 외에 기관 단독 초청도 받습니다. 주제·연사 후보·일정·강연료 범위를 제안서로 드리고, 연사 섭외는 확정 전까지 비용이 없습니다.</p><p class="para mt16">50명 이상이면 공개 강연보다 1인당 비용이 낮아지는 경우가 많습니다.</p></div><div class="cta-wrap" style="justify-content:flex-start" data-reveal=""><a class="cta" href="request.html?type=기업">초청 강연 제안서 요청</a><a class="btn-outline" href="contact.html">전화로 먼저 상담</a></div></div>
 </section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const render = () => { $("#ev").innerHTML = ACADEMY.map(a => { const d = new Date(a.date), full = a.left===0; return `<div class="row" data-id="${a.id}"><div class="y">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}<small>${d.getFullYear()} · ${["일","월","화","수","목","금","토"][d.getDay()]}요일</small></div><div><div class="tags"><span class="tag ${a.type==="명사초청"?"on":""}">${a.type}</span><span class="tag">${a.field}</span></div><div class="ct mt1" style="font-size:2.4rem">${a.title}</div><div class="dt mt1">${a.place}</div></div><div class="seats">잔여 <b>${a.left}</b> / ${a.seats}석<div class="bar"><i style="width:${(1-a.left/a.seats)*100}%"></i></div></div><button class="cta ${full?"cta-o":"cta-k"}" type="button">${full?"대기 신청":"참가 신청"}</button></div>`; }).join(""); };
+  let year = "2026";
+  const render = () => { $("#ev").innerHTML = ACADEMY.filter(a => !year || a.date.startsWith(year)).map(a => { const d = new Date(a.date), full = a.left===0; return `<div class="ev" data-id="${a.id}"><div class="d">${d.getMonth()+1}.${String(d.getDate()).padStart(2,"0")}<small>${d.getFullYear()} · ${["일","월","화","수","목","금","토"][d.getDay()]}요일</small></div><div><div class="chips"><span class="chip ${a.type==="명사초청"?"fill":""}">${a.type}</span><span class="chip">${a.field}</span></div><div class="tt">${a.title}</div><div class="pl">${a.place}</div></div><div class="seats">잔여 <b>${a.left}</b> / ${a.seats}석<div class="bar mt8"><i style="width:${(1-a.left/a.seats)*100}%"></i></div></div>${full?`<button class="btn-outline" type="button">대기 신청</button>`:`<button class="cta" type="button">참가 신청</button>`}</div>`; }).join("") || `<div class="empty"><div><b>해당 연도 일정이 없습니다</b></div></div>`; };
   $("#ev").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const a = ACADEMY.find(x=>x.id===b.closest("[data-id]").dataset.id); if (a.left>0) { a.left--; render(); toast(`${a.title} — 참가 신청되었습니다 (잔여 ${a.left}석)`, "ok"); } else toast(`${a.title} — 대기 명단에 올렸습니다. 자리가 나면 문자로 안내합니다`, "ok"); });
-  render();
+  $("#selYear").addEventListener("change", e => { year = e.detail; render(); });
+  const PAST = [["2026.09","회의실에 들어온 인문학","academy-hall"],["2026.07","위임의 기술 — 리더십 특강","case-corp"],["2026.05","AI 이후의 직무","case-startup"],["2026.03","4세대가 한 팀이 되는 법","case-public"],["2026.01","다시 뛰게 하는 말","hero-main"]];
+  $("#past").innerHTML = PAST.map(p => `<div class="sw-card"><div class="th"><img src="assets/img/${p[2]}.webp" alt="" loading="lazy" draggable="false"></div><div class="tt">${p[1]}</div><div class="sb">${p[0]} · 공개 강연</div></div>`).join("");
+  render(); UI.reveal(); UI.carousel(); UI.selects();
 })();
 </script>
 </body></html>

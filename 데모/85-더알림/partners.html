@@ -5,27 +5,28 @@
 <title>함께한 곳 — 더알림</title>
 <meta name="description" content="노출 동의를 받은 출강 기관. 로고는 출강 이력 기록에 연결됩니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
-<style>.pgrp+.pgrp{margin-top:6rem}.pgrp h2{font-size:2.6rem;display:flex;align-items:baseline;gap:1.2rem;margin-bottom:2.4rem}.pgrp h2 span{font-size:1.4rem;font-weight:400;color:var(--s)}</style>
+<style>.pgrp+.pgrp{margin-top:5rem}.disc-card.sm{min-height:10rem;padding:1.5rem}.disc-card.sm .tt{font-size:var(--fs-b20);font-weight:600}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub2 kv-grad gray-1"><img src="assets/img/case-corp.webp" alt=""><div class="kv-text"><h1 class="kv-t">함께한 곳</h1><p class="kv-d">로고는 출강 이력 기록에 연결되어 있고, 노출 동의를 받은 기관만 표시합니다. 초·중·고등학교는 출강 수가 많아 전국 단위로만 적습니다.</p></div></section>
+<main class="s-wrap">
+<div id="bc"></div>
+<div class="board-head" data-reveal-box><div><h1 class="t" data-reveal="mask">함께한 곳</h1><p class="ft-t24s c-sub mt16" data-reveal="">누적 <b id="n">0</b>개 기관 — 관리자의 「로고 노출 동의」 체크와 출강 이력 연결이 모두 있어야 보입니다. 초·중·고등학교는 출강 수가 많아 전국 단위로만 적습니다.</p></div></div>
+<div class="tagtabs" id="tabs" data-tagtabs><button class="tagtab" type="button" data-v="" aria-pressed="true">#전체</button></div>
+<div class="b-t-line" style="padding-top:2.5rem" id="wall" data-reveal-box></div>
 
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">누적 <span id="n">0</span>개 기관</h2><p class="d">기관명은 관리자의 「파트너 로고 노출 동의」 체크와 출강 이력 연결이 모두 있어야 보입니다. 체크를 풀면 이 페이지에서 즉시 빠집니다.</p></div>
-  <div class="lay-lg" id="wall"></div>
-</section>
-
-<section class="gray"><div class="max"><div class="qb-static" data-aos="fade-up"><img src="assets/img/case-public2.webp" alt="" loading="lazy"><div class="qi"><div><h3>다음 이름은 귀 기관일 수 있습니다</h3><p>제안서 요청 3~5분. 담당 매니저가 1~2일 안에 강의계획서·견적서·강사 약력을 보냅니다.</p><div class="cta-row c mt3"><a class="cta cta-w" href="request.html">제안서 요청</a></div></div></div></div></div></section>
+<section class="sec note-box" style="grid-template-columns:1fr auto" data-reveal-box><div data-reveal=""><div class="nt">다음 이름은 귀 기관일 수 있습니다</div><ul><li>제안서 요청 3~5분. 담당 매니저가 1~2일 안에 강의계획서·견적서·강사 약력을 보냅니다.</li><li>로고 노출은 교육 종료 후 동의를 받은 기관만, 관리자에서 체크를 풀면 즉시 빠집니다.</li></ul></div><a class="cta" href="request.html" data-reveal="">제안서 요청</a></section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const all = Object.values(PARTNERS).flat(); UI.countUp && ($("#n").dataset.count = all.length); $("#n").textContent = all.length;
-  $("#wall").innerHTML = Object.entries(PARTNERS).map(([k,v],i)=>`<div class="pgrp" data-aos="fade-up"><h2>${k} <span>${v.length}곳</span></h2><div class="logos">${v.map(n=>`<span>${n}</span>`).join("")}</div></div>`).join("");
+  const all = Object.values(PARTNERS).flat(); $("#n").textContent = all.length;
+  $("#tabs").insertAdjacentHTML("beforeend", Object.keys(PARTNERS).map(k=>`<button class="tagtab" type="button" data-v="${k}">#${k}</button>`).join(""));
+  const render = k => { $("#wall").innerHTML = Object.entries(PARTNERS).filter(([g])=>!k||g===k).map(([g,v],i)=>`<div class="pgrp"><div class="row-between b-b-line" style="padding-bottom:1rem;margin-bottom:1.5rem"><h2 class="h40">${g} <span class="ft-c16s c-sub">${v.length}곳</span></h2></div><div class="g4">${v.map((n,j)=>`<div class="disc-card sm" data-reveal=""><span class="date">출강 이력 ${1+((i*7+j)%5)}건</span><div class="tt">${n}</div><div class="ft ft-c14 c-sub">노출 동의 · 최근 2026.${String(3+(j%7)).padStart(2,"0")}</div></div>`).join("")}</div></div>`).join(""); $$("#wall [data-reveal]").forEach(e=>e.classList.add("is-reveal")); };
+  $("#tabs").addEventListener("change", e => render(e.detail)); render(""); UI.reveal(); UI.selects();
 })();
 </script>
 </body></html>

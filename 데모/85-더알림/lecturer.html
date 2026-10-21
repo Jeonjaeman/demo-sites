@@ -4,16 +4,18 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>강사 프로필 — 더알림</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-.hist li{display:grid;grid-template-columns:11rem 1fr auto;gap:1.6rem;padding:1.4rem 0;border-bottom:1px solid var(--d2);font-size:1.5rem}.hist li span:first-child{color:var(--s)}
-.lstats{grid-template-columns:repeat(4,1fr)}@media (max-width:767px){.lstats{grid-template-columns:1fr 1fr}}
-.fb{padding:2rem 2.4rem;background:var(--g);border-radius:var(--r1);font-size:1.6rem;line-height:1.5}.fb+.fb{margin-top:1.2rem}.fb small{display:block;color:var(--s);margin-top:.8rem}
+.hist li{display:grid;grid-template-columns:7rem 1fr auto;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--g300);font-size:1rem}.hist li span:first-child{font-family:var(--serif);color:var(--g700)}
+.def-row dd .hist li{padding-left:0}.def-row dd .hist li::before{display:none}
+.fb{padding:1.5rem;background:var(--g100);font-family:var(--serif);font-size:var(--fs-b20);line-height:1.6}.fb+.fb{margin-top:.75rem}.fb small{display:block;font-family:var(--sans);color:var(--g700);margin-top:.5rem;font-size:.875rem}
+.dl2{display:grid;grid-template-columns:auto 1fr;gap:.5rem 1.5rem;font-size:1rem}.dl2 dt{color:var(--g700)}.dl2 dd{font-weight:600}
 </style>
 </head>
-<body>
+<body class="has-hero-visual">
 <div id="hd"></div>
-<main class="inner max" id="main"></main>
+<main class="inner" id="main"></main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
@@ -26,30 +28,29 @@
   const hist = Array.from({length:8}, (_,i) => ({ m: months[i], org: orgTypes[Math.floor(r()*orgTypes.length)]+" ("+REGIONS[Math.floor(r()*REGIONS.length)]+")", prog: progs[Math.floor(r()*Math.max(1,progs.length))]?.name || l.field+" 교육", sat: (4.3 + r()*0.7).toFixed(1) }));
   const fbs = CASES.filter(c=>c.lec===l.id).slice(0,2);
   const generic = [["교육 후 부서 분위기가 달라졌다는 말을 여러 명에게 들었습니다.","인사팀장 · 중견기업"],["사례가 전부 우리 현장 이야기라 몰입이 좋았습니다.","교육담당 · 공공기관"]];
+  const img = l.img ? `assets/img/${l.img}.webp` : "assets/img/hero-main.webp";
   $("#main").innerHTML = `
-  <div class="split" style="height:auto;align-items:flex-start;padding-top:6rem">
-    <div class="img" style="height:auto;aspect-ratio:1;max-width:60rem">${l.img?`<img src="assets/img/${l.img}.webp" alt="${l.name} 강사">`:`<div style="display:grid;place-items:center;height:100%;font-size:8rem;font-weight:700;color:#999">${l.name[0]}</div>`}</div>
-    <div class="txt" style="padding-right:0;padding-left:5rem">
-      <div class="tags">${H.tag(l.field,"on")}${l.field2?H.tag(l.field2):""}${l.legal?H.tag("법정의무 인정자격","blue"):""}${l.online?H.tag("온라인 가능"):""}${l.weekend?H.tag("주말 가능"):""}</div>
-      <h1 class="t mt3">${l.name}</h1>
-      <p class="d" style="font-weight:700">${l.title || l.field + " 전문 강사"} · ${l.region}</p>
-      <p class="d">${l.line || `${l.field} 분야에서 ${l.exp}년. 현장의 사례로 시작해 참여자가 스스로 답을 찾게 하는 방식을 고집합니다.`}</p>
-      <div class="stats lstats mt4" style="gap:1.2rem"><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.exp}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">경력 (년)</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.runs}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">출강 횟수</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.rating}" data-dec="1">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">담당자 평점</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${Math.round(l.runs*0.31)}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">재출강 요청</div></div></div>
-      <div class="notice mt3 small">공개 범위 — 전체 공개 (동의 2026.08.21). 연락처는 공개되지 않으며 매니저를 통해 연결됩니다. 강사 지명은 참고 사항이고 일정·권역·피드백 이력을 종합해 매니저가 최종 배정합니다.</div>
-      <div class="cta-row mt3"><a class="cta cta-k" href="request.html?lec=${l.id}">이 강사로 제안서 요청</a><a class="cta cta-o" href="lecturers.html?field=${encodeURIComponent(l.field)}">같은 분야 강사 보기</a></div>
+  <section class="hv"><img class="bg" src="${img}" alt=""><div class="in"><div><p class="lb">${H.esc(l.field)}${l.field2?" · "+H.esc(l.field2):""} · ${l.region}</p><h1 class="t">${H.esc(l.name)} <span class="serif" style="font-size:var(--fs-t32s);font-weight:400">${H.esc(l.title || l.field + " 전문 강사")}</span></h1></div><a class="btn-outline w" href="lecturers.html?field=${encodeURIComponent(l.field)}">목록으로</a></div></section>
+  <div class="hv-body" data-reveal-box>
+    <div class="hv-box" data-reveal="">
+      <p class="ft-b24">${H.esc(l.line || `${l.field} 분야에서 ${l.exp}년. 현장의 사례로 시작해 참여자가 스스로 답을 찾게 하는 방식을 고집합니다.`)}</p>
+      <div class="stats4" style="grid-template-columns:repeat(2,1fr);gap:1rem"><div class="stat"><div class="lb">경력</div><div class="num"><span data-count="${l.exp}">0</span><small>년</small></div></div><div class="stat"><div class="lb">출강 횟수</div><div class="num"><span data-count="${l.runs}">0</span><small>회</small></div></div><div class="stat"><div class="lb">담당자 평점</div><div class="num"><span data-count="${l.rating}" data-dec="1">0</span><small>/ 5</small></div></div><div class="stat"><div class="lb">재출강 요청</div><div class="num"><span data-count="${Math.round(l.runs*0.31)}">0</span><small>건</small></div></div></div>
+      <dl class="dl2"><dt>강의 주제</dt><dd>${(l.topics||[l.field, l.field2].filter(Boolean)).join(" · ")}</dd><dt>매칭 조건</dt><dd>${l.region}${l.online?" · 온라인 가능":""}${l.weekend?" · 주말 가능":""}</dd><dt>인정자격</dt><dd>${l.legal?'<span class="tag-pri">법정의무교육 인정자격 보유</span>':"없음 — 법정의무 과목 매칭 불가"}</dd><dt>공개 범위</dt><dd>전체 공개 (동의 2026.08.21) · 연락처 비공개</dd></dl>
+      <div class="btn-row"><a class="cta" href="request.html?lec=${l.id}">이 강사로 제안서 요청</a><a class="btn-outline" href="lecturers.html?field=${encodeURIComponent(l.field)}">같은 분야 강사</a></div>
+      <p class="ft-c14 c-sub">강사 지명은 참고 사항이며 일정·권역·피드백 이력을 종합해 매니저가 최종 배정합니다.</p>
     </div>
+    <div data-reveal=""><div class="ph"><img src="${img}" alt=""></div><p class="cap">${H.esc(l.name)} · ${H.esc(l.title || l.field + " 강사")} — 초상은 데모용 생성 이미지입니다.</p></div>
   </div>
-  <div class="view">
-    <div class="view-body">
-      <div><h2 class="t" style="font-size:2.6rem">강의 주제</h2><div class="tags mt2">${(l.topics||[l.field, l.field2].filter(Boolean)).map(t=>`<span class="tag lg">${t}</span>`).join("")}</div></div>
-      <div><h2 class="t" style="font-size:2.6rem">담당 가능 프로그램</h2><div class="cards lay-sm">${progs.slice(0,3).map(H.progCard).join("")}</div></div>
-      <div><h2 class="t" style="font-size:2.6rem">최근 출강 이력 <span class="sub" style="font-size:1.4rem;font-weight:400">기관유형·권역만 공개</span></h2><ul class="hist lay-sm">${hist.map(h=>`<li><span>${h.m}</span><span>${h.org} · ${h.prog}</span><span>★ ${h.sat}</span></li>`).join("")}</ul></div>
-      <div><h2 class="t" style="font-size:2.6rem">담당자 피드백 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 동의한 문장만 · 원문은 강사에게도 비공개</span></h2><div class="lay-sm">${(fbs.length?fbs.map(c=>[c.quote,c.who+" · "+c.org]):generic).map(([q,w])=>`<div class="fb">“${q}”<small>— ${w}</small></div>`).join("")}</div></div>
-    </div>
-    <aside class="view-rail"><div class="rail-card"><b>매칭 조건</b><p class="mt2 small">분야 ${l.field}${l.field2?" · "+l.field2:""}<br>권역 ${l.region}${l.online?" · 온라인 가능":""}${l.weekend?" · 주말 가능":""}<br>${l.legal?"법정의무 인정자격 보유":"법정의무 인정자격 없음 — 해당 과목 매칭 불가"}</p><a class="cta cta-k" href="request.html?lec=${l.id}">제안서 요청</a></div>
-      <div class="rail"><h4>같은 분야 강사</h4>${LECTURERS.filter(x=>x.pub&&x.featured&&x.id!==l.id&&(x.field===l.field||x.field2===l.field)).slice(0,3).map(x=>`<a href="lecturer.html?id=${x.id}"><div class="th" style="height:15rem"><img src="assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${x.name} · ${x.title}</div><div class="dt">${x.region} · 출강 ${x.runs}회 · ★ ${x.rating}</div></div></a>`).join("")}</div></aside>
-  </div>`;
-  UI.countUp();
+  <section class="sec" data-reveal-box>
+    <dl class="def-row" data-reveal=""><dt>담당 가능 프로그램</dt><dd><div class="g3">${progs.slice(0,3).map(H.progCard).join("")}</div></dd></dl>
+    <dl class="def-row" data-reveal=""><dt>최근 출강 이력<br><span class="ft-c16s c-sub">기관유형·권역만 공개</span></dt><dd><ul class="hist">${hist.map(h=>`<li><span>${h.m}</span><span>${h.org} · ${h.prog}</span><span>★ ${h.sat}</span></li>`).join("")}</ul></dd></dl>
+    <dl class="def-row" data-reveal=""><dt>담당자 피드백<br><span class="ft-c16s c-sub">공개 동의 문장만</span></dt><dd>${(fbs.length?fbs.map(c=>[c.quote,c.who+" · "+c.org]):generic).map(([q,w])=>`<div class="fb">“${H.esc(q)}”<small>— ${w}</small></div>`).join("")}</dd></dl>
+  </section>
+  <section class="sec" data-reveal-box>
+    <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">같은 분야 강사</h2></div>${H.under(`lecturers.html?field=${encodeURIComponent(l.field)}`)}</div>
+    <div class="g4">${LECTURERS.filter(x=>x.pub&&x.featured&&x.id!==l.id&&(x.field===l.field||x.field2===l.field)).slice(0,4).map(H.lecCard).join("")}</div>
+  </section>`;
+  UI.reveal(); UI.countUp();
 })();
 </script>
 </body></html>

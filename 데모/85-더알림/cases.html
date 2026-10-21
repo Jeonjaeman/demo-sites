@@ -5,37 +5,59 @@
 <title>현장 사례 — 더알림</title>
 <meta name="description" content="학교·기업·병원·공공 출강 사례. 담당자 평가는 공개 동의 문장만, 현장 기록은 더알림이 직접 쓴 글.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+.ahead{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;padding-bottom:1.5rem;border-bottom:3px solid var(--ink);margin-bottom:2.5rem}
+.ahead .tabs{display:flex;gap:2.5rem}.ahead .tabs button{position:relative;font-size:var(--fs-t32);font-weight:600;color:var(--g600);padding-bottom:.5rem;min-height:44px;transition:color .2s}.ahead .tabs button::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:3px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .3s}.ahead .tabs button.on{color:var(--ink)}.ahead .tabs button.on::after{transform:scaleX(1)}
+.ex-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;margin-bottom:2.5rem}.ex-head .t{font-size:var(--fs-t40);font-weight:600;color:var(--primary)}.ex-head .m{font-family:var(--serif);color:var(--g700);margin-top:.5rem}
+.ex-stage{position:relative;aspect-ratio:1360/744;overflow:hidden;background:var(--g100)}.ex-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}.ex-stage img.on{opacity:1}.ex-stage .nav{position:absolute;right:1rem;bottom:1rem;display:flex;gap:.5rem;z-index:2}.ex-stage .nav button{width:44px;height:44px;background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center}
+.ex-intro{display:grid;grid-template-columns:28.4375rem 1fr;gap:4.5rem;align-items:end;margin-top:7.5rem}.ex-intro .ph{aspect-ratio:412/549;overflow:hidden;max-width:25.75rem}.ex-intro .ph img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}.ex-intro .txt{display:grid;gap:1rem;font-size:var(--fs-b24);line-height:1.5}
+@media (max-width:1024px){.ex-intro{grid-template-columns:1fr;gap:2rem;margin-top:4rem}}
+.row-stats{display:flex;gap:2.5rem;flex-wrap:wrap;font-size:var(--fs-b18)}.row-stats b{font-size:var(--fs-t32);margin-right:.25rem}
+</style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub2 kv-grad green-1"><img src="assets/img/case-hospital.webp" alt=""><div class="kv-text"><h1 class="kv-t">현장 사례</h1><p class="kv-d">두 종류를 나눠 둡니다. 담당자 평가는 교육 후 피드백 폼에서 공개에 동의한 문장만, 현장 기록은 더알림이 직접 쓴 글입니다. 기관명은 유형과 지역까지만.</p></div></section>
+<main class="s-wrap">
+<div id="bc"></div>
+<div class="board-head" data-reveal-box><div><h1 class="t" data-reveal="mask">현장 사례</h1><p class="ft-t24s c-sub mt16" data-reveal="">담당자 평가는 교육 후 피드백 폼에서 공개에 동의한 문장만, 현장 기록은 더알림이 직접 쓴 글입니다. 기관명은 유형과 지역까지.</p></div><div class="search" data-reveal=""><input type="search" id="q" placeholder="기관 · 프로그램으로 검색"><button type="button" aria-label="검색"></button></div></div>
 
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">담당자가 남긴 말</h2><p class="d">사례 <b id="n">0</b>건 · 평균 만족도 <b id="avg">0</b> · 재출강률 <b id="rep">0%</b>. 숫자는 선택한 유형의 사례로 다시 계산됩니다.</p></div>
-  <div class="tabs lay-lg" role="tablist" id="fCat"><button role="tab" data-v="" aria-selected="true">전체</button><button role="tab" data-v="학교">학교</button><button role="tab" data-v="기업">기업</button><button role="tab" data-v="병원">병원</button><button role="tab" data-v="공공">공공</button></div>
-  <div class="cards lay-lg" id="grid"></div>
+<div class="ahead" data-reveal-box>
+  <div class="tabs" id="fCat" data-reveal=""><button type="button" class="on" data-v="">전체</button><button type="button" data-v="학교">학교</button><button type="button" data-v="기업">기업</button><button type="button" data-v="병원">병원</button><button type="button" data-v="공공">공공</button></div>
+  <div class="sel-drop" id="selYear" data-reveal=""><button type="button"><span>2026</span></button><div class="list"><button data-v="2026" aria-selected="true">2026</button><button data-v="">전체</button></div></div>
+</div>
+
+<section id="spot" data-reveal-box>
+  <div class="ex-head" data-reveal=""><div><div class="t" id="spotT"></div><div class="m" id="spotM"></div></div><a class="btn-outline" id="spotGo" href="#">사례 상세 보기</a></div>
+  <div class="ex-stage" id="stage" data-reveal=""></div>
+  <div class="ex-intro" data-reveal=""><div><div class="ph"><img id="spotImg" src="" alt=""></div><p class="cap" id="spotCap"></p></div><div class="txt" id="spotTxt"></div></div>
 </section>
 
-<section class="gray"><div class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">현장 기록</h2><p class="d">더알림이 직접 쓴 출강 기록입니다. 고객 후기와 구분해 둡니다. 원문은 블로그로 이어집니다.</p></div>
-  <div class="rows lay-lg" id="blog" style="border-top-color:var(--d)"></div>
-</div></section>
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">담당자가 남긴 말</h2><div class="row-stats mt16" data-reveal=""><span><b id="n">0</b>건</span><span><b id="avg">0</b>평균 만족도</span><span><b id="rep">0%</b>재출강률</span></div></div></div>
+  <div class="g4" id="grid"></div>
+</section>
 
-<section class="max"><div class="qb" data-aos="fade-up"><img src="assets/img/case-public.webp" alt="" loading="lazy"><div class="qb-in"><h3>교육이 끝나면 담당자와 수강생에게 따로 묻습니다</h3><div class="who">그 답이 강사 평점이 되고, 다음 배정의 근거가 됩니다.<small>공개에 동의한 문장만 이 페이지에 올라옵니다 · 원문은 강사에게도 비공개</small></div><div class="cta-row mt3"><a class="cta cta-w" href="request.html">우리 기관 제안서 요청</a></div></div></div></section>
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:0"><div><h2 class="h40" data-reveal="mask">현장 기록</h2><p class="ft-t24s c-sub" data-reveal="">더알림이 직접 쓴 출강 기록. 원문은 블로그로 이어집니다.</p></div></div>
+  <div id="blog" data-reveal=""></div>
+</section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  let cat = qs("cat") || "";
-  function render(){ const L = CASES.filter(c=>!cat||c.cat===cat); $("#n").textContent = L.length; $("#avg").textContent = (L.reduce((a,c)=>a+c.sat,0)/L.length).toFixed(2); $("#rep").textContent = Math.round(L.filter(c=>c.repeat>1).length/L.length*100)+"%"; $("#grid").innerHTML = L.map(H.caseCard).join(""); $$("#grid .card").forEach((c,i)=>{ c.style.opacity=0; c.style.transform="translateY(14px)"; c.style.transition=`opacity .5s var(--ease) ${i*50}ms, transform .5s var(--ease) ${i*50}ms`; requestAnimationFrame(()=>requestAnimationFrame(()=>{ c.style.opacity=1; c.style.transform="none"; })); }); }
-  $("#fCat").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (!b) return; cat = b.dataset.v; $$("#fCat [role=tab]").forEach(c=>c.setAttribute("aria-selected", c===b)); render(); });
-  if (cat) $$("#fCat [role=tab]").forEach(c=>c.setAttribute("aria-selected", c.dataset.v===cat));
+  let cat = qs("cat") || "", year = "2026", q = "";
+  const list = () => CASES.filter(c=>(!cat||c.cat===cat) && (!year||c.date.startsWith(year)) && (!q || (c.org+c.title+(c.quote||"")).includes(q)));
+  function render(){ const L = list(); $("#n").textContent = L.length; $("#avg").textContent = L.length ? (L.reduce((a,c)=>a+c.sat,0)/L.length).toFixed(2) : "–"; $("#rep").textContent = L.length ? Math.round(L.filter(c=>c.repeat>1).length/L.length*100)+"%" : "–"; $("#grid").innerHTML = L.length ? L.map(H.caseCard).join("") : `<div class="empty" style="grid-column:1/-1"><div><b>조건에 맞는 사례가 없습니다</b></div></div>`; $$("#grid [data-reveal]").forEach(e=>e.classList.add("is-reveal")); spotlight(L[0] || CASES[0]); }
+  function spotlight(c){ const l = DATA.lecturer(c.lec), p = DATA.program(c.prog); $("#spotT").textContent = `${c.date.slice(0,4)} ${c.org} — ${c.title}`; $("#spotM").textContent = `${DATA.fmtDate(c.date)} · ${c.people}명 · ${c.hours}시간 · 담당자 평가 ${c.sat}`; $("#spotGo").href = `case.html?id=${c.id}`; const imgs = [c.img, p ? H.progImg(p) : c.img, l && l.img ? l.img : "hero-main"]; $("#stage").innerHTML = imgs.map((i,k)=>`<img src="assets/img/${i}.webp" alt="" class="${k===0?"on":""}">`).join("") + `<div class="nav"><button type="button" class="p" aria-label="이전">‹</button><button type="button" class="n" aria-label="다음">›</button></div>`; let k = 0; const go = d => { const im = $$("#stage img"); im[k].classList.remove("on"); k = (k+d+im.length)%im.length; im[k].classList.add("on"); }; $("#stage .p").addEventListener("click", ()=>go(-1)); $("#stage .n").addEventListener("click", ()=>go(1)); $("#spotImg").src = l && l.img ? `assets/img/${l.img}.webp` : `assets/img/${c.img}.webp`; $("#spotCap").textContent = l ? `${l.name} · ${l.title}` : "담당 강사"; $("#spotTxt").innerHTML = `<p>${H.esc(c.org)}에서 ${H.esc(c.title)}을(를) 진행했다. 참여 인원 ${c.people}명, ${c.hours}시간.</p><p>“${H.esc(c.quote)}” — ${c.who}의 말이다.</p><p>${c.repeat>1?`이후 ${c.repeat-1}회 재출강이 이어졌다.`:"재출강 의향을 확인했다."} 담당자 평가와 수강생 설문은 따로 수집했고, 공개에 동의한 문장만 이 페이지에 올린다.</p>`; }
+  $("#fCat").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; cat = b.dataset.v; $$("#fCat button").forEach(x=>x.classList.toggle("on", x===b)); render(); });
+  $("#selYear").addEventListener("change", e => { year = e.detail; render(); }); $("#q").addEventListener("input", e => { q = e.target.value.trim(); render(); });
+  if (cat) $$("#fCat button").forEach(x=>x.classList.toggle("on", x.dataset.v===cat));
   const BLOG = [["특성화고 취업교육","대기업·공기업 자기소개서 1:1 첨삭 컨설팅","2026.09.21"],["온라인 AI 마케팅","경기도 공공기관 스마트스토어 개설·상품등록 실습","2026.09.21"],["인스타그램 마케팅","SNS 콘텐츠 제작·AI 이미지 실습","2026.09.21"],["노인복지시설 안전교육","소방안전·대피훈련 현장","2026.09.21"],["학교 교육","서울 특성화고 1학년 전교생 중소기업 이해","2026.03.11"],["공공기관 교육","회복탄력성·마음챙김 소통, 월 정기","2026.03.03"]];
-  $("#blog").innerHTML = BLOG.map(b=>`<a class="row" href="https://blog.naver.com/bkh2457" target="_blank" rel="noopener"><span class="m">${b[0]}</span><span class="ct">${b[1]}</span><span class="dt">${b[2]} · 블로그 원문 ↗</span></a>`).join("");
-  render();
+  $("#blog").innerHTML = BLOG.map(b=>`<a class="list-row" href="https://blog.naver.com/bkh2457" target="_blank" rel="noopener"><div class="tt"><span class="badge" style="background:var(--g700)">${b[0]}</span><span>${b[1]}</span></div><div class="dt">${b[2]} · 블로그 원문 ↗</div></a>`).join("");
+  render(); UI.reveal(); UI.selects();
 })();
 </script>
 </body></html>

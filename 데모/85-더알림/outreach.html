@@ -2,71 +2,101 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>교육출강 센터 — 더알림</title>
+<title>교육출강 — 더알림</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-.px{display:grid;grid-template-columns:1fr 1fr;gap:2rem}
-.px label{display:grid;grid-template-columns:auto 1fr;gap:1.4rem;align-items:center;padding:2rem 2.4rem;border:1px solid var(--d);border-radius:var(--r1);cursor:pointer;font-size:1.6rem;font-weight:700;transition:border-color var(--t2),background-color var(--t2)}
-.px label:has(input:checked){border-color:var(--k);background:var(--g)}
-.px label input{width:1.8rem;height:1.8rem;accent-color:var(--k)}
-.px label small{display:block;font-weight:400;color:var(--s);margin-top:.4rem;font-size:1.3rem}
-.px-out dl{display:grid;grid-template-columns:auto 1fr;gap:1rem 1.6rem;font-size:1.5rem;margin:0}.px-out dt{color:var(--s)}.px-out dd{margin:0;font-weight:700}
-@media (max-width:767px){.px{grid-template-columns:1fr}}
+.px{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}.px .list{display:grid;gap:0}.px .list label{display:grid;grid-template-columns:auto 1fr;gap:1rem;padding:1.25rem 1rem;border-bottom:1px solid var(--g300);cursor:pointer;align-items:start;transition:background-color .25s,color .25s}.px .list label:hover{background:var(--g100)}.px .list label:has(input:checked){background:var(--primary);color:#fff}.px .list label:has(input:checked) small{color:rgba(255,255,255,.8)}
+.px .list input{width:1.25rem;height:1.25rem;margin-top:.25rem;accent-color:#fff}.px .list b{font-size:var(--fs-b20);display:block}.px .list small{display:block;color:var(--g700);font-size:.9375rem;margin-top:.25rem}
+.px .out{background:var(--g100);padding:2rem;position:sticky;top:calc(var(--nav) + 1.5rem);display:grid;gap:1rem}.px .out .lb{font-family:var(--serif);font-size:var(--fs-c16s);color:var(--g700)}.px .out .sum{font-size:var(--fs-b24);font-weight:600;line-height:1.5}.px .out ul{display:grid;gap:.5rem;font-size:.9375rem}.px .out li{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px dashed var(--g300);padding-bottom:.5rem}
+@media (max-width:1024px){.px{grid-template-columns:1fr}.px .out{position:static}}
 </style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner" id="main"></main>
+<main class="s-wrap">
+<div id="bc"></div>
+<section class="sub-visual" data-reveal-box>
+  <div class="sub-head"><h1 class="t" id="kvT" data-reveal="mask"></h1><p class="d" id="kvD" data-reveal="mask"></p></div>
+  <div class="sub-img" data-reveal=""><img id="kvImg" src="" alt=""></div>
+</section>
+
+<!-- 통계 4열 카운트업 (천만장학금 award-info) -->
+<section class="sec" data-reveal-box>
+  <div class="row-between mb80"><div><h2 class="h40" id="statT" data-reveal="mask"></h2><p class="c-sub ft-b15" data-reveal="">(2026년 10월 기준 · 등록 강사 DB·접수함 집계)</p></div><a class="btn-outline" href="cases.html" data-reveal="">현장 사례 보기</a></div>
+  <div class="stats4" id="stats" data-reveal=""></div>
+</section>
+
+<!-- sticky 2단 소개 + 정보 카드 + CTA 코너컷 -->
+<section class="sec sticky2" data-reveal-box>
+  <div class="left" data-reveal=""><h2 class="lb" id="bizT"></h2><div class="ph"><img id="bizImg" src="" alt="" loading="lazy"></div></div>
+  <div class="right">
+    <div data-reveal="" id="bizP"></div>
+    <div class="cards" data-reveal="" id="bizCards"></div>
+    <div class="cta-wrap" data-reveal=""><a class="cta" id="bizCta" href="request.html">맞춤 제안서 요청</a><span class="ft-c14 c-sub" style="align-self:center">접수 후 1~2영업일 회신</span></div>
+  </div>
+</section>
+
+<!-- 병원: 환자경험평가 7영역 → 차시 매핑 계산기 (F14 · 기능으로 구현) -->
+<section class="sec" id="pxSec" hidden data-reveal-box>
+  <div class="row-between mb40"><div><h2 class="h40" data-reveal="mask">우리 병원의 약한 영역을 고르면 차시 조합이 계산됩니다</h2><p class="c-sub" data-reveal="">환자경험평가 7개 영역을 대응 차시에 연결했습니다. 체크하면 추천 과정·차시·총 시간이 바로 바뀌고 제안서 요청에 그대로 넘어갑니다.</p></div><button class="btn-outline" type="button" id="pxSample" data-reveal="">예시 — 설명·퇴원 영역 약함</button></div>
+  <div class="px b-t-line" data-reveal=""><div class="list" id="pxGrid"></div><div class="out"><span class="lb">Recommendation</span><div class="sum" id="pxOut">영역을 선택하면 추천이 계산됩니다.</div><ul id="pxList"></ul><a class="cta" id="pxGo" href="request.html?type=병원">이 조합으로 제안서 요청</a></div></div>
+</section>
+
+<!-- 대표 프로그램 4열 (재단소식 갤러리 3:2) -->
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">대표 프로그램</h2><p class="ft-t24s c-sub" id="progD" data-reveal=""></p></div><a class="btn-under" id="progMore" href="programs.html" data-reveal=""><span class="ar prev"></span><span class="in">View More<span class="ar next"></span></span></a></div>
+  <div class="g4" id="progs"></div>
+</section>
+
+<!-- 강사 4열 (장학생 이야기 322×241 · 분야 글자 파랑) -->
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">이 센터의 강사</h2><p class="ft-t24s c-sub" id="lecD" data-reveal=""></p></div><a class="btn-under" id="lecMore" href="lecturers.html" data-reveal=""><span class="ar prev"></span><span class="in">View More<span class="ar next"></span></span></a></div>
+  <div class="g4" id="lecs"></div>
+</section>
+
+<!-- 사례 4열 -->
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">현장 사례</h2><p class="ft-t24s c-sub" data-reveal="">담당자 평가는 공개 동의 문장만. 기관명은 유형과 지역까지.</p></div><a class="btn-under" id="caseMore" href="cases.html" data-reveal=""><span class="ar prev"></span><span class="in">View More<span class="ar next"></span></span></a></div>
+  <div class="g4" id="cases"></div>
+</section>
+</main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const id = qs("c") || "youth"; const c = CENTERS.find(x=>x.id===id) || CENTERS[0];
-  document.title = `${c.name} — 더알림 교육출강`;
-  const field = ({youth:"진로·취업",corp:"리더십",medical:"병원·의료",public:"소통·CS"})[c.id];
-  const progs = PROGRAMS.filter(p=>p.center===c.id);
-  const lecs = LECTURERS.filter(l=>l.pub && l.featured && (l.field===field||l.field2===field)).slice(0,6);
-  const cases = CASES.filter(x => ({youth:"학교",corp:"기업",medical:"병원",public:"공공"})[c.id]===x.cat).slice(0,3);
+  const c = (qs("c") || "youth"); const C = CENTERS.find(x => x.id === c) || CENTERS[0];
   const COPY = {
-    youth: { grad:"blue-2", h:"진로를 묻는 학생에게<br>직업인의 얼굴로 답합니다", lead:"1학년의 자기이해부터 3학년의 실전 모의면접까지. 특성화고·일반고·대학·청소년기관의 학년 흐름에 맞춰 설계하고, 현직자와 창업 멘토가 직접 들어갑니다.",
-      splits:[["현직자가 직무의 실제를 말하게 합니다","진로 특강이 '좋은 말'로 끝나지 않도록 대기업·공기업·전문직 전/현직자(신입·경력·임원)를 초청합니다. 강사 프로필에 전직 기관유형을 공개하고, Job 콘서트에서는 ChatGPT 시대의 유망 직업과 산업을 함께 다룹니다.","case-school"],["학년별로 같은 내용을 반복하지 않습니다","1학년은 MBTI·DISC로 자기이해와 진로 로드맵, 2학년은 취업역량 진단과 이력서·자기소개서·면접, 3학년은 실전 모의면접과 인적성 대비. 학교별 연간 플랜을 한 장으로 드립니다.","case-school2"],["외부강사 서류가 일정을 밀지 않습니다","청소년 출강 강사는 성범죄·아동학대 경력조회 동의서를 사전 제출합니다. 미제출 강사는 매칭에서 자동 제외되고, 학교장터 서류 패키지(견적서·사업자등록증·통장사본·강사 이력서)를 원클릭으로 보냅니다.","case-job"]],
-      nums:[["3","프로그램","진로·취업 / 창업 / 온라인 창업·마케팅"],[String(DATA.countLecturers({field:"진로·취업"})),"공개 강사","진로·취업 분야 · 경력조회 동의서 제출자 우선"],["1→3","학년 단계 설계","자기이해 → 역량 진단 → 실전"]] },
-    corp: { grad:"gray-2", h:"연간 교육 계획을<br>한 번의 상담으로 끝냅니다", lead:"리더십·직무·소통·법정의무까지 23개 주제. 집체·온라인·혼합을 섞어 분기별 플랜을 짜고, 법정의무교육은 과목별 강사 요건을 맞춰 보냅니다.",
-      splits:[["법정의무교육 이수가 인정되지 않을까 걱정하지 않도록","장애인 인식개선은 공단 강사양성 수료 강사, 성희롱 예방은 지정기관 요건, 산업안전은 등록기관. 과목마다 다른 요건을 프로그램에 표시하고, 요건 없는 강사는 매칭 자체가 되지 않습니다. 교육 후 출석부·교육일지·사진 증빙 패키지를 드립니다.","case-factory"],["고용보험 환급 여부를 먼저 알려 드립니다","사업주훈련 환급은 과정 인정과 고용보험 가입이 전제입니다. 프로그램마다 환급 가능 여부를 배지로 표시하고, 비대상 과정은 제안서 요청 단계에서 미리 안내합니다.","case-corp"],["강사마다 품질 편차가 크지 않도록","담당자 피드백이 강사 평점이 됩니다. 최근 10건 가중 평균으로 재출강 요청률 상위 강사를 먼저 제안하고, 4.3 미만이 두 번 이어지면 재배치를 검토합니다.","case-startup"]],
-      nums:[["23","프로그램","마케팅·경영·IT·ChatGPT·조직·ESG·리더십·법정의무 …"],[String(DATA.countLecturers({field:"리더십"})),"공개 강사","리더십 분야 · 법정의무 인정자격 별도 태그"],["4","법정의무 과목","성희롱·개인정보·장애인인식·산업안전"]] },
-    medical:{ grad:"blue-1", h:"환자경험평가 등급이<br>공개되는 시대의 교육", lead:"2026년 7월 첫 등급이 공개되고 6차 평가부터 887곳으로 확대됩니다. 평가 7개 영역을 차시로 번역한 16개 과정, 전부 4시간 7차시 강의계획서가 준비되어 있습니다.",
-      splits:[["평가 문항과 교육 내용이 따로 놀지 않습니다","의사소통·존중·설명·퇴원관리 등 평가 영역을 차시에 1:1로 대응시켰습니다. 아래 표에서 약한 영역을 고르면 차시 조합과 총 시간이 계산되고 제안서 요청에 그대로 넘어갑니다.","case-hospital"],["교대 근무라도 전 직원이 들을 수 있게","2회차 분반·부서별 분할·야간반을 기본 옵션으로 둡니다. 활동형 과정은 20~40명 단위로 설계하고, 실전사례는 외래·병동·원무 접점으로 나눕니다.","case-hospital2"],["수간호사·팀장 리더십의 공백을 메웁니다","신임관리자·중간관리자·프리셉터·임원급 4단계 리더십 과정을 같은 강사군이 이어서 맡습니다. 역할 전환기의 흔한 착오를 병동 사례로 풉니다.","case-hospital3"]],
-      nums:[["16","프로그램","CS 3 · 리더십 5 · 조직관리 4 · 리더십스킬 4"],[String(DATA.countLecturers({field:"병원·의료"})),"공개 강사","병원·의료 분야 · 전 대학병원 간호교육팀장 등"],["4h·7","차시 강의계획서","전 과정 240분 · 활동 2회 포함"]] },
-    public:{ grad:"green-1", h:"월 단위 정기 출강,<br>전 직원 의무교육까지", lead:"정부부처·교육청·일자리센터·복지시설. 강사수당 기준 등급 안에서 견적을 맞추고, 민원·청렴·안전·마음챙김을 연간 캘린더로 운영합니다.",
-      splits:[["강사료 기준을 넘는 견적은 보내지 않습니다","제안서 요청에서 기관의 강사수당 지급기준 등급(특별·일반 1급·2급)을 고르면 그 상한 안에서만 산출합니다. 초과 시 경고가 뜨고 차시 압축안을 함께 제안합니다.","case-public"],["매달 새 강사를 찾지 않아도 됩니다","월 정기 출강은 같은 강사군이 연간 주제를 이어 갑니다. 서울 소재 신용보증 기관 11회 연속 사례처럼 구성원들이 다음 달 주제를 먼저 묻게 됩니다.","case-public2"],["복지시설 안전교육은 '해 봐야' 합니다","소방안전·대피훈련은 실제 동선으로 훈련합니다. 전직 소방관 강사군이 맡고, 어르신 보행 속도에 맞춘 대피 계획을 시설과 함께 만듭니다.","case-welfare"]],
-      nums:[["5","프로그램","회복탄력성 · 민원 · 청렴 · SNS 실무 · 소방안전"],[String(DATA.countLecturers({field:"소통·CS"})),"공개 강사","소통·CS 분야 · 월 정기 전담"],["11","회 연속","신용보증 기관 월 정기 (2026 기준)"]] },
-  }[c.id];
-  const PX = [["의사소통(의사)","med-01",2],["의사소통(간호사)","med-02",2],["존중·예의","med-02",3],["설명·동의","med-01",4],["투약·치료 과정","med-01",4],["병원 환경·감정노동","med-03",3],["퇴원·사후관리","med-01",5]];
-  const medMap = c.id!=="medical" ? "" : `<section class="max"><div class="tw" data-aos="fade-up"><h2 class="t">우리 병원의 약한 영역을 고르면<br>차시 조합이 계산됩니다</h2><p class="d">환자경험평가 7개 영역을 대응 차시로 연결했습니다. 체크하면 추천 과정·차시·총 시간이 바로 바뀌고 제안서 요청에 그대로 넘어갑니다.</p></div>
-    <div class="split lay-lg" style="height:auto;align-items:flex-start" data-aos="fade-up"><div class="txt"><div class="px" id="pxGrid">${PX.map((x,i)=>`<label><input type="checkbox" data-i="${i}"><span>${x[0]}<small>→ ${DATA.program(x[1]).name} · ${x[2]}차시</small></span></label>`).join("")}</div><div class="cta-row mt3"><button class="cta cta-o" type="button" id="pxSample">예시 — 설명·퇴원 영역 약함</button></div></div>
-    <div class="px-out" style="background:var(--g);border-radius:var(--r);padding:4rem"><span class="ey">RECOMMENDATION</span><div id="pxOut"><p class="sub">영역을 선택하면 추천이 계산됩니다.</p></div><div class="cta-row mt3"><a class="cta cta-k" id="pxGo" href="request.html?type=병원">이 조합으로 제안서 요청</a></div></div></div></section>`;
-  $("#main").innerHTML = `
-  <section class="kv sub kv-grad ${COPY.grad}"><img src="assets/img/${c.img}.webp" alt=""><div class="kv-text"><div class="kv-lock">${c.en} CENTER<small>${c.line}</small></div><h1 class="kv-t">${COPY.h}</h1><p class="kv-d">${COPY.lead}</p><div class="cta-row"><a class="cta cta-w" href="programs.html?center=${c.id}">프로그램 ${progs.length}개</a><a class="cta cta-ow" href="request.html?type=${encodeURIComponent(({youth:"학교",corp:"기업",medical:"병원",public:"공공기관"})[c.id])}">제안서 요청</a></div></div></section>
-  <section class="max"><div class="split" data-aos="fade-up"><div class="txt"><h2 class="t">${c.name}</h2><p class="d">${c.desc} 센터 담당 매니저가 기관 유형별 품의 자료(강의계획서·강사 약력·견적·서류 패키지)를 한 번에 보냅니다.</p><div class="cta-row"><a class="cta cta-k" href="request.html">맞춤 제안서 요청</a></div></div><div class="mosaic"><div><img src="assets/img/${COPY.splits[0][2]}.webp" alt="" loading="lazy"></div><div class="num"><b>${COPY.nums[0][0]}</b><span>${COPY.nums[0][1]}</span><small>${COPY.nums[0][2]}</small></div><div class="num"><b>${COPY.nums[1][0]}</b><span>${COPY.nums[1][1]}</span><small>${COPY.nums[1][2]}</small></div><div><img src="assets/img/${COPY.splits[1][2]}.webp" alt="" loading="lazy"></div></div></div></section>
-  ${medMap}
-  ${COPY.splits.map((s,i)=>`<section class="max"><div class="split ${i%2?"":"end"}" data-aos="fade-up"><div class="txt"><h2 class="t">${s[0]}</h2><p class="d">${s[1]}</p><div class="cta-row"><a class="lm" href="programs.html?center=${c.id}">관련 프로그램 보기</a></div></div><div class="img"><img src="assets/img/${s[2]}.webp" alt="" loading="lazy"></div></div></section>`).join("")}
-  <section class="gray"><div class="max"><div class="tw" data-aos="fade-up"><h2 class="t">대표 프로그램</h2><p class="d">${c.name}의 ${progs.length}개 과정 중 담당자가 가장 많이 고른 6개입니다. 카드의 「담기」로 제안서에 바로 넣을 수 있습니다.</p><div class="cta-row c"><a class="cta cta-k" href="programs.html?center=${c.id}">전체 ${progs.length}개 보기</a></div></div><div class="cards lay-lg" data-aos-group>${progs.slice(0,6).map(H.progCard).join("")}</div></div></section>
-  <section class="max"><div class="tw" data-aos="fade-up"><h2 class="t">이 센터의 강사</h2><p class="d">${field} 분야 공개 강사 ${DATA.countLecturers({field})}명 중 대표 ${lecs.length}명. 공개 범위는 강사가 직접 정하고, 연락처는 매니저를 통해서만 연결됩니다.</p><div class="cta-row c"><a class="cta cta-o" href="lecturers.html?field=${encodeURIComponent(field)}">${field} 강사 전체</a></div></div>
-    <div class="sw lay-lg" data-aos="fade-up"><div class="sw-track">${lecs.map(l=>`<a class="pt" href="lecturer.html?id=${l.id}"><div class="im"><img src="assets/img/${l.img}.webp" alt="" loading="lazy"><div class="ov"><b>${l.name}</b><span>${l.title} · ${l.region}</span></div></div><div class="cap">${l.topics[0]}<small>출강 ${l.runs}회 · ★ ${l.rating}</small></div></a>`).join("")}</div><div class="sw-prog"><i></i></div></div></section>
-  ${cases.length?`<section class="max"><div class="tw" data-aos="fade-up"><h2 class="t">현장 사례</h2><p class="d">담당자 평가와 현장 기록을 분리해 둡니다. 기관명은 유형과 지역까지만.</p><div class="cta-row c"><a class="cta cta-o" href="cases.html">사례 전체</a></div></div><div class="cards lay-lg" data-aos-group>${cases.map(H.caseCard).join("")}</div></section>`:""}
-  <section class="max"><div class="qb" data-aos="fade-up"><img src="assets/img/${COPY.splits[2][2]}.webp" alt="" loading="lazy"><div class="qb-in"><h3>“${cases[0]?cases[0].quote:"현장의 언어로 설계한 교육은 끝난 뒤에도 쓰입니다."}”</h3><div class="who">${cases[0]?cases[0].who+" · "+cases[0].org:"기관 담당자"}<small>${cases[0]?cases[0].title:""}</small></div></div></div></section>`;
-  if (c.id==="medical") {
-    const calc = () => { const sel = $$("#pxGrid input:checked").map(i=>PX[+i.dataset.i]);
-      if (!sel.length) { $("#pxOut").innerHTML = `<p class="sub">영역을 선택하면 추천이 계산됩니다.</p>`; return; }
-      const byProg = {}; sel.forEach(x => { (byProg[x[1]] = byProg[x[1]] || new Set()).add(x[2]); });
-      const ids = Object.keys(byProg); const total = ids.reduce((a,id)=>a+DATA.program(id).sessions.filter(s=>byProg[id].has(s.n)).reduce((b,s)=>b+s.min,0),0);
-      $("#pxOut").innerHTML = `<dl>${ids.map(id=>`<dt>${DATA.program(id).name}</dt><dd>${[...byProg[id]].sort().map(n=>n+"차시").join(", ")}</dd>`).join("")}<dt>집중 차시 합계</dt><dd>${total}분</dd><dt>권장 구성</dt><dd>${ids.length>1?`${ids.length}개 과정 · 각 4시간 전체 또는 집중 차시 ${Math.ceil(total/60)}시간 압축`:"4시간 전체 과정 권장"}</dd><dt>가용 강사</dt><dd>${DATA.countLecturers({field:"병원·의료"})}명</dd></dl>`;
-      $("#pxGo").href = `request.html?type=병원&progs=${ids.join(",")}`; };
+    youth:   { t:"진로를 묻는 학생에게<br>직업인의 얼굴로 답합니다", d:"\"1학년 자기이해부터 3학년 실전 모의면접까지, 학년·학교별 설계\" — 특성화고·대학·청소년기관 전담", img:"center-youth", field:"진로·취업", stat:"청소년 교육센터 출강 현황", bizT:"청소년 교육센터", bizImg:"case-school", p:["특성화고·대학·청소년기관을 전담합니다. 진로 탐색부터 모의면접, 창업 경진대회까지 성장 단계에 맞춥니다.","학교 건은 학교장터(S2B) 견적으로 진행하고, 청소년 대상 강사는 경력조회 동의서를 사전 제출한 강사만 배정합니다."], cards:[["대상","초·중·고·대학·청소년기관"],["진행 방식","학년별 분반 · 모의면접은 1:1 영상 피드백"],["서류","견적서·사업자등록증·통장사본·강사 이력서 패키지"]], progD:"학년별 3개 과정 · 학교장터 견적", lecD:"진로·취업 분야 공개 강사", cat:"학교", cta:"학교장터 견적 요청" },
+    corp:    { t:"신입부터 임원까지,<br>한 커리큘럼으로 잇습니다", d:"\"리더십·ChatGPT·법정의무를 직급과 상황에 맞춰 조합\" — 대기업·중견·스타트업", img:"center-corp", field:"리더십", stat:"기업 HRD 컨설팅 출강 현황", bizT:"기업 HRD 컨설팅", bizImg:"case-corp", p:["직급별 리더십, ChatGPT 질문력, 사내 강사 양성, 4대 법정의무교육을 한 커리큘럼으로 조합합니다.","4시간 이상 과정은 고용보험 사업주훈련 환급 요건을 함께 검토합니다. 법정의무교육은 환급 대상이 아니라 미리 표시합니다."], cards:[["대상","신입·실무·팀장·임원"],["환급","4시간 이상 과정은 사업주훈련 환급 요건 검토"],["법정의무","4과목 1일 통합 · 과목별 인정자격 보유 강사만"]], progD:"18개 과정 · 환급 가능 여부 표시", lecD:"리더십·AI·법정의무 분야 공개 강사", cat:"기업", cta:"기업 교육 제안서 요청" },
+    medical: { t:"평가 등급이 공개되는<br>시대의 병원 교육", d:"\"환자경험평가 7개 영역을 차시로 번역한 16개 과정\" — 2026년 7월 첫 등급 공개 · 6차 평가부터 887곳 확대", img:"center-medical", field:"병원·의료", stat:"병원 메디컬센터 출강 현황", bizT:"병원 메디컬센터", bizImg:"case-hospital2", p:["환자경험평가 대응부터 수간호사 리더십까지, 4시간 7차시 강의계획서가 준비된 16개 과정입니다.","교대 근무라도 전 직원이 들을 수 있게 2회차 분반·부서별 분할·야간반을 기본 옵션으로 둡니다. 활동형 과정은 20~40명 단위로 설계합니다."], cards:[["대상","의료진·간호 · 원무·행정 · 전 직원"],["구성","4시간 7차시 · 2회차 분반 · 부서별 분할"],["강사","전 대학병원 간호교육팀장 등 병원·의료 분야 156명"]], progD:"16개 과정 · 4시간 7차시", lecD:"병원·의료 분야 공개 강사 156명", cat:"병원", cta:"병원 교육 제안서 요청" },
+    public:  { t:"월 단위 정기 출강,<br>전 직원 의무교육까지", d:"\"강사수당 지급기준 등급에 맞춰 견적을 먼저 맞춥니다\" — 정부·지자체·센터·복지시설", img:"center-public", field:"소통·CS", stat:"공공기관·지자체 출강 현황", bizT:"공공기관·지자체", bizImg:"case-public", p:["민원 응대, 회복탄력성, 소방안전·대피훈련, 전 직원 의무교육을 월 단위 정기 출강으로 운영합니다.","공공기관은 강사수당 지급기준 등급(특별·1급·2급) 상한에 맞춰 견적을 산출하고, 품의에 붙일 강의계획서를 함께 보냅니다."], cards:[["대상","공무원·공공기관 직원 · 복지시설"],["견적","강사수당 등급 상한 적용 · 품의용 강의계획서"],["운영","월 정기 출강 · 같은 강사 연속 배정"]], progD:"10개 과정 · 월 정기 운영", lecD:"소통·CS·안전 분야 공개 강사", cat:"공공", cta:"공공기관 제안서 요청" },
+  }[c];
+  document.title = `${C.name} — 더알림 교육출강`;
+  $("#kvT").innerHTML = COPY.t; $("#kvD").textContent = COPY.d; $("#kvImg").src = `assets/img/${COPY.img}.webp`;
+  const bc = document.querySelector(".bc"); if (bc) bc.lastElementChild.textContent = C.name;
+  const progs = PROGRAMS.filter(p => p.center === c), lecs = LECTURERS.filter(l => l.pub && l.featured && (l.field === COPY.field || l.field2 === COPY.field)), cases = CASES.filter(x => x.cat === COPY.cat);
+  const nLec = DATA.countLecturers({ field: COPY.field });
+  $("#statT").textContent = COPY.stat;
+  $("#stats").innerHTML = [["프로그램", progs.length, "개"],["공개 강사", nLec, "명"],["누적 출강 기관", { youth:1180, corp:1460, medical:620, public:740 }[c], "곳"],["담당자 평균 만족도", (cases.reduce((a,x)=>a+x.sat,0)/Math.max(1,cases.length)).toFixed(1), "점", 1]].map(s => `<div class="stat"><div class="lb">${s[0]}</div><div class="num"><span data-count="${s[1]}" ${s[3]?'data-dec="1"':""}>0</span><small>${s[2]}</small></div></div>`).join("");
+  $("#bizT").textContent = COPY.bizT; $("#bizImg").src = `assets/img/${COPY.bizImg}.webp`;
+  $("#bizP").innerHTML = COPY.p.map(t => `<p class="para">${t}</p>`).join("");
+  $("#bizCards").innerHTML = COPY.cards.map(k => `<div class="infocard"><div class="lb">${k[0]}</div><div class="vl">${k[1]}</div></div>`).join("");
+  $("#bizCta").textContent = COPY.cta; $("#bizCta").href = `request.html?type=${encodeURIComponent(c==="public"?"공공기관":C.name.includes("청소년")?"학교":c==="corp"?"기업":"병원")}`;
+  $("#progD").textContent = COPY.progD; $("#progs").innerHTML = progs.slice(0,4).map(H.progCard).join(""); $("#progMore").href = `programs.html?center=${c}`;
+  $("#lecD").textContent = COPY.lecD; $("#lecs").innerHTML = lecs.slice(0,4).map(H.lecCard).join(""); $("#lecMore").href = `lecturers.html?field=${encodeURIComponent(COPY.field)}`;
+  $("#cases").innerHTML = (cases.length ? cases : CASES).slice(0,4).map(H.caseCard).join(""); $("#caseMore").href = `cases.html?cat=${encodeURIComponent(COPY.cat)}`;
+  /* 병원: 환자경험평가 영역 → 차시 매핑 */
+  if (c === "medical") {
+    $("#pxSec").hidden = false;
+    const PX = [["의사소통(의사)","의료진 설명·경청·예의 — 환자경험평가 대응 교육 2차시","med-01",2],["의사소통(간호사)","환자·보호자 응대 매너 및 컴플레인(VOC) 처리 실습 — 4차시","med-02",4],["존중·예의","환자가 존중받았다고 느끼는 행동 신호 — 환자경험평가 대응 교육 3차시","med-01",3],["설명·동의","인폼드 컨센트·설명 화법 — 환자경험평가 대응 교육 4차시","med-01",4],["투약·치료 과정","환자·보호자 응대 매너 — 4차시","med-02",4],["병원 환경·감정노동","감정노동 관리 및 친절 서비스 마인드 — 3차시","med-03",3],["퇴원·사후관리","퇴원교육 및 사후관리 표준 — 환자경험평가 대응 교육 5차시","med-01",5]];
+    $("#pxGrid").innerHTML = PX.map((x,i) => `<label><input type="checkbox" value="${i}"><div><b>${x[0]}</b><small>${x[1]}</small></div></label>`).join("");
+    const calc = () => { const on = $$("#pxGrid input:checked").map(i => PX[+i.value]); if (!on.length) { $("#pxOut").textContent = "영역을 선택하면 추천이 계산됩니다."; $("#pxList").innerHTML = ""; $("#pxGo").href = "request.html?type=병원"; return; } const byP = {}; on.forEach(x => { (byP[x[2]] = byP[x[2]] || new Set()).add(x[3]); }); const ids = Object.keys(byP); const sessions = Object.values(byP).reduce((a,s)=>a+s.size,0); const mins = sessions * 40; $("#pxOut").textContent = `${ids.length}개 과정 · ${sessions}차시 · 약 ${Math.round(mins/60*10)/10}시간`; $("#pxList").innerHTML = ids.map(id => { const p = DATA.program(id); return `<li><span>${p.name}</span><b>${[...byP[id]].sort().map(n=>n+"차시").join(" · ")}</b></li>`; }).join(""); $("#pxGo").href = `request.html?type=병원&progs=${ids.join(",")}`; };
     $("#pxGrid").addEventListener("change", calc);
-    $("#pxSample").addEventListener("click", () => { $$("#pxGrid input").forEach((i,k)=>i.checked=[3,6].includes(k)); calc(); toast("예시 영역을 선택했습니다", "ok"); });
+    $("#pxSample").addEventListener("click", () => { $$("#pxGrid input").forEach((i,k) => i.checked = [3,6].includes(k)); calc(); toast("설명·동의와 퇴원·사후관리 영역을 선택했습니다", "ok"); });
   }
-  UI.reveal(); UI.carousel();
+  UI.reveal(); UI.countUp();
 })();
 </script>
 </body></html>

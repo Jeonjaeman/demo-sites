@@ -5,62 +5,62 @@
 <title>민간자격증 — 더알림 · 한국인재양성협회 등록 32종</title>
 <meta name="description" content="등록 민간자격 32종. 등록번호·자격관리기관·총비용·환불 규정을 자격마다 표시합니다. 국가공인 민간자격이 아닙니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
 <style>
-.clist{display:grid;grid-template-columns:1fr 1fr;gap:.8rem 2.4rem}
-.clist button{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.4rem 1.6rem;border-radius:var(--r1);text-align:left;min-height:4.4rem;transition:background-color var(--t2),color var(--t2)}
-.clist button:hover{background:var(--g)} .clist button[aria-pressed=true]{background:var(--k);color:var(--w)}
-.clist button b{font-weight:700;font-size:1.6rem} .clist button b span{font-weight:400;color:var(--s)} .clist button[aria-pressed=true] b span{color:rgba(255,255,255,.7)}
-.clist button small{font-size:1.2rem;color:var(--s);white-space:nowrap} .clist button[aria-pressed=true] small{color:rgba(255,255,255,.7)}
-.clist .off{opacity:.5} .clist .off small{color:var(--bad)}
-.disc{display:grid;gap:1.2rem;font-size:1.5rem}.disc dl{display:grid;grid-template-columns:11rem 1fr;gap:.8rem 1.2rem;margin:0}.disc dt{color:var(--s)}.disc dd{margin:0;font-weight:700}
-.disc .warn-line{padding:1.2rem 1.4rem;background:#FFF4E0;border-radius:var(--r1);font-weight:700}
-.cost>div{display:flex;justify-content:space-between;padding:.8rem 0;border-bottom:1px dashed var(--d2)}.cost .tot{border-bottom:0;font-weight:700;font-size:1.8rem;padding-top:1.2rem}
-@media (max-width:767px){.clist{grid-template-columns:1fr}}
+.award-row .names button{font-size:var(--fs-b20);padding:.125rem .5rem;border:1px solid transparent;transition:border-color .2s;min-height:44px}.award-row .names button:hover{border-color:currentColor}.award-row .names button.off{opacity:.5;text-decoration:line-through}.award-row .names button[aria-pressed=true]{border-color:currentColor;font-weight:600}
+.disc{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}.disc .box{background:var(--g100);padding:2rem;display:grid;gap:1rem}.disc dl{display:grid;grid-template-columns:8rem 1fr;gap:.5rem 1rem;font-size:1rem}.disc dt{color:var(--g700)}.disc dd{font-weight:600}
+.disc .warnline{padding:1rem;border:1px solid var(--warn);color:var(--warn);font-weight:600}.cost>div{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px dashed var(--g300)}.cost .tot{border:0;font-size:var(--fs-b24);font-weight:600;padding-top:1rem}
+@media (max-width:1024px){.disc{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub kv-grad blue-2"><img src="assets/img/cert-exam.webp" alt=""><div class="kv-text"><div class="kv-lock">CERTIFICATE<small>한국인재양성협회 등록 민간자격</small></div><h1 class="kv-t">등록 민간자격 <span id="nCert">32</span>종</h1><p class="kv-d">자격마다 등록번호·관리기관·총비용·환불 규정을 표시합니다. 국가공인 민간자격이 아닙니다. 등급별 과정 <span id="nGrade">63</span>개.</p></div></section>
-
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">등록번호가 있어야 공개됩니다</h2><p class="d">자격 수는 손으로 적지 않고 관리자에서 공개된 자격을 집계해 자동 표기합니다. 지금 <b id="nHidden">4</b>종은 등록번호가 입력되지 않아 공개가 차단되어 있습니다(회색 항목). 관리자에서 등록번호를 넣으면 즉시 공개됩니다.</p><div class="cta-row c"><button class="cta cta-o" type="button" id="sample">예시로 보기 — 병원코디네이터</button></div></div>
-  <div class="view lay-lg"><div class="view-body" id="fields" style="gap:4rem"></div>
-    <aside class="view-rail" id="panel"><div class="rail-card"><b>자격 정보 표시</b><p class="mt2 small sub">왼쪽에서 자격을 선택하면 자격기본법 제33조 표시 항목이 여기에 나타납니다.</p></div></aside></div>
+<main class="s-wrap">
+<div id="bc"></div>
+<section class="sub-visual" data-reveal-box>
+  <div class="sub-head"><h1 class="t" data-reveal="mask">등록 민간자격 <span id="nCert">32</span>종</h1><p class="d" data-reveal="mask">"등록번호가 있어야 공개됩니다" — 자격마다 자격기본법 제33조 표시 항목(등록번호·관리기관·총비용·환불·'국가공인 아님')을 붙이고, 자격 수는 손으로 적지 않고 집계합니다.</p></div>
+  <div class="sub-img" data-reveal=""><img src="assets/img/cert-exam.webp" alt=""></div>
 </section>
 
-<section class="gray"><div class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">과정 신청에서 발급까지</h2><p class="d">집체 또는 온라인 교육 → 검정 → 발급. 온라인 과정이 30시간 이상이면 원격평생교육시설 신고 번호를 함께 표시합니다.</p></div>
-  <div class="ht lg lay-lg" id="howHt"></div>
-</div></section>
+<section class="sec" data-reveal-box>
+  <div class="row-between mb40"><div><h2 class="h40" data-reveal="mask">분야별 자격 목록 <span class="ft-c16s c-sub">등급별 과정 <span id="nGrade">63</span>개 · 비공개 <span id="nHidden">4</span>종</span></h2><p class="c-sub" data-reveal="">자격명을 누르면 아래에 표시 블록이 펼쳐집니다. 회색 취소선은 등록번호가 비어 공개가 차단된 자격입니다.</p></div><button class="btn-outline" type="button" id="sample" data-reveal="">예시로 보기 — 병원코디네이터</button></div>
+  <div id="rows" data-reveal=""></div>
+</section>
+
+<section class="sec" id="discSec" hidden data-reveal-box>
+  <dl class="def-row" data-reveal=""><dt>자격 정보 표시<br><span class="ft-c16s c-sub">자격기본법 제33조</span></dt><dd><div class="disc" id="disc"></div></dd></dl>
+</section>
+
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">과정 신청에서 발급까지</h2><p class="ft-t24s c-sub" data-reveal="">온라인 과정이 30시간 이상이면 원격평생교육시설 신고 번호를 함께 표시합니다.</p></div></div>
+  <div data-single data-reveal="" id="steps"></div>
+</section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const pubCerts = CERTS.filter(c=>c.published);
-  $("#nCert").textContent = pubCerts.length; $("#nGrade").textContent = pubCerts.reduce((a,c)=>a+c.grades.length,0); $("#nHidden").textContent = CERTS.length - pubCerts.length;
-  $("#fields").innerHTML = CERT_FIELDS.map((f,i)=>`<div><h2 class="t" style="font-size:2.6rem;display:flex;gap:1.2rem;align-items:baseline">0${i+1} ${f.name} <span class="sub" style="font-size:1.4rem;font-weight:400">${CERTS.filter(c=>c.field===f.id&&c.published).length}종 · ${f.issuer}</span></h2><div class="clist mt3">${CERTS.filter(c=>c.field===f.id).map(c=>`<button type="button" class="${c.published?"":"off"}" data-id="${c.id}" aria-pressed="false"><b>${c.name} <span>${c.grades.join("·")}</span></b><small>${c.published?c.regNo:"등록번호 미입력 · 비공개"}</small></button>`).join("")}</div></div>`).join("");
+  const pub = CERTS.filter(c=>c.published);
+  $("#nCert").textContent = pub.length; $("#nGrade").textContent = pub.reduce((a,c)=>a+c.grades.length,0); $("#nHidden").textContent = CERTS.length - pub.length;
+  $("#rows").innerHTML = CERT_FIELDS.map((f,i)=>`<div class="award-row" data-f="${f.id}"><div class="cat">0${i+1} ${f.name}<br><span class="ft-c14" style="font-weight:400;opacity:.8">${CERTS.filter(c=>c.field===f.id&&c.published).length}종 · ${f.issuer}</span></div><div class="ph"><img src="assets/img/${["cert-exam","case-hospital2","case-school","case-corp"][i%4]}.webp" alt=""></div><div class="names">${CERTS.filter(c=>c.field===f.id).map(c=>`<button type="button" class="${c.published?"":"off"}" data-id="${c.id}" aria-pressed="false">${c.name} <span class="ft-c14" style="font-weight:400">${c.grades.join("·")}</span></button>`).join("")}</div></div>`).join("");
   function show(id){
-    const c = CERTS.find(x=>x.id===id); $$("#fields button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.id===id));
-    if (!c.published) { $("#panel").innerHTML = `<div class="rail-card"><b>${c.name}</b><div class="notice bad mt2 small">자격기본법 제33조 표시 항목(등록번호)이 비어 있어 공개가 차단된 자격입니다. 관리자가 등록번호를 입력하면 이 자리에 표시 블록이 나타납니다.</div><a class="cta cta-o cta-dense" href="admin.html#certs">관리자에서 입력하기</a></div>`; return; }
-    const total = c.fee + c.examFee + 30000;
-    $("#panel").innerHTML = `<div class="rail-card"><span class="ey">자격 정보 표시 · 자격기본법 제33조</span><b style="font-size:2.6rem">${c.name}</b>
-      <div class="disc mt3"><dl><dt>자격 종류</dt><dd>등록 민간자격 (비공인)</dd><dt>등록번호</dt><dd>${c.regNo}</dd><dt>등급</dt><dd>${c.grades.join(" · ")}</dd><dt>자격관리기관</dt><dd>${c.issuer}</dd><dt>소재지</dt><dd>서울 금천구 가산디지털2로 (등록 주소)</dd><dt>연락처</dt><dd>0507-1322-2916</dd><dt>교육 시간</dt><dd>${c.hours}시간 · ${c.online?"집체/온라인":"집체"}</dd><dt>다음 과정</dt><dd>${DATA.fmtDate(c.next)} 개강</dd></dl>
-      <div class="warn-line">이 자격은 국가로부터 인정받은 공인자격이 아닙니다.</div>
-      <div class="cost"><div><span>교육비</span><b>${DATA.won(c.fee)}</b></div><div><span>검정 응시료</span><b>${DATA.won(c.examFee)}</b></div><div><span>자격증 발급비</span><b>30,000원</b></div><div class="tot"><span>총비용</span><b>${DATA.won(total)}</b></div></div>
-      <p class="small sub">환불: 개강 전 전액 · 1/3 경과 전 2/3 · 1/2 경과 전 1/2 · 이후 환불 불가 (학원법 시행령 환불 기준 준용). 재발급 10,000원.</p></div>
-      <div class="cta-row mt3"><button class="cta cta-k" type="button" id="apply">과정 신청 (${DATA.fmtDate(c.next)})</button><a class="cta cta-o" href="https://www.pqi.or.kr" target="_blank" rel="noopener">민간자격정보서비스 확인</a></div></div>`;
-    $("#apply").addEventListener("click", () => toast("신청서로 이동합니다 — 데모에서는 접수함에 기록됩니다", "ok"));
-    if (innerWidth < 1024) $("#panel").scrollIntoView({ behavior:"smooth", block:"start" });
+    const c = CERTS.find(x=>x.id===id); $$("#rows button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.id===id)); $$("#rows .award-row").forEach(r=>r.classList.toggle("is-open", r.dataset.f===c.field));
+    $("#discSec").hidden = false;
+    if (!c.published) { $("#disc").innerHTML = `<div class="box"><b class="ft-b24-sb">${c.name}</b><div class="notice warn">자격기본법 제33조 표시 항목(등록번호)이 비어 있어 공개가 차단된 자격입니다. 관리자가 등록번호를 입력하면 이 자리에 표시 블록이 나타납니다.</div><a class="btn-outline" href="admin.html#certs" style="justify-self:start">관리자에서 입력하기</a></div>`; }
+    else { const total = c.fee + c.examFee + 30000;
+      $("#disc").innerHTML = `<div class="box"><b class="ft-b24-sb">${c.name}</b><dl><dt>자격 종류</dt><dd>등록 민간자격 (비공인)</dd><dt>등록번호</dt><dd>${c.regNo}</dd><dt>등급</dt><dd>${c.grades.join(" · ")}</dd><dt>자격관리기관</dt><dd>${c.issuer}</dd><dt>소재지</dt><dd>서울 금천구 가산디지털2로 (등록 주소)</dd><dt>연락처</dt><dd>0507-1322-2916</dd><dt>교육 시간</dt><dd>${c.hours}시간 · ${c.online?"집체/온라인":"집체"}</dd><dt>다음 과정</dt><dd>${DATA.fmtDate(c.next)} 개강</dd></dl><div class="warnline">이 자격은 국가로부터 인정받은 공인자격이 아닙니다.</div></div>
+      <div class="box"><b class="ft-b24-sb">총비용 · 환불</b><div class="cost"><div><span>교육비</span><b>${DATA.won(c.fee)}</b></div><div><span>검정 응시료</span><b>${DATA.won(c.examFee)}</b></div><div><span>자격증 발급비</span><b>30,000원</b></div><div class="tot"><span>총비용</span><b>${DATA.won(total)}</b></div></div><p class="ft-b15 c-sub">환불: 개강 전 전액 · 1/3 경과 전 2/3 · 1/2 경과 전 1/2 · 이후 환불 불가 (학원법 시행령 환불 기준 준용). 재발급 10,000원.</p><div class="btn-row"><button class="cta" type="button" id="apply">과정 신청 (${DATA.fmtDate(c.next)})</button><a class="btn-outline" href="https://www.pqi.or.kr" target="_blank" rel="noopener">민간자격정보서비스 확인</a></div></div>`;
+      $("#apply").addEventListener("click", () => toast("신청서로 이동합니다 — 데모에서는 접수함에 기록됩니다", "ok")); }
+    $("#discSec").querySelectorAll("[data-reveal]").forEach(e=>e.classList.add("is-reveal"));
+    $("#discSec").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   }
-  $("#fields").addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (b) show(b.dataset.id); });
+  $("#rows").addEventListener("click", e => { const b = e.target.closest("button[data-id]"); if (b) show(b.dataset.id); });
   $("#sample").addEventListener("click", () => show(CERTS.find(c=>c.name==="병원코디네이터").id));
   if (qs("id")) show(qs("id"));
   const STEPS = [["과정 선택·신청","총비용(교육비·응시료·발급비)과 환불 규정을 확인하고 신청합니다. 결제 전 '국가공인 자격이 아님' 고지에 동의합니다.","cert-exam"],["교육 이수","집체 16~32시간 또는 온라인. 출석 80% 이상이 검정 응시 조건입니다.","case-public2"],["검정·발급","검정 합격 시 협회 명의 자격증 발급. 등록번호가 인쇄되며 민간자격정보서비스에서 진위를 확인할 수 있습니다.","book-print"],["출강 연계 안내","수료 후 강사 지원이 가능합니다. 다만 수료가 출강이나 수익을 보장하지는 않으며, 강사 등록은 별도 심사를 거칩니다.","hero-main"]];
-  $("#howHt").innerHTML = STEPS.map((s,i)=>`<div class="ht-item ${i===0?"on":""}"><div class="ht-img"><img src="assets/img/${s[2]}.webp" alt="" loading="lazy"></div><div class="ht-txt"><div class="ht-h"><span class="ht-n">0${i+1}</span><span class="ht-t">${s[0]}</span></div><p class="ht-d">${s[1]}</p>${i===3?'<a class="lm ht-b" href="contact.html#apply">강사 지원</a>':""}</div></div>`).join("");
-  UI.halfTeaser();
+  $("#steps").innerHTML = STEPS.map((s,i)=>`<div class="acc-num ${i===0?"is-active":""}"><button class="h" type="button" aria-expanded="${i===0}"><span class="n">0${i+1}</span><span>${s[0]}</span><span class="pm"></span></button><div class="b"><div><div class="bd"><img src="assets/img/${s[2]}.webp" alt="" loading="lazy"><p>${s[1]}</p>${i===3?'<a class="btn-outline w" href="contact.html#apply" style="width:max-content">강사 지원</a>':""}</div></div></div></div>`).join("");
+  UI.reveal(); UI.accordion();
 })();
 </script>
 </body></html>

@@ -4,45 +4,44 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>현장 사례 상세 — 더알림</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
-<style>
-.quote{padding:4rem 4.8rem;background:var(--g);border-radius:var(--r);font-size:2.6rem;font-weight:700;line-height:1.4;letter-spacing:-.05rem}.quote small{display:block;margin-top:1.6rem;font-size:1.5rem;font-weight:400;color:var(--s)}
-.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}.facts>div{padding:2.4rem;background:var(--g);border-radius:var(--r1)}.facts b{display:block;font-size:3.2rem;line-height:1}.facts span{display:block;margin-top:.8rem;font-size:1.4rem;color:var(--s)}
-.tl{display:grid;gap:0}.tl>div{display:grid;grid-template-columns:4rem 1fr;gap:1.6rem;padding:1.6rem 0;border-bottom:1px solid var(--d2);font-size:1.6rem}.tl>div b{font-size:1.4rem;color:var(--link)}
-@media (max-width:767px){.facts{grid-template-columns:1fr 1fr}.quote{font-size:2rem;padding:2.4rem}}
-</style>
+<style>.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}.facts>div{border-top:1px solid var(--g300);padding-top:1rem}.facts b{display:block;font-size:var(--fs-t40);line-height:1.2}.facts span{font-family:var(--serif);color:var(--g700);font-size:.9375rem}@media (max-width:800px){.facts{grid-template-columns:1fr 1fr}}
+.tl>div{display:grid;grid-template-columns:3rem 1fr;gap:1rem;padding:1rem 0;border-bottom:1px solid var(--g300)}.tl b{color:var(--primary)}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner max" id="main"></main>
+<main class="s-wrap" id="main"></main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const c = CASES.find(x=>x.id===qs("id")) || CASES[0];
+  const c = CASES.find(x=>x.id===qs("id")) || CASES[0]; const i = CASES.indexOf(c), prev = CASES[i-1], next = CASES[i+1];
   const l = DATA.lecturer(c.lec), p = DATA.program(c.prog);
   document.title = `${c.title} — 더알림 현장 사례`;
-  const same = CASES.filter(x=>x.cat===c.cat && x.id!==c.id).slice(0,3);
   const steps = [["접수", `${c.org} 담당자가 제안서 요청 폼으로 접수. ${c.people}명 · ${c.hours}시간 희망.`],["상담·커리큘럼", `담당 매니저가 전화로 교육 목적을 확인하고 「${p?p.name:c.title}」 강의계획서를 기관 상황에 맞게 조정.`],["강사 배정", `${l?l.name+" 강사":"담당 강사"}에게 제안 → 수락. ${p&&p.legal?"법정의무 인정자격 확인. ":""}${c.cat==="학교"?"경력조회 동의서 확인. ":""}수강생 명단은 열람 전용으로 공유.`],["진행", `${DATA.fmtDate(c.date)} 진행. 강사 체크인(도착·시작·종료) 3회 기록.`],["피드백", `교육 종료 후 담당자 평가와 수강생 설문을 따로 수집. 담당자 평가 ${c.sat}, ${c.repeat>1?`이후 ${c.repeat-1}회 재출강`:"재출강 의향 확인"}.`]];
   $("#main").innerHTML = `
-  <div class="view-top" style="padding-top:6rem"><div class="sub">${c.cat} · ${c.org}</div><h1 class="t">${H.esc(c.title)}</h1>
-    <div class="mt"><div class="share"><button type="button" aria-label="공유 — 링크 복사" id="share"><i>🔗</i></button><button type="button" aria-label="인쇄" onclick="print()"><i>⎙</i></button></div><div class="info"><span>${DATA.fmtDate(c.date)}</span><span>${c.people}명 · ${c.hours}시간</span><span>담당자 평가 ★ ${c.sat}</span></div></div></div>
-  <div class="view">
-    <div class="view-body">
-      <figure><img src="assets/img/${c.img}.webp" alt=""><figcaption>${c.org} 현장 — 사진은 데모용 생성 이미지이며 실제 기관과 무관합니다.</figcaption></figure>
-      <div class="quote">“${H.esc(c.quote)}”<small>— ${c.who} · 교육 후 피드백 폼에서 공개에 동의한 문장</small></div>
-      <div class="facts"><div><b>${c.people}</b><span>참여 인원</span></div><div><b>${c.hours}<em style="font-style:normal;font-size:1.8rem">h</em></b><span>교육 시간</span></div><div><b>${c.sat}</b><span>담당자 평가 (5점)</span></div><div><b>${c.repeat}</b><span>누적 출강 횟수</span></div></div>
-      <div><h2 class="t" style="font-size:2.6rem">진행 과정</h2><div class="tl lay-sm">${steps.map((s,i)=>`<div><b>0${i+1}</b><div><b style="color:var(--k);font-size:1.6rem">${s[0]}</b><div class="mt1" style="line-height:1.5">${s[1]}</div></div></div>`).join("")}</div></div>
-      ${p ? `<div><h2 class="t" style="font-size:2.6rem">사용한 프로그램</h2><div class="cards lay-sm">${H.progCard(p)}</div></div>` : ""}
-      <div class="notice small">기관명은 유형·지역까지만 표시합니다. 담당자 평가 원문과 연락처는 강사에게도 공개되지 않으며, 공개 동의는 피드백 폼에서 문장 단위로 받습니다.</div>
+  <div class="bc"><a href="index.html" aria-label="홈"><span class="home"></span></a><i></i><a href="cases.html">현장 사례</a><i></i><a href="cases.html?cat=${encodeURIComponent(c.cat)}">${c.cat}</a></div>
+  <article class="view" data-reveal-box style="margin-top:5rem">
+    <p class="bn" data-reveal="mask">현장 사례 · ${c.cat}</p>
+    <h1 class="t" data-reveal="mask">${H.esc(c.org)} · ${H.esc(c.title)}</h1>
+    <div class="meta" data-reveal=""><div class="l"><span class="date">${DATA.fmtDate(c.date)}</span><div class="chips"><span class="chip">#${c.cat}</span>${l?`<span class="chip">#${l.field}</span>`:""}<span class="chip">${c.people}명</span><span class="chip">${c.hours}시간</span></div></div><div class="r"><button class="btn-pill" type="button" id="share">링크 복사<span class="ic"><i></i><i></i></span></button></div></div>
+    <div class="body">
+      <img src="assets/img/${c.img}.webp" alt="" data-reveal="">
+      <blockquote data-reveal="">“${H.esc(c.quote)}”<br><span class="ft-c16s c-sub" style="font-family:var(--sans)">— ${c.who} · 교육 후 피드백 폼에서 공개에 동의한 문장</span></blockquote>
+      <div class="facts" data-reveal=""><div><b>${c.people}</b><span>참여 인원</span></div><div><b>${c.hours}h</b><span>교육 시간</span></div><div><b>${c.sat}</b><span>담당자 평가 (5점)</span></div><div><b>${c.repeat}</b><span>누적 출강 횟수</span></div></div>
+      <h3 data-reveal="">진행 과정</h3>
+      <div class="tl" data-reveal="">${steps.map((s,k)=>`<div><b>0${k+1}</b><div><b style="color:var(--ink)">${s[0]}</b><div>${s[1]}</div></div></div>`).join("")}</div>
+      ${p ? `<h3 data-reveal="">사용한 프로그램</h3><div class="g4" data-reveal="">${H.progCard(p)}</div>` : ""}
+      ${l ? `<h3 data-reveal="">담당 강사</h3><div class="g4" data-reveal="">${H.lecCard(l)}</div>` : ""}
+      <div class="notice" data-reveal="">기관명은 유형·지역까지만 표시합니다. 담당자 평가 원문과 연락처는 강사에게도 공개되지 않으며, 공개 동의는 피드백 폼에서 문장 단위로 받습니다.</div>
+      <div class="cta-wrap" data-reveal=""><a class="cta" href="request.html?type=${encodeURIComponent(c.cat==="공공"?"공공기관":c.cat)}${p?"&progs="+p.id:""}">이 구성으로 제안서 요청</a></div>
     </div>
-    <aside class="view-rail">
-      <div class="rail-card"><b>같은 교육을 받으려면</b><p class="mt2 small">${p?`「${H.esc(p.name)}」 ${p.hours}시간 · ${p.format.join("/")}`:c.title}<br>가용 강사 ${p?DATA.countLecturers({ field:({youth:"진로·취업",corp:"리더십",medical:"병원·의료",public:"소통·CS"})[p.center], legal:p.legal }):"—"}명</p><a class="cta cta-k" href="request.html?type=${encodeURIComponent(c.cat==="공공"?"공공기관":c.cat)}${p?"&progs="+p.id:""}">이 구성으로 제안서 요청</a></div>
-      ${l ? `<div class="rail"><h4>담당 강사</h4><a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.field} · ${l.region} · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a></div>` : ""}
-      <div class="rail"><h4>같은 유형의 사례</h4>${same.map(x=>`<a href="case.html?id=${x.id}"><div class="th"><img src="assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.title)}</div><div class="dt">${x.org} · ${DATA.fmtDate(x.date)} · ★ ${x.sat}</div></div></a>`).join("")}<a class="lm mt2" href="cases.html?cat=${encodeURIComponent(c.cat)}" style="border:0;padding-left:0">${c.cat} 사례 전체</a></div>
-    </aside>
-  </div>`;
+    <div class="prevnext" data-reveal="">${prev?`<a href="case.html?id=${prev.id}"><small>이전</small><span>${H.esc(prev.org)} · ${H.esc(prev.title)}</span></a>`:"<span></span>"}<a class="btn-outline" href="cases.html">목록으로</a>${next?`<a class="n" href="case.html?id=${next.id}"><small>다음</small><span>${H.esc(next.org)} · ${H.esc(next.title)}</span></a>`:"<span></span>"}</div>
+  </article>`;
   $("#share").addEventListener("click", () => { navigator.clipboard && navigator.clipboard.writeText(location.href).catch(()=>{}); toast("링크를 복사했습니다", "ok"); });
+  $$(".view .body .g4 [data-reveal]").forEach(e=>e.removeAttribute("data-reveal"));
+  UI.reveal();
 })();
 </script>
 </body></html>

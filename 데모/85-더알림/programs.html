@@ -5,67 +5,70 @@
 <title>프로그램 카탈로그 — 더알림</title>
 <meta name="description" content="청소년·기업·병원·공공 47개 교육 프로그램. 센터·대상·시간·형태로 거르고 제안서에 담으세요.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+.ftr{display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:2.5rem}.ftr .r{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+.flayer{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}.flayer.open{grid-template-rows:1fr}.flayer>div{overflow:hidden}.fgroups{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;padding:2rem 0;border-top:1px solid var(--g300)}.fgroup b{display:block;margin-bottom:.75rem}.fopts{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem}.fopts label{display:inline-flex;align-items:center;gap:.5rem;min-height:44px;cursor:pointer}.fopts input{accent-color:var(--primary);width:1.125rem;height:1.125rem}
+@media (max-width:800px){.fgroups{grid-template-columns:1fr}}
+.rcount{font-size:var(--fs-b18);font-weight:600}.rcount span{color:var(--primary)}
+</style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub2 kv-grad gray-1"><img src="assets/img/center-corp.webp" alt=""><div class="kv-text"><h1 class="kv-t">프로그램 카탈로그</h1><p class="kv-d">센터·대상·시간·형태로 거르면 조건에 맞는 프로그램과 지금 보낼 수 있는 강사 수가 함께 바뀝니다.</p></div></section>
+<main class="s-wrap">
+<div id="bc"></div>
+<div class="board-head" data-reveal-box><h1 class="t" data-reveal="mask">프로그램 카탈로그</h1><div class="search" data-reveal=""><input type="search" id="q" placeholder="프로그램명 · 주제로 검색"><button type="button" aria-label="검색"></button></div></div>
 
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">어떤 교육을 찾고 계신가요?</h2><p class="d">프로그램 47개 · 4개 센터. 마음에 드는 과정은 「담기」로 제안서에 넣어 두세요. 최대 6개까지.</p></div>
-  <div class="search lay-lg"><input type="search" id="q" placeholder="프로그램명 · 주제로 검색"><button class="go" type="button" aria-label="검색"></button></div>
-  <div class="kw" id="kw"></div>
-  <div class="fbar">
-    <div class="l"><button class="ftog" type="button" data-ftoggle="#flayer" aria-expanded="false">필터</button><span class="fcount"><span id="rCount">0</span> Results · 가용 강사 <span id="rLec">0</span>명</span></div>
-    <div class="r">
-      <div class="sel" id="selHours"><button type="button"><span>시간 전체</span></button><div class="sel-layer"><button data-v="" aria-selected="true">시간 전체</button><button data-v="1">1~2시간</button><button data-v="4">4시간</button><button data-v="8">8시간 이상</button></div></div>
-      <div class="sel" id="selSort"><button type="button"><span>기본순</span></button><div class="sel-layer"><button data-v="rel" aria-selected="true">기본순</button><button data-v="hours">짧은 순</button><button data-v="name">이름순</button></div></div>
-    </div>
-  </div>
-  <div class="flayer" id="flayer"><div><div class="fgroups">
-    <div class="fgroup"><b>센터</b><div class="fopts" id="fCenter"><label><input type="radio" name="center" value="" checked> 전체</label><label><input type="radio" name="center" value="youth"> 청소년</label><label><input type="radio" name="center" value="corp"> 기업</label><label><input type="radio" name="center" value="medical"> 병원</label><label><input type="radio" name="center" value="public"> 공공</label></div></div>
-    <div class="fgroup"><b>대상</b><div class="fopts" id="fTarget"><label><input type="radio" name="target" value="" checked> 전체</label></div></div>
-    <div class="fgroup"><b>형태 · 권역</b><div class="fopts"><label><input type="radio" name="format" value="" checked> 형태 전체</label><label><input type="radio" name="format" value="집체"> 집체</label><label><input type="radio" name="format" value="온라인"> 온라인</label><label><input type="checkbox" id="fLegal"> 법정의무교육만</label></div>
-      <div class="fopts mt2" id="fRegion"><label><input type="radio" name="region" value="" checked> 권역 전체</label></div></div>
-  </div></div></div>
-  <div class="cta-row lay-sm" id="samples"><button class="cta cta-o cta-dense" type="button" id="sample">예시 — 병원 · 4시간 · 집체</button><button class="cta cta-o cta-dense" type="button" id="sample2">예시 — 법정의무 · 온라인</button><button class="cta cta-dense" type="button" id="reset" style="border-color:var(--d)">초기화</button></div>
-  <div class="cards lay-lg" id="grid"></div>
-  <div class="empty" id="empty" hidden><b>조건에 맞는 프로그램이 없습니다</b><p>시간이나 형태 조건을 넓혀 보세요. 아래는 가장 가까운 과정입니다.</p><div class="cards mt4" id="near"></div></div>
-  <div class="cta-row c lay-lg" id="moreRow"><button class="vm" type="button" id="more">View more</button></div>
-</section>
+<div class="tagtabs" id="centerTabs" data-tagtabs><button class="tagtab" type="button" data-v="" aria-pressed="true">#전체</button><button class="tagtab" type="button" data-v="youth">#청소년 교육센터</button><button class="tagtab" type="button" data-v="corp">#기업 HRD</button><button class="tagtab" type="button" data-v="medical">#병원 메디컬</button><button class="tagtab" type="button" data-v="public">#공공기관</button><button class="tagtab" type="button" data-v="legal">#법정의무교육</button></div>
 
-<section class="max"><div class="qb" data-aos="fade-up"><img src="assets/img/book-print.webp" alt="" loading="lazy"><div class="qb-in"><h3>담아 둔 프로그램으로 제안서를 받아 보세요</h3><div class="who">담긴 과정은 제안서 요청 3단계에 자동으로 채워집니다.<small>강의계획서 · 강사 약력 · 견적서를 한 번에</small></div><div class="cta-row mt3"><a class="cta cta-w" href="request.html">제안서 요청 <span class="cart cart-badge" style="margin-left:.4rem;background:#000;color:#fff;display:inline-grid;place-items:center;min-width:2rem;height:2rem;border-radius:1rem;font-size:11px" hidden>0</span></a></div></div></div></section>
+<div class="ftr">
+  <div class="r"><span class="rcount"><span id="rCount">47</span>개 과정 · 가용 강사 <span id="rLec">1,294</span>명</span><button class="btn-pill" type="button" id="ftog" aria-expanded="false">상세 필터<span class="ic"><i></i><i></i></span></button><button class="btn-outline" type="button" id="sample">예시 — 병원 · 4시간 · 집체</button><button class="btn-outline" type="button" id="sample2">예시 — 법정의무 · 온라인</button></div>
+  <div class="r"><div class="sel-drop sm" id="selHours"><button type="button"><span>시간 전체</span></button><div class="list"><button data-v="" aria-selected="true">시간 전체</button><button data-v="1">1~2시간</button><button data-v="4">4시간</button><button data-v="8">8시간 이상</button></div></div><div class="sel-drop sm" id="selSort"><button type="button"><span>기본순</span></button><div class="list"><button data-v="rel" aria-selected="true">기본순</button><button data-v="hours">짧은 순</button><button data-v="name">이름순</button></div></div></div>
+</div>
+<div class="flayer" id="flayer"><div><div class="fgroups">
+  <div class="fgroup"><b>대상</b><div class="fopts" id="fTarget"><label><input type="radio" name="target" value="" checked> 전체</label></div></div>
+  <div class="fgroup"><b>형태</b><div class="fopts"><label><input type="radio" name="format" value="" checked> 전체</label><label><input type="radio" name="format" value="집체"> 집체</label><label><input type="radio" name="format" value="온라인"> 온라인</label></div></div>
+  <div class="fgroup"><b>권역 (가용 강사 수 계산)</b><div class="fopts" id="fRegion"><label><input type="radio" name="region" value="" checked> 전체</label></div><button class="btn-under" type="button" id="reset" style="margin-top:.5rem"><span class="ar prev"></span><span class="in">필터 초기화<span class="ar next"></span></span></button></div>
+</div></div></div>
+
+<div class="b-t-line" style="padding-top:2.5rem">
+  <div class="g4" id="grid"></div>
+  <div class="empty" id="empty" hidden><div><b>조건에 맞는 프로그램이 없습니다</b><p>시간이나 형태 조건을 넓혀 보세요. 아래는 가장 가까운 과정입니다.</p></div></div>
+  <div class="g4 mt40" id="near" hidden></div>
+  <div class="cta-wrap" id="moreRow"><button class="btn-pill" type="button" id="more">더 보기<span class="ic"><i></i><i></i></span></button></div>
+</div>
+
+<section class="sec note-box" style="grid-template-columns:1fr auto"><div><div class="nt">담아 둔 프로그램은 제안서 요청 3단계에 자동으로 들어갑니다</div><ul><li>최대 6개 · 강의계획서·강사 약력·견적서를 한 번에 받습니다</li><li>법정의무·2시간 이하 과정은 고용보험 환급 대상이 아니라 미리 표시합니다</li></ul></div><a class="cta" href="request.html">제안서 요청 <span class="cart-badge" hidden style="margin-left:.5rem;background:#fff;color:var(--primary);min-width:1.25rem;height:1.25rem;border-radius:10px;display:inline-grid;place-items:center;font-size:.75rem;padding:0 .25rem">0</span></a></section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  const st = { center:"", target:"", hours:"", format:"", region:"", legal:false, sort:"rel", q:"", limit:9 };
+  const st = { center:"", target:"", hours:"", format:"", region:"", legal:false, sort:"rel", q:"", limit:12 };
   const fieldOf = c => ({youth:"진로·취업",corp:"리더십",medical:"병원·의료",public:"소통·CS"})[c];
   $("#fTarget").insertAdjacentHTML("beforeend", Object.entries(TARGET_LABEL).map(([v,l])=>`<label><input type="radio" name="target" value="${v}"> ${l}</label>`).join(""));
   $("#fRegion").insertAdjacentHTML("beforeend", REGIONS.map(r=>`<label><input type="radio" name="region" value="${r}"> ${r}</label>`).join(""));
-  $("#kw").innerHTML = ["법정의무","환자경험평가","ChatGPT","리더십","모의면접"].map(k=>`<button class="tag lg" type="button" data-kw="${k}">${k}</button>`).join("");
-  $("#kw").addEventListener("click", e => { const b = e.target.closest("[data-kw]"); if (!b) return; st.q = b.dataset.kw; $("#q").value = st.q; render(); });
-  $("#q").addEventListener("input", e => { st.q = e.target.value.trim(); render(); });
-  $("#flayer").addEventListener("change", e => { const t = e.target; if (t.name) st[t.name] = t.value; if (t.id==="fLegal") st.legal = t.checked; st.limit = 9; render(); });
+  $("#q").addEventListener("input", e => { st.q = e.target.value.trim(); st.limit = 12; render(); });
+  $("#centerTabs").addEventListener("change", e => { const v = e.detail; st.legal = v === "legal"; st.center = v === "legal" ? "" : v; st.limit = 12; render(); });
+  $("#ftog").addEventListener("click", () => { const o = $("#flayer").classList.toggle("open"); $("#ftog").setAttribute("aria-expanded", o); });
+  $("#flayer").addEventListener("change", e => { const t = e.target; if (t.name) st[t.name] = t.value; st.limit = 12; render(); });
   $("#selHours").addEventListener("change", e => { st.hours = e.detail; render(); }); $("#selSort").addEventListener("change", e => { st.sort = e.detail; render(); });
-  const sync = () => { ["center","target","format","region"].forEach(k => { const el = document.querySelector(`[name=${k}][value="${st[k]}"]`); if (el) el.checked = true; }); $("#fLegal").checked = st.legal; };
-  $("#reset").addEventListener("click", () => { Object.assign(st, { center:"", target:"", hours:"", format:"", region:"", legal:false, q:"", limit:9 }); $("#q").value=""; sync(); render(); toast("필터를 초기화했습니다"); });
-  $("#sample").addEventListener("click", () => { Object.assign(st, { center:"medical", target:"", hours:"4", format:"집체", region:"", legal:false, q:"" }); sync(); $("#selHours span").textContent = "4시간"; render(); toast("예시 조건을 적용했습니다", "ok"); });
-  $("#sample2").addEventListener("click", () => { Object.assign(st, { center:"", target:"", hours:"", format:"온라인", region:"", legal:true, q:"" }); sync(); $("#selHours span").textContent = "시간 전체"; render(); toast("법정의무 · 온라인 과정만 보여 드립니다", "ok"); });
-  const match = p => (!st.center || p.center===st.center) && (!st.target || p.targets.includes(st.target)) && (!st.format || p.format.includes(st.format)) && (!st.legal || p.legal)
-      && (!st.hours || (st.hours==="1" ? p.hours<=2 : st.hours==="4" ? p.hours===4 : p.hours>=8)) && (!st.q || (p.name+" "+(p.summary||"")+" "+p.tags.join(" ")).toLowerCase().includes(st.q.toLowerCase()));
+  const syncTabs = () => $$("#centerTabs .tagtab").forEach(b => b.setAttribute("aria-pressed", st.legal ? b.dataset.v === "legal" : b.dataset.v === st.center));
+  const sync = () => { ["target","format","region"].forEach(k => { const el = document.querySelector(`[name=${k}][value="${st[k]}"]`); if (el) el.checked = true; }); syncTabs(); };
+  $("#reset").addEventListener("click", () => { Object.assign(st, { center:"", target:"", hours:"", format:"", region:"", legal:false, q:"", limit:12 }); $("#q").value = ""; $("#selHours > button span").textContent = "시간 전체"; sync(); render(); toast("필터를 초기화했습니다"); });
+  $("#sample").addEventListener("click", () => { Object.assign(st, { center:"medical", target:"", hours:"4", format:"집체", region:"", legal:false, q:"", limit:12 }); sync(); $("#selHours > button span").textContent = "4시간"; render(); toast("예시 조건을 적용했습니다 — 병원 · 4시간 · 집체", "ok"); });
+  $("#sample2").addEventListener("click", () => { Object.assign(st, { center:"", target:"", hours:"", format:"온라인", region:"", legal:true, q:"", limit:12 }); sync(); $("#selHours > button span").textContent = "시간 전체"; render(); toast("법정의무 · 온라인 과정만 보여 드립니다", "ok"); });
+  const match = p => (!st.center || p.center===st.center) && (!st.target || p.targets.includes(st.target)) && (!st.format || p.format.includes(st.format)) && (!st.legal || p.legal) && (!st.hours || (st.hours==="1" ? p.hours<=2 : st.hours==="4" ? p.hours===4 : p.hours>=8)) && (!st.q || (p.name+" "+(p.summary||"")+" "+p.tags.join(" ")).toLowerCase().includes(st.q.toLowerCase()));
   function render(){
-    let list = PROGRAMS.filter(match);
-    if (st.sort==="hours") list = [...list].sort((a,b)=>a.hours-b.hours); if (st.sort==="name") list = [...list].sort((a,b)=>a.name.localeCompare(b.name,"ko"));
+    let list = PROGRAMS.filter(match); if (st.sort==="hours") list = [...list].sort((a,b)=>a.hours-b.hours); if (st.sort==="name") list = [...list].sort((a,b)=>a.name.localeCompare(b.name,"ko"));
     $("#rCount").textContent = list.length; $("#rLec").textContent = DATA.countLecturers({ field: st.center ? fieldOf(st.center) : "", region: st.region, target: st.target, legal: st.legal, online: st.format==="온라인" }).toLocaleString();
-    $("#grid").innerHTML = list.slice(0, st.limit).map(H.progCard).join("");
-    $("#empty").hidden = list.length>0; $("#moreRow").hidden = list.length <= st.limit;
-    if (!list.length) $("#near").innerHTML = PROGRAMS.filter(p => (!st.center || p.center===st.center)).slice(0,3).map(H.progCard).join("");
+    $("#grid").innerHTML = list.slice(0, st.limit).map(H.progCard).join(""); $("#grid").querySelectorAll("[data-reveal]").forEach(e => e.classList.add("is-reveal"));
+    $("#empty").hidden = list.length>0; $("#near").hidden = list.length>0; $("#moreRow").hidden = list.length <= st.limit;
+    if (!list.length) { $("#near").innerHTML = PROGRAMS.filter(p => (!st.center || p.center===st.center)).slice(0,4).map(H.progCard).join(""); $("#near").querySelectorAll("[data-reveal]").forEach(e => e.classList.add("is-reveal")); }
     history.replaceState(null, "", "?" + new URLSearchParams(Object.fromEntries(Object.entries(st).filter(([k,v])=>v && !["sort","limit"].includes(k)))).toString());
   }
-  $("#more").addEventListener("click", () => { st.limit += 9; render(); });
+  $("#more").addEventListener("click", () => { st.limit += 12; render(); });
   const q = new URLSearchParams(location.search); ["center","target","hours","format","region","q"].forEach(k => { if (q.get(k)) st[k] = q.get(k); }); if (q.get("legal")) st.legal = true; if (st.q) $("#q").value = st.q; sync(); render();
 })();
 </script>

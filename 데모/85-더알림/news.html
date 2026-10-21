@@ -5,47 +5,41 @@
 <title>언론보도·수상·공지 — 더알림</title>
 <meta name="description" content="수상은 주최·연도·부문을 함께 적습니다. 보도는 매체명과 날짜로.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&display=swap">
 <link rel="stylesheet" href="assets/css/style.css">
-<style>
-.awards{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4rem}
-.award{padding:3.2rem;background:var(--g);border-radius:var(--r);display:flex;flex-direction:column;gap:1rem;min-height:22rem;transition:background-color var(--t3) ease,color var(--t3) ease}
-.award:hover{background:var(--k);color:var(--w)}
-.award .y{font-size:1.4rem;font-weight:700;color:var(--link)}.award:hover .y{color:rgba(255,255,255,.7)}
-.award b{font-size:2.2rem;line-height:1.3}.award span{margin-top:auto;font-size:1.4rem;color:var(--s)}.award:hover span{color:rgba(255,255,255,.7)}
-@media (max-width:1023px){.awards{grid-template-columns:1fr 1fr}}@media (max-width:767px){.awards{grid-template-columns:1fr}}
-</style>
+<style>.ahead{display:flex;justify-content:space-between;align-items:flex-end;gap:1.5rem;flex-wrap:wrap;padding-bottom:1.5rem;border-bottom:3px solid var(--ink);margin-bottom:0}.ahead .tabs{display:flex;gap:2.5rem}.ahead .tabs button{position:relative;font-size:var(--fs-t32);font-weight:600;color:var(--g600);padding-bottom:.5rem;min-height:44px;transition:color .2s}.ahead .tabs button::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:3px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform .3s}.ahead .tabs button.on{color:var(--ink)}.ahead .tabs button.on::after{transform:scaleX(1)}</style>
 </head>
 <body>
 <div id="hd"></div>
-<main class="inner">
-<section class="kv sub2 kv-grad black-1"><img src="assets/img/about-office.webp" alt=""><div class="kv-text"><h1 class="kv-t">언론보도 · 수상 · 공지</h1><p class="kv-d">수상은 주최·연도·부문을 함께 적습니다. "1위"나 "대상"은 그 범위 안에서만 사실이기 때문입니다. 보도는 매체명과 날짜로 둡니다.</p></div></section>
+<main class="s-wrap">
+<div id="bc"></div>
+<div class="board-head" data-reveal-box><div><h1 class="t" data-reveal="mask">언론보도 · 수상 · 공지</h1><p class="ft-t24s c-sub mt16" data-reveal="">수상은 주최·연도·부문을 함께 적습니다. "1위"나 "대상"은 그 범위 안에서만 사실이기 때문입니다.</p></div><div class="search" data-reveal=""><input type="search" id="q" placeholder="매체 · 제목으로 검색"><button type="button" aria-label="검색"></button></div></div>
 
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">수상 · 인정</h2><p class="d">주최와 범위를 뺀 "대상 수상"은 표시광고법상 실증 대상이 됩니다. 아래는 범위를 붙여 적은 네 건입니다.</p></div>
-  <div class="awards lay-lg" id="awards" data-aos="fade-up"></div>
-</section>
+<div class="tagtabs" id="ftype" data-tagtabs><button class="tagtab" type="button" data-v="" aria-pressed="true">#전체</button><button class="tagtab" type="button" data-v="MOU">#협약</button><button class="tagtab" type="button" data-v="수상">#수상</button><button class="tagtab" type="button" data-v="인터뷰">#인터뷰</button></div>
 
-<section class="gray"><div class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">보도 · 협약 <span class="sub" style="font-size:2rem;font-weight:400" id="pn"></span></h2></div>
-  <div class="tabs lay-lg" role="tablist" id="ftype"><button role="tab" data-v="" aria-selected="true">전체</button><button role="tab" data-v="MOU">협약</button><button role="tab" data-v="수상">수상</button><button role="tab" data-v="인터뷰">인터뷰</button></div>
-  <div class="rows lay-lg" id="list" style="border-top-color:var(--d)"></div>
-</div></section>
+<div class="ahead" data-reveal-box><div class="tabs" data-reveal=""><button type="button" class="on" id="tabPress">보도 · 협약 <span class="ft-c16s c-sub" id="pn"></span></button><button type="button" id="tabNotice">공지사항</button></div></div>
+<div id="press"></div>
+<div id="notice" hidden class="list"></div>
 
-<section class="max">
-  <div class="tw" data-aos="fade-up"><h2 class="t">공지사항</h2><p class="d">관리자에서 등록합니다. 비어 있으면 이 섹션은 숨겨집니다.</p></div>
-  <div class="rows lay-lg" id="notice"></div>
+<section class="sec" data-reveal-box>
+  <div class="row-between b-b-line" style="padding-bottom:1.5rem;margin-bottom:2.5rem"><div><h2 class="h40" data-reveal="mask">수상 · 인정</h2><p class="ft-t24s c-sub" data-reveal="">주최와 범위를 뺀 "대상 수상"은 표시광고법상 실증 대상이 됩니다.</p></div></div>
+  <div class="g4" id="awards" data-reveal=""></div>
 </section>
 </main>
 <div id="ft"></div>
 <script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
 <script>
 (function(){
-  $("#awards").innerHTML = AWARDS.map(a=>`<div class="award"><span class="y">${a.year}</span><b>${a.title}</b><span>${a.by}</span></div>`).join("");
-  let t = ""; const render = () => { const L = NEWS.filter(n=>!t||n.type===t); $("#pn").textContent = `${L.length}건`; let y = ""; $("#list").innerHTML = L.map(n => { const yy = n.date.slice(0,4), show = yy!==y; y = yy; return `<div class="row" style="background:transparent"><span class="y">${show?yy:""}</span><div><span class="m">${n.media} · ${n.type}</span><div class="ct mt1">${n.title}</div></div><span class="dt">${n.date.slice(5).replace("-",".")}</span></div>`; }).join(""); };
-  $("#ftype").addEventListener("click", e => { const b = e.target.closest("[role=tab]"); if (!b) return; t = b.dataset.v; $$("#ftype [role=tab]").forEach(c=>c.setAttribute("aria-selected", c===b)); render(); });
-  const NOTICE = [["2026-10-18","11월 아카데미 명사초청강연 2회 일정 공개 — 잔여석은 아카데미 페이지에서 실시간 확인"],["2026-10-02","환자경험평가 6차 대상 확대에 따른 병원 메디컬센터 과정 16종 강의계획서 공개"],["2026-09-15","강사전용 공용 입장 암호 폐지 · 개인 계정 전환 안내 (구 사이트 종료 예정)"]];
-  $("#notice").innerHTML = NOTICE.map(n=>`<div class="row"><span class="y">${n[0].slice(0,4)}</span><div><span class="m">공지</span><div class="ct mt1">${n[1]}</div></div><span class="dt">${n[0].slice(5).replace("-",".")}</span></div>`).join("");
-  render();
+  let t = "", q = "";
+  const IMG = ["about-office","case-corp","case-public","academy-hall","book-print","vod-studio"];
+  $("#awards").innerHTML = AWARDS.map((a,i)=>`<div class="disc-card"><span class="date">${a.year}</span><div class="tt">${a.title}</div><div class="ft">${H.under("#","근거 보기").replace('href="#"','href="#" onclick="return false"')}<div class="ft-c14 c-sub mt8">${a.by}</div></div></div>`).join("");
+  const render = () => { const L = NEWS.filter(n=>(!t||n.type===t) && (!q || (n.media+n.title).includes(q))); $("#pn").textContent = `${L.length}건`; $("#press").innerHTML = L.map((n,i) => `<a class="press-row" href="#" onclick="return false"><div class="th"><img src="assets/img/${IMG[i%IMG.length]}.webp" alt="" loading="lazy"></div><div><div class="chips"><span class="chip fill">${n.type}</span></div><div class="tt mt8">${H.esc(n.title)}</div><div class="meta">${n.media} · ${n.date.replace(/-/g,".")}</div></div></a>`).join("") || `<div class="empty"><div><b>해당 보도가 없습니다</b></div></div>`; };
+  $("#ftype").addEventListener("change", e => { t = e.detail; render(); }); $("#q").addEventListener("input", e => { q = e.target.value.trim(); render(); });
+  const NOTICE = [["2026-10-18","11월 아카데미 명사초청강연 2회 일정 공개 — 잔여석은 아카데미 페이지에서 실시간 확인",true],["2026-10-02","환자경험평가 6차 대상 확대에 따른 병원 메디컬센터 과정 16종 강의계획서 공개",true],["2026-09-15","강사전용 공용 입장 암호 폐지 · 개인 계정 전환 안내 (구 사이트 종료 예정)",false],["2026-09-01","2026 하반기 법정의무교육 4과목 통합 운영 일정 안내",false]];
+  $("#notice").innerHTML = NOTICE.map(n=>`<a class="list-row" href="#" onclick="return false"><div class="tt">${n[2]?'<span class="badge">공지</span>':""}<span>${n[1]}</span></div><div class="dt">${n[0].replace(/-/g,".")}</div></a>`).join("");
+  $("#tabPress").addEventListener("click", () => { $("#tabPress").classList.add("on"); $("#tabNotice").classList.remove("on"); $("#press").hidden = false; $("#notice").hidden = true; $("#ftype").hidden = false; });
+  $("#tabNotice").addEventListener("click", () => { $("#tabNotice").classList.add("on"); $("#tabPress").classList.remove("on"); $("#press").hidden = true; $("#notice").hidden = false; $("#ftype").hidden = true; });
+  render(); UI.reveal(); UI.selects();
 })();
 </script>
 </body></html>
