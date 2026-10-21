@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[v1] 빠른 상담 · 제휴 · 강사 지원 — 더알림</title>
+<meta name="description" content="빠른 상담은 15초. 담당 매니저가 먼저 전화드립니다. 제휴와 강사 지원도 여기서.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.contact{display:flex;gap:6rem;align-items:flex-start}.contact>div:first-child{flex:1;min-width:0}
+.cform{background:var(--g);border-radius:var(--r);padding:4rem}
+.cform h2{font-size:2.6rem;letter-spacing:-.05rem;margin-bottom:2.4rem}
+.err{font-size:1.3rem;color:var(--bad)} .hint{font-weight:400;color:var(--s)}
+.info .rail-card{display:grid;gap:.4rem}.info .rail-card b{font-size:1.4rem;color:var(--s)}.info .big{font-size:2.6rem;font-weight:700}
+@media (max-width:1023px){.contact{flex-direction:column;align-items:stretch}.contact .view-rail{width:100%;position:static}.cform{padding:2.4rem}.fgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main class="inner">
+<section class="kv sub2 kv-grad gray-2"><img src="../assets/img/center-public.webp" alt=""><div class="kv-text"><h1 class="kv-t">문의</h1><p class="kv-d">빠른 상담은 15초면 됩니다. 담당 매니저가 먼저 전화드립니다. 제휴와 강사 지원도 여기서 받습니다.</p></div></section>
+
+<section class="max">
+  <div class="tabs" role="tablist" data-tabs="0" id="ctabs"><button role="tab" aria-selected="true">빠른 상담 · 15초</button><button role="tab">콘텐츠·광고 제휴</button><button role="tab">강사 지원</button><div role="tabpanel" hidden></div><div role="tabpanel" hidden></div><div role="tabpanel" hidden></div></div>
+  <div class="contact lay-lg">
+  <div>
+    <div class="cform" id="panel1">
+      <h2>빠른 상담</h2>
+      <form id="quick" novalidate>
+        <div class="fgrid">
+          <div class="field"><label>기관 유형 <i>*</i></label><select class="inp" name="type"><option value="">선택</option><option>학교</option><option>기업</option><option>병원</option><option>공공기관</option><option>개인(자격·컨설팅)</option></select><span class="err" hidden>기관 유형을 골라 주세요</span></div>
+          <div class="field"><label>이름 <i>*</i></label><input class="inp" name="name" placeholder="이름"><span class="err" hidden>이름을 입력해 주세요</span></div>
+          <div class="field"><label>연락처 <i>*</i></label><input class="inp" name="phone" inputmode="tel" placeholder="010-0000-0000"><span class="err" hidden>연락처 형식을 확인해 주세요</span></div>
+          <div class="field"><label>통화 가능 시간</label><select class="inp" name="when"><option>아무 때나</option><option>오전 (10–12시)</option><option>오후 (13–18시)</option><option>저녁 (18–20시)</option></select></div>
+        </div>
+        <label class="chk mt3"><input type="checkbox" name="agree"> 상담 목적의 개인정보 수집·이용에 동의합니다 (보유 1년) <i style="color:var(--bad);font-style:normal">*</i></label>
+        <div class="cta-row mt3"><button class="cta cta-k" type="submit">상담 신청</button><button class="cta cta-o cta-dense" type="button" id="q-sample">예시로 채우기</button></div>
+      </form>
+      <div class="notice ok mt3" id="quickOk" hidden><div><b>접수되었습니다 — 접수번호 <span id="qNo"></span></b><br>담당 매니저가 <span id="qWhen"></span>에 전화드립니다. 바쁘시면 0507-1322-2916으로 먼저 주셔도 됩니다.</div></div>
+    </div>
+    <div class="cform" id="panel2" hidden>
+      <h2>콘텐츠 · 광고 제휴</h2>
+      <form id="partner" novalidate>
+        <div class="fgrid">
+          <div class="field"><label>제휴 유형</label><select class="inp" name="kind"><option>교재·VOD 공동 제작</option><option>광고·콘텐츠 제휴</option><option>협회 공동 과정</option><option>기관 MOU</option></select></div>
+          <div class="field"><label>회사·기관명 <i>*</i></label><input class="inp" name="org" placeholder="회사명"><span class="err" hidden>회사·기관명을 입력해 주세요</span></div>
+          <div class="field"><label>담당자 <i>*</i></label><input class="inp" name="name" placeholder="이름 · 직함"><span class="err" hidden>담당자를 입력해 주세요</span></div>
+          <div class="field"><label>이메일 <i>*</i></label><input class="inp" name="email" type="email" placeholder="email@company.com"><span class="err" hidden>이메일을 입력해 주세요</span></div>
+        </div>
+        <div class="field mt3"><label>제안 내용</label><textarea class="inp" name="memo" placeholder="제휴 목적과 범위를 간단히"></textarea></div>
+        <label class="chk mt3"><input type="checkbox" name="agree"> 개인정보 수집·이용 동의 (보유 1년)</label>
+        <div class="cta-row mt3"><button class="cta cta-k" type="submit">제휴 제안 보내기</button></div>
+      </form>
+      <div class="notice ok mt3" id="partnerOk" hidden><div><b>제안이 접수되었습니다</b><br>검토 후 5영업일 내 이메일로 회신합니다.</div></div>
+    </div>
+    <div class="cform" id="panel3" hidden>
+      <h2>강사 지원</h2>
+      <div class="notice blue mb3" style="margin-bottom:2.4rem">강사 등록은 심사제입니다. 지원서 검토 → 샘플 강의 영상 확인 → 초대코드 발송 → 강사전용 가입 순으로 진행되며, 청소년 출강을 원하면 경력조회 동의서를 함께 받습니다. 자격 과정 수료가 등록을 보장하지는 않습니다.</div>
+      <form id="apply" novalidate>
+        <div class="fgrid">
+          <div class="field"><label>이름 <i>*</i></label><input class="inp" name="name" placeholder="이름"><span class="err" hidden>이름을 입력해 주세요</span></div>
+          <div class="field"><label>연락처 <i>*</i></label><input class="inp" name="phone" inputmode="tel" placeholder="010-0000-0000"><span class="err" hidden>연락처 형식을 확인해 주세요</span></div>
+          <div class="field"><label>주 분야 <i>*</i></label><select class="inp" name="field"><option value="">선택</option></select><span class="err" hidden>주 분야를 골라 주세요</span></div>
+          <div class="field"><label>활동 권역</label><select class="inp" name="region"></select></div>
+          <div class="field"><label>강의 경력 (년)</label><input class="inp" name="exp" type="number" min="0" max="40" placeholder="예) 7"></div>
+          <div class="field"><label>샘플 강의 영상 링크</label><input class="inp" name="video" placeholder="YouTube · Vimeo 등"></div>
+        </div>
+        <div class="field mt3"><label>보유 인정자격 <span class="hint">법정의무교육 출강에 필요한 수료·자격이 있으면 적어 주세요</span></label><input class="inp" name="cert" placeholder="예) 장애인 인식개선 전문강사 수료 (2024)"></div>
+        <label class="chk mt3"><input type="checkbox" name="youth"> 청소년·학교 출강을 희망합니다 (경력조회 동의서 제출에 동의)</label>
+        <label class="chk mt1"><input type="checkbox" name="agree"> 개인정보 수집·이용 동의 (심사 종료 후 1년 보관)</label>
+        <div class="cta-row mt3"><button class="cta cta-k" type="submit">지원서 제출</button><button class="cta cta-o cta-dense" type="button" id="a-sample">예시로 채우기</button></div>
+      </form>
+      <div class="notice ok mt3" id="applyOk" hidden><div><b>지원서가 접수되었습니다</b><br>검토 후 7영업일 내 결과를 문자로 안내합니다. 통과 시 초대코드로 <a class="u" href="lecturer-portal.html" style="min-height:0;padding:0">강사전용</a>에 가입할 수 있습니다.</div></div>
+    </div>
+  </div>
+  <aside class="view-rail info">
+    <div class="rail-card"><b>대표 전화</b><span class="big">0507-1322-2916</span><span class="small sub">월–일 10:00–20:00</span></div>
+    <div class="rail-card"><b>이메일</b><span>thealrim7@gmail.com</span></div>
+    <div class="rail-card"><b>카카오톡 채널</b><span>더알림 교육 상담</span><span class="small sub">평일 10:00–18:00 응답</span></div>
+    <div class="rail-card"><b>거점</b><span>강남본사 · 서울 강남구 도곡로 123 대경빌딩 2층</span><span class="small sub">경기화성 교육장 · 경북구미 사무소</span></div>
+    <div class="rail-card"><b>품의가 급하신가요</b><span>제안서 요청(3~5분)을 쓰시면 강의계획서·견적서·강사 약력이 한 번에 갑니다.</span><a class="cta cta-k cta-dense" href="request.html" style="justify-self:start">제안서 요청</a></div>
+  </aside>
+  </div>
+</section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  $("#ctabs").addEventListener("tabchange", e => { [1,2,3].forEach(i => $("#panel"+i).hidden = e.detail !== i-1); });
+  $("#apply").field.insertAdjacentHTML("beforeend", FIELDS.map(f=>`<option>${f}</option>`).join("")); $("#apply").region.insertAdjacentHTML("beforeend", REGIONS.map(r=>`<option>${r}</option>`).join(""));
+  const check = (form, names) => { let ok = true; names.forEach(n => { const el = form[n], err = el.parentElement.querySelector(".err"); const bad = !el.value.trim() || (n==="phone" && !/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(el.value.trim())); el.setAttribute("aria-invalid", bad); if (err) err.hidden = !bad; if (bad) ok = false; }); if (form.agree && !form.agree.checked) { ok = false; toast("개인정보 동의가 필요합니다", "warn"); } return ok; };
+  $("#quick").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["type","name","phone"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } const no = "QC-" + Date.now().toString().slice(-6); $("#qNo").textContent = no; $("#qWhen").textContent = f.when.value==="아무 때나" ? "오늘 중" : f.when.value; $("#quickOk").hidden = false; f.querySelector("button[type=submit]").disabled = true; toast("상담 신청이 접수되었습니다", "ok"); try { const arr = JSON.parse(localStorage.getItem("alrim.quick")||"[]"); arr.unshift({ no, type:f.type.value, name:f.name.value, when:f.when.value, at:new Date().toISOString() }); localStorage.setItem("alrim.quick", JSON.stringify(arr)); } catch {} });
+  $("#q-sample").addEventListener("click", () => { const f = $("#quick"); f.type.value = "병원"; f.name.value = "김담당"; f.phone.value = "010-1234-5678"; f.when.value = "오후 (13–18시)"; f.agree.checked = true; toast("예시로 채웠습니다 — 상담 신청을 눌러 보세요", "ok"); });
+  $("#partner").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["org","name","email"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } $("#partnerOk").hidden = false; toast("제휴 제안이 접수되었습니다", "ok"); });
+  $("#apply").addEventListener("submit", e => { e.preventDefault(); const f = e.target; if (!check(f, ["name","phone","field"])) { toast("필수 항목을 확인해 주세요", "warn"); return; } $("#applyOk").hidden = false; toast("지원서가 접수되었습니다", "ok"); });
+  $("#a-sample").addEventListener("click", () => { const f = $("#apply"); f.name.value = "이강사"; f.phone.value = "010-9876-5432"; f.field.value = "소통·CS"; f.region.value = "영남"; f.exp.value = 7; f.video.value = "https://youtu.be/sample"; f.cert.value = "장애인 인식개선 전문강사 수료 (2024)"; f.youth.checked = true; f.agree.checked = true; toast("예시로 채웠습니다", "ok"); });
+  if (location.hash === "#apply") { $$("#ctabs [role=tab]")[2].click(); }
+})();
+</script>
+</body></html>

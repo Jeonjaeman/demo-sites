@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[v1] 관리자 — 더알림 운영 시스템</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%276%27 fill=%27%23000%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2716%27 font-family=%27sans-serif%27 font-weight=%27700%27 fill=%27%23fff%27 text-anchor=%27middle%27%3E알%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <a class="logo" href="index.html">더알림 <small style="color:rgba(255,255,255,.5)">ADMIN</small></a>
+    <div class="who"><b>박매니저</b><span>운영팀 · 기업·병원 담당</span><span>매니저 권한 · 마지막 접속 오늘 09:12</span></div>
+    <nav id="nav">
+      <button data-v="dash" aria-current="page">대시보드</button>
+      <div class="grp">운영</div>
+      <button data-v="inbox">접수함 <span class="cnt" id="cInbox">0</span></button>
+      <button data-v="edu">교육 건 · 매칭</button>
+      <button data-v="today">오늘의 출강</button>
+      <button data-v="feedback">피드백 수집</button>
+      <div class="grp">사람</div>
+      <button data-v="lec">강사 관리 <span class="cnt">118</span></button>
+      <div class="grp">콘텐츠</div>
+      <button data-v="content">프로그램 · 파트너 관리</button>
+      <button data-v="certs">자격 관리</button>
+      <button data-v="copy">광고 문구 검사기</button>
+      <button data-v="company">회사 정보 (단일 원본)</button>
+      <div class="grp">점검</div>
+      <button data-v="review">검토 항목</button>
+      <button data-v="migrate">사이트 통합 · 이관</button>
+    </nav>
+    <div class="bottom">데모 · 모든 데이터는 가상<br><a href="lecturer-portal.html">강사전용 보기</a> · <a href="index.html">공개 사이트</a></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><div><h1 id="vTitle">대시보드</h1><div class="sub" id="vSub">2026년 10월 20일 (화) · 이번 주 출강 7건</div></div><div class="row"><button class="btn btn-ghost btn-sm app-burger" type="button" id="burger">메뉴</button><a class="btn btn-primary btn-sm" href="request.html" target="_blank">공개 폼으로 접수 테스트</a></div></div>
+
+    <!-- 대시보드 -->
+    <section class="view on" data-v="dash">
+      <div class="kpis" id="kpis"></div>
+      <div class="two">
+        <div class="card"><h2>월별 교육 건 · 매출 <small>2026 · 단위 만원</small></h2><canvas class="chart" id="chart1"></canvas></div>
+        <div class="card"><h2>센터별 비중 <small>진행·완료 기준</small></h2><canvas class="chart" id="chart2"></canvas><div id="legend2" class="row small mt2"></div></div>
+      </div>
+      <div class="two">
+        <div class="card"><h2>신규 접수 <small>최근 7일</small></h2><div id="dashInbox"></div></div>
+        <div class="card"><h2>경과 경고 <small>회신 기한 초과</small></h2><div id="dashLate"></div></div>
+      </div>
+    </section>
+
+    <!-- 접수함 -->
+    <section class="view" data-v="inbox">
+      <div class="row between mb3"><div class="seg" id="inboxMode"><button aria-pressed="true" data-m="kanban">칸반</button><button aria-pressed="false" data-m="table">표</button></div><div class="row"><select class="sel" id="fMgr"><option value="">담당 전체</option><option>박매니저</option><option>최매니저</option><option value="-">미배정</option></select><select class="sel" id="fType"><option value="">기관 전체</option><option>학교</option><option>기업</option><option>병원</option><option>공공</option></select></div></div>
+      <div class="notice small mb3"><span>ⓘ</span><div>공개 사이트 제안서 요청·빠른 상담·강사매칭 폼·전화 접수가 <b>한 접수함</b>으로 들어옵니다. 출처 배지와 중복 병합이 붙습니다. 카드를 누르면 상세·상태 변경·매니저 배정.</div></div>
+      <div id="kanban" class="kanban"></div>
+      <div id="inboxTbl" class="tbl-wrap" hidden></div>
+    </section>
+
+    <!-- 교육 건 · 매칭 -->
+    <section class="view" data-v="edu">
+      <div class="card"><h2>강사 매칭 <small>조건 불충족 강사는 선택이 막히고 사유가 보입니다</small></h2>
+        <div class="form-grid">
+          <div class="field"><label>교육 건</label><select class="sel" id="mInq" style="width:100%"></select></div>
+          <div class="field"><label>권역 · 날짜</label><div id="mMeta" class="small muted" style="padding-top:12px">—</div></div>
+        </div>
+        <div class="row mt3"><label class="toggle"><input type="checkbox" id="mOnline"> 온라인 가능만</label><label class="toggle"><input type="checkbox" id="mWeekend"> 주말 가능만</label><label class="toggle"><input type="checkbox" id="mRegionOnly" checked> 같은 권역만</label><span class="small muted" id="mCount"></span></div>
+        <div id="mList" class="mt3"></div>
+      </div>
+      <div class="card"><h2>배정·알림 로그</h2><div class="log" id="mLog"><div><span class="t">09:12</span><span>RQ-2610-041 한서연 강사 배정 · 문자 발송 · 수락 대기</span></div><div><span class="t">09:03</span><span>RQ-2610-040 정시우 강사 수락 · 경력조회 동의서 확인됨</span></div><div><span class="t">08:41</span><span>OP-118 출강 제안 3명에게 발송 (법정의무 인정자격 보유자만)</span></div></div></div>
+    </section>
+
+    <!-- 오늘의 출강 -->
+    <section class="view" data-v="today">
+      <div class="notice small mb3"><span>ⓘ</span><div>강사 체크인(도착)·시작·종료를 모바일에서 누르면 여기 상태가 바뀝니다. 체크인 지연 시 대체 강사 연락망이 열립니다.</div></div>
+      <div class="tbl-wrap"><table class="tbl" id="todayTbl"><thead><tr><th>시간</th><th>기관</th><th>프로그램</th><th>강사</th><th>인원</th><th>체크인</th><th>상태</th><th></th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- 피드백 -->
+    <section class="view" data-v="feedback">
+      <div class="two">
+        <div class="card"><h2>완료 교육 · 피드백 수집 <small>검증 3단계의 실제 구현</small></h2><div id="fbList"></div></div>
+        <div class="card"><h2>피드백이 평점·배정에 반영되는 방식</h2><ul class="checks" style="grid-template-columns:1fr"><li>담당자 평가(기관)와 수강생 설문(개인)을 <b>분리</b>해 수집</li><li>평점은 최근 10건 가중 평균 · 4.3 미만 2회 연속이면 재배치 검토 플래그</li><li>공개 동의한 문장만 공개 사이트 「담당자 평가」에 노출</li><li>강사에게는 요약·점수만 보임, 원문·기관 담당자 연락처 비공개</li></ul><div class="mt3" id="fbStat"></div></div>
+      </div>
+    </section>
+
+    <!-- 강사 관리 -->
+    <section class="view" data-v="lec">
+      <div class="kpis" id="lecKpi"></div>
+      <div class="card"><h2>승인 대기 <small>초대코드 발급 전 심사</small></h2><div id="lecPending"></div></div>
+      <div class="card"><h2>강사 검색 <small>등록 2,000명 · 공개 범위·인정자격·경력조회 상태</small></h2>
+        <div class="row mb2"><input class="input" id="lecQ" placeholder="이름 · 분야 · 권역" style="max-width:320px"><select class="sel" id="lecScope"><option value="">공개 범위 전체</option><option value="pub">전체 공개</option><option value="org">담당자 공개</option><option value="priv">비공개</option></select><button class="btn btn-ghost btn-sm" type="button" id="lecCsv">CSV 내보내기</button></div>
+        <div class="tbl-wrap"><table class="tbl" id="lecTbl"><thead><tr><th>ID</th><th>이름</th><th>분야</th><th>권역</th><th>경력</th><th>출강</th><th>평점</th><th>공개 범위</th><th>인정자격</th><th>경력조회</th><th>상태</th><th></th></tr></thead><tbody></tbody></table></div>
+        <div class="row between mt2 small muted"><span id="lecN"></span><div class="row"><button class="btn btn-xs btn-ghost" type="button" id="lecPrev">이전</button><span id="lecPage">1</span><button class="btn btn-xs btn-ghost" type="button" id="lecNext">다음</button></div></div>
+      </div>
+    </section>
+
+    <!-- 콘텐츠 관리 -->
+    <section class="view" data-v="content">
+      <div class="two">
+        <div class="card"><h2>프로그램 <small><span id="pgPub"></span>개 공개 · 저장 즉시 공개 사이트 반영</small></h2>
+          <div class="row mb2"><select class="sel" id="pgCenter"><option value="">센터 전체</option><option value="youth">청소년</option><option value="corp">기업</option><option value="medical">병원</option><option value="public">공공</option></select><span class="small muted">시간을 바꾸면 카탈로그 필터·견적 계산에 바로 반영됩니다</span></div>
+          <div class="tbl-wrap"><table class="tbl" id="pgTbl" style="min-width:0"><thead><tr><th>프로그램</th><th>센터</th><th>시간</th><th>환급</th><th>공개</th></tr></thead><tbody></tbody></table></div></div>
+        <div class="card"><h2>파트너 로고 노출 동의 <small>동의 + 출강 이력 연결이 있어야 공개 사이트에 노출</small></h2>
+          <div class="notice small mb2"><span>ⓘ</span><div>「함께한 곳」 로고는 출강 이력 레코드(일자·기관유형)에 연결되고 노출 동의가 체크된 기관만 보입니다. 체크를 풀면 공개 사이트에서 즉시 빠집니다.</div></div>
+          <div id="pnList" style="max-height:520px;overflow:auto"></div></div>
+      </div>
+    </section>
+
+    <!-- 자격 관리 -->
+    <section class="view" data-v="certs">
+      <div class="notice warn small mb3"><span>!</span><div>자격기본법 제33조 표시 항목(등록번호·관리기관·총비용·환불·'국가공인 아님')이 하나라도 비면 <b>저장은 되지만 공개는 잠깁니다.</b> 공개 사이트의 자격 수는 여기서 공개된 자격을 집계해 자동 표기합니다 — 손으로 적는 숫자가 없습니다.</div></div>
+      <div class="two">
+        <div class="card"><h2>등록 자격 <small><span id="certPub"></span>종 공개 · <span id="certHid"></span>종 잠김</small></h2><div class="tbl-wrap"><table class="tbl" id="certTbl" style="min-width:0"><thead><tr><th>자격명</th><th>발급기관</th><th>등록번호</th><th>총비용</th><th>공개</th></tr></thead><tbody></tbody></table></div></div>
+        <div class="card"><h2>자격 편집</h2><div id="certEdit"><p class="muted small">왼쪽 목록에서 자격을 고르세요.</p></div></div>
+      </div>
+    </section>
+
+    <!-- 광고 문구 검사기 -->
+    <section class="view" data-v="copy">
+      <div class="two">
+        <div class="card"><h2>광고 문구 검사기 <small>표시광고법 실증 대상 표현 탐지</small></h2>
+          <div class="field"><label>공개 페이지에 쓸 문구</label><textarea class="textarea" id="copyIn" style="min-height:140px">대한민국 1등 교육 플랫폼, 2,000명의 검증된 전문가 네트워크와 함께합니다. 언론이 주목한 대한민국 대표 교육 법인.</textarea></div>
+          <div class="row mt2"><button class="btn btn-primary btn-sm" type="button" id="copyRun">검사</button><button class="btn btn-ghost btn-sm" type="button" id="copyFix">안전한 문구로 바꾸기</button></div>
+          <div id="copyOut" class="mt3"></div></div>
+        <div class="card"><h2>근거가 있으면 통과합니다</h2><p class="small muted">최상급·절대 표현은 금지가 아니라 <b>실증 대상</b>입니다. 주최·연도·부문·산출 기준을 붙이면 공개되고, 공개 페이지에 각주가 자동으로 달립니다.</p>
+          <div class="field mt3"><label>예: "소비자만족 브랜드대상 1위"의 근거</label><input class="input" id="copyBasis" value="2022 · JY네트워크 주최 · 중앙일보 후원 · 강의·교육컨설팅 부문"></div>
+          <div class="notice ok small mt2"><span>✓</span><div>근거가 채워진 표현은 공개 가능 — 각주: <i id="copyFoot">2022 · JY네트워크 주최 · 중앙일보 후원 · 강의·교육컨설팅 부문</i></div></div>
+          <div class="field mt3"><label>예: "강사 2,000명"의 산출 기준</label><input class="input" value="등록 강사 DB 집계 (승인 1,882 · 공개 1,294) · 자동 갱신"></div></div>
+      </div>
+    </section>
+
+    <!-- 회사 정보 -->
+    <section class="view" data-v="company">
+      <div class="two">
+        <div class="card"><h2>회사 정보 — 단일 원본 <small>푸터·처리방침·자격 표시 블록에 동시 반영</small></h2>
+          <div class="form-grid" id="coForm">
+            <div class="field"><label>상호</label><input class="input" value="(주)더알림"></div><div class="field"><label>대표</label><input class="input" value="김경림"></div>
+            <div class="field"><label>사업자등록번호</label><input class="input" value="535-81-02819"></div><div class="field"><label>통신판매업 신고</label><input class="input" value="제2023-서울금천-0325호"></div>
+            <div class="field"><label>대표 전화</label><input class="input" value="0507-1322-2916"></div><div class="field"><label>이메일 (하나만)</label><input class="input" value="thealrim7@gmail.com"></div>
+            <div class="field"><label>상담 시간</label><input class="input" value="월–일 10:00–20:00"></div><div class="field"><label>개인정보 보호책임자 <i style="color:var(--bad);font-style:normal">*</i></label><input class="input" id="coDpo" value=""><span class="err">비어 있음 — 처리방침 공개가 잠깁니다</span></div>
+          </div>
+          <div class="row mt3"><button class="btn btn-primary btn-sm" type="button" id="coSave">저장</button><span class="lock" id="coLock">🔒 처리방침 비공개 (보호책임자 미입력)</span></div></div>
+        <div class="card"><h2>현행 3개 사이트의 정보 불일치</h2><div class="tbl-wrap"><table class="tbl" style="min-width:0"><thead><tr><th>항목</th><th>아임웹</th><th>그누보드</th><th>강사매칭</th></tr></thead><tbody><tr><td>이메일</td><td>thealrim7@</td><td>thealrim7@ · yonsei</td><td>limlucky764@</td></tr><tr><td>상담시간</td><td>없음</td><td>월~일 10~20</td><td>평일 10~20</td></tr><tr><td>통신판매 번호</td><td class="small" style="color:var(--bad)">미표시 / OOO</td><td>표시</td><td>표시</td></tr><tr><td>처리방침 책임자</td><td class="small" style="color:var(--bad)">OOO</td><td>—</td><td>—</td></tr></tbody></table></div><p class="small muted mt2">리뉴얼 후에는 이 화면이 유일한 원본이 되어 불일치가 생길 수 없습니다.</p></div>
+      </div>
+    </section>
+
+    <!-- 검토 항목 -->
+    <section class="view" data-v="review">
+      <div class="notice small mb3"><span>ⓘ</span><div>리서치에서 나온 발견을 <b>기능으로 구현했는지</b> 점검하는 체크리스트입니다. 체크 상태는 이 브라우저에 저장됩니다. 근거는 분석/기획_설계.md.</div></div>
+      <div class="check-list" id="reviewList"></div>
+    </section>
+
+    <!-- 이관 -->
+    <section class="view" data-v="migrate">
+      <div class="two">
+        <div class="card"><h2>3개 사이트 → 1개 · 이관 계획</h2>
+          <div class="tbl-wrap"><table class="tbl" style="min-width:0"><thead><tr><th>현행</th><th>데이터</th><th>처리</th><th>상태</th></tr></thead><tbody>
+            <tr><td>thealrim.com (아임웹)</td><td>페이지 16 · 언론 20 · 제안서 폼</td><td>콘텐츠 이관 · 도메인 유지 · 아임웹 해지</td><td><span class="stage s4">계획</span></td></tr>
+            <tr><td>bkh2457.mycafe24.com (그누보드)</td><td>회원(강사) · 출강요청 게시판 · 컨설팅·아카데미 페이지</td><td>회원 → 초대코드 재가입 · 게시글 → 접수함 · <b>폐쇄 + 301</b></td><td><span class="stage s3">확인 필요</span></td></tr>
+            <tr><td>gangsamatching.co.kr (자체 PHP)</td><td>공개 강사 2 · 섭외요청 폼 · 강사 포털</td><td>데이터 병합 · <b>폐쇄 + 301</b></td><td><span class="stage s3">확인 필요</span></td></tr>
+          </tbody></table></div></div>
+        <div class="card"><h2>301 리다이렉트 맵 <small>제출한 지원서·검색 유입 보존</small></h2><div class="log" style="max-height:none" id="redir"></div><button class="btn btn-ghost btn-sm mt3" type="button" id="redirCsv">맵 CSV 내려받기</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"><div class="drawer-h"><h2 id="dTitle">상세</h2><button class="btn btn-xs btn-ghost" type="button" id="dClose">닫기</button></div><div class="drawer-b" id="dBody"></div></aside>
+
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  /* ---------- 상태 ---------- */
+  const INQ = [...(JSON.parse(localStorage.getItem("alrim.inq")||"[]")), ...INQUIRIES]; // 공개 폼에서 접수된 건이 맨 앞
+  const QUICK = JSON.parse(localStorage.getItem("alrim.quick")||"[]");
+  const CERT = JSON.parse(JSON.stringify(CERTS));
+  const today = new Date("2026-10-20");
+  const daysSince = d => Math.round((today - new Date(d)) / 86400000);
+  const won = n => (n/10000).toLocaleString() + "만";
+  /* ---------- 내비 ---------- */
+  const TITLES = { dash:["대시보드","2026년 10월 20일 (화) · 이번 주 출강 7건"], inbox:["접수함","공개 폼 · 빠른 상담 · 강사매칭 폼 · 전화 — 한 곳"], edu:["교육 건 · 강사 매칭","조건 필터로 후보를 산출하고 배정합니다"], today:["오늘의 출강","체크인 모니터링 · 대체 강사"], feedback:["피드백 수집","담당자 평가 + 수강생 설문 → 강사 평점"], lec:["강사 관리","승인 · 공개 범위 · 인정자격 · 경력조회 · 정지"], content:["프로그램 · 파트너 관리","저장 즉시 공개 사이트 반영"], certs:["자격 관리","표시 항목이 비면 공개가 잠깁니다"], copy:["광고 문구 검사기","최상급 표현은 근거가 있어야 공개"], company:["회사 정보","단일 원본"], review:["검토 항목","리서치 발견 → 기능 구현 체크"], migrate:["사이트 통합 · 이관","3개 사이트 → 1개"] };
+  function show(v){ $$(".view").forEach(s=>s.classList.toggle("on", s.dataset.v===v)); $$("#nav button").forEach(b=>{ if (b.dataset.v===v) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); }); $("#vTitle").textContent = TITLES[v][0]; $("#vSub").textContent = TITLES[v][1]; location.hash = v; $("#side").classList.remove("open"); if (v==="dash") drawCharts(); }
+  $("#nav").addEventListener("click", e => { const b = e.target.closest("button[data-v]"); if (b) show(b.dataset.v); });
+  $("#burger").addEventListener("click", () => $("#side").classList.toggle("open"));
+  /* ---------- 드로어 ---------- */
+  const openD = (title, html) => { $("#dTitle").textContent = title; $("#dBody").innerHTML = html; $("#drawer").classList.add("open"); $("#scrim").classList.add("on"); $("#drawer").setAttribute("aria-hidden","false"); };
+  const closeD = () => { $("#drawer").classList.remove("open"); $("#scrim").classList.remove("on"); $("#drawer").setAttribute("aria-hidden","true"); };
+  $("#dClose").addEventListener("click", closeD); $("#scrim").addEventListener("click", closeD); addEventListener("keydown", e => { if (e.key==="Escape") closeD(); });
+
+  /* ---------- 대시보드 ---------- */
+  const active = INQ.filter(i=>i.stage<6), done = INQ.filter(i=>i.stage===6);
+  const avgSat = (done.reduce((a,i)=>a+(i.sat||0),0)/done.filter(i=>i.sat).length).toFixed(2);
+  $("#kpis").innerHTML = [["신규 접수 (7일)", INQ.filter(i=>daysSince(i.since)<=7).length+"건", "+2 vs 지난주"],["진행 중 교육", active.length+"건", "확정 "+INQ.filter(i=>i.stage===4||i.stage===5).length+"건"],["이번 주 출강", "7회", "병원 3 · 공공 2 · 기업 2"],["평균 만족도", avgSat, "완료 "+done.length+"건 기준"],["공개 강사", LECTURERS.filter(l=>l.pub).length.toLocaleString()+"명", "등록 2,000 · 승인 1,882"],["이달 예상 매출", won(active.reduce((a,i)=>a+i.budget,0))+"원", "확정 기준 "+won(INQ.filter(i=>i.stage>=4&&i.stage<6).reduce((a,i)=>a+i.budget,0))]].map(k=>`<div class="kpi-c"><span class="l">${k[0]}</span><span class="v">${k[1]}</span><span class="d">${k[2]}</span></div>`).join("");
+  $("#dashInbox").innerHTML = INQ.filter(i=>daysSince(i.since)<=7).slice(0,6).map(i=>`<div class="lrow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>${i.org}</b> <span class="small muted">· ${i.type} · ${i.people}명</span><div class="small muted">${i.prog.map(p=>DATA.program(p)?.name).join(", ")}</div></div><span class="stage s${i.stage}">${STAGES[i.stage]}</span></div>`).join("") || `<p class="muted small">없음</p>`;
+  const late = INQ.filter(i=>i.stage<=1 && daysSince(i.since)>=2);
+  $("#dashLate").innerHTML = late.length ? late.map(i=>`<div class="lrow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>${i.org}</b><div class="small" style="color:var(--bad)">접수 후 ${daysSince(i.since)}일 · 담당 ${i.mgr==="-"?"미배정":i.mgr}</div></div><button class="btn btn-xs btn-primary" type="button" onclick="document.querySelector('#nav [data-v=inbox]').click()">처리</button></div>`).join("") : `<p class="muted small">기한 초과 건 없음</p>`;
+  function drawCharts(){
+    const c1 = $("#chart1"), c2 = $("#chart2"); if (c1.dataset.drawn) return; c1.dataset.drawn = 1;
+    const dpr = devicePixelRatio||1; [c1,c2].forEach(c=>{ c.width = c.clientWidth*dpr; c.height = 220*dpr; c.getContext("2d").scale(dpr,dpr); });
+    const months = ["1","2","3","4","5","6","7","8","9","10"], cnt = [6,9,12,10,11,13,9,8,14,12], rev = [820,1240,1660,1390,1510,1820,1230,1080,1950,1680];
+    const ctx = c1.getContext("2d"), W = c1.clientWidth, H = 220, pad = 28, bw = (W-pad*2)/months.length;
+    let t0 = null; const anim = ts => { if (!t0) t0 = ts; const p = Math.min(1,(ts-t0)/900), e = 1-Math.pow(1-p,3); ctx.clearRect(0,0,W,H);
+      ctx.font = "11px Pretendard, sans-serif"; ctx.textAlign = "center";
+      months.forEach((m,i)=>{ const x = pad + i*bw + bw/2, h = (cnt[i]/15)*(H-60)*e; ctx.fillStyle = i===9 ? "#000000" : "#D9D9D9"; ctx.fillRect(x-bw*0.28, H-30-h, bw*0.56, h); ctx.fillStyle = "#6E7482"; ctx.fillText(m+"월", x, H-12); });
+      ctx.strokeStyle = "#2189FF"; ctx.lineWidth = 2; ctx.beginPath(); rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke();
+      rev.forEach((v,i)=>{ const x = pad + i*bw + bw/2, y = H-30-(v/2200)*(H-60)*e; ctx.fillStyle="#2189FF"; ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); });
+      if (p<1) requestAnimationFrame(anim); else { ctx.fillStyle="#6E7482"; ctx.textAlign="left"; ctx.fillText("막대 = 교육 건수 · 선 = 매출(만원)", pad, 14); } }; requestAnimationFrame(anim);
+    const ctx2 = c2.getContext("2d"), W2 = c2.clientWidth; const parts = [["병원",34,"#000000"],["기업",28,"#555555"],["공공",22,"#2189FF"],["학교",16,"#AAAAAA"]]; let a0 = -Math.PI/2, t1 = null;
+    const anim2 = ts => { if (!t1) t1 = ts; const p = Math.min(1,(ts-t1)/900), e = 1-Math.pow(1-p,3); ctx2.clearRect(0,0,W2,220); let a = a0; parts.forEach(pt=>{ const ang = pt[1]/100*2*Math.PI*e; ctx2.beginPath(); ctx2.moveTo(W2/2,110); ctx2.arc(W2/2,110,88,a,a+ang); ctx2.closePath(); ctx2.fillStyle = pt[2]; ctx2.fill(); a += ang; }); ctx2.fillStyle="#F5F5F5"; ctx2.beginPath(); ctx2.arc(W2/2,110,54,0,7); ctx2.fill(); ctx2.fillStyle="#000000"; ctx2.font="700 22px Pretendard"; ctx2.textAlign="center"; ctx2.fillText(Math.round(INQ.length*e)+"건", W2/2, 118); if (p<1) requestAnimationFrame(anim2); }; requestAnimationFrame(anim2);
+    $("#legend2").innerHTML = parts.map(p=>`<span><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${p[2]};margin-right:6px"></i>${p[0]} ${p[1]}%</span>`).join("");
+  }
+
+  /* ---------- 접수함 ---------- */
+  let fMgr = "", fType = "", mode = "kanban";
+  const inqList = () => INQ.filter(i => (!fMgr || (fMgr==="-" ? i.mgr==="-" : i.mgr===fMgr)) && (!fType || i.type===fType));
+  function renderInbox(){
+    const L = inqList(); $("#cInbox").textContent = INQ.filter(i=>i.stage<=1).length;
+    $("#kanban").innerHTML = STAGES.map((s,si) => { const col = L.filter(i=>i.stage===si); return `<div class="kcol"><h3>${s} <b>${col.length}</b></h3>${col.map(i=>`<div class="kcard ${i.id.endsWith("042")||i.id>"RQ-2610-041"?"new":""}" data-id="${i.id}"><b>${i.org}</b><span class="small muted">${i.type} · ${i.people}명 · ${DATA.fmtDate(i.date==="협의"?i.since:i.date)}</span><div class="m"><span>${i.mgr==="-"?"미배정":i.mgr}</span><span class="${i.stage<=1&&daysSince(i.since)>=2?"late":""}">D+${daysSince(i.since)}</span></div></div>`).join("")}</div>`; }).join("");
+    $("#inboxTbl").innerHTML = `<table class="tbl"><thead><tr><th>접수번호</th><th>기관</th><th>유형</th><th>프로그램</th><th>인원</th><th>희망일</th><th>예산</th><th>담당</th><th>상태</th><th>경과</th></tr></thead><tbody>${L.map(i=>`<tr data-id="${i.id}" style="cursor:pointer"><td class="small">${i.id}</td><td>${i.org}</td><td>${i.type}</td><td class="small">${i.prog.map(p=>DATA.program(p)?.name).join(", ")}</td><td class="num">${i.people}</td><td>${i.date}</td><td class="num">${won(i.budget)}</td><td>${i.mgr}</td><td><span class="stage s${i.stage}">${STAGES[i.stage]}</span></td><td class="num">D+${daysSince(i.since)}</td></tr>`).join("")}</tbody></table>`;
+    $("#kanban").hidden = mode!=="kanban"; $("#inboxTbl").hidden = mode!=="table";
+  }
+  $("#inboxMode").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; mode = b.dataset.m; $$("#inboxMode button").forEach(x=>x.setAttribute("aria-pressed", x===b)); renderInbox(); });
+  $("#fMgr").addEventListener("change", e => { fMgr = e.target.value; renderInbox(); }); $("#fType").addEventListener("change", e => { fType = e.target.value; renderInbox(); });
+  document.addEventListener("click", e => { const k = e.target.closest("[data-id^='RQ-']"); if (!k || !k.closest("#kanban,#inboxTbl")) return; openInq(INQ.find(i=>i.id===k.dataset.id)); });
+  function openInq(i){
+    const ps = i.prog.map(id=>DATA.program(id)).filter(Boolean); const lec = i.lec ? DATA.lecturer(i.lec) : null;
+    openD(i.id, `<div><span class="stage s${i.stage}">${STAGES[i.stage]}</span> <span class="small muted">접수 ${i.since} · D+${daysSince(i.since)} · 출처 ${i.est?"공개 폼":"공개 폼(기존)"}</span></div>
+      <dl style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0"><dt class="muted">기관</dt><dd><b>${i.org}</b> (${i.type})</dd><dt class="muted">담당자</dt><dd>${i.contact||"—"}</dd><dt class="muted">프로그램</dt><dd>${ps.map(p=>p.name).join(", ")}</dd><dt class="muted">인원·일정</dt><dd>${i.people}명 · ${i.date}</dd><dt class="muted">예산</dt><dd>${won(i.budget)}원${i.est?` · 자동 견적 ${i.est.low/10000}~${i.est.high/10000}만`:""}</dd><dt class="muted">강사</dt><dd>${lec?`${lec.name} (${lec.field})`:"미배정"}</dd></dl>
+      <div><b class="small">상태 변경</b><div class="flow mt1">${STAGES.map((s,si)=>`<button type="button" class="${si<i.stage?"done":si===i.stage?"cur":""}" data-st="${si}">${s}</button>`).join("")}</div></div>
+      <div class="field"><label>담당 매니저</label><select class="sel" id="dMgr" style="width:100%"><option value="-">미배정</option><option ${i.mgr==="박매니저"?"selected":""}>박매니저</option><option ${i.mgr==="최매니저"?"selected":""}>최매니저</option></select></div>
+      ${i.type==="학교"?`<div class="notice small"><span>ⓘ</span><div>학교 건 — 학교장터(S2B) 서류 패키지와 강사 경력조회 동의서가 필요합니다. <button class="btn btn-xs btn-ghost" type="button" id="dPack">서류 패키지 생성</button></div></div>`:""}
+      ${ps.some(p=>p.legal)?`<div class="notice warn small"><span>!</span><div>법정의무교육 포함 — 과목별 인정자격 보유 강사만 매칭 가능. 교육 후 증빙 패키지(출석부·일지·사진) 3년 보관.</div></div>`:""}
+      <div class="field"><label>수강생 명단 (기관 업로드)</label><div class="notice small"><span>🔒</span><div>강사에게는 <b>열람 전용·다운로드 불가</b>. 기관의 재위탁 동의 ${i.stage>=4?"<b style='color:var(--ok)'>받음</b>":"<b style='color:var(--warn)'>대기</b>"} · 교육 종료 후 30일 자동 파기 예약</div></div></div>
+      <div class="row"><button class="btn btn-primary btn-sm" type="button" id="dMatch">강사 매칭 화면으로</button><button class="btn btn-ghost btn-sm" type="button" id="dQuote">견적서 생성</button></div>`);
+    $$("#dBody .flow button").forEach(b => b.addEventListener("click", () => { i.stage = +b.dataset.st; if (i.stage>=1 && i.mgr==="-") i.mgr = "박매니저"; toast(`${i.id} → ${STAGES[i.stage]}`, "ok"); renderInbox(); openInq(i); }));
+    $("#dMgr").addEventListener("change", e => { i.mgr = e.target.value; toast("담당 매니저를 바꿨습니다", "ok"); renderInbox(); });
+    $("#dMatch").addEventListener("click", () => { closeD(); show("edu"); $("#mInq").value = i.id; renderMatch(); });
+    $("#dQuote").addEventListener("click", () => { const lines = [`더알림 견적서 (기관용)`, `접수 ${i.id} · ${i.org}`, ...ps.map(p=>`${p.name} · ${p.hours}시간 · 강사료 ${DATA.won(180000+ (p.hours-1)*108000)}`), `교재·자료 ${i.people}명 × 3,500원 = ${DATA.won(i.people*3500)}`, `부가세 별도 · 유효 30일`, `※ 강사료·마진은 내부용 견적에 분리 기재됩니다 (강사 화면 비공개)`]; const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+lines.join("\r\n")],{type:"text/plain;charset=utf-8"})); a.download = `${i.id}_견적서.txt`; a.click(); toast("견적서를 생성했습니다", "ok"); });
+    const pk = $("#dPack"); if (pk) pk.addEventListener("click", () => toast("견적서·사업자등록증·통장사본·강사 이력서·경력조회 동의서 5종 패키지 생성 (데모)", "ok"));
+  }
+
+  /* ---------- 매칭 ---------- */
+  $("#mInq").innerHTML = INQ.filter(i=>i.stage>=1&&i.stage<=4).map(i=>`<option value="${i.id}">${i.id} · ${i.org}</option>`).join("");
+  function renderMatch(){
+    const i = INQ.find(x=>x.id===$("#mInq").value); if (!i) return; const ps = i.prog.map(id=>DATA.program(id)).filter(Boolean);
+    const region = ({"서울":"서울","경기":"경기·인천","영남":"영남","충남":"충청","호남":"호남","부산":"영남","경북":"영남","수도권":"경기·인천"})[Object.keys({"서울":1,"경기":1,"영남":1,"충남":1,"호남":1,"부산":1,"경북":1,"수도권":1}).find(k=>i.org.includes(k))] || "서울";
+    const field = ({"병원":"병원·의료","학교":"진로·취업","기업":"리더십","공공":"소통·CS"})[i.type]; const needLegal = ps.some(p=>p.legal), youth = i.type==="학교";
+    $("#mMeta").textContent = `${region} · ${i.date} · ${i.people}명 · ${ps.map(p=>p.name).join(", ")}`;
+    const d = new Date(i.date), weekend = !isNaN(d) && (d.getDay()===0||d.getDay()===6);
+    const cand = LECTURERS.filter(l => (l.field===field||l.field2===field) && (!$("#mRegionOnly").checked || l.region===region) && (!$("#mOnline").checked || l.online) && (!$("#mWeekend").checked || l.weekend)).sort((a,b)=>b.rating-a.rating||b.runs-a.runs).slice(0,12);
+    $("#mCount").textContent = `후보 ${cand.length}명 (분야 ${field}${$("#mRegionOnly").checked?" · "+region:""})`;
+    $("#mList").innerHTML = cand.map(l => { const bg = parseInt(l.id.slice(1))%5===0; const noLegal = needLegal && !l.legal, noYouth = youth && parseInt(l.id.slice(1))%4===0, noWk = weekend && !l.weekend; const dis = bg||noLegal||noYouth; const why = bg?"블랙리스트 (민원 2회)":noLegal?"법정의무 인정자격 없음":noYouth?"경력조회 동의서 미제출":noWk?"주말 불가":""; return `<div class="lrow ${dis?"dis":""}"><div class="av">${l.img?`<img src="../../assets/img/${l.img}.webp" alt="">`:l.name[0]}</div><div><b>${l.name}</b> <span class="small muted">${l.field}${l.field2?" · "+l.field2:""} · ${l.region} · 경력 ${l.exp}년 · 출강 ${l.runs}회 · ★${l.rating}</span>${why?`<div class="why">⛔ ${why}</div>`:`<div class="small muted">${l.legal?"법정의무 인정자격 · ":""}${l.online?"온라인 · ":""}${l.weekend?"주말 가능":""}</div>`}</div><div class="row-actions">${i.lec===l.id?`<span class="stage s4">배정됨</span>`:`<button class="btn btn-xs ${dis?"btn-ghost":"btn-primary"}" type="button" data-assign="${l.id}" ${dis?"disabled":""}>배정 제안</button>`}</div></div>`; }).join("") || `<p class="muted small">조건에 맞는 후보가 없습니다 — 같은 권역 조건을 끄거나 온라인으로 전환하세요.</p>`;
+    $$("#mList [data-assign]").forEach(b => b.addEventListener("click", () => { const l = DATA.lecturer(b.dataset.assign); if (l.id==="L0010") { const why = prompt("매니저 본인과 동일인 배정 — 사유를 기록하세요 (이해상충 로그)"); if (!why) return; } i.lec = l.id; if (i.stage<4) i.stage = 4; const t = new Date(); $("#mLog").insertAdjacentHTML("afterbegin", `<div><span class="t">${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}</span><span>${i.id} ${l.name} 강사에게 출강 제안 발송 · 수락 대기 (거절 가능, 불이익 없음)</span></div>`); toast(`${l.name} 강사에게 제안을 보냈습니다`, "ok"); renderMatch(); renderInbox(); }));
+  }
+  $("#mInq").addEventListener("change", renderMatch); ["mOnline","mWeekend","mRegionOnly"].forEach(id => $("#"+id).addEventListener("change", renderMatch));
+
+  /* ---------- 오늘의 출강 ---------- */
+  const TODAY = [["09:00–13:00","영남 재활병원","세대 다양성 관리","L0009",48,"08:41 도착","진행 중"],["10:00–12:00","서울 신용보증 기관","회복탄력성·마음챙김","L0011",45,"09:32 도착","진행 중"],["13:00–17:00","서울 특성화고","특성화고 취업역량","L0004",240,"—","체크인 대기"],["14:00–18:00","IT 스타트업","ChatGPT 질문력","L0006",35,"—","체크인 대기"],["14:00–16:00","경북 노인복지시설","소방안전·대피훈련","L0012",40,"지연 12분","⚠ 지연"]];
+  $("#todayTbl tbody").innerHTML = TODAY.map(r => { const l = DATA.lecturer(r[3]); return `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${l.name}</td><td class="num">${r[4]}</td><td>${r[5]}</td><td><span class="stage ${r[6].includes("지연")?"s3":r[6]==="진행 중"?"s5":"s0"}">${r[6]}</span></td><td>${r[6].includes("지연")?`<button class="btn btn-xs btn-primary" type="button" onclick="toast('대체 강사 후보 3명에게 긴급 연락 발송 · 강사에게 통화 시도','ok')">대체 연락망</button>`:`<button class="btn btn-xs btn-ghost" type="button" onclick="toast('강사에게 리마인드 문자를 보냈습니다','ok')">리마인드</button>`}</td></tr>`; }).join("");
+
+  /* ---------- 피드백 ---------- */
+  function renderFb(){ const D = INQ.filter(i=>i.stage===6); $("#fbList").innerHTML = D.map(i => { const l = DATA.lecturer(i.lec); const sent = i.fbSent; return `<div class="lrow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>${i.org}</b> <span class="small muted">· ${DATA.program(i.prog[0])?.name} · ${l?.name}</span><div class="small muted">담당자 평가 ${i.sat?`<b style="color:var(--ink)">${i.sat}</b>`:"미응답"} · 수강생 설문 ${i.sat?Math.round(i.people*0.62)+"명 응답":"—"} · 공개 동의 ${i.sat&&i.sat>=4.8?"1문장":"없음"}</div></div><div class="row-actions">${i.sat?`<button class="btn btn-xs btn-ghost" type="button" data-fbv="${i.id}">결과 보기</button>`:`<button class="btn btn-xs btn-primary" type="button" data-fbs="${i.id}">${sent?"재발송":"설문 발송"}</button>`}</div></div>`; }).join("");
+    $$("[data-fbs]").forEach(b => b.addEventListener("click", () => { const i = INQ.find(x=>x.id===b.dataset.fbs); i.fbSent = true; setTimeout(() => { i.sat = 4.7; const l = DATA.lecturer(i.lec); if (l) l.rating = Math.round(((l.rating*9)+4.7)/10*10)/10; toast(`${i.org} 담당자 평가 수신 4.7 → ${l?.name} 평점 ${l?.rating}`, "ok"); renderFb(); fbStat(); }, 1500); toast("담당자·수강생에게 설문 링크를 보냈습니다 (데모: 1.5초 후 응답 도착)", "ok"); renderFb(); }));
+    $$("[data-fbv]").forEach(b => b.addEventListener("click", () => { const i = INQ.find(x=>x.id===b.dataset.fbv); openD(`${i.org} · 피드백`, `<div class="kpis" style="margin:0"><div class="kpi-c"><span class="l">담당자 평가</span><span class="v">${i.sat}</span></div><div class="kpi-c"><span class="l">수강생 설문</span><span class="v">${(i.sat-0.1).toFixed(1)}</span><span class="d">${Math.round(i.people*0.62)}명 응답</span></div><div class="kpi-c"><span class="l">재출강 의향</span><span class="v">${i.sat>=4.8?"예":"검토"}</span></div></div><div><b class="small">공개 동의 문장</b><div class="fb mt1" style="padding:14px;background:var(--paper);border-left:2px solid var(--gold)">${(CASES.find(c=>c.lec===i.lec)||{}).quote||"—"}</div></div><div class="notice small"><span>🔒</span><div>원문·담당자 연락처는 강사에게 비공개. 강사 화면에는 점수와 요약만 보입니다.</div></div>`); }));
+  }
+  function fbStat(){ const D = INQ.filter(i=>i.stage===6&&i.sat); $("#fbStat").innerHTML = `<div class="kpis" style="margin:0"><div class="kpi-c"><span class="l">수집률</span><span class="v">${Math.round(D.length/INQ.filter(i=>i.stage===6).length*100)}%</span></div><div class="kpi-c"><span class="l">평균</span><span class="v">${(D.reduce((a,i)=>a+i.sat,0)/D.length).toFixed(2)}</span></div><div class="kpi-c"><span class="l">재배치 검토</span><span class="v">${LECTURERS.filter(l=>l.featured&&l.rating<4.6).length}명</span></div></div>`; }
+  renderFb(); fbStat();
+
+  /* ---------- 강사 관리 ---------- */
+  const scopeOf = l => l.pub ? "전체 공개" : parseInt(l.id.slice(1))%5===0 ? "담당자 공개" : "비공개";
+  $("#lecKpi").innerHTML = [["등록", "2,000"],["승인", "1,882"],["전체 공개", LECTURERS.filter(l=>l.pub).length.toLocaleString()],["담당자 공개", LECTURERS.filter(l=>!l.pub&&parseInt(l.id.slice(1))%5===0).length.toLocaleString()],["승인 대기", "118"],["정지", "7"]].map(k=>`<div class="kpi-c"><span class="l">${k[0]}</span><span class="v">${k[1]}</span></div>`).join("");
+  $("#lecPending").innerHTML = [["이강사","소통·CS","영남","7년","샘플 영상 확인됨 · 장애인 인식개선 수료 (2024) · 청소년 희망"],["윤지원","AI·IT","서울","4년","샘플 영상 미제출"],["강민호","안전","충청","12년","전직 소방관 · 경력조회 동의서 제출"]].map(p=>`<div class="lrow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>${p[0]}</b> <span class="small muted">· ${p[1]} · ${p[2]} · ${p[3]}</span><div class="small muted">${p[4]}</div></div><div class="row-actions"><button class="btn btn-xs btn-primary" type="button" onclick="this.closest('.lrow').remove();toast('승인 · 초대코드 발송 (SMS)','ok')">승인 · 초대코드</button><button class="btn btn-xs btn-ghost" type="button" onclick="this.closest('.lrow').remove();toast('보류 안내를 보냈습니다')">보류</button></div></div>`).join("");
+  let lq = "", lscope = "", lpage = 0;
+  function renderLec(){ const L = LECTURERS.filter(l => (!lq || (l.name+l.field+(l.field2||"")+l.region).includes(lq)) && (!lscope || (lscope==="pub"&&l.pub) || (lscope==="org"&&scopeOf(l)==="담당자 공개") || (lscope==="priv"&&scopeOf(l)==="비공개"))); const pg = L.slice(lpage*20, lpage*20+20);
+    $("#lecTbl tbody").innerHTML = pg.map(l => { const n = parseInt(l.id.slice(1)); const yc = n%4!==0; const stop = n%300===0; return `<tr><td class="small">${l.id}</td><td><b>${l.name}</b></td><td>${l.field}${l.field2?`<span class="small muted"> · ${l.field2}</span>`:""}</td><td>${l.region}</td><td class="num">${l.exp}년</td><td class="num">${l.runs}</td><td class="num">${l.rating}</td><td><select class="sel" style="height:30px;padding:0 28px 0 8px;font-size:12.5px" data-scope="${l.id}"><option ${scopeOf(l)==="전체 공개"?"selected":""}>전체 공개</option><option ${scopeOf(l)==="담당자 공개"?"selected":""}>담당자 공개</option><option ${scopeOf(l)==="비공개"?"selected":""}>비공개</option></select></td><td>${l.legal?'<span class="tag gold">법정의무</span>':'<span class="small muted">—</span>'}</td><td>${yc?'<span class="tag ok">제출</span>':'<span class="tag warn">미제출</span>'}</td><td>${stop?'<span class="tag bad">정지</span>':'<span class="tag ok">활동</span>'}</td><td><button class="btn btn-xs btn-ghost" type="button" data-stop="${l.id}">${stop?"해제":"정지"}</button></td></tr>`; }).join("");
+    $("#lecN").textContent = `${L.length.toLocaleString()}명 중 ${lpage*20+1}–${Math.min(L.length,lpage*20+20)}`; $("#lecPage").textContent = lpage+1;
+    $$("[data-scope]").forEach(s => s.addEventListener("change", e => { const l = DATA.lecturer(s.dataset.scope); l.pub = e.target.value==="전체 공개"; toast(`${l.name} 공개 범위 → ${e.target.value} · 공개 사이트 즉시 반영 (공개 ${LECTURERS.filter(x=>x.pub).length}명)`, "ok"); $("#lecKpi .kpi-c:nth-child(3) .v").textContent = LECTURERS.filter(x=>x.pub).length.toLocaleString(); }));
+    $$("[data-stop]").forEach(b => b.addEventListener("click", () => toast(`${DATA.lecturer(b.dataset.stop).name} 계정 ${b.textContent==="정지"?"정지 · 포털 접속 차단 · 진행 중 배정 재검토":"해제"}`, b.textContent==="정지"?"warn":"ok")));
+  }
+  $("#lecQ").addEventListener("input", e => { lq = e.target.value.trim(); lpage = 0; renderLec(); }); $("#lecScope").addEventListener("change", e => { lscope = e.target.value; lpage = 0; renderLec(); });
+  $("#lecPrev").addEventListener("click", () => { if (lpage>0) { lpage--; renderLec(); } }); $("#lecNext").addEventListener("click", () => { lpage++; renderLec(); });
+  $("#lecCsv").addEventListener("click", () => { const rows = [["ID","이름","분야","분야2","권역","경력","출강","평점","공개범위","법정의무","온라인","주말"], ...LECTURERS.map(l=>[l.id,l.name,l.field,l.field2||"",l.region,l.exp,l.runs,l.rating,scopeOf(l),l.legal?"Y":"",l.online?"Y":"",l.weekend?"Y":""])]; const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n"); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"})); a.download = "더알림_강사_2000.csv"; a.click(); toast("강사 2,000명 CSV를 내려받았습니다 (12열 · UTF-8 BOM)", "ok"); });
+  renderLec();
+
+  /* ---------- 콘텐츠 관리 ---------- */
+  const PG = PROGRAMS.map(p => ({ ...p, pub: true, refund: p.legal ? "비대상" : p.hours >= 4 ? "협의" : "비대상" }));
+  function renderPg(){ const c = $("#pgCenter").value; const L = PG.filter(p => !c || p.center === c); $("#pgPub").textContent = PG.filter(p=>p.pub).length;
+    $("#pgTbl tbody").innerHTML = L.map(p => `<tr><td><b>${p.name}</b></td><td>${DATA.centerName(p.center)}</td><td><input class="input" type="number" value="${p.hours}" min="1" max="16" style="height:30px;width:64px;padding:0 8px" data-pgh="${p.id}"></td><td><select class="sel" style="height:30px;padding:0 26px 0 8px;font-size:12.5px" data-pgr="${p.id}"><option ${p.refund==="인정 과정"?"selected":""}>인정 과정</option><option ${p.refund==="협의"?"selected":""}>협의</option><option ${p.refund==="비대상"?"selected":""}>비대상</option></select></td><td><label class="toggle"><input type="checkbox" data-pgp="${p.id}" ${p.pub?"checked":""}></label></td></tr>`).join("");
+    $$("[data-pgh]").forEach(i => i.addEventListener("change", e => { const p = PG.find(x=>x.id===i.dataset.pgh); p.hours = +e.target.value; toast(`${p.name} → ${p.hours}시간 · 카탈로그·견적에 반영`, "ok"); }));
+    $$("[data-pgr]").forEach(s => s.addEventListener("change", e => { const p = PG.find(x=>x.id===s.dataset.pgr); p.refund = e.target.value; toast(`${p.name} 환급 표시 → ${p.refund}`, "ok"); }));
+    $$("[data-pgp]").forEach(t => t.addEventListener("change", e => { const p = PG.find(x=>x.id===t.dataset.pgp); p.pub = e.target.checked; $("#pgPub").textContent = PG.filter(x=>x.pub).length; toast(`${p.name} 공개 ${p.pub?"ON":"OFF"} → 공개 프로그램 ${PG.filter(x=>x.pub).length}개`, p.pub?"ok":"warn"); })); }
+  $("#pgCenter").addEventListener("change", renderPg); renderPg();
+  const PN = Object.entries(PARTNERS).flatMap(([k,v]) => v.map((n,i) => ({ k, n, ok: true, last: `2026-${String(3+((i*7)%7)).padStart(2,"0")}` })));
+  $("#pnList").innerHTML = PN.map((x,i) => `<div class="lrow" style="grid-template-columns:auto minmax(0,1fr) auto"><input type="checkbox" ${x.ok?"checked":""} data-pn="${i}" style="width:18px;height:18px;accent-color:var(--ok)"><div><b>${x.n}</b> <span class="small muted">· ${x.k}</span><div class="small muted">최근 출강 ${x.last} · 이력 ${1+(i%5)}건</div></div><span class="tag ${x.ok?"ok":"soft"}">${x.ok?"노출":"비노출"}</span></div>`).join("");
+  $("#pnList").addEventListener("change", e => { const i = e.target.dataset.pn; if (i===undefined) return; const t = e.target.closest(".lrow").querySelector(".tag"); t.className = "tag " + (e.target.checked?"ok":"soft"); t.textContent = e.target.checked?"노출":"비노출"; toast(`${PN[i].n} — 공개 사이트 로고 ${e.target.checked?"노출":"비노출"} 즉시 반영`, "ok"); });
+
+  /* ---------- 자격 관리 ---------- */
+  function renderCerts(){ const pub = CERT.filter(c=>c.published); $("#certPub").textContent = pub.length; $("#certHid").textContent = CERT.length - pub.length;
+    $("#certTbl tbody").innerHTML = CERT.map(c => `<tr data-cert="${c.id}" style="cursor:pointer"><td><b>${c.name}</b> <span class="small muted">${c.grades.join("·")}</span></td><td class="small">${c.issuer}</td><td class="small">${c.regNo||'<span style="color:var(--bad)">미입력</span>'}</td><td class="num">${c.fee?DATA.won(c.fee+c.examFee+30000):"—"}</td><td>${c.published?'<span class="tag ok">공개</span>':'<span class="lock">🔒 잠김</span>'}</td></tr>`).join("");
+    $$("[data-cert]").forEach(r => r.addEventListener("click", () => editCert(r.dataset.cert))); }
+  function editCert(id){ const c = CERT.find(x=>x.id===id); const miss = []; if (!c.regNo) miss.push("등록번호"); if (!c.fee) miss.push("총비용");
+    $("#certEdit").innerHTML = `<div class="form-grid"><div class="field"><label>자격명</label><input class="input" value="${c.name}" disabled></div><div class="field"><label>발급기관 <span class="hint">등록 자격 목록에서만 선택</span></label><select class="sel" style="width:100%"><option>한국인재양성협회 (등록 32종)</option><option disabled>한국기업경영협회 (등록 자격 없음 — 선택 불가)</option></select></div><div class="field"><label>등록번호 <i style="color:var(--bad);font-style:normal">*</i></label><input class="input" id="ceReg" value="${c.regNo}" placeholder="2024-000000"></div><div class="field"><label>주무부처</label><input class="input" value="${c.name.includes("ESG")?"산업통상부":c.name.includes("노인")?"보건복지부":"교육부"}"></div><div class="field"><label>교육비</label><input class="input" id="ceFee" type="number" value="${c.fee||""}"></div><div class="field"><label>응시료</label><input class="input" type="number" value="${c.examFee}"></div><div class="field"><label>운영 형태</label><select class="sel" id="ceFmt" style="width:100%"><option ${!c.online?"selected":""}>집체</option><option ${c.online?"selected":""}>온라인</option></select></div><div class="field"><label>총 시간</label><input class="input" id="ceHrs" type="number" value="${c.hours}"></div></div>
+      <label class="check mt3"><input type="checkbox" checked disabled> "국가로부터 인정받은 공인자격이 아닙니다" 문구 (자동 삽입 · 해제 불가)</label>
+      <div id="ceWarn" class="mt3"></div>
+      <div class="row mt3"><button class="btn btn-primary btn-sm" type="button" id="ceSave">저장</button><label class="toggle"><input type="checkbox" id="cePub" ${c.published?"checked":""} ${miss.length?"disabled":""}> 공개</label><span class="lock" id="ceLock" ${miss.length?"":"hidden"}>🔒 ${miss.join("·")} 미입력 — 공개 잠김</span></div>`;
+    const warn = () => { const on = $("#ceFmt").value==="온라인" && +$("#ceHrs").value>=30; $("#ceWarn").innerHTML = on ? `<div class="notice warn small"><span>!</span><div>온라인 30시간 이상 유료 과정 — <b>원격평생교육시설 신고번호</b>가 필요합니다 (평생교육법 제33조). <input class="input mt2" placeholder="교육청 신고번호"></div></div>` : ""; }; $("#ceFmt").addEventListener("change", warn); $("#ceHrs").addEventListener("input", warn); warn();
+    $("#ceSave").addEventListener("click", () => { c.regNo = $("#ceReg").value.trim(); c.fee = +$("#ceFee").value||0; const m = !c.regNo||!c.fee; if (m) { c.published = false; toast("저장됨 — 표시 항목이 비어 공개는 잠깁니다", "warn"); } else { c.published = $("#cePub").checked || !m; toast(`저장됨 · 공개 ${c.published?"ON":"OFF"} → 공개 사이트 자격 수 ${CERT.filter(x=>x.published).length}종으로 갱신`, "ok"); } renderCerts(); editCert(id); });
+    $("#cePub").addEventListener("change", e => { c.published = e.target.checked; renderCerts(); toast(`공개 ${c.published?"ON":"OFF"} → 자격 수 ${CERT.filter(x=>x.published).length}종`, "ok"); });
+  }
+  renderCerts();
+
+  /* ---------- 광고 문구 검사기 ---------- */
+  const BAD = ["1등","1위","No.1","no.1","최고","최대","최초","유일","대표","넘버원","국내 유명","검증된","완벽"];
+  $("#copyRun").addEventListener("click", () => { const t = $("#copyIn").value; const BASIS = /(주최|후원|기준|집계|조사|통계|\b(19|20)\d{2}\b|부문)/; const sents = t.split(/(?<=[.!?])\s+|\n/).filter(Boolean); const blocked = [], passed = []; sents.forEach(s => { const hits = BAD.filter(w => s.includes(w)); if (!hits.length) return; (BASIS.test(s) ? passed : blocked).push({ s, hits }); }); $("#copyOut").innerHTML = (blocked.length ? `<div class="notice bad small"><span>⛔</span><div><b>공개 차단</b> — 근거 없는 실증 대상 표현 ${blocked.length}문장: ${blocked.flatMap(b=>b.hits).map(h=>`<span class="tag bad">${h}</span>`).join(" ")}<br>근거(주최·연도·범위·산출 기준)를 같은 문장에 붙이거나 표현을 바꾸세요. 표시광고법 제5조 실증책임 · 공정위 교육업체 제재 사례(합격자수 1위 2.86억).</div></div>` : `<div class="notice ok small"><span>✓</span><div>근거 없는 실증 대상 표현 없음 — 공개 가능</div></div>`) + (passed.length ? `<div class="notice small mt2"><span>ⓘ</span><div>근거가 붙어 통과한 표현 ${passed.length}문장: ${passed.flatMap(b=>b.hits).map(h=>`<span class="tag gold">${h}</span>`).join(" ")} — 공개 페이지에 각주가 자동으로 붙습니다.</div></div>` : ""); });
+  $("#copyFix").addEventListener("click", () => { $("#copyIn").value = "2022 소비자만족 브랜드대상 강의·교육컨설팅 부문 1위(JY네트워크 주최·중앙일보 후원). 등록 강사 2,000명(승인 1,882 · 공개 1,294, DB 집계) 네트워크와 함께합니다. 서울경제TV·전자신문 등 보도 14건."; $("#copyRun").click(); toast("근거를 붙인 문구로 바꿨습니다 — '1위'는 범위 안에서만", "ok"); });
+  $("#copyBasis").addEventListener("input", e => $("#copyFoot").textContent = e.target.value);
+
+  /* ---------- 회사 정보 ---------- */
+  $("#coSave").addEventListener("click", () => { const ok = $("#coDpo").value.trim(); $("#coLock").hidden = !!ok; $("#coDpo").parentElement.querySelector(".err").hidden = !!ok; toast(ok ? "저장 — 푸터·처리방침·자격 표시 블록 3곳에 반영, 처리방침 공개" : "저장 — 보호책임자가 비어 처리방침은 비공개 유지", ok?"ok":"warn"); });
+
+  /* ---------- 검토 항목 ---------- */
+  const REVIEW = [["F1","자격 32종 표시 항목(등록번호·기관·총비용·환불·공인 아님) — 비면 공개 잠김","certificates.html · admin 자격 관리"],["F2","자격 수 자동 집계 (손 입력 금지) · 종목/등급 단위 분리","certificates.html 상단 숫자"],["F3","발급기관은 등록 목록에서만 선택 · 기업경영협회 자격 링크 미생성","admin 자격 편집 · about.html"],["F4","환급 가능 여부 배지 · 제안서 요청 2단계 환급 체크 → 비대상 경고","program.html · request.html"],["F5","강사 공개 범위 3단계 · 홈 숫자 DB 집계 · 광고 문구 검사기 · 로고 노출 동의","lecturers.html · admin 검사기"],["F6","법정의무 과목별 인정자격 · 매칭 시 요건 없는 강사 선택 불가 · 증빙 패키지","admin 매칭 · 괴롭힘은 권장 교육"],["F7","4항목 동의 표 · 처리방침 자동 생성(OOO 금지) · 명단 열람 전용·자동 파기·재위탁 동의","request.html · admin 접수 상세 · 회사 정보"],["F8","청소년 건 경력조회 동의서 미제출 강사 배정 불가","admin 매칭 · 강사 관리"],["F9","공공기관 강사수당 등급 상한 견적 · 학교 서류 패키지","request.html 1단계"],["F10","배정이 아니라 제안→수락/거절 · 강사 최소 단가·가능 요일 설정","lecturer-portal.html"],["F11","개인 계정 + 초대코드 · 정지 1클릭 · 접속 로그 · 301 맵","admin 강사 관리 · 이관"],["F12","접수함 상태 7단계 · 매니저 배정 · 조건 필터 매칭 (아임웹 불가 3화면)","admin 접수함·매칭"],["F13","온라인 30h 이상 자격 과정 → 원격평생교육시설 신고번호 필수 경고","admin 자격 편집"],["F14","환자경험평가 7영역 → 차시 매핑 · 선택 시 조합 계산 → 제안서 프리필","outreach.html?c=medical"],["F15","4단계 위저드 + 예시 채우기 + 즉시 추천·견적 범위","request.html"],["F16","현장 기록(자사 블로그)과 담당자 평가(공개 동의 문장) 분리","cases.html"],["F17","회사 정보 단일 원본 → 푸터·처리방침·자격 블록 동시 반영 · 통신판매번호 표시","admin 회사 정보 · 푸터"],["IA","구 사이트 기능 통합 — 개인컨설팅·아카데미(일정)·공지·강사전용·출강요청·광고제휴·강사지원","consulting · academy · news · lecturer-portal · request · contact"]];
+  const rv = JSON.parse(localStorage.getItem("alrim.review")||"{}");
+  $("#reviewList").innerHTML = REVIEW.map(r=>`<label><input type="checkbox" data-r="${r[0]}" ${rv[r[0]]?"checked":""}><span><b>${r[0]}</b> ${r[1]}<small>${r[2]}</small></span><span class="tag ${rv[r[0]]?"ok":"soft"}">${rv[r[0]]?"확인":"미확인"}</span></label>`).join("");
+  $("#reviewList").addEventListener("change", e => { const i = e.target; rv[i.dataset.r] = i.checked; localStorage.setItem("alrim.review", JSON.stringify(rv)); const t = i.closest("label").querySelector(".tag"); t.className = "tag "+(i.checked?"ok":"soft"); t.textContent = i.checked?"확인":"미확인"; });
+
+  /* ---------- 이관 ---------- */
+  const REDIR = [["thealrim.com/edu","/outreach.html?c=youth"],["thealrim.com/enterprise","/outreach.html?c=corp"],["thealrim.com/hospital","/outreach.html?c=medical"],["thealrim.com/qualifications","/certificates.html"],["thealrim.com/vod","/about.html#contents"],["thealrim.com/news","/news.html"],["thealrim.com/review","/cases.html"],["thealrim.com/asso · /39","/about.html#asso"],["thealrim.com/com · /32","/about.html"],["thealrim.com/sponsor","/partners.html"],["thealrim.com/25","/request.html"],["bkh2457.mycafe24.com/pages/prim1234.php","/consulting.html"],["bkh2457.mycafe24.com/pages/lec3.php","/academy.html"],["bkh2457.mycafe24.com/pages/all_license.php","/certificates.html (와인소믈리에 제외)"],["bkh2457.mycafe24.com/lecturer/","/lecturer-portal.html"],["gangsamatching.co.kr/list.php","/lecturers.html"],["gangsamatching.co.kr/request.php","/request.html"],["gangsamatching.co.kr/lecturer/","/lecturer-portal.html"]];
+  $("#redir").innerHTML = REDIR.map(r=>`<div><span class="t">301</span><span>${r[0]} → <b>${r[1]}</b></span></div>`).join("");
+  $("#redirCsv").addEventListener("click", () => { const csv = [["from","to","code"],...REDIR.map(r=>[r[0],r[1],"301"])].map(r=>r.map(v=>`"${v}"`).join(",")).join("\r\n"); const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"})); a.download = "redirect_map.csv"; a.click(); toast("리다이렉트 맵 CSV 내려받음", "ok"); });
+
+  renderInbox(); renderMatch(); drawCharts();
+  const h = location.hash.slice(1); if (h && TITLES[h]) show(h);
+})();
+</script>
+</body></html>

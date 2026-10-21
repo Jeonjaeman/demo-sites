@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[v1] 강사 프로필 — 더알림</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.hist li{display:grid;grid-template-columns:11rem 1fr auto;gap:1.6rem;padding:1.4rem 0;border-bottom:1px solid var(--d2);font-size:1.5rem}.hist li span:first-child{color:var(--s)}
+.lstats{grid-template-columns:repeat(4,1fr)}@media (max-width:767px){.lstats{grid-template-columns:1fr 1fr}}
+.fb{padding:2rem 2.4rem;background:var(--g);border-radius:var(--r1);font-size:1.6rem;line-height:1.5}.fb+.fb{margin-top:1.2rem}.fb small{display:block;color:var(--s);margin-top:.8rem}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main class="inner max" id="main"></main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  const l = DATA.lecturer(qs("id")) || DATA.lecturer("L0001");
+  document.title = `${l.name} 강사 — 더알림`;
+  const r = (s=>()=>{ s=(s*9301+49297)%233280; return s/233280; })(parseInt(l.id.slice(1)));
+  const progs = PROGRAMS.filter(p => { const f = ({youth:"진로·취업",corp:"리더십",medical:"병원·의료",public:"소통·CS"})[p.center]; return f===l.field || f===l.field2 || (l.legal && p.legal) || (l.topics||[]).some(t=>p.name.includes(t.split(" ")[0])); }).slice(0,6);
+  const orgTypes = ["종합병원","특성화고","공공기관","대기업","중견기업","대학","요양병원","지자체"], months = ["2026.10","2026.09","2026.09","2026.08","2026.07","2026.06","2026.05","2026.04"];
+  const hist = Array.from({length:8}, (_,i) => ({ m: months[i], org: orgTypes[Math.floor(r()*orgTypes.length)]+" ("+REGIONS[Math.floor(r()*REGIONS.length)]+")", prog: progs[Math.floor(r()*Math.max(1,progs.length))]?.name || l.field+" 교육", sat: (4.3 + r()*0.7).toFixed(1) }));
+  const fbs = CASES.filter(c=>c.lec===l.id).slice(0,2);
+  const generic = [["교육 후 부서 분위기가 달라졌다는 말을 여러 명에게 들었습니다.","인사팀장 · 중견기업"],["사례가 전부 우리 현장 이야기라 몰입이 좋았습니다.","교육담당 · 공공기관"]];
+  $("#main").innerHTML = `
+  <div class="split" style="height:auto;align-items:flex-start;padding-top:6rem">
+    <div class="img" style="height:auto;aspect-ratio:1;max-width:60rem">${l.img?`<img src="../../assets/img/${l.img}.webp" alt="${l.name} 강사">`:`<div style="display:grid;place-items:center;height:100%;font-size:8rem;font-weight:700;color:#999">${l.name[0]}</div>`}</div>
+    <div class="txt" style="padding-right:0;padding-left:5rem">
+      <div class="tags">${H.tag(l.field,"on")}${l.field2?H.tag(l.field2):""}${l.legal?H.tag("법정의무 인정자격","blue"):""}${l.online?H.tag("온라인 가능"):""}${l.weekend?H.tag("주말 가능"):""}</div>
+      <h1 class="t mt3">${l.name}</h1>
+      <p class="d" style="font-weight:700">${l.title || l.field + " 전문 강사"} · ${l.region}</p>
+      <p class="d">${l.line || `${l.field} 분야에서 ${l.exp}년. 현장의 사례로 시작해 참여자가 스스로 답을 찾게 하는 방식을 고집합니다.`}</p>
+      <div class="stats lstats mt4" style="gap:1.2rem"><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.exp}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">경력 (년)</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.runs}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">출강 횟수</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${l.rating}" data-dec="1">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">담당자 평점</div></div><div class="stat" style="grid-template-columns:1fr;padding:2.4rem;gap:.4rem"><div class="n" data-count="${Math.round(l.runs*0.31)}">0</div><div class="l" style="min-height:0;font-size:1.4rem;color:var(--s)">재출강 요청</div></div></div>
+      <div class="notice mt3 small">공개 범위 — 전체 공개 (동의 2026.08.21). 연락처는 공개되지 않으며 매니저를 통해 연결됩니다. 강사 지명은 참고 사항이고 일정·권역·피드백 이력을 종합해 매니저가 최종 배정합니다.</div>
+      <div class="cta-row mt3"><a class="cta cta-k" href="request.html?lec=${l.id}">이 강사로 제안서 요청</a><a class="cta cta-o" href="lecturers.html?field=${encodeURIComponent(l.field)}">같은 분야 강사 보기</a></div>
+    </div>
+  </div>
+  <div class="view">
+    <div class="view-body">
+      <div><h2 class="t" style="font-size:2.6rem">강의 주제</h2><div class="tags mt2">${(l.topics||[l.field, l.field2].filter(Boolean)).map(t=>`<span class="tag lg">${t}</span>`).join("")}</div></div>
+      <div><h2 class="t" style="font-size:2.6rem">담당 가능 프로그램</h2><div class="cards lay-sm">${progs.slice(0,3).map(H.progCard).join("")}</div></div>
+      <div><h2 class="t" style="font-size:2.6rem">최근 출강 이력 <span class="sub" style="font-size:1.4rem;font-weight:400">기관유형·권역만 공개</span></h2><ul class="hist lay-sm">${hist.map(h=>`<li><span>${h.m}</span><span>${h.org} · ${h.prog}</span><span>★ ${h.sat}</span></li>`).join("")}</ul></div>
+      <div><h2 class="t" style="font-size:2.6rem">담당자 피드백 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 동의한 문장만 · 원문은 강사에게도 비공개</span></h2><div class="lay-sm">${(fbs.length?fbs.map(c=>[c.quote,c.who+" · "+c.org]):generic).map(([q,w])=>`<div class="fb">“${q}”<small>— ${w}</small></div>`).join("")}</div></div>
+    </div>
+    <aside class="view-rail"><div class="rail-card"><b>매칭 조건</b><p class="mt2 small">분야 ${l.field}${l.field2?" · "+l.field2:""}<br>권역 ${l.region}${l.online?" · 온라인 가능":""}${l.weekend?" · 주말 가능":""}<br>${l.legal?"법정의무 인정자격 보유":"법정의무 인정자격 없음 — 해당 과목 매칭 불가"}</p><a class="cta cta-k" href="request.html?lec=${l.id}">제안서 요청</a></div>
+      <div class="rail"><h4>같은 분야 강사</h4>${LECTURERS.filter(x=>x.pub&&x.featured&&x.id!==l.id&&(x.field===l.field||x.field2===l.field)).slice(0,3).map(x=>`<a href="lecturer.html?id=${x.id}"><div class="th" style="height:15rem"><img src="../../assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${x.name} · ${x.title}</div><div class="dt">${x.region} · 출강 ${x.runs}회 · ★ ${x.rating}</div></div></a>`).join("")}</div></aside>
+  </div>`;
+  UI.countUp();
+})();
+</script>
+</body></html>

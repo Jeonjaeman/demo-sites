@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>[v1] 개인컨설팅 — 더알림</title>
+<meta name="description" content="진로·취업·창업·프레젠테이션·온라인 마케팅 1:1 컨설팅. 대기업·공기업 전현직자와 정부지원사업 컨설턴트가 직접 합니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.con{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
+.con>article{display:flex;flex-direction:column;gap:1.2rem;padding:3.6rem 3.2rem;background:var(--g);border-radius:var(--r);transition:background-color var(--t3) ease,color var(--t3) ease}
+.con>article:hover{background:var(--k);color:var(--w)}
+.con .who{font-size:1.3rem;font-weight:700;color:var(--s)} .con>article:hover .who{color:rgba(255,255,255,.7)}
+.con h3{font-size:2.6rem;line-height:1.2;letter-spacing:-.05rem} .con .line{font-size:1.6rem;line-height:1.5}
+.con ul{display:grid;gap:.6rem;font-size:1.5rem;line-height:1.5;margin-top:.6rem} .con li::before{content:"· "}
+.con .meta{margin-top:auto;padding-top:1.6rem;border-top:1px solid var(--d2);display:flex;justify-content:space-between;align-items:baseline;font-size:1.4rem} .con>article:hover .meta{border-color:rgba(255,255,255,.3)}
+.con .meta b{font-size:2rem}
+.con .cta{align-self:flex-start;margin-top:1.2rem} .con>article:hover .cta-o{border-color:var(--w);color:var(--w)} .con>article:hover .cta-o:hover{background:var(--w);color:var(--k)}
+@media (max-width:1023px){.con{grid-template-columns:1fr 1fr}}@media (max-width:767px){.con{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd"></div>
+<main class="inner">
+<section class="kv sub kv-grad purple-1"><img src="../assets/img/consulting-room.webp" alt=""><div class="kv-text"><div class="kv-lock">CONSULTING<small>1:1 개인컨설팅</small></div><h1 class="kv-t">1:1로 묻고,<br>현직자가 답합니다</h1><p class="kv-d">진로·취업·창업·프레젠테이션·온라인 마케팅. 대기업·공기업 전현직자와 정부지원사업을 따 본 컨설턴트가 직접 합니다.</p></div></section>
+
+<section class="max">
+  <div class="tw" data-aos="fade-up"><h2 class="t">7개 과정 · 첫 상담 30분 무료</h2><p class="d">비용은 회당 기준입니다. 대학생·졸업생·중장년·경력단절 집중반은 소그룹(4명)으로도 엽니다. 온라인 또는 강남본사, 회당 60~120분.</p></div>
+  <div class="con lay-lg" id="con" data-aos-group></div>
+</section>
+
+<section class="gray"><div class="max">
+  <div class="split" data-aos="fade-up">
+    <div class="txt"><span class="ey">How it works</span><h2 class="t">컨설턴트는<br>그 일을 해 본 사람입니다</h2><p class="d">취업 컨설팅은 채용을 해 본 전현직자가, 창업 컨설팅은 정부지원금을 받아 본 대표가 맡습니다. 첫 상담 30분에서 목표를 확인하고, 회차별 과제와 피드백으로 진행합니다. 결과물(자기소개서·사업계획서·피치덱)은 본인 소유입니다.</p><div class="cta-row"><a class="cta cta-k" href="contact.html">빠른 상담 신청</a><a class="lm" href="programs.html?center=youth">기관 단위 교육은 프로그램에서</a></div></div>
+    <div class="img"><img src="../assets/img/consulting-room.webp" alt="" loading="lazy"></div>
+  </div>
+</div></section>
+
+<section class="max"><div class="qb-static" data-aos="fade-up"><img src="../assets/img/case-job.webp" alt="" loading="lazy"><div class="qi"><div><h3>첫 상담은 무료입니다</h3><p>빠른 상담에서 「개인(자격·컨설팅)」을 고르면 담당 컨설턴트가 연락합니다. 결제는 상담 뒤에 합니다.</p><div class="cta-row c mt3"><a class="cta cta-w" href="contact.html">상담 신청 · 15초</a></div></div></div></div></section>
+</main>
+<div id="ft"></div>
+<script src="assets/js/programs.js"></script><script src="assets/js/data.js"></script><script src="assets/js/shell.js"></script><script src="assets/js/ui.js"></script>
+<script>
+(function(){
+  $("#con").innerHTML = CONSULTING.map((c,i)=>`<article data-aos="fade-up" data-aos-delay="${i*60}"><span class="who">${c.who}</span><h3>${c.name}</h3><p class="line">${c.line}</p><ul>${c.items.map(x=>`<li>${x}</li>`).join("")}</ul><div class="meta"><span>${c.sessions}</span><b>${c.price}</b></div><button class="cta cta-o cta-dense" type="button" data-con="${c.id}">무료 첫 상담 신청</button></article>`).join("");
+  $("#con").addEventListener("click", e => { const b = e.target.closest("[data-con]"); if (!b) return; const c = CONSULTING.find(x=>x.id===b.dataset.con); b.textContent = "신청됨 · 연락 대기"; b.disabled = true; try { const arr = JSON.parse(localStorage.getItem("alrim.quick")||"[]"); arr.unshift({ no:"CS-"+Date.now().toString().slice(-6), type:"개인(자격·컨설팅)", name:c.name, when:"컨설팅 상담", at:new Date().toISOString() }); localStorage.setItem("alrim.quick", JSON.stringify(arr)); } catch {} toast(`${c.name} 첫 상담을 신청했습니다 — 컨설턴트가 연락드립니다`, "ok"); });
+})();
+</script>
+</body></html>
