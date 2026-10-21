@@ -28,7 +28,7 @@
   const generic = [["교육 후 부서 분위기가 달라졌다는 말을 여러 명에게 들었습니다.","인사팀장 · 중견기업"],["사례가 전부 우리 현장 이야기라 몰입이 좋았습니다.","교육담당 · 공공기관"]];
   $("#main").innerHTML = `
   <div class="split" style="height:auto;align-items:flex-start;padding-top:6rem">
-    <div class="img" style="height:auto;aspect-ratio:1;max-width:60rem">${l.img?`<img src="../../assets/img/${l.img}.webp" alt="${l.name} 강사">`:`<div style="display:grid;place-items:center;height:100%;font-size:8rem;font-weight:700;color:#999">${l.name[0]}</div>`}</div>
+    <div class="img" style="height:auto;aspect-ratio:1;max-width:60rem">${l.img?`<img src="../assets/img/${l.img}.webp" alt="${l.name} 강사">`:`<div style="display:grid;place-items:center;height:100%;font-size:8rem;font-weight:700;color:#999">${l.name[0]}</div>`}</div>
     <div class="txt" style="padding-right:0;padding-left:5rem">
       <div class="tags">${H.tag(l.field,"on")}${l.field2?H.tag(l.field2):""}${l.legal?H.tag("법정의무 인정자격","blue"):""}${l.online?H.tag("온라인 가능"):""}${l.weekend?H.tag("주말 가능"):""}</div>
       <h1 class="t mt3">${l.name}</h1>
@@ -47,7 +47,7 @@
       <div><h2 class="t" style="font-size:2.6rem">담당자 피드백 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 동의한 문장만 · 원문은 강사에게도 비공개</span></h2><div class="lay-sm">${(fbs.length?fbs.map(c=>[c.quote,c.who+" · "+c.org]):generic).map(([q,w])=>`<div class="fb">“${q}”<small>— ${w}</small></div>`).join("")}</div></div>
     </div>
     <aside class="view-rail"><div class="rail-card"><b>매칭 조건</b><p class="mt2 small">분야 ${l.field}${l.field2?" · "+l.field2:""}<br>권역 ${l.region}${l.online?" · 온라인 가능":""}${l.weekend?" · 주말 가능":""}<br>${l.legal?"법정의무 인정자격 보유":"법정의무 인정자격 없음 — 해당 과목 매칭 불가"}</p><a class="cta cta-k" href="request.html?lec=${l.id}">제안서 요청</a></div>
-      <div class="rail"><h4>같은 분야 강사</h4>${LECTURERS.filter(x=>x.pub&&x.featured&&x.id!==l.id&&(x.field===l.field||x.field2===l.field)).slice(0,3).map(x=>`<a href="lecturer.html?id=${x.id}"><div class="th" style="height:15rem"><img src="../../assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${x.name} · ${x.title}</div><div class="dt">${x.region} · 출강 ${x.runs}회 · ★ ${x.rating}</div></div></a>`).join("")}</div></aside>
+      <div class="rail"><h4>같은 분야 강사</h4>${LECTURERS.filter(x=>x.pub&&x.featured&&x.id!==l.id&&(x.field===l.field||x.field2===l.field)).slice(0,3).map(x=>`<a href="lecturer.html?id=${x.id}"><div class="th" style="height:15rem"><img src="../assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${x.name} · ${x.title}</div><div class="dt">${x.region} · 출강 ${x.runs}회 · ★ ${x.rating}</div></div></a>`).join("")}</div></aside>
   </div>`;
   UI.countUp();
 })();

@@ -36,7 +36,7 @@
       ${sessions ? `<div><h2 class="t" style="font-size:2.6rem">차시별 강의계획 <span class="sub" style="font-size:1.4rem;font-weight:400">${p.sessions.length}차시 · ${hoursTotal}분</span></h2>${sessions}</div>` : ""}
       ${blocks ? `<div>${blocks}</div>` : ""}
       ${p.effects && p.effects.length ? `<div><h2 class="t" style="font-size:2.6rem">기대효과</h2><ul class="checks lay-sm">${p.effects.map(g=>`<li>${H.esc(g)}</li>`).join("")}</ul></div>` : ""}
-      <figure><img src="../../assets/img/${H.progImg(p)}.webp" alt="" loading="lazy"><figcaption>${center.name} 현장 — 사진은 데모용 생성 이미지입니다.</figcaption></figure>
+      <figure><img src="../assets/img/${H.progImg(p)}.webp" alt="" loading="lazy"><figcaption>${center.name} 현장 — 사진은 데모용 생성 이미지입니다.</figcaption></figure>
       <div class="tags">${p.tags.map(t=>`<a class="tag" href="programs.html?q=${encodeURIComponent(t)}">#${H.esc(t)}</a>`).join("")}</div>
     </div>
     <aside class="view-rail">
@@ -45,8 +45,8 @@
         <div class="notice ${refund[0]} mt3 small">${refund[1]}</div>
         <div class="cta-row mt3"><button class="cta cta-k" type="button" data-cart="${p.id}" data-name="${H.esc(p.name)}">${cart.has(p.id)?"담김":"제안서에 담기"}</button><button class="cta cta-o" type="button" id="pdf">강의계획서 내려받기</button></div>
         <a class="u mt2" href="request.html">바로 제안서 요청</a></div>
-      <div class="rail"><h4>이 과정을 맡는 강사 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 ${availN}명 중 ${recs.length}명</span></h4>${recs.map(l=>`<a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="../../assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.region} · 경력 ${l.exp}년 · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a>`).join("")}</div>
-      <div class="rail"><h4>같은 센터의 다른 과정</h4>${PROGRAMS.filter(x=>x.center===p.center && x.id!==p.id).slice(0,3).map(x=>`<a href="program.html?id=${x.id}"><div class="th"><img src="../../assets/img/${H.progImg(x)}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.name)}</div><div class="dt">${x.hours}시간 · ${x.targets.map(t=>TARGET_LABEL[t]).slice(0,2).join(", ")}</div></div></a>`).join("")}</div>
+      <div class="rail"><h4>이 과정을 맡는 강사 <span class="sub" style="font-size:1.4rem;font-weight:400">공개 ${availN}명 중 ${recs.length}명</span></h4>${recs.map(l=>`<a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="../assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.region} · 경력 ${l.exp}년 · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a>`).join("")}</div>
+      <div class="rail"><h4>같은 센터의 다른 과정</h4>${PROGRAMS.filter(x=>x.center===p.center && x.id!==p.id).slice(0,3).map(x=>`<a href="program.html?id=${x.id}"><div class="th"><img src="../assets/img/${H.progImg(x)}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.name)}</div><div class="dt">${x.hours}시간 · ${x.targets.map(t=>TARGET_LABEL[t]).slice(0,2).join(", ")}</div></div></a>`).join("")}</div>
     </aside>
   </div>`;
   $("#pdf").addEventListener("click", () => {

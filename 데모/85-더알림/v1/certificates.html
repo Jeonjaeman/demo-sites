@@ -59,7 +59,7 @@
   $("#sample").addEventListener("click", () => show(CERTS.find(c=>c.name==="병원코디네이터").id));
   if (qs("id")) show(qs("id"));
   const STEPS = [["과정 선택·신청","총비용(교육비·응시료·발급비)과 환불 규정을 확인하고 신청합니다. 결제 전 '국가공인 자격이 아님' 고지에 동의합니다.","cert-exam"],["교육 이수","집체 16~32시간 또는 온라인. 출석 80% 이상이 검정 응시 조건입니다.","case-public2"],["검정·발급","검정 합격 시 협회 명의 자격증 발급. 등록번호가 인쇄되며 민간자격정보서비스에서 진위를 확인할 수 있습니다.","book-print"],["출강 연계 안내","수료 후 강사 지원이 가능합니다. 다만 수료가 출강이나 수익을 보장하지는 않으며, 강사 등록은 별도 심사를 거칩니다.","hero-main"]];
-  $("#howHt").innerHTML = STEPS.map((s,i)=>`<div class="ht-item ${i===0?"on":""}"><div class="ht-img"><img src="../../assets/img/${s[2]}.webp" alt="" loading="lazy"></div><div class="ht-txt"><div class="ht-h"><span class="ht-n">0${i+1}</span><span class="ht-t">${s[0]}</span></div><p class="ht-d">${s[1]}</p>${i===3?'<a class="lm ht-b" href="contact.html#apply">강사 지원</a>':""}</div></div>`).join("");
+  $("#howHt").innerHTML = STEPS.map((s,i)=>`<div class="ht-item ${i===0?"on":""}"><div class="ht-img"><img src="../assets/img/${s[2]}.webp" alt="" loading="lazy"></div><div class="ht-txt"><div class="ht-h"><span class="ht-n">0${i+1}</span><span class="ht-t">${s[0]}</span></div><p class="ht-d">${s[1]}</p>${i===3?'<a class="lm ht-b" href="contact.html#apply">강사 지원</a>':""}</div></div>`).join("");
   UI.halfTeaser();
 })();
 </script>

@@ -29,7 +29,7 @@
     <div class="mt"><div class="share"><button type="button" aria-label="공유 — 링크 복사" id="share"><i>🔗</i></button><button type="button" aria-label="인쇄" onclick="print()"><i>⎙</i></button></div><div class="info"><span>${DATA.fmtDate(c.date)}</span><span>${c.people}명 · ${c.hours}시간</span><span>담당자 평가 ★ ${c.sat}</span></div></div></div>
   <div class="view">
     <div class="view-body">
-      <figure><img src="../../assets/img/${c.img}.webp" alt=""><figcaption>${c.org} 현장 — 사진은 데모용 생성 이미지이며 실제 기관과 무관합니다.</figcaption></figure>
+      <figure><img src="../assets/img/${c.img}.webp" alt=""><figcaption>${c.org} 현장 — 사진은 데모용 생성 이미지이며 실제 기관과 무관합니다.</figcaption></figure>
       <div class="quote">“${H.esc(c.quote)}”<small>— ${c.who} · 교육 후 피드백 폼에서 공개에 동의한 문장</small></div>
       <div class="facts"><div><b>${c.people}</b><span>참여 인원</span></div><div><b>${c.hours}<em style="font-style:normal;font-size:1.8rem">h</em></b><span>교육 시간</span></div><div><b>${c.sat}</b><span>담당자 평가 (5점)</span></div><div><b>${c.repeat}</b><span>누적 출강 횟수</span></div></div>
       <div><h2 class="t" style="font-size:2.6rem">진행 과정</h2><div class="tl lay-sm">${steps.map((s,i)=>`<div><b>0${i+1}</b><div><b style="color:var(--k);font-size:1.6rem">${s[0]}</b><div class="mt1" style="line-height:1.5">${s[1]}</div></div></div>`).join("")}</div></div>
@@ -38,8 +38,8 @@
     </div>
     <aside class="view-rail">
       <div class="rail-card"><b>같은 교육을 받으려면</b><p class="mt2 small">${p?`「${H.esc(p.name)}」 ${p.hours}시간 · ${p.format.join("/")}`:c.title}<br>가용 강사 ${p?DATA.countLecturers({ field:({youth:"진로·취업",corp:"리더십",medical:"병원·의료",public:"소통·CS"})[p.center], legal:p.legal }):"—"}명</p><a class="cta cta-k" href="request.html?type=${encodeURIComponent(c.cat==="공공"?"공공기관":c.cat)}${p?"&progs="+p.id:""}">이 구성으로 제안서 요청</a></div>
-      ${l ? `<div class="rail"><h4>담당 강사</h4><a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="../../assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.field} · ${l.region} · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a></div>` : ""}
-      <div class="rail"><h4>같은 유형의 사례</h4>${same.map(x=>`<a href="case.html?id=${x.id}"><div class="th"><img src="../../assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.title)}</div><div class="dt">${x.org} · ${DATA.fmtDate(x.date)} · ★ ${x.sat}</div></div></a>`).join("")}<a class="lm mt2" href="cases.html?cat=${encodeURIComponent(c.cat)}" style="border:0;padding-left:0">${c.cat} 사례 전체</a></div>
+      ${l ? `<div class="rail"><h4>담당 강사</h4><a href="lecturer.html?id=${l.id}"><div class="th" style="height:15rem"><img src="../assets/img/${l.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${l.name} · ${l.title}</div><div class="dt">${l.field} · ${l.region} · 출강 ${l.runs}회 · ★ ${l.rating}</div></div></a></div>` : ""}
+      <div class="rail"><h4>같은 유형의 사례</h4>${same.map(x=>`<a href="case.html?id=${x.id}"><div class="th"><img src="../assets/img/${x.img}.webp" alt="" loading="lazy"></div><div><div class="ct">${H.esc(x.title)}</div><div class="dt">${x.org} · ${DATA.fmtDate(x.date)} · ★ ${x.sat}</div></div></a>`).join("")}<a class="lm mt2" href="cases.html?cat=${encodeURIComponent(c.cat)}" style="border:0;padding-left:0">${c.cat} 사례 전체</a></div>
     </aside>
   </div>`;
   $("#share").addEventListener("click", () => { navigator.clipboard && navigator.clipboard.writeText(location.href).catch(()=>{}); toast("링크를 복사했습니다", "ok"); });
