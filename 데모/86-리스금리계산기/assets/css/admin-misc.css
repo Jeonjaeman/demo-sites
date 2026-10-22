@@ -1,0 +1,42 @@
+/* 관리자 관리 · 접속기록 (분석/_실측_초안.md 5-3 · 5-4) */
+.mgr td { height: 64px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; display: inline-grid; place-items: center; background: #E3EEEB; color: var(--admin); font-weight: 800; font-size: 14px; margin-right: 10px; vertical-align: middle; }
+.avatar.is-off { background: #EEF0EF; color: #9AA09C; }
+.who { display: inline-flex; align-items: center; }
+.who b { display: block; }
+.who small { display: block; font-size: 12.5px; color: var(--admin-ink3); }
+.mgr .sw-cell { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.mgr tr.is-off td { color: #9AA09C; }
+.mgr tbody tr { cursor: default; }
+.mgr tbody tr:hover td { background: #FAFBFA; }
+.scope-sel { height: 34px; border: 1px solid var(--admin-input); border-radius: 9px; padding: 0 8px; font-size: 13.5px; font-weight: 700; }
+.hist { list-style: none; margin: 0; padding: 0; }
+.hist li { display: grid; grid-template-columns: 150px 120px 1fr; gap: 12px; padding: 11px 0; border-top: 1px solid #EEF1EF; font-size: 13.5px; }
+.hist li:first-child { border-top: 0; }
+.hist time { color: var(--admin-ink3); font-variant-numeric: tabular-nums; }
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 20px; align-items: start; margin-top: 20px; }
+.rules { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 13.5px; line-height: 1.55; color: var(--admin-ink2); }
+.rules li { display: grid; grid-template-columns: 20px 1fr; gap: 6px; }
+.rules li::before { content: "✓"; color: var(--admin); font-weight: 900; }
+
+.integrity { display: flex; align-items: center; gap: 14px; padding: 16px 20px; margin-bottom: 16px; }
+.integrity .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: #E4F0EE; color: #236C65; flex: none; }
+.integrity .ic.bad { background: #FDF1EE; color: #B03A22; }
+.integrity .ic svg { width: 22px; height: 22px; }
+.integrity b { font-size: 15px; }
+.integrity p { margin: 2px 0 0; font-size: 13px; color: var(--admin-ink3); }
+.integrity .r { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--admin-ink2); }
+.lfilters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 16px 18px; }
+.fchip { height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--admin-input); font-size: 13.5px; font-weight: 700; color: var(--admin-ink2); background: #fff; display: inline-flex; align-items: center; gap: 6px; transition: all .15s var(--ease-a); }
+.fchip i { width: 7px; height: 7px; border-radius: 50%; }
+.fchip[aria-pressed="true"] { background: #1C1F25; border-color: #1C1F25; color: #fff; }
+.lfilters select { height: 34px; border: 1px solid var(--admin-input); border-radius: 999px; padding: 0 12px; font-size: 13.5px; font-weight: 700; margin-left: auto; }
+.logt td { height: 54px; }
+.logt tbody tr { cursor: default; }
+.act { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; }
+.act i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.code { font: 11.5px/1 ui-monospace, Consolas, monospace; padding: 4px 6px; border-radius: 6px; background: var(--admin-head); color: #2A4A44; margin-left: 6px; }
+.hash { font: 12px ui-monospace, Consolas, monospace; color: #8A9098; }
+.logt tr.is-fresh td { animation: fresh 1.6s var(--ease-a); }
+@keyframes fresh { from { background: #FFF4E6; } to { background: transparent; } }
+.ltop { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: #F2F7F3; border-radius: 16px 16px 0 0; font-size: 13px; color: #2D4A40; border-bottom: 1px solid var(--admin-line); }

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>금리 분석 보고서 · 리스승계연구소</title>
+<meta name="description" content="내 리스 금리 분석 보고서 — 실제 적용 이율, 총 이자비용, 연도별·회차별 상환표 (제안용 데모)">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/report.css">
+</head>
+<body class="page-report">
+<header class="rp-bar" id="bar">
+  <div class="rp-bar__in">
+    <a class="rp-bar__logo" href="index.html" aria-label="리스승계연구소 처음으로"><img src="assets/img/logo.png" alt="리스승계연구소" width="503" height="77"></a>
+    <div class="rp-bar__t"><h1>금리 분석 보고서</h1><p id="pages">A4</p></div>
+    <div class="rp-bar__act">
+      <button class="rp-btn rp-btn--fill" type="button" id="print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg><span>인쇄 · PDF 저장</span></button>
+      <button class="rp-btn rp-btn--fill rp-btn--copy" type="button" id="copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>링크 복사</span></button>
+      <a class="rp-btn rp-btn--line" href="calc.html" id="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg><span>계산기로</span></a>
+    </div>
+  </div>
+</header>
+
+<main class="rp-view" id="view" aria-live="polite">
+  <div class="rp-verify" id="verify" hidden></div>
+  <div class="rp-sheets" id="sheets"></div>
+</main>
+
+<div class="rp-zoom" id="zoom" role="group" aria-label="확대·축소">
+  <button type="button" data-z="-1" aria-label="축소"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+  <output id="zv">100%</output>
+  <button type="button" data-z="1" aria-label="확대"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+</div>
+
+<div class="cta-bar rp-cta" id="cta"><div class="cta-bar__in">
+  <button class="cta-transfer cta-transfer--fill" type="button" id="ctaTransfer"><span><b>승계 상담 신청</b><span>리스·장기렌트 중도 처분, 승계 전문가가 도와드려요</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+</div></div>
+
+<script src="assets/js/core.js"></script>
+<script src="assets/js/server/server.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/consult.js"></script>
+<script src="assets/js/report.js"></script>
+<script src="assets/js/demo.js"></script>
+</body>
+</html>

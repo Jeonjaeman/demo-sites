@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고객 DB · 상담 고객 DB 관리 · CAR PASS</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="../assets/css/app.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="adm" data-page="customers">
+<header id="ah"></header>
+<main class="am">
+  <div class="am__head">
+    <div><h1>고객 DB</h1><p>계산기 첫 화면에서 들어온 고객 문의와, <span id="scopeTxt">모든 관리자가 등록한 상담</span>이에요.</p></div>
+    <div class="am__actions">
+      <button class="ab ab--line ab--lg" type="button" id="excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>엑셀 다운로드</button>
+      <button class="ab ab--teal ab--lg" type="button" id="add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>승계 상담 추가</button>
+    </div>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <section class="acard" aria-label="고객 목록">
+    <div class="atabs" role="tablist" id="tabs">
+      <button type="button" role="tab" data-tab="all" aria-selected="true">전체 <span class="cnt">0</span></button>
+      <button type="button" role="tab" data-tab="consult" aria-selected="false">승계상담 신청 <span class="cnt">0</span></button>
+      <button type="button" role="tab" data-tab="calc" aria-selected="false">금리계산만 <span class="cnt">0</span></button>
+      <button type="button" role="tab" data-tab="admin" aria-selected="false" class="is-right">서브관리자 등록 <span class="cnt">0</span></button>
+      <span class="atabs__bar" aria-hidden="true"></span>
+    </div>
+    <div class="atool">
+      <div class="aseg" id="seg" role="group" aria-label="상담 확인 여부">
+        <button type="button" data-seg="all" aria-pressed="true">전체 <span class="cnt">0</span></button>
+        <button type="button" data-seg="unconfirmed" aria-pressed="false">상담 미확인 <span class="cnt">0</span></button>
+        <button type="button" data-seg="confirmed" aria-pressed="false">상담 확인 <span class="cnt">0</span></button>
+      </div>
+      <div class="atool__right">
+        <div class="aseg aseg--sm" id="sort" role="group" aria-label="정렬">
+          <button type="button" data-sort="recent" aria-pressed="true">최신순</button>
+          <button type="button" data-sort="status" aria-pressed="false">진행상태순</button>
+        </div>
+        <form class="asearch" id="search" role="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input id="q" type="search" placeholder="성함, 전화번호, 차량번호 검색" aria-label="고객 검색" autocomplete="off">
+        </form>
+      </div>
+    </div>
+    <div class="atbl-wrap">
+      <table class="atbl" id="tbl">
+        <thead><tr>
+          <th class="c" style="width:44px"><button class="chk" type="button" role="checkbox" aria-checked="false" aria-label="현재 페이지 전체 선택" id="chkAll"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></button></th>
+          <th>문의일시</th><th>진행상태</th><th>성함 · 전화번호</th><th>차량번호 · 색상 · 주행</th><th>모델명</th><th>최초등록일</th><th class="r">승계 인수 총액</th><th class="r">승계 수수료</th><th class="r">월 리스료</th><th>리스 시작 · 마지막 납입</th><th class="c">상담 확인</th>
+        </tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <div class="afoot"><span id="range">-</span><div class="pager"><button class="ab ab--line ab--sm" type="button" id="prev">이전</button><b id="pg">1 / 1</b><button class="ab ab--line ab--sm" type="button" id="next">다음</button></div></div>
+  </section>
+  <p class="anote"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>성함·전화번호는 서버에 암호화해 저장하고, 이 화면의 열람·다운로드·삭제는 모두 접속기록에 남아요. (데모 데이터는 전부 가상)</p>
+</main>
+<script src="../assets/js/core.js"></script>
+<script src="../assets/js/server/server.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/admin/shell.js"></script>
+<script src="../assets/js/admin/customers.js"></script>
+<script src="../assets/js/demo.js"></script>
+</body>
+</html>

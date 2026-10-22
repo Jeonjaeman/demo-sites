@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>리스승계연구소 · 리스 금리 계산기 — 내 계약 10초 검증</title>
+<meta name="description" content="월 리스료·렌트료로 실제 적용 금리와 총 이자, 회차별 상환표를 10초 만에 확인하세요. (제안용 데모 — 모든 데이터는 가상)">
+<meta name="theme-color" content="#F6F7F2">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<meta property="og:title" content="내가 산 신차리스, 과연 잘 산 걸까?">
+<meta property="og:description" content="딱 10초, 리스 금리 계산기로 내 계약 검증하기">
+<meta property="og:image" content="assets/img/hero-think.webp">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preload" as="image" href="assets/img/hero-think.webp">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/start.css">
+</head>
+<body class="page-start">
+<div class="intro" id="intro" aria-hidden="true">
+  <button class="intro__skip" type="button" id="skip">건너뛰기</button>
+  <div class="intro__logo"><img src="assets/img/logo.png" alt="" width="503" height="77"></div>
+  <p class="intro__en">LEASE TRANSFER LAB</p>
+</div>
+
+<header class="hd hd--brand-m">
+  <div class="hd__in">
+    <a class="hd__logo" href="index.html" aria-label="리스승계연구소 처음으로"><img src="assets/img/logo.png" alt="리스승계연구소" width="503" height="77"></a>
+  </div>
+</header>
+
+<main class="start" id="main">
+  <div class="start__grid">
+    <section class="start__visual" aria-label="리스 금리 계산기 소개">
+      <div class="bn" id="banner">
+        <img class="bn__img" src="assets/img/hero-think.webp" srcset="assets/img/hero-think-720.webp 720w, assets/img/hero-think.webp 1200w" sizes="(min-width:1240px) 632px, (min-width:640px) 640px, 100vw" alt="" width="1200" height="800" fetchpriority="high">
+        <div class="bn__shade"></div>
+        <div class="bn__yt" aria-hidden="true"><i></i>리스승계연구소</div>
+        <span class="bn__q q1" aria-hidden="true">?</span><span class="bn__q q2" aria-hidden="true">?</span>
+        <h2 class="bn__h"><span>내가 산 <mark>신차리스</mark>,</span><span>과연 <mark>잘 산 걸까?</mark></span><span>당한 걸까?</span></h2>
+        <div class="bn__panel" aria-hidden="true"></div>
+        <p class="bn__know">확인해 보기 전엔 <b>모릅니다.</b></p>
+        <div class="bn__timer" aria-hidden="true">
+          <svg viewBox="0 0 100 112"><g fill="none" stroke="#111" stroke-width="5"><circle cx="50" cy="56" r="40" fill="#fff"/><path d="M42 8h16M50 8v8M83 22l6-6" stroke-linecap="round"/></g>
+            <circle cx="50" cy="56" r="40" fill="none" stroke="#E3E92C" stroke-width="7" stroke-linecap="round" class="ring"/>
+            <text x="50" y="66" text-anchor="middle" font-size="28" font-weight="900" font-family="Pretendard Variable,Pretendard,sans-serif" fill="#111" font-style="italic">10<tspan font-size="16">초</tspan></text>
+            <g stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".9"><path d="M-14 44h12M-18 56h14M-14 68h12"/></g></svg>
+        </div>
+        <p class="bn__ten">딱 <b>10초,</b><br><b>리스 금리</b> 계산기로<br>내 계약 검증하기</p>
+        <a class="bn__cta" href="#f-plate" id="bannerCta">지금 바로 확인하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></a>
+      </div>
+      <div class="start__feats">
+        <div class="feat" data-rv style="--d:80ms"><span class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18"/><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="17" r="2.2"/></svg></span><div><b>내 리스 금리</b><span>월 리스료로 실제 적용된 금리를 계산해요</span></div></div>
+        <div class="feat" data-rv style="--d:160ms"><span class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg></span><div><b>총 이자 · 상환표</b><span>회차별 원금과 이자를 한눈에 보여 드려요</span></div></div>
+        <div class="feat" data-rv style="--d:240ms"><span class="feat__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6" stroke-linecap="round"/></svg></span><div><b>금리 분석 보고서</b><span>내 계약을 보고서로 확인하고 출력해요</span></div></div>
+      </div>
+    </section>
+
+    <form class="start__form" id="form" novalidate aria-labelledby="formTitle">
+      <div class="start__fhead"><h1 id="formTitle">계산을 시작하기 전에<br>기본 정보를 입력해 주세요</h1><button class="start__sample" type="button" id="sample">예시 값 채우기</button></div>
+
+      <div class="field" id="fd-plate">
+        <label class="field__label" for="f-plate">차량번호 <span class="req" aria-hidden="true">*</span></label>
+        <div class="input"><input id="f-plate" name="plate" autocomplete="off" inputmode="text" placeholder="예) 123우1234" maxlength="12" aria-describedby="h-plate" required></div>
+        <p class="field__hint" id="h-plate">123우1234 또는 12우1234 형식으로 입력해 주세요.</p>
+      </div>
+      <div class="field" id="fd-name">
+        <label class="field__label" for="f-name">성함 <span class="req" aria-hidden="true">*</span></label>
+        <div class="input"><input id="f-name" name="name" autocomplete="name" placeholder="이름을 입력해 주세요" maxlength="20" required></div>
+      </div>
+      <div class="field" id="fd-phone">
+        <label class="field__label" for="f-phone">전화번호 <span class="req" aria-hidden="true">*</span></label>
+        <div class="input"><input id="f-phone" name="phone" autocomplete="tel" inputmode="numeric" placeholder="010-0000-0000" maxlength="13" required></div>
+      </div>
+
+      <div class="consent" id="consent">
+        <div class="consent__row">
+          <label class="check"><input type="checkbox" id="c-collect"><span class="check__box"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check__txt">개인정보 수집·이용에 동의합니다. <em>(필수)</em></span></label>
+          <button class="consent__more" type="button" data-terms="collect">자세히</button>
+        </div>
+        <div class="consent__row">
+          <label class="check"><input type="checkbox" id="c-contact"><span class="check__box"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="check__txt">승계 상담 연락을 받을게요. <em class="opt">(선택)</em></span></label>
+          <button class="consent__more" type="button" data-terms="contact">자세히</button>
+        </div>
+      </div>
+
+      <div class="start__submit-in"><button class="btn btn--primary btn--block" type="submit" data-submit disabled>확인</button></div>
+    </form>
+  </div>
+
+  <div class="cta-bar"><div class="cta-bar__in"><button class="btn btn--primary btn--block" type="submit" form="form" data-submit disabled>확인</button></div></div>
+</main>
+
+<script src="assets/js/core.js"></script>
+<script src="assets/js/server/server.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/start.js"></script>
+<script src="assets/js/demo.js"></script>
+</body>
+</html>

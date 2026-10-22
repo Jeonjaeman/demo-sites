@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>리스·장기렌트 금리 계산기 · 리스승계연구소</title>
+<meta name="description" content="취득원가·보증금·잔존가치·월 리스료를 넣으면 실제 적용 금리와 총 이자, 회차별 상환표를 계산합니다. (제안용 데모)">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/calc.css">
+</head>
+<body class="page-calc">
+<header class="hd hd--app">
+  <div class="hd__in">
+    <a class="hd__back" href="index.html" aria-label="뒤로가기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+    <h1 class="hd__title">리스·장기렌트 금리 계산기</h1>
+    <a class="hd__logo" href="index.html" aria-label="리스승계연구소 처음으로"><img src="assets/img/logo.png" alt="리스승계연구소" width="503" height="77"></a>
+  </div>
+</header>
+<div class="offline-bar" id="offlineBar" hidden><i></i>오프라인 상태예요</div>
+
+<main class="page calc" id="main">
+  <div class="calc__grid" id="calcGrid">
+    <!-- 왼쪽: 계산 조건 -->
+    <section class="calc__left" aria-labelledby="condTitle">
+      <div class="calc__intro">
+        <h2 class="calc__h">리스·장기렌트 금리 계산기</h2>
+        <p class="calc__lead">리스 · 렌트 조건을 넣으면 금리와 이자를 바로 계산해요.</p>
+        <p class="notice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/></svg>잘 모르는 항목은 계약서나<br>이용 중인 캐피탈 · 렌트사에서 확인할 수 있어요.</p>
+      </div>
+
+      <form class="card cond" id="cond" novalidate autocomplete="off">
+        <div class="cond__head">
+          <h3 id="condTitle">계산 조건</h3>
+          <button class="pill-btn" type="button" id="reset"><svg class="spin-on-hover" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>초기화</button>
+        </div>
+        <div class="seg" id="type" data-v="lease" role="group" aria-label="계약 구분">
+          <span class="seg__ind" aria-hidden="true"></span>
+          <button type="button" data-v="lease" aria-pressed="true">리스</button>
+          <button type="button" data-v="rent" aria-pressed="false">장기렌트</button>
+        </div>
+
+        <div class="cond__fields">
+          <div class="field" data-f="price">
+            <label class="field__label" for="i-price"><span data-l="price">취득원가 · 리스원금</span> <small data-s="price">(신차출고가 + 부대비용)</small></label>
+            <div class="input input--num"><input id="i-price" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+            <span class="field__read" aria-hidden="true"></span>
+          </div>
+          <div class="grid2">
+            <div class="field" data-f="prepay">
+              <label class="field__label" for="i-prepay">선납금 <small>(선수금)</small></label>
+              <div class="input input--num"><input id="i-prepay" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+              <span class="field__read" aria-hidden="true"></span>
+            </div>
+            <div class="field" data-f="deposit">
+              <label class="field__label" for="i-deposit">보증금 <span class="ratio" data-ratio="deposit"></span></label>
+              <div class="input input--num"><input id="i-deposit" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+              <span class="field__read" aria-hidden="true"></span>
+            </div>
+          </div>
+          <div class="field" data-f="residual">
+            <label class="field__label" for="i-residual"><span data-l="residual">잔존가치</span> <small data-s="residual">(만기 인수가)</small> <span class="ratio" data-ratio="residual"></span></label>
+            <div class="input input--num"><input id="i-residual" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+            <span class="field__read" aria-hidden="true"></span>
+          </div>
+          <div class="field" data-f="months">
+            <label class="field__label" for="i-months">계약기간</label>
+            <div class="input input--num"><input id="i-months" inputmode="numeric" placeholder="0" maxlength="3"><span class="unit">개월</span></div>
+            <div class="chips" role="group" aria-label="계약기간 빠른 선택">
+              <button class="chip" type="button" data-m="12" aria-pressed="false">12개월</button><button class="chip" type="button" data-m="24" aria-pressed="false">24개월</button><button class="chip" type="button" data-m="36" aria-pressed="false">36개월</button><button class="chip" type="button" data-m="48" aria-pressed="false">48개월</button><button class="chip" type="button" data-m="60" aria-pressed="false">60개월</button>
+            </div>
+          </div>
+          <div class="field" data-f="payment">
+            <label class="field__label" for="i-payment"><span data-l="payment">월 리스료</span></label>
+            <div class="input input--num"><input id="i-payment" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+            <span class="field__read" aria-hidden="true"></span>
+          </div>
+          <div class="field" data-f="service" hidden>
+            <label class="field__label" for="i-service">렌트료에 포함된 비용 <small>(보험·자동차세·정비)</small></label>
+            <div class="input input--num"><input id="i-service" inputmode="numeric" placeholder="0"><span class="unit">원</span></div>
+            <div class="svc-help"><span>렌트료엔 금융 외 비용이 섞여 있어요. 빼지 않으면 금리가 높게 나와요.</span><button type="button" class="svc-est" id="svcEst">예상값 넣기</button></div>
+          </div>
+          <div class="field" data-f="startDate">
+            <label class="field__label" for="i-start"><span data-l="start">리스 시작일</span> <small>(1회차 납입일)</small></label>
+            <div class="input input--date"><input id="i-start" type="date"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></div>
+          </div>
+        </div>
+
+        <details class="basis" id="basis">
+          <summary><span>계산 기준</span><em id="basisSum">보증금 반영 · 후납</em><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="basis__body">
+            <p class="basis__label">보증금 처리</p>
+            <div class="mini-seg" data-k="depositMode"><button type="button" data-v="net" aria-pressed="true">실제 현금흐름 반영</button><button type="button" data-v="ignore" aria-pressed="false">반영 안 함(시안 방식)</button></div>
+            <p class="basis__label">1회차 납입 시점</p>
+            <div class="mini-seg" data-k="timing"><button type="button" data-v="arrears" aria-pressed="true">출고 1개월 뒤</button><button type="button" data-v="advance" aria-pressed="false">출고일(선납)</button></div>
+            <p class="basis__note">보증금은 리스사가 만기까지 이자 없이 맡아 두는 돈이라, 그만큼 빌린 돈이 줄어든 계약과 같아요. 반영하지 않으면 금리가 낮게 보여요.</p>
+          </div>
+        </details>
+      </form>
+
+      <a class="tel-box" href="tel:16000000" id="telBox">
+        <span>입력이 어려우시면 관리자에게 전화 주세요</span>
+        <b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>1600-0000</b>
+      </a>
+      <a class="bn2" href="#" id="bn2" aria-label="승계 상담 신청">
+        <img src="assets/img/hero-point-720.webp" srcset="assets/img/hero-point-720.webp 720w, assets/img/hero-point.webp 1200w" sizes="(min-width:960px) 420px, 100vw" alt="" width="720" height="480" loading="lazy">
+        <div class="bn2__shade"></div>
+        <div class="bn2__yt" aria-hidden="true"><i></i>리스승계연구소</div>
+        <p class="bn2__h"><span>리스차량</span><span><mark>중도처분</mark>을 원하시면</span><span class="big">정답은</span><span class="big"><em>승계</em>입니다!</span></p>
+        <div class="bn2__panel"><span class="bn2__shake" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14l-3.5-3.5M20 16H6l3.5 3.5"/></svg></span><b>승계는<br><em>승계 전문가</em>에게 맡겨주세요</b><span class="bn2__cta">상담신청<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span></div>
+      </a>
+    </section>
+
+    <!-- 오른쪽: 결과 -->
+    <section class="calc__right" aria-label="계산 결과">
+      <div id="result" aria-live="polite"></div>
+
+      <p class="calc__disc">실제 금융사 조건(중도상환수수료, 일할 이자 등)에 따라 금액이 다를 수 있습니다.<br>모든 계산은 서버에서 처리되며, 화면에는 결과만 전달됩니다.</p>
+    </section>
+  </div>
+</main>
+
+<div class="page-state" id="pageState" hidden></div>
+
+<div class="cta-bar"><div class="cta-bar__in">
+  <button class="cta-transfer" type="button" id="ctaTransfer"><span><b>승계 상담 신청</b><span>리스·장기렌트 중도 처분, 승계 전문가가 도와드려요</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+</div></div>
+
+<script src="assets/js/core.js"></script>
+<script src="assets/js/server/server.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/consult.js"></script>
+<script src="assets/js/calc.js"></script>
+<script src="assets/js/demo.js"></script>
+</body>
+</html>
