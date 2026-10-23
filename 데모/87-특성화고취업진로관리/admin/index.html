@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>교사 로그인 — CAREERPASS 커리어패스 (데모)</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body class="login-body">
+<a class="skip" href="#main">본문으로</a>
+<main id="main" class="login">
+  <section class="login__panel" data-reveal>
+    <a class="brand brand--lg" href="../index.html"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">CAREERPASS<small>한빛직업고 취업지원부 · 교사 콘솔</small></span></a>
+    <h1 class="login__h1">역할을 고르면<br>그 선생님의 화면으로 들어갑니다</h1>
+    <p class="login__lead">같은 데이터를 역할마다 다르게 봅니다. 담임은 본인 학급만, 취업지원부는 전체를 보고 배정·발송하며, 총괄 관리자는 권한과 연동까지 관리합니다. 비밀번호 없이 클릭 한 번으로 체험됩니다.</p>
+    <div class="role-cards" id="roles"></div>
+    <details class="login__real">
+      <summary>실제 서비스의 로그인 방식</summary>
+      <p>교직원은 학교 계정(ID·비밀번호) + 외부망 접속 시 휴대폰 인증번호 2단계, 학생은 학번 + 초기 비밀번호 변경 강제, 학부모는 로그인 없이 알림톡 1회용 링크 + 휴대폰 뒤 4자리 확인으로 설계합니다. 개인정보처리시스템 접속기록은 1년 이상 보관합니다.</p>
+    </details>
+  </section>
+  <aside class="login__aside" aria-label="체험 안내">
+    <h2 class="t-eyebrow">입력 없이 5분 체험</h2>
+    <ol class="howto">
+      <li><span><b>취업지원부</b>로 들어가 대시보드에서 <b>「미완료 전원 독려 알림톡 발송」</b>을 눌러 보세요.</span></li>
+      <li><span>전자동의 화면에서 진행 중인 건의 <b>「학부모 화면 열기」</b> → 휴대폰에서 서명하는 화면이 그대로 나옵니다 (OTP는 미리 채워져 있어요).</span></li>
+      <li><span>서명을 마치고 돌아오면 상태가 <b>「서명 완료」</b>로 바뀌고 다음 차례(학생) 링크가 열립니다.</span></li>
+      <li><span>맞춤 알림에서 조건 칩을 누르면 발송 대상 수가 <b>실제로</b> 바뀝니다. 대시보드의 <b>「교육부 기준 / 3학년 전체」</b> 토글도 눌러 보세요.</span></li>
+      <li><span>역할을 <b>담임</b>으로 바꾸면 목록이 한 학급으로 줄고 발송·배정 버튼이 잠깁니다.</span></li>
+    </ol>
+    <p class="t-small muted">모든 인물·기업·수치는 가상입니다. 바꾼 상태는 이 브라우저에만 저장됩니다.</p>
+  </aside>
+</main>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/calc.js"></script>
+<script src="../assets/js/ui.js"></script>
+<script>
+(function(){
+  const next = new URLSearchParams(location.search).get('next') || 'dashboard.html';
+  const DESC = {
+    teacher: ['본인 학급(소프트웨어과 3-1) 18명만 보입니다', '증빙 확인·상담 메모·리포트 인쇄는 가능', '배정·알림 발송·교육청 추출은 잠깁니다'],
+    staff: ['전체 학과 153명 열람·배정·발송', '동의서 발송·재발송·PDF, 엑셀 일괄 업로드', '교육청 보고 양식 XLSX 추출'],
+    admin: ['취업지원부 권한 전부 +', '3단계 권한 매트릭스 · 알림톡 템플릿 상태', '접속·처리 기록(감사 로그) 열람'],
+  };
+  const wrap = document.getElementById('roles');
+  wrap.innerHTML = Object.values(CP.ROLES).map((r,i)=>`
+    <button class="role-card role-card--${r.id}" data-role="${r.id}" style="--i:${i}" data-reveal>
+      <span class="role-card__top"><span class="role-chip role-chip--${r.id}">${r.name}</span><span class="role-card__person">${r.person}</span></span>
+      <ul class="role-card__list">${DESC[r.id].map(t=>`<li>${t}</li>`).join('')}</ul>
+      <span class="role-card__cta">이 역할로 체험 →</span>
+    </button>`).join('');
+  wrap.addEventListener('click', e => { const b = e.target.closest('[data-role]'); if(!b) return; CP.setRole(b.dataset.role); CP.audit('로그인', CP.ROLES[b.dataset.role].name); b.classList.add('is-going'); setTimeout(()=>location.href = next, 260); });
+  UI.reveal();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* 진로 가이드 리포트 인쇄 — A4 · 콘솔 셸 숨김 */
+@page { size: A4; margin: 14mm; }
+.side, .topbar, .scope-bar, .scrim, .toasts, .no-print, .modal { display: none !important; }
+.shell { display: block; } .content { padding: 0; max-width: none; }
+.a4-wrap { display: block; } .a4 { box-shadow: none; border-radius: 0; width: auto; min-height: 0; padding: 0; color: #000; }
+.a4__memo textarea { border: 1px solid #999; }
+a::after { content: none !important; }
+body { background: #fff; }

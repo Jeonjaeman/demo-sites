@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CAREERPASS 커리어패스 — 특성화고 취업·진로 이력 관리 + 현장실습 전자동의 (데모)</title>
+<meta name="description" content="특성화고 학생의 자격증·어학·포트폴리오를 누적 관리하고, 현장실습 기업 매칭과 학부모 터치 서명 동의서, 맞춤 알림톡 발송을 한 곳에서 처리하는 시스템 데모. 교사 콘솔 · 학생 모바일 웹 · 학부모 서명 페이지. 모든 데이터는 가상입니다.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<meta property="og:title" content="CAREERPASS 커리어패스 — 특성화고 취업·진로 이력 관리 데모">
+<meta property="og:description" content="교사 콘솔 · 학생 모바일 웹 · 학부모 서명 페이지. 입력 없이 클릭만으로 체험됩니다.">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/hub.css">
+</head>
+<body class="hub-body">
+<a class="skip" href="#main">본문으로</a>
+<header class="hub-top">
+  <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">CAREERPASS<small>커리어패스 · 데모</small></span></a>
+  <nav class="hub-nav" aria-label="데모 메뉴"><a href="admin/index.html">교사 콘솔</a><a href="app/index.html">학생 앱</a><a href="sign.html?t=sample">학부모 서명</a><a href="proposal.html">제안 노트</a></nav>
+</header>
+
+<main id="main">
+  <section class="hub-hero">
+    <p class="t-eyebrow" data-reveal>위시켓 159208 · 특성화고 학생 취업·진로 이력 관리 및 현장실습 시스템 — 제안용 데모</p>
+    <h1 class="hub-h1" data-reveal style="--i:1">수기로 모으던 자격증과 동의서를,<br>선생님은 클릭 몇 번으로 · 학생과 학부모는 휴대폰으로.</h1>
+    <p class="hub-lead" data-reveal style="--i:2">공고의 5개 모듈(대시보드 · 학생 이력 · 현장실습 매칭·전자동의 · 진로 가이드 · 맞춤 알림·통계)을 세 사람의 화면으로 나눠 실제로 동작하게 만들었습니다. 입력 없이 버튼만 눌러도 흐름이 끝까지 이어집니다. 인물·기업·수치는 전부 가상입니다.</p>
+    <div class="hub-roles">
+      <a class="role-tile role-tile--teacher" href="admin/index.html" data-reveal style="--i:3">
+        <span class="role-tile__kicker">교사 콘솔 · PC</span><strong>취업지원부 · 담임 · 총괄 관리자</strong>
+        <ul><li>KPI 대시보드 · 학과별 비교 그래프</li><li>동의서 3종 상태 · 독려 알림톡 즉시 발송</li><li>엑셀 일괄 업로드 (오류 행 검증)</li><li>기업 공고 등록 · 기준 검증 · 학생 배정</li><li>맞춤 알림 · 교육청 XLSX · 3단계 권한</li></ul>
+        <span class="role-tile__cta">역할 골라 들어가기 →</span>
+      </a>
+      <a class="role-tile role-tile--student" href="app/index.html" data-reveal style="--i:4">
+        <span class="role-tile__kicker">학생 모바일 웹</span><strong>3학년 학생</strong>
+        <ul><li>내 준비도 링 · 해야 할 일</li><li>자격증·어학·수상 등록 → 교사 확인</li><li>포트폴리오 v1·v2 누적</li><li>희망 직무 바꿔 보며 갭 재계산</li><li>실습 공고 지원 · 알림함</li></ul>
+        <span class="role-tile__cta">학생 화면 열기 →</span>
+      </a>
+      <a class="role-tile role-tile--parent" href="sign.html?t=sample" data-reveal style="--i:5">
+        <span class="role-tile__kicker">학부모 서명 · 로그인 없음</span><strong>알림톡 링크로 들어온 보호자</strong>
+        <ul><li>휴대폰 뒤 4자리 본인 확인 (5회 제한)</li><li>요약 카드 → 전문 끝까지 읽기</li><li>필수 동의 3항목 개별 체크</li><li>손가락 서명 · 다시 쓰기</li><li>서명본 PDF · 확인번호 · 거부 경로</li></ul>
+        <span class="role-tile__cta">샘플 링크로 서명해 보기 →</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="hub-flow" data-reveal>
+    <h2 class="hub-h2">5분 체험 순서 — 세 화면이 실제로 연결됩니다</h2>
+    <ol class="flow">
+      <li><b>교사 콘솔</b>에서 「취업지원부로 체험」 → 대시보드 「미완료 전원 독려 알림톡 발송」</li>
+      <li><b>전자동의</b>에서 아무 행의 「학부모 링크 열기」 → 휴대폰 화면 그대로 서명</li>
+      <li>서명 후 돌아오면 상태가 <b>「서명 완료」</b>로 바뀌고 PDF 버튼이 활성화</li>
+      <li><b>학생 앱</b>에서 자격증을 올리면 교사 콘솔 학생 상세에 「확인 대기」로 등장 → 확인하면 준비도 숫자가 바뀜</li>
+      <li><b>맞춤 알림</b>에서 「필수 자격증 미보유」 칩 → 대상 수가 줄고, 야간엔 광고성 템플릿 발송이 막힘</li>
+    </ol>
+  </section>
+
+  <section class="hub-find" data-reveal>
+    <h2 class="hub-h2">요구사항대로만 만들면 걸리는 지점 — 설명이 아니라 기능으로 넣었습니다</h2>
+    <div class="finds" id="finds"></div>
+    <p class="t-small muted">전체 발견과 근거는 <a class="plink" href="proposal.html">제안 노트</a>와 <code>분석/기획_설계.md</code>에 있습니다.</p>
+  </section>
+
+  <section class="hub-spec" data-reveal>
+    <h2 class="hub-h2">화면 지도 — 공고 2-1~2-5 ↔ 데모 페이지</h2>
+    <div class="table-wrap"><table class="table table--compact"><thead><tr><th>공고 모듈</th><th>데모 페이지</th><th>눌러 볼 것</th></tr></thead><tbody>
+      <tr><td>2-1 통합 대시보드</td><td><a class="plink" href="admin/dashboard.html">admin/dashboard</a></td><td>KPI 카운트업 · 학과별 그래프 · 서명 상태 필터 · 독려 발송</td></tr>
+      <tr><td>2-2 학생 프로필·이력</td><td><a class="plink" href="admin/students.html">admin/students</a> · <a class="plink" href="admin/student.html">student</a> · <a class="plink" href="app/me.html">app/me</a></td><td>엑셀 업로드 검증 · 증빙 확인/반려 · 포트폴리오 버전</td></tr>
+      <tr><td>2-3 현장실습 매칭·전자동의</td><td><a class="plink" href="admin/jobs.html">admin/jobs</a> · <a class="plink" href="admin/consents.html">consents</a> · <a class="plink" href="sign.html?t=sample">sign</a></td><td>기준 초과 공고 배정 잠김 · 발송 → 서명 → PDF</td></tr>
+      <tr><td>2-4 진로 가이드 리포트</td><td><a class="plink" href="admin/report.html">admin/report</a> · <a class="plink" href="app/path.html">app/path</a></td><td>갭 계산 · 다른 직무 비교 · A4 인쇄</td></tr>
+      <tr><td>2-5 맞춤 알림·취업 통계</td><td><a class="plink" href="admin/messages.html">admin/messages</a> · <a class="plink" href="admin/stats.html">stats</a> · <a class="plink" href="admin/settings.html">settings</a></td><td>대상 추출 · 변수 치환 · SMS 대체 · XLSX · 권한 매트릭스</td></tr>
+    </tbody></table></div>
+  </section>
+</main>
+
+<footer class="hub-foot">
+  <p>CAREERPASS 커리어패스 · 제안용 데모 · 인물·기업·학교명·수치는 전부 가상입니다 · 바꾼 상태는 이 브라우저에만 저장됩니다 <button class="btn btn--text btn--sm" data-reset>초기화</button></p>
+  <p><a href="proposal.html">제안 노트</a> · <a href="../../index.html">데모 포털</a></p>
+</footer>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/calc.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/findings.js"></script>
+<script>
+(function(){
+  const el = document.getElementById('finds');
+  if (window.FINDINGS) el.innerHTML = FINDINGS.slice(0,6).map((f,i)=>`<article class="find" data-reveal style="--i:${i}"><span class="find__n">${String(i+1).padStart(2,'0')}</span><h3>${f.title}</h3><p>${f.text}</p><p class="find__how"><b>데모에서</b> ${f.how}</p>${f.href?`<a class="plink t-small" href="${f.href}">${f.hrefLabel||'보러 가기'} →</a>`:''}</article>`).join('');
+  UI.bindReset(); UI.reveal();
+})();
+</script>
+</body>
+</html>

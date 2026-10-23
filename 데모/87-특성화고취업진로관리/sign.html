@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>현장실습 동의서 서명 — CAREERPASS 커리어패스 (데모)</title>
+<meta name="description" content="알림톡 링크로 진입한 학부모·학생이 로그인 없이 본인확인 → 문서 열람 → 터치 서명으로 현장실습 사전 동의서를 제출하는 화면. 데모 데이터는 전부 가상입니다.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/sign.css">
+</head>
+<body class="sign-body">
+<a class="skip" href="#main">본문으로</a>
+
+<header class="sign-top">
+  <div class="sign-top__school"><span class="sign-top__mark" aria-hidden="true"></span><span>한빛직업고등학교 취업지원부</span></div>
+  <span class="sign-top__demo">데모 · 가상 데이터</span>
+</header>
+
+<main id="main" class="sign-main" aria-live="polite">
+  <!-- 진행 표시 -->
+  <ol class="steps" id="steps" aria-label="진행 단계">
+    <li data-step="1" class="is-current"><span class="steps__n">1</span><span class="steps__t">안내</span></li>
+    <li data-step="2"><span class="steps__n">2</span><span class="steps__t">본인 확인</span></li>
+    <li data-step="3"><span class="steps__n">3</span><span class="steps__t">내용 확인</span></li>
+    <li data-step="4"><span class="steps__n">4</span><span class="steps__t">서명</span></li>
+    <li data-step="5"><span class="steps__n">5</span><span class="steps__t">완료</span></li>
+  </ol>
+
+  <section id="view" class="sign-view"></section>
+</main>
+
+<footer class="sign-foot">
+  <p>문의 · 한빛직업고 취업지원부 02-123-4567 (평일 09:00~16:30)</p>
+  <p>이 링크는 본인에게만 발송된 1회용 링크입니다. 다른 사람에게 전달하지 마세요.</p>
+  <p class="sign-foot__links"><a href="index.html">데모 입구</a> · <a href="admin/consents.html">교사 화면에서 상태 보기</a></p>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/calc.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/sign.js"></script>
+</body>
+</html>

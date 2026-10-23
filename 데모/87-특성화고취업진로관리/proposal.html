@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>제안 노트 — CAREERPASS 커리어패스 (위시켓 159208)</title>
+<meta name="description" content="특성화고 취업·진로 이력 관리 및 현장실습 시스템 제안 — 리서치 발견 18건, 화면 구성, 기술 스택, 60일 일정, 완료 기준, 의뢰자 준비 사항.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/hub.css">
+</head>
+<body class="hub-body">
+<a class="skip" href="#main">본문으로</a>
+<header class="hub-top">
+  <a class="brand" href="index.html"><span class="brand__mark" aria-hidden="true"></span><span class="brand__name">CAREERPASS<small>제안 노트</small></span></a>
+  <nav class="hub-nav" aria-label="데모 메뉴"><a href="index.html">데모 입구</a><a href="admin/index.html">교사 콘솔</a><a href="app/index.html">학생 앱</a><a href="sign.html?t=sample">학부모 서명</a></nav>
+</header>
+<main id="main">
+  <section class="prop-hero">
+    <p class="t-eyebrow" data-reveal>위시켓 159208 · 특성화고 학생 취업·진로 이력 관리 및 현장실습 시스템 구축 · 1,500만원 · 60일</p>
+    <h1 class="hub-h1" data-reveal style="--i:1">요구사항대로만 만들면<br>어디서 멈추는지 먼저 확인했습니다.</h1>
+    <p class="hub-lead" data-reveal style="--i:2">공고의 5개 모듈을 교육부 2025 현장실습 운영 매뉴얼, 전자서명법, 정보통신망법, 교육기본법과 하나씩 대조했습니다. 그 결과 문서 흐름·알림톡·통계 정의에서 그대로 만들면 작동하지 않거나 효력이 없는 지점이 나왔고, 전부 설명이 아니라 <b>동작하는 화면</b>으로 데모에 넣었습니다. 아래는 그 목록과 구축 계획입니다.</p>
+  </section>
+
+  <section class="prop-sec" id="finds">
+    <h2><small>01</small>치명적 발견 18건 중 데모에 구현한 15건</h2>
+    <div class="finds" id="finds-list"></div>
+    <p class="t-small muted">F13(클라우드 CSAP 등급)·F14(학습지원 SW 심의 해당 여부)는 운영 준비 체크리스트로, 출처·근거 URL 전체는 <code>분석/기획_설계.md</code>에 있습니다.</p>
+  </section>
+
+  <section class="prop-sec" id="arch">
+    <h2><small>02</small>화면 구성 — 세 표면 18페이지</h2>
+    <div class="arch">
+      <div><span>A · 교사 콘솔 (PC 우선 · 반응형)</span><b>10페이지</b>로그인(역할 3) · 대시보드(KPI·분모 토글·학과 비교·오늘 할 일·4단 서명 상태) · 학생 목록(필터·엑셀 업로드 검증) · 학생 상세(이력 타임라인·증빙 확인·버전·갭·서명자 패널·메모) · 기업 공고·매칭(협약 항목 1:1 검증·승인 상태·배정 잠금·정보 제공 동의) · 전자동의(4단 체인·순서 잠금·날인·변경 합의·HIFIVE·취업전환) · 맞춤 알림(대상 추출·템플릿 상태·개인화·실패 사유·비용) · 통계·보고(분모 토글·점검 일지·사안보고서·교육청 XLSX 4시트) · 진로 리포트(A4) · 운영(권한·기준표 편집·발송 준비·운영 준비·보존·파기·검토 항목·감사 로그)</div>
+      <div><span>B · 학생 모바일 웹 (PWA)</span><b>5페이지</b>홈(준비도 링·할 일·내 실습·HIFIVE 딥링크·새 공고) · 내 이력(자격·어학·수상 등록 → 교사 확인 · 반려 재등록 · 포트폴리오 버전) · 진로 가이드(직무 바꿔 보기 → 즉시 재계산 · 보완 가이드) · 실습 공고(기준 충족 표시·지원·정보 제공 동의) · 알림함(받은 알림톡·채용 알림 신청·상담 요청)</div>
+      <div><span>C · 서명 페이지 (로그인 없음)</span><b>1페이지 · 5단계</b>안내(학교 신원·문서 요약·마감) → 본인 확인(등록 번호 OTP 6자리·5회 제한) → 내용 확인(요약 카드·전문 끝까지·필수 동의 개별 체크·전자서명 약정) → 관계 선택 + 손가락 서명 → 완료(확인번호·감사추적 PDF·사본 알림). 보호자·학생·기업 대표·취업전환 동의서가 같은 흐름을 씁니다. 만료·거부·잠김·순서 대기 상태 화면 포함.</div>
+    </div>
+  </section>
+
+  <section class="prop-sec" id="stack">
+    <h2><small>03</small>기술 스택과 선택 이유</h2>
+    <div class="prop-grid">
+      <div class="prop-card"><h3>접속 방식 — 반응형 모바일 웹 + PWA (앱 대체)</h3><ul><li>보호자는 앱을 설치하지 않습니다. 동의서 서명은 1년에 몇 번이라 "링크 → 인증 → 서명"이 전부여야 하고, 알림톡 링크는 설치 없이 바로 열립니다.</li><li>학생은 홈 화면에 추가(PWA)하면 앱처럼 쓰고, iOS 16.4+에서 웹푸시가 됩니다(보조 채널 — 주 채널은 알림톡).</li><li>네이티브 앱은 스토어 심사·개발자 계정(Apple $99/년·Google $25)·OS별 유지보수가 붙어 1,500만원 안에서 화면 퀄리티를 깎습니다. 사용 데이터를 본 뒤 2차에서 판단합니다.</li></ul></div>
+      <div class="prop-card"><h3>Next.js(React·TypeScript) + Node API + PostgreSQL</h3><ul><li>학생·보호자 모바일 화면과 교사 PC 콘솔을 한 코드베이스로. 담임의 "본인 학급만"은 서버에서 행 단위로 강제합니다(URL 변조로 다른 반 열람 불가).</li><li>증빙·포트폴리오는 객체 스토리지, 서명 원본은 변경 불가 저장, 열람은 10분 서명 URL + 기록.</li><li>표준 스택·DB 설계서·운영 매뉴얼로 다른 업체도 이어받을 수 있습니다(저작권 학교 귀속).</li></ul></div>
+      <div class="prop-card"><h3>국내 클라우드 우선 (CSAP)</h3><ul><li>학생·보호자 개인정보를 담으므로 네이버클라우드 공공·NHN Cloud 등 국내 CSP 상위 등급을 우선 제안합니다. AWS·Azure·GCP는 CSAP "하" 등급만 보유(2025).</li><li>공립학교의 의무 적용 여부는 착수 1주차에 교육청 정보보안 담당과 함께 확인합니다.</li></ul></div>
+      <div class="prop-card"><h3>알림톡·SMS · 전자서명 · PDF · 엑셀</h3><ul><li>카카오 공식 딜러사 API(NHN Cloud 또는 네이버 SENS) — 알림톡 약 13원, LMS 45원. 학교 명의 채널·발신번호 등록을 함께 진행합니다.</li><li>전자서명은 1차 자체 구현(OTP + 약정 고지 + 감사추적 + 해시) — 건당 0원. 분쟁 대응 강화가 필요하면 모두싸인 API(건당 약 1,400~2,200원)를 2차에.</li><li>PDF는 서버 헤드리스 크롬 + Noto Sans CJK 임베딩(한글 깨짐 방지), 교육청 XLSX는 원본 양식의 고정 셀을 채워 서식 유지.</li></ul></div>
+    </div>
+  </section>
+
+  <section class="prop-sec" id="plan">
+    <h2><small>04</small>60일 일정 — 매주 스테이징에서 직접 눌러 보실 수 있습니다</h2>
+    <div class="timeline-w">
+      <div class="is-gate"><b>1주</b>요구사항 확정 · 7개 화면 PDF 대조 · 교육청 양식·HIFIVE 분담·채널 서류 · DB 설계</div>
+      <div><b>2주</b>Figma 핵심 화면(교사·학생·서명) · 디자인 시스템 · 권한·학급 범위</div>
+      <div class="is-gate"><b>3주</b>학생 프로필·이력·증빙 확인·버전 · 엑셀 업로드 검증 → <b>중간 확인 ①</b></div>
+      <div><b>4주</b>기업 공고(협약 항목 검증) · 매칭 · 정보 제공 동의 · 4단 문서 체인</div>
+      <div class="is-gate"><b>5주</b>서명 페이지(OTP·약정·감사추적·PDF) · 날인 · 변경 합의 → <b>중간 확인 ②(선생님이 직접 서명)</b></div>
+      <div><b>6주</b>알림톡 연동·템플릿 심사 · 대상 추출 · 실패 대체 · 이력 · 대시보드·통계·분모</div>
+      <div class="is-gate"><b>7주</b>진로 가이드·기준표 편집기 · 리포트 PDF · 점검 일지·사안보고 · 교육청 XLSX → <b>중간 확인 ③</b></div>
+      <div><b>8주</b>QA(4개 폭·접근성) · 보안 점검 · 운영 매뉴얼·DB 설계서 · 교사 교육 · 오픈</div>
+    </div>
+    <p class="t-small muted mt">알림톡 템플릿 심사(영업일 1~3일)와 학교 채널 개설은 1주차에 시작해 6주차 연동 전에 끝냅니다. 교육청 XLSX 원본 양식은 1주차에 받아야 7주차 매핑이 가능합니다.</p>
+  </section>
+
+  <section class="prop-sec" id="done">
+    <h2><small>05</small>완료 기준 — 이것이 되면 성공이라고 봅니다</h2>
+    <div class="prop-grid">
+      <div class="prop-card prop-card--accent"><h3>기능</h3><ul><li>보호자가 알림톡 링크로 들어와 로그인 없이 3분 안에 서명을 마치고, 그 즉시 교사 화면 상태가 바뀐다</li><li>4단 체인이 순서대로만 진행되고, 체결 후 3부 PDF(감사추적 포함)가 생성된다</li><li>엑셀 200행 업로드에서 0 소실·중복·서식 오류가 행 단위로 잡히고 오류 행만 다시 받는다</li><li>학생이 올린 증빙을 교사가 확인하면 준비도 숫자가 바로 바뀐다</li><li>교육청 양식 XLSX가 원본 서식 그대로 채워져 나온다</li></ul></div>
+      <div class="prop-card prop-card--accent"><h3>품질·운영</h3><ul><li>344·390·834·1280 네 폭에서 가로 스크롤 0, 터치 타깃 44px 이상, 콘솔 에러 0</li><li>담임 계정으로 다른 반 학생 URL을 열면 서버가 거부하고 기록이 남는다</li><li>알림톡 실패가 SMS로 자동 대체되고 사유·비용이 이력에 남는다</li><li>소스·DB 설계서·API 명세·운영 매뉴얼 납품, 교사 교육 1회, 오픈 후 60일 무상 하자 보수</li></ul></div>
+    </div>
+  </section>
+
+  <section class="prop-sec" id="cost">
+    <h2><small>06</small>견적 — 1,500만원 (VAT 별도) · 60일</h2>
+    <table class="prop-table"><thead><tr><th>작업</th><th class="num">일</th><th>포함 내용</th></tr></thead><tbody>
+      <tr><td>착수 · 요구사항 확정</td><td class="num">3</td><td>7개 화면 PDF 대조 · 교내 관리 항목 매핑 · 미팅 확인 질문 15건 해소 · HIFIVE 분담</td></tr>
+      <tr><td>UI/UX 설계 + Figma</td><td class="num">7</td><td>교사·학생·서명 핵심 화면 · 디자인 시스템 · 원본 파일 납품</td></tr>
+      <tr><td>DB · 클라우드 · 도메인</td><td class="num">3</td><td>스키마·DB 설계서 · 국내 CSP · SSL · 백업</td></tr>
+      <tr><td>인증 · 3단계 권한 · 토큰 링크</td><td class="num">3</td><td>교사 역할×학급 범위 · 학생 계정 · 보호자·기업 1회용 링크 · OTP</td></tr>
+      <tr><td>모듈 1 통합 대시보드</td><td class="num">3</td><td>KPI · 분모 토글 · 학과 비교 · 오늘 할 일 · 서명 상태 필터 · 독려 발송</td></tr>
+      <tr><td>모듈 2 학생 프로필·이력</td><td class="num">5</td><td>증빙 확인 · 버전 · 엑셀 업로드 검증·보정 · 학생 앱 등록</td></tr>
+      <tr><td>모듈 3 공고·매칭·전자동의</td><td class="num">7</td><td>협약 항목 검증 · 배정 잠금 · 4단 체인 · 서명 페이지 · 날인 · 변경 합의 · PDF 감사추적</td></tr>
+      <tr><td>모듈 4 진로 가이드</td><td class="num">4</td><td>기준표 편집기 · 갭 계산 · 보완 가이드 · 상담 메모 · A4 리포트</td></tr>
+      <tr><td>모듈 5 알림 · 통계 · 보고</td><td class="num">6</td><td>알림톡 연동 · 템플릿 상태 · 대상 추출 · 대체 발송 · 점검 일지 · 사안보고 · 교육청 XLSX</td></tr>
+      <tr><td>QA · 보안 · 개인정보</td><td class="num">3</td><td>4개 폭 · 접근성 · 처리방침 · 파기 스케줄 · 감사 로그</td></tr>
+      <tr><td>매뉴얼 · 교육 · 인수인계</td><td class="num">2</td><td>운영 매뉴얼 · 교사 교육 · 소스·설계서 납품</td></tr>
+      <tr><td><b>합계</b></td><td class="num"><b>46</b></td><td><b>15,000,000원 ÷ 46일 ≈ 일 326,000원</b> · 달력 60일 중 영업일 약 43일이라 디자인·개발 일부 병렬</td></tr>
+    </tbody></table>
+    <div class="prop-grid mt">
+      <div class="prop-card"><h3>의뢰자 부담</h3><ul><li>클라우드·DB·스토리지·도메인 월 비용(소형 기준 월 수만~10만원대)</li><li>알림톡·SMS 발송비 — 3학년 200명 + 보호자 200명, 월 8건 기준 연 약 35만원(알림톡 13원·LMS 45원)</li><li>카카오 채널·비즈니스 인증 서류(고유번호증), 문자 발신번호 등록 서류(통신서비스 이용증명원)</li><li>전자서명 SaaS·휴대폰 본인확인을 2차에 붙일 경우 건당 과금</li><li>개인정보파일 등록·처리방침 게시·학운위 심의·CSAP 판단 등 법적 판단 책임</li></ul></div>
+      <div class="prop-card"><h3>1,000만원 축소안(의뢰자 하한)을 원하시면</h3><ul><li>모듈 4를 "갭 비교 + 상담 메모"까지, 교육청 XLSX는 학교 집계표까지, Figma는 핵심 12화면 — 공수 약 31일</li><li>변경 합의 재서명·사안보고서·졸업생 파기 스케줄은 2차로</li><li>어느 안이든 서명 체인·순서 잠금·OTP·감사추적은 빼지 않습니다 — 빼면 협약서 효력 문제가 그대로 남습니다</li></ul></div>
+    </div>
+  </section>
+
+  <section class="prop-sec" id="refs">
+    <h2><small>07</small>이 데모의 디자인 출처</h2>
+    <div class="prop-grid">
+      <div class="prop-card"><h3>도메인 레퍼런스 (무엇을 만들까)</h3><ul><li>모두싸인 — 본인확인 3방식·감사추적인증서·문서 검증센터 문법 → 서명 페이지 OTP·확인번호</li><li>Handshake — 역할별 3입구·검색 우선 공고 탐색·공고 카드 3줄 → 허브·학생 실습 공고</li><li>DocuSign — 보내는 쪽 4기능(템플릿·자동 채움·다채널 발송) → 전자동의 콘솔</li><li>고용24 — 공공 채용 행 3열·D-day 빨강 → 공고 카드·마감 표기</li></ul></div>
+      <div class="prop-card"><h3>디자인 레퍼런스 (어떻게 보이게 할까)</h3><ul><li>Awwwards SOTD 2026-10-12 Heron AI — 주의 우선 인사·KPI 타일의 8px 색 사각·모노 라벨·승인 큐·버튼 이징</li><li>GDWEB 2026 선정작 매쓰플랫 — 교사 대상 교육 SaaS의 타이포 스케일(64/56/32·lh 1.25~1.7)·카운트업 엇갈림</li><li>토스 디자인 시스템(TDS Mobile) — 학생·학부모 화면의 타입 스케일 t1~t7·버튼 48/56·누름 피드백</li><li>레퍼런스 라이브러리 shopify-admin(Polaris) — 교사 콘솔 프레임 240/56·무채색·상태 쌍·100~250ms 모션</li></ul></div>
+    </div>
+  </section>
+</main>
+<footer class="hub-foot"><p>CAREERPASS 커리어패스 · 제안용 데모 · 인물·기업·학교명·수치는 전부 가상입니다.</p><p><a href="index.html">데모 입구</a> · <a href="../../index.html">데모 포털</a></p></footer>
+<script src="assets/js/data.js"></script><script src="assets/js/calc.js"></script><script src="assets/js/ui.js"></script><script src="assets/js/findings.js"></script>
+<script>document.getElementById('finds-list').innerHTML = FINDINGS.map((f,i)=>`<article class="find" data-reveal style="--i:${i%6}"><span class="find__n">${f.id}</span><h3>${f.title}</h3><p>${f.text}</p><p class="find__how"><b>데모에서</b> ${f.how}</p><p class="t-small muted">근거 · ${f.src}</p>${f.href?`<a class="plink t-small" href="${f.href}">${f.hrefLabel} →</a>`:''}</article>`).join(''); UI.reveal();</script>
+</body>
+</html>

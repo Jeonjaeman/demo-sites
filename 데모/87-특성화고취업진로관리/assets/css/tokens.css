@@ -1,0 +1,69 @@
+/* CAREERPASS 커리어패스 — 디자인 토큰
+   출처(실측): 레퍼런스 라이브러리 shopify-admin(교사 콘솔 프레임·무채색·radius·그림자) · Polaris tokens v9 원문(상태 쌍·모션) ·
+   TDS Mobile(토스 디자인 시스템 — 모바일 타입 스케일 t1~t7·버튼 32/38/48/56·blue #3182f6·grey) · 매쓰플랫(GDWEB 2026 선정작 — 허브 타이포 64/56/32·lh 1.25~1.7·ls −0.02em) ·
+   Heron AI(Awwwards SOTD 2026-10-12 — 모노 라벨·8px 색 사각 상태·버튼 이징) · 고용24(D-day red #e0024b) · 모두싸인(통계 숫자 ls −0.025em) · DocuSign(0.1s cubic-bezier(.33,0,.67,1))
+   폰트는 Pretendard — 수상작 유료 폰트는 메트릭(em 비율)만 이식 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+:root {
+  /* 색 — 무채색 + 액센트 1 */
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --ink: #191f28;          /* TDS grey900 — 모바일 본문 */
+  --ink-console: #303030;  /* shopify-admin 잉크·검정 Primary */
+  --ink-2: #4e5968;        /* TDS grey700 — 보조 본문 */
+  --ink-3: #6b7684;        /* TDS grey600 — 캡션 (콘솔 #616161) */
+  --ink-4: #8b95a1;        /* TDS grey500 — placeholder */
+  --line: #e5e8eb;         /* TDS grey200 (콘솔 #e3e3e3) */
+  --line-2: #ebebeb;       /* 행 구분 shopify-admin */
+  --line-strong: #d1d6db;  /* TDS grey300 · 입력 테두리는 #8a8a8a(shopify)보다 부드럽게 */
+  --bg: #f1f1f1;           /* 콘솔 바탕 shopify-admin */
+  --bg-app: #f2f4f6;       /* 모바일 바탕 TDS grey100 */
+  --bg-side: #ebebeb;      /* 사이드바 shopify-admin */
+  --surface: #ffffff;
+  --surface-2: #f9fafb;    /* TDS grey50 */
+  --accent: #3182f6;       /* TDS blue500 — 링크·포커스·선택·CTA (Polaris #005bd3를 이 값으로 통일) */
+  --accent-strong: #2272eb;/* TDS blue600 hover/pressed */
+  --accent-tint: #e8f3ff;  /* TDS blue50 */
+  --accent-tint-2: #c9e2ff;
+  --ok: #03b26c;  --ok-bg: #cdfed4;  --ok-ink: #014b40;      /* Polaris success 쌍 + TDS green500 */
+  --warn: #fe9800; --warn-bg: #fff8db; --warn-ink: #4f4700;  /* Polaris caution 쌍 + TDS orange500 */
+  --warn2-bg: #fff1e3; --warn2-ink: #5e4200;                  /* Polaris warning */
+  --danger: #f04452; --danger-bg: #fee8eb; --danger-ink: #8e0b21; /* Polaris critical 쌍 + TDS red500 */
+  --info-bg: #e0f0ff; --info-ink: #00527c;                   /* shopify-admin 정보 톤 */
+  --neutral-bg: rgba(0,0,0,.06); --neutral-ink: #616161;
+  --dday: #e0024b;         /* 고용24 red_50 */
+  --dark: #0b0b0b;         /* shopify 상단 바 */
+
+  /* 타이포 — 콘솔(shopify 12/13/14/20 한 단계 상향) */
+  --fs-12: 12px; --lh-12: 16px;
+  --fs-13: 13px; --lh-13: 20px;
+  --fs-14: 14px; --lh-14: 20px;   /* 표 본문 */
+  --fs-16: 16px; --lh-16: 24px;   /* 카드 제목 650 */
+  --fs-20: 20px; --lh-20: 28px;
+  --fs-24: 24px; --lh-24: 32px;   /* 페이지 제목 700 */
+  --fs-32: 32px;                   /* KPI 숫자 700 ls −0.02em tabular */
+  /* 모바일 TDS t1~t7 */
+  --t1: 30px; --t1-lh: 40px; --t2: 26px; --t2-lh: 35px; --t3: 22px; --t3-lh: 31px; --t4: 20px; --t4-lh: 29px;
+  --t5: 17px; --t5-lh: 25.5px; --t6: 15px; --t6-lh: 22.5px; --t7: 13px; --t7-lh: 19.5px;
+  /* 허브 — 매쓰플랫 설계 px */
+  --h-display: 56px; --h-display-lh: 1.3; --h-h2: 32px; --h-h2-lh: 1.4; --h-body: 16px; --h-body-lh: 1.7;
+  --ls-tight: -0.02em; --ls-num: -0.025em; --ls-label: 0.04em;
+
+  /* 형태 */
+  --r-8: 8px; --r-10: 10px; --r-12: 12px; --r-14: 14px; --r-16: 16px; --r-24: 24px;
+  --shadow-card: inset 0 -1px 0 0 rgb(0 0 0 / .08), 0 1px 0 0 rgb(26 26 26 / .07);   /* shopify-admin 베벨 */
+  --shadow-pop: 0 4px 12px -2px rgb(26 26 26 / .14), 0 0 0 1px rgb(0 0 0 / .06);
+  --shadow-modal: 0 20px 20px -8px rgb(26 26 26 / .28), 0 0 0 1px rgb(0 0 0 / .08);
+  --shadow-float: 0 8px 24px -8px rgb(26 26 26 / .28);
+
+  /* 리듬 */
+  --side-w: 240px; --top-h: 56px; --row-h: 48px; --card-pad: 20px; --gutter: 20px; --tap: 44px;
+
+  /* 모션 — Polaris v9 · TDS · DocuSign · Heron */
+  --dur-1: 100ms; --dur-2: 150ms; --dur-3: 250ms; --dur-4: 400ms;
+  --ease-out: cubic-bezier(.19, .91, .38, 1);
+  --ease-std: cubic-bezier(.33, 0, .67, 1);
+  --ease-label: cubic-bezier(.625, .05, 0, 1);
+  --ease-icon: cubic-bezier(.23, 1, .32, 1);
+}
