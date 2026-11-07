@@ -8,7 +8,7 @@
 <meta property="og:title" content="탱탱소프트 포트폴리오 | 운영 중인 사이트 · MVP 데모" />
 <meta property="og:description" content="실제 운영 중인 고객 사이트와 바로 체험할 수 있는 MVP 데모 모음" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
-<link rel="stylesheet" href="./assets/portal/portal.css?v=20261107d" />
+<link rel="stylesheet" href="./assets/portal/portal.css?v=20261107g" />
 </head>
 <body>
 <a class="skip" href="#list">본문 바로가기</a>
@@ -19,6 +19,7 @@
   <div class="wrap px">
     <a class="brand" href="./">탱탱소프트 <em>포트폴리오</em></a>
     <nav class="toptabs" id="toptabs" aria-label="포트폴리오 구분 바로가기">
+      <button type="button" data-tab="all">전체 <em data-n="all">0</em></button>
       <button type="button" data-tab="live"><span class="dot" aria-hidden="true"></span>운영 중 <em data-n="live">0</em></button>
       <button type="button" data-tab="mvp">MVP <em data-n="mvp">0</em></button>
     </nav>
@@ -41,6 +42,10 @@
   <section class="px" aria-labelledby="list-title" id="list">
     <div class="wrap">
       <div role="tablist" aria-label="포트폴리오 구분" class="bigtabs" id="tabs">
+        <button type="button" role="tab" id="tab-all" aria-controls="panel" data-tab="all">
+          <span class="bt-top"><span class="bt-name">전체</span><b class="bt-n" data-n="all">0</b></span>
+          <span class="bt-desc">운영 중인 사이트와 MVP 데모를 한 화면에서 모두 보기</span>
+        </button>
         <button type="button" role="tab" id="tab-live" aria-controls="panel" data-tab="live">
           <span class="bt-top"><span class="bt-name"><span class="dot" aria-hidden="true"></span>운영 중</span><b class="bt-n" data-n="live">0</b></span>
           <span class="bt-desc">고객 도메인에서 실제로 오픈한 사이트 · 상세에서 실제 화면으로 둘러보기</span>
@@ -52,8 +57,8 @@
       </div>
       <h2 id="list-title" class="sr-only">포트폴리오 목록</h2>
       <div id="chips" class="chips" hidden></div>
-      <div role="tabpanel" id="panel" aria-labelledby="tab-live">
-        <ul class="cards" id="cards"></ul>
+      <div role="tabpanel" id="panel" aria-labelledby="tab-all">
+        <div id="lists"></div>
         <div class="switchcta" id="switchcta"></div>
       </div>
     </div>
@@ -68,6 +73,7 @@
 </footer>
 
 <script src="./assets/portal/live.js?v=20261107b"></script>
+<script src="./assets/portal/work-extra.js?v=20261107f"></script>
 <script>
   // 데모 목록 — cat: home(홈페이지·브랜드) / admin(관리자·대시보드) / platform(플랫폼·서비스). 전부 MVP 로 보인다.
   const DEMOS = [
@@ -184,7 +190,8 @@
   // MVP 정렬(기존 규칙 유지): 카테고리 순(홈페이지 → 플랫폼 → 대시보드) → ord → 폴더 번호 → 번호 없는 레거시
   const CAT_RANK = { home:0, platform:1, admin:2 };
   const catRank = (d)=> CAT_RANK[d.cat]===undefined ? 9 : CAT_RANK[d.cat];
-  const MVP = DEMOS.filter(d=> d.status!=="soon" && d.thumb).sort((a,b)=>{
+  // MVP = WORK 에만 있는 작업(work-extra.js) 먼저 → 포털 DEMOS. 운영 중이 아닌 작업은 모두 여기에 든다.
+  const MVP = [...(window.WORK_EXTRA || []), ...DEMOS.filter(d=> d.status!=="soon" && d.thumb).sort((a,b)=>{
     const cr = catRank(a)-catRank(b);
     if(cr!==0) return cr;
     const ao = Number.isInteger(a.ord)?a.ord:Infinity, bo = Number.isInteger(b.ord)?b.ord:Infinity;
@@ -194,12 +201,14 @@
     if(an!==null) return -1;
     if(bn!==null) return 1;
     return 0;
-  });
+  })];
 
-  const state = { tab:"live", cat:"all" };
+  const state = { tab:"all", cat:"all" };
   const $ = (id)=> document.getElementById(id);
   document.querySelectorAll('[data-n="live"]').forEach(el=> el.textContent = LIVE.length);
   document.querySelectorAll('[data-n="mvp"]').forEach(el=> el.textContent = MVP.length);
+  document.querySelectorAll('[data-n="all"]').forEach(el=> el.textContent = LIVE.length + MVP.length);
+  const TABS = ["all", "live", "mvp"];
 
   function liveCard(s){
     const year = s.published.slice(0,4);
@@ -210,12 +219,12 @@
     </a>`;
   }
   function mvpCard(d){
-    const { title, sub } = splitName(d.name);
+    const { title, sub } = d.work ? { title:d.title, sub:d.sub } : splitName(d.name);
     const no = demoNo(d);
     const noTag = no===null ? "" : `<span class="tag mono">NO. ${String(no).padStart(2,"0")}</span>`;
     const cat = (CATS.find(c=>c.key===d.cat)||{}).label || "";
     return `<a class="card" href="${esc(d.url)}" target="_blank" rel="noopener" aria-label="${esc(title)} MVP 데모 — 새 탭에서 바로 체험">
-      <div class="frame"><div class="ratio"><img src="${esc(d.thumb)}" alt="" width="900" height="900" loading="lazy" decoding="async"></div></div>
+      <div class="frame"><div class="ratio">${d.work ? `<img src="${esc(d.thumb)}" alt="" width="1600" height="1200" loading="lazy" decoding="async">` : `<img class="sq" src="${esc(d.thumb)}" alt="" width="900" height="900" loading="lazy" decoding="async">`}</div></div>
       <div class="card-body"><div><strong>${esc(title)}</strong>${sub?`<span class="sum">${esc(sub)}</span>`:""}</div><span class="arrow" aria-hidden="true">${ARROW}</span></div>
       <div class="tags"><span class="tag try">MVP · 바로 체험 ↗</span>${cat?`<span class="tag">${esc(cat)}</span>`:""}${noTag}</div>
     </a>`;
@@ -239,25 +248,31 @@
     });
     $("panel").setAttribute("aria-labelledby", "tab-"+state.tab);
     document.querySelectorAll("#toptabs [data-tab]").forEach(b=> b.setAttribute("aria-pressed", String(b.dataset.tab===state.tab)));
-    // 목록 끝 — 다른 구분도 있다는 안내(운영 중을 다 본 사람은 MVP 로, MVP 를 본 사람은 운영 중으로)
-    $("switchcta").innerHTML = state.tab==="live"
+    // 목록 끝 — 다른 구분도 있다는 안내(운영 중을 다 본 사람은 MVP 로, MVP 를 본 사람은 운영 중으로). 전체에는 둘 다 있으니 없다.
+    $("switchcta").innerHTML = state.tab==="all" ? "" : state.tab==="live"
       ? `<button type="button" data-tab="mvp"><span><small>운영 중 사이트는 여기까지입니다</small><b>MVP 데모 ${MVP.length}개도 바로 체험해 보세요</b></span><span class="arrow" aria-hidden="true">${ARROW}</span></button>`
       : `<button type="button" data-tab="live"><span><small>MVP 데모는 여기까지입니다</small><b>실제 운영 중인 사이트 ${LIVE.length}곳 보기</b></span><span class="arrow" aria-hidden="true">${ARROW}</span></button>`;
     renderChips();
-    const ul = $("cards");
-    ul.className = state.tab==="live" ? "cards zig" : "cards mvp";
-    const list = state.tab==="live" ? LIVE : MVP.filter(d=> state.cat==="all" || d.cat===state.cat);
-    ul.innerHTML = list.map((item, i)=> `<li class="${i < 6 ? "rise" : ""}" style="--d:${(i % 3) * 90}ms">${state.tab==="live" ? liveCard(item) : mvpCard(item)}</li>`).join("");
+    // 전체 = 운영 중 묶음 → MVP 묶음(각 묶음 머리에 개수와 "만 보기"). 운영 중 · MVP 탭은 그 묶음 하나만.
+    const items = (list, card)=> list.map((item, i)=> `<li class="${i < 6 ? "rise" : ""}" style="--d:${(i % 3) * 90}ms">${card(item)}</li>`).join("");
+    const liveUl = `<ul class="cards zig">${items(LIVE, liveCard)}</ul>`;
+    const mvpList = MVP.filter(d=> state.tab!=="mvp" || state.cat==="all" || d.cat===state.cat);
+    const mvpUl = `<ul class="cards mvp">${items(mvpList, mvpCard)}</ul>`;
+    const head = (tab, name, n, desc)=> `<div class="grouphead"><div><h3>${name} <em>${n}</em></h3><p>${desc}</p></div><button type="button" class="btn ghost" data-tab="${tab}">${name}만 보기</button></div>`;
+    $("lists").innerHTML = state.tab==="live" ? liveUl
+      : state.tab==="mvp" ? mvpUl
+      : `<section class="group" aria-label="운영 중">${head("live", "운영 중", LIVE.length, "고객 도메인에서 실제로 오픈한 사이트 — 카드를 누르면 실제 화면 상세")}${liveUl}</section>
+         <section class="group" aria-label="MVP 데모">${head("mvp", "MVP 데모", MVP.length, "제안용으로 만든 동작 데모 — 카드를 누르면 새 탭에서 바로 체험")}${mvpUl}</section>`;
   }
 
   function fromHash(){
     const h = location.hash.replace("#","");
     const [tab, cat] = h.split("/");
-    state.tab = tab==="mvp" ? "mvp" : "live";
+    state.tab = TABS.includes(tab) ? tab : "all";
     state.cat = CATS.some(c=>c.key===cat) ? cat : "all";
   }
   function toHash(){
-    const h = state.tab==="mvp" ? (state.cat==="all" ? "#mvp" : `#mvp/${state.cat}`) : "#live";
+    const h = state.tab==="mvp" ? (state.cat==="all" ? "#mvp" : `#mvp/${state.cat}`) : state.tab==="live" ? "#live" : location.pathname + location.search;
     history.replaceState(null, "", h);
   }
 
@@ -270,11 +285,12 @@
   $("tabs").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, false); });
   $("toptabs").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, true); });
   $("switchcta").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, true); });
+  $("lists").addEventListener("click", (e)=>{ const b = e.target.closest("button[data-tab]"); if(b) switchTab(b.dataset.tab, true); });
   // 탭 목록 키보드 — 좌우 화살표로 이동(WAI-ARIA tabs)
   $("tabs").addEventListener("keydown", (e)=>{
     if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
-    state.tab = state.tab==="live" ? "mvp" : "live"; state.cat = "all";
-    toHash(); render();
+    const i = TABS.indexOf(state.tab), next = TABS[(i + (e.key==="ArrowRight" ? 1 : TABS.length - 1)) % TABS.length];
+    switchTab(next, false);
     $("tab-"+state.tab).focus();
   });
   $("chips").addEventListener("click", (e)=>{
