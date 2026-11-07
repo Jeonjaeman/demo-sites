@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>운영 중인 사이트 | 탱탱소프트 포트폴리오</title>
+<meta name="description" content="탱탱소프트가 제작해 고객 도메인에서 실제 운영 중인 사이트를 화면 그대로 둘러보세요." />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
+<link rel="stylesheet" href="./assets/portal/portal.css" />
+</head>
+<body>
+<a class="skip" href="#main">본문 바로가기</a>
+
+<!-- 운영 중 사이트 상세 (2026-11-07) — 탱탱소프트 WORKS 상세와 같은 구성:
+     목록 링크 → 제목 · 설명 · 방문 버튼 → 개요 4칸 → 대표 화면(실제 사이트 iframe · 녹화 영상 탭) → 다른 사이트.
+     iframe 을 막는 사이트(live.js frame:false)는 녹화 영상이 기본 화면이다. -->
+<header class="top" id="top">
+  <div class="wrap px">
+    <a class="brand" href="./">탱탱소프트 <em>포트폴리오</em></a>
+    <a class="top-link" href="https://tengtengsoft.kr/" target="_blank" rel="noopener">tengtengsoft.kr ↗</a>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<footer class="foot px">
+  <div class="wrap">
+    <span>운영 중 사이트는 고객 도메인의 실제 서비스입니다. 화면은 실제 사이트를 그대로 불러오거나 실제 사이트를 녹화한 영상입니다.</span>
+    <span>© 2026 탱탱소프트 · <a href="https://tengtengsoft.kr/works" target="_blank" rel="noopener">WORKS ↗</a></span>
+  </div>
+</footer>
+
+<script src="./assets/portal/live.js"></script>
+<script>
+  const LIVE = window.LIVE_SITES || [];
+  const DESKTOP = { width:1920, height:1080 }, MOBILE = { width:390, height:844 }, DESKTOP_MIN = 640;
+  const SANDBOX = "allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox";
+  const esc = (s)=> String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
+  const main = document.getElementById("main");
+  const slug = new URLSearchParams(location.search).get("s");
+  const site = LIVE.find(s=> s.slug===slug);
+
+  function card(s){
+    return `<a class="card" href="./site.html?s=${encodeURIComponent(s.slug)}" aria-label="${esc(s.client)} — ${esc(s.summary)} (운영 중), 상세 보기">
+      <div class="frame"><div class="ratio"><img src="${esc(s.thumb)}" alt="" width="1600" height="1200" loading="lazy" decoding="async"></div></div>
+      <div class="card-body"><div><strong>${esc(s.client)}</strong><span class="sum">${esc(s.summary)}</span></div><span class="arrow" aria-hidden="true">${ARROW}</span></div>
+      <div class="tags"><span class="tag"><span class="dot" aria-hidden="true"></span>운영 중</span><span class="tag mono"><time datetime="${esc(s.published)}">${s.published.slice(0,4)}</time></span></div>
+    </a>`;
+  }
+
+  if(!site){
+    document.title = "사이트를 찾을 수 없습니다 | 탱탱소프트 포트폴리오";
+    main.innerHTML = `<section class="hero px"><div class="wrap">
+      <a class="back" href="./#live">← 포트폴리오 목록</a>
+      <h1 class="page-title">사이트를 찾을 수 없습니다</h1>
+      <p class="lead" style="margin-top:24px">주소가 바뀌었거나 목록에서 내려간 사이트입니다. 운영 중인 사이트 목록에서 다시 골라 주세요.</p>
+    </div></section>`;
+  } else {
+    document.title = `${site.title} | 탱탱소프트 포트폴리오`;
+    document.querySelector('meta[name="description"]').setAttribute("content", site.description);
+    const others = LIVE.filter(s=> s.slug!==site.slug).slice(0, 2);
+    const v = site.video;
+    const videoCaption = v ? `실제 사이트 동작 녹화 · ${v.width}×${v.height} · 무음` : "";
+    main.innerHTML = `
+      <section class="px" style="padding-top:40px" aria-labelledby="work-title">
+        <div class="wrap">
+          <a class="back" href="./#live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>포트폴리오 목록</a>
+          <div class="hero-grid" style="margin-top:24px">
+            <div>
+              <p class="pill live rise">운영 중</p>
+              <h1 id="work-title" class="page-title rise" style="--d:80ms">${esc(site.title)}</h1>
+            </div>
+            <div class="hero-side rise" style="--d:160ms">
+              <p class="lead">${esc(site.description)}</p>
+              <a class="btn" style="margin-top:28px" href="${esc(site.url)}" target="_blank" rel="noopener noreferrer">사이트 방문하기 ${ARROW}</a>
+            </div>
+          </div>
+          <dl class="facts">
+            <div><dt>고객</dt><dd>${esc(site.client)}</dd></div>
+            <div><dt>유형</dt><dd>${esc(site.summary)}</dd></div>
+            <div><dt>구분</dt><dd><span class="dot" aria-hidden="true"></span>운영 중</dd></div>
+            <div><dt>공개일</dt><dd><time datetime="${esc(site.published)}">${site.published.replaceAll("-",".")}</time></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="px stage-sec" aria-label="${esc(site.client)} ${site.frame ? "실제 웹사이트 화면" : "웹사이트 동작 영상"}">
+        <div class="wrap" id="viewer"></div>
+      </section>
+
+      ${others.length ? `<section class="px more" aria-labelledby="more-title">
+        <div class="wrap">
+          <div class="sechead">
+            <div><p class="pill">MORE SITES</p><h2 id="more-title">다른 운영 사이트</h2></div>
+            <a class="btn ghost" href="./#live">운영 중 전체 보기</a>
+          </div>
+          <ul class="cards">${others.map(o=>`<li>${card(o)}</li>`).join("")}</ul>
+        </div>
+      </section>` : ""}`;
+
+    mountViewer(document.getElementById("viewer"), site, videoCaption);
+  }
+
+  // 대표 화면 — WORKS 의 WorkLiveFrame 과 같은 동작:
+  //   640px 이상은 1920×1080 으로 렌더해 액자 폭에 맞춰 축소, 그 미만은 390×844 모바일 화면 그대로.
+  //   처음에는 잠겨 있어(포인터 없음 · inert) 페이지 스크롤이 갇히지 않는다. 안내판을 누르면 조작, 마우스가 벗어나거나 "조작 끝내기"로 다시 잠근다.
+  function mountViewer(root, s, videoCaption){
+    let mode = s.frame ? "live" : "video";
+    let active = false, scale = null, mobile = false, frame = null, ro = null;
+    const mq = matchMedia(`(min-width:${DESKTOP_MIN}px)`);
+
+    function videoHtml(){
+      const v = s.video;
+      return `<video controls muted playsinline preload="metadata" poster="${esc(s.poster)}" width="${v.width}" height="${v.height}" aria-label="${esc(s.client)} 웹사이트 화면 동작 영상 (무음, ${v.seconds}초)"><source src="${esc(v.src)}" type="video/mp4"></video>`;
+    }
+
+    function render(){
+      mobile = !mq.matches;
+      const base = mobile ? MOBILE : DESKTOP;
+      active = false; frame = null; ro?.disconnect();
+      const tabs = s.frame && s.video ? `<div class="modes"><div class="tabs" role="group" aria-label="화면 보기 방식">
+          <button type="button" data-mode="live" aria-pressed="${mode==="live"}" ${mode==="live"?'aria-selected="true"':""}>실제 사이트</button>
+          <button type="button" data-mode="video" aria-pressed="${mode==="video"}" ${mode==="video"?'aria-selected="true"':""}>녹화 영상</button>
+        </div></div>` : "";
+      const caption = mode==="live"
+        ? `실제 사이트 · ${mobile ? "모바일 화면 그대로 · 눌러서 스크롤" : `${base.width}×${base.height} 화면을 액자에 맞춰 축소 · 클릭한 뒤 스크롤`}`
+        : (s.frame ? videoCaption : `${videoCaption} · 이 사이트는 보안 설정상 다른 사이트 안에서 열리지 않아 녹화 영상으로 보여 드립니다`);
+      root.innerHTML = `${tabs}
+        <div class="frame liveframe ${mode==="live" ? "is-live" : ""}">
+          <div class="stage" ${mode==="video" ? 'style="aspect-ratio:16/9"' : ""} data-viewport="${mobile ? "mobile" : "desktop"}">
+            ${mode==="live" ? `
+              <img class="bgposter" src="${esc(s.poster)}" alt="" aria-hidden="true">
+              <span class="livebadge" aria-hidden="true"><span class="ping"></span><span class="lb-text">실제 사이트 불러오는 중…</span></span>
+              <button type="button" class="shield" aria-label="${esc(s.client)} 실제 사이트를 이 액자 안에서 스크롤해 보기">
+                <span class="panel">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <b>${mobile ? "눌러서 스크롤해 둘러보세요" : "클릭한 뒤 스크롤해서 둘러보세요"}</b>
+                  <small>정지 이미지가 아닌, 실제로 움직이는 사이트입니다</small>
+                  <svg class="down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 6 5 5 5-5"/><path d="m7 13 5 5 5-5"/></svg>
+                </span>
+              </button>` : videoHtml()}
+          </div>
+        </div>
+        <div class="caption"><span>${esc(caption)}</span><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">사이트 방문하기 ↗</a></div>`;
+
+      root.querySelectorAll("[data-mode]").forEach(b=> b.addEventListener("click", ()=>{
+        if(mode===b.dataset.mode) return;
+        mode = b.dataset.mode; render();
+      }));
+      if(mode==="live") mountFrame(root.querySelector(".stage"), base);
+    }
+
+    function mountFrame(stage, base){
+      const badgeText = stage.querySelector(".lb-text");
+      const measure = ()=>{
+        const w = stage.clientWidth; if(!w) return;
+        scale = w / base.width;
+        if(frame) frame.style.transform = `scale(${scale})`;
+      };
+      measure();
+      frame = document.createElement("iframe");
+      frame.src = s.url;
+      frame.title = `${s.client} 실제 웹사이트 (${base.width}×${base.height} 화면을 축소해 표시)`;
+      frame.loading = "lazy";
+      frame.setAttribute("sandbox", SANDBOX);
+      frame.setAttribute("allow", "fullscreen");
+      frame.referrerPolicy = "strict-origin-when-cross-origin";
+      frame.tabIndex = -1;
+      frame.inert = true;
+      Object.assign(frame.style, { width:base.width+"px", height:base.height+"px", transform:`scale(${scale})`, pointerEvents:"none" });
+      frame.addEventListener("load", ()=>{ frame.classList.add("loaded"); badgeText.textContent = "LIVE · 실제 사이트"; });
+      stage.prepend(frame);
+      if("ResizeObserver" in window){ ro = new ResizeObserver(measure); ro.observe(stage); }
+
+      const shield = stage.querySelector(".shield");
+      const lock = (restoreFocus)=>{
+        if(!active) return;
+        active = false;
+        frame.style.pointerEvents = "none"; frame.inert = true; frame.tabIndex = -1;
+        stage.querySelector(".endbtn")?.remove();
+        shield.hidden = false;
+        if(restoreFocus) requestAnimationFrame(()=> shield.focus());
+      };
+      shield.addEventListener("click", ()=>{
+        active = true;
+        frame.style.pointerEvents = "auto"; frame.inert = false; frame.tabIndex = 0;
+        shield.hidden = true;
+        const end = document.createElement("button");
+        end.type = "button"; end.className = "endbtn"; end.textContent = "조작 끝내기";
+        end.addEventListener("click", ()=> lock(true));
+        stage.append(end);
+        requestAnimationFrame(()=> frame.focus());
+      });
+      stage.addEventListener("mouseleave", ()=> lock(false));
+    }
+
+    // 화면 기준(데스크톱/모바일)이 바뀌면 그 폭의 레이아웃으로 다시 불러온다
+    const onChange = ()=>{ if(mode==="live") render(); };
+    if(typeof mq.addEventListener==="function") mq.addEventListener("change", onChange); else mq.addListener(onChange);
+    render();
+  }
+
+  const topbar = document.getElementById("top");
+  addEventListener("scroll", ()=> topbar.classList.toggle("scrolled", scrollY > 8), { passive:true });
+</script>
+</body>
+</html>
