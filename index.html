@@ -8,7 +8,7 @@
 <meta property="og:title" content="탱탱소프트 포트폴리오 | 운영 중인 사이트 · MVP 데모" />
 <meta property="og:description" content="실제 운영 중인 고객 사이트와 바로 체험할 수 있는 MVP 데모 모음" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css" />
-<link rel="stylesheet" href="./assets/portal/portal.css?v=20261107b" />
+<link rel="stylesheet" href="./assets/portal/portal.css?v=20261107d" />
 </head>
 <body>
 <a class="skip" href="#list">본문 바로가기</a>
@@ -18,6 +18,10 @@
 <header class="top" id="top">
   <div class="wrap px">
     <a class="brand" href="./">탱탱소프트 <em>포트폴리오</em></a>
+    <nav class="toptabs" id="toptabs" aria-label="포트폴리오 구분 바로가기">
+      <button type="button" data-tab="live"><span class="dot" aria-hidden="true"></span>운영 중 <em data-n="live">0</em></button>
+      <button type="button" data-tab="mvp">MVP <em data-n="mvp">0</em></button>
+    </nav>
   </div>
 </header>
 
@@ -36,17 +40,21 @@
 
   <section class="px" aria-labelledby="list-title" id="list">
     <div class="wrap">
-      <div class="listhead">
-        <div role="tablist" aria-label="포트폴리오 구분" class="tabs" id="tabs">
-          <button type="button" role="tab" id="tab-live" aria-controls="panel" data-tab="live"><span class="dot" aria-hidden="true"></span>운영 중 <em id="n-live">0</em></button>
-          <button type="button" role="tab" id="tab-mvp" aria-controls="panel" data-tab="mvp">MVP <em id="n-mvp">0</em></button>
-        </div>
-        <p class="listnote" id="note"></p>
+      <div role="tablist" aria-label="포트폴리오 구분" class="bigtabs" id="tabs">
+        <button type="button" role="tab" id="tab-live" aria-controls="panel" data-tab="live">
+          <span class="bt-top"><span class="bt-name"><span class="dot" aria-hidden="true"></span>운영 중</span><b class="bt-n" data-n="live">0</b></span>
+          <span class="bt-desc">고객 도메인에서 실제로 오픈한 사이트 · 상세에서 실제 화면으로 둘러보기</span>
+        </button>
+        <button type="button" role="tab" id="tab-mvp" aria-controls="panel" data-tab="mvp">
+          <span class="bt-top"><span class="bt-name"><span class="mvp-mark" aria-hidden="true">▶</span>MVP 데모</span><b class="bt-n" data-n="mvp">0</b></span>
+          <span class="bt-desc">공고 요구사항을 동작으로 구현한 제안용 데모 · 카드를 누르면 바로 체험</span>
+        </button>
       </div>
       <h2 id="list-title" class="sr-only">포트폴리오 목록</h2>
       <div id="chips" class="chips" hidden></div>
       <div role="tabpanel" id="panel" aria-labelledby="tab-live">
         <ul class="cards" id="cards"></ul>
+        <div class="switchcta" id="switchcta"></div>
       </div>
     </div>
   </section>
@@ -159,10 +167,6 @@
     { key:"platform", label:"플랫폼" },
     { key:"admin", label:"대시보드" },
   ];
-  const NOTES = {
-    live: '<span class="dot" aria-hidden="true"></span> <b>운영 중</b>은 고객 도메인에서 실제로 오픈한 사이트입니다. 카드를 누르면 실제 사이트 화면과 방문 링크가 있는 상세로 이동합니다.',
-    mvp: '<b>MVP</b>는 공고 요구사항을 실제 동작으로 구현한 제안용 데모입니다. 카드를 누르면 데모가 새 탭에서 바로 열립니다.',
-  };
   const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>';
 
   const esc = (s)=> String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -194,8 +198,8 @@
 
   const state = { tab:"live", cat:"all" };
   const $ = (id)=> document.getElementById(id);
-  $("n-live").textContent = LIVE.length;
-  $("n-mvp").textContent = MVP.length;
+  document.querySelectorAll('[data-n="live"]').forEach(el=> el.textContent = LIVE.length);
+  document.querySelectorAll('[data-n="mvp"]').forEach(el=> el.textContent = MVP.length);
 
   function liveCard(s){
     const year = s.published.slice(0,4);
@@ -234,7 +238,11 @@
       b.tabIndex = on ? 0 : -1;
     });
     $("panel").setAttribute("aria-labelledby", "tab-"+state.tab);
-    $("note").innerHTML = NOTES[state.tab];
+    document.querySelectorAll("#toptabs [data-tab]").forEach(b=> b.setAttribute("aria-pressed", String(b.dataset.tab===state.tab)));
+    // 목록 끝 — 다른 구분도 있다는 안내(운영 중을 다 본 사람은 MVP 로, MVP 를 본 사람은 운영 중으로)
+    $("switchcta").innerHTML = state.tab==="live"
+      ? `<button type="button" data-tab="mvp"><span><small>운영 중 사이트는 여기까지입니다</small><b>MVP 데모 ${MVP.length}개도 바로 체험해 보세요</b></span><span class="arrow" aria-hidden="true">${ARROW}</span></button>`
+      : `<button type="button" data-tab="live"><span><small>MVP 데모는 여기까지입니다</small><b>실제 운영 중인 사이트 ${LIVE.length}곳 보기</b></span><span class="arrow" aria-hidden="true">${ARROW}</span></button>`;
     renderChips();
     const ul = $("cards");
     ul.className = state.tab==="live" ? "cards zig" : "cards mvp";
@@ -253,12 +261,15 @@
     history.replaceState(null, "", h);
   }
 
-  $("tabs").addEventListener("click", (e)=>{
-    const b = e.target.closest("[data-tab]"); if(!b) return;
-    if(state.tab===b.dataset.tab) return;
-    state.tab = b.dataset.tab; state.cat = "all";
+  function switchTab(tab, scroll){
+    if(state.tab===tab) return;
+    state.tab = tab; state.cat = "all";
     toHash(); render();
-  });
+    if(scroll) $("list").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion:reduce)").matches ? "auto" : "smooth" });
+  }
+  $("tabs").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, false); });
+  $("toptabs").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, true); });
+  $("switchcta").addEventListener("click", (e)=>{ const b = e.target.closest("[data-tab]"); if(b) switchTab(b.dataset.tab, true); });
   // 탭 목록 키보드 — 좌우 화살표로 이동(WAI-ARIA tabs)
   $("tabs").addEventListener("keydown", (e)=>{
     if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;

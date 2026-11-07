@@ -174,3 +174,38 @@ button{font:inherit;color:inherit}
 .shield[hidden]{display:none}
 /* iframe 은 포스터 위 · 안내판 아래 — 포스터가 iframe 을 덮으면 클릭 · 스크롤이 사이트로 가지 않는다 */
 .stage iframe{z-index:1}
+
+/* 2026-11-07 — 운영 중 / MVP 구분을 한눈에: 큰 카드 탭 · 머리글 바로가기 · 목록 끝 전환 안내 */
+.bigtabs{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:768px){ .bigtabs{grid-template-columns:1fr 1fr;gap:16px} }
+.bigtabs button{display:flex;flex-direction:column;gap:10px;text-align:left;padding:22px 24px;border:1.5px solid var(--line-2);border-radius:24px;background:var(--panel);box-shadow:var(--shadow-card);cursor:pointer;transition:border-color .3s,background .3s,color .3s,transform .3s var(--ease)}
+@media (min-width:1024px){ .bigtabs button{padding:28px 32px} }
+.bigtabs button:hover{border-color:var(--accent);transform:translateY(-2px)}
+.bigtabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff;transform:none}
+.bt-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.bt-name{display:inline-flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.03em}
+@media (min-width:1024px){ .bt-name{font-size:26px} }
+.bt-name .dot{width:10px;height:10px}
+.mvp-mark{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:9px;padding-left:2px}
+.bt-n{font-family:var(--mono);font-size:36px;font-weight:500;letter-spacing:-.02em;line-height:1}
+@media (min-width:1024px){ .bt-n{font-size:44px} }
+.bt-desc{font-size:14px;line-height:22px;color:var(--mut)}
+.bigtabs button[aria-selected="true"] .bt-desc{color:rgba(255,255,255,.72)}
+.bigtabs button:not([aria-selected="true"]) .bt-n{color:var(--accent-hi)}
+.bigtabs button:not([aria-selected="true"]) .bt-desc::after{content:" →";color:var(--accent-hi);font-weight:600}
+.toptabs{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.toptabs button{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border:0;border-radius:999px;background:transparent;font-size:14px;font-weight:600;color:var(--mut);cursor:pointer}
+.toptabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.toptabs em{font-style:normal;font-family:var(--mono);font-size:11px;opacity:.75}
+@media (max-width:400px){ .toptabs button{padding:0 10px;font-size:13px} .brand em{display:none} }
+.switchcta{margin-top:80px}
+.switchcta button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:28px 24px;border:1.5px dashed var(--line-2);border-radius:24px;background:transparent;text-align:left;cursor:pointer;transition:border-color .3s,background .3s}
+@media (min-width:1024px){ .switchcta{margin-top:120px} .switchcta button{padding:36px 40px} }
+.switchcta button:hover{border-color:var(--accent);background:var(--panel)}
+.switchcta small{display:block;font-size:14px;color:var(--mut-2)}
+.switchcta b{display:block;margin-top:6px;font-size:22px;font-weight:600;letter-spacing:-.03em}
+@media (min-width:1024px){ .switchcta b{font-size:28px} }
+.switchcta button:hover .arrow{background:var(--accent);border-color:var(--accent);color:#fff}
+.toptabs a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--mut)}
+.toptabs a:hover{color:var(--ink)}
+.toptabs a[aria-current="true"]{background:var(--ink);color:#fff}
