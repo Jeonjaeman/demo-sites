@@ -170,3 +170,7 @@ button{font:inherit;color:inherit}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .cards.mvp .ratio{aspect-ratio:1/1}
 .pill.live::before{background:var(--live)}
+/* hidden 속성이 display:flex 에 덮이지 않게 — 조작 중에는 안내판이 iframe 을 가리면 안 된다 */
+.shield[hidden]{display:none}
+/* iframe 은 포스터 위 · 안내판 아래 — 포스터가 iframe 을 덮으면 클릭 · 스크롤이 사이트로 가지 않는다 */
+.stage iframe{z-index:1}
